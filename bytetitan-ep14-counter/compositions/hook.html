@@ -1,0 +1,230 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Noto Color Emoji";
+      src: local("Noto Color Emoji"), local("Apple Color Emoji"), local("Segoe UI Emoji");
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .emoji {
+      font-family: "Noto Color Emoji", sans-serif;
+      font-weight: 400;
+    }
+    .tag {
+      position: absolute;
+      height: 60px;
+      padding: 0 24px;
+      border-radius: 10px;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 34px;
+      letter-spacing: 0.06em;
+      line-height: 60px;
+      color: #0e1b3d;
+      white-space: nowrap;
+    }
+    .title {
+      position: absolute;
+      left: 70px;
+      right: 70px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 70px;
+      line-height: 1.05;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+    .code {
+      position: absolute;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 48px;
+      line-height: 64px;
+      color: #eaf0ff;
+      white-space: nowrap;
+    }
+    .ln {
+      display: block;
+      height: 64px;
+      white-space: pre;
+      clip-path: inset(0 100% 0 0);
+    }
+    .kw { color: #ff6ec7; }
+    .str { color: #ffb35c; }
+    .num { color: #3de0cf; }
+    .fn { color: #7cc4ff; }
+    .res { color: #3de0cf; }
+    .char {
+      position: absolute;
+    }
+    .slip {
+      position: absolute;
+      width: 110px;
+      height: 70px;
+    }
+
+    .cf {
+      position: absolute;
+      border-radius: 3px;
+      opacity: 0;
+    }
+
+    #h-bar {
+      position: absolute;
+      left: 110px;
+      right: 110px;
+      top: 478px;
+      height: 92px;
+      background: #e0218a;
+      border-radius: 10px;
+      box-shadow: 0 8px 0 #9c1360;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 58px;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+    }
+    #h-bar-block {
+      width: 26px;
+      height: 26px;
+      background: #ff8a1f;
+      border-radius: 4px;
+    }
+    .h-line {
+      position: absolute;
+      left: 60px;
+      right: 60px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 86px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    #h-l1 { top: 622px; color: #ffffff; }
+    #h-l2 { top: 728px; color: #ffb020; }
+    #h-under {
+      position: absolute;
+      left: 170px;
+      width: 740px;
+      top: 846px;
+      height: 14px;
+      border-radius: 7px;
+      background: #ff8a1f;
+      transform-origin: 0 50%;
+    }
+    #h-emoji {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 884px;
+      text-align: center;
+      font-size: 140px;
+      line-height: 1;
+    }
+    #h-emoji span {
+      display: inline-block;
+      margin: 0 12px;
+    }
+  </style>
+  <div data-hf-id="hf-srfg" id="root" data-composition-id="hook" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-tpql" id="h-bar"><div data-hf-id="hf-ji8z" id="h-bar-block"></div>BREAKING NEWS<div data-hf-id="hf-zkgd" id="h-bar-block2" style="width:26px;height:26px;background:#ff8a1f;border-radius:4px"></div></div>
+    <div data-hf-id="hf-y9ph" id="h-l1" class="h-line">COUNTING VOTES</div>
+    <div data-hf-id="hf-jzk2" id="h-l2" class="h-line">THE HARD WAY?</div>
+    <div data-hf-id="hf-csh6" id="h-under"></div>
+    <div data-hf-id="hf-yfo1" id="h-emoji" class="emoji"><span data-hf-id="hf-dz8z" id="h-e1">😩</span><span data-hf-id="hf-xsy3" id="h-e2">🗳️</span></div>
+    <div data-hf-id="hf-7uir" id="h-m1" class="char" style="left:190px;top:1160px;width:150px;height:165px"><svg data-hf-id="hf-xo1z" id="h-m1-svg" viewBox="0 0 200 220" aria-hidden="true" width="150" height="165">
+  <path data-hf-id="hf-1nka" d="M104 34 C156 32 186 86 180 136 C174 190 132 214 96 208 C54 202 22 166 26 118 C30 68 58 36 104 34Z" fill="#ffb020" stroke="#c96a00" stroke-width="5"/>
+  <path data-hf-id="hf-iedt" d="M150 60 C176 90 182 140 166 176 C150 200 120 210 100 208 C140 190 168 140 150 60Z" fill="#ff7a1a" opacity=".55"/>
+  <ellipse data-hf-id="hf-9915" cx="68" cy="88" rx="14" ry="26" fill="#ffe08a" opacity=".9" transform="rotate(-20 68 88)"/>
+  <path data-hf-id="hf-mx90" d="M104 36 C112 14 140 6 160 12 C146 30 124 38 104 36Z" fill="#2e9e5b"/>
+  <path data-hf-id="hf-2f7n" d="M104 36 L100 22" stroke="#6b4b2a" stroke-width="6" stroke-linecap="round"/>
+  <circle data-hf-id="hf-ey95" cx="82" cy="118" r="10" fill="#0e1b3d"/><circle data-hf-id="hf-y8qq" cx="124" cy="118" r="10" fill="#0e1b3d"/>
+  <circle data-hf-id="hf-6be8" cx="85" cy="114" r="3.5" fill="#fff"/><circle data-hf-id="hf-yox7" cx="127" cy="114" r="3.5" fill="#fff"/>
+  <circle data-hf-id="hf-2ns1" cx="64" cy="140" r="9" fill="#ff5f7a" opacity=".45"/><circle data-hf-id="hf-gl5c" cx="142" cy="140" r="9" fill="#ff5f7a" opacity=".45"/>
+  <path data-hf-id="hf-ksat" d="M86 144 Q103 162 120 144" fill="none" stroke="#0e1b3d" stroke-width="6" stroke-linecap="round"/>
+  <g data-hf-id="hf-ubhq" transform="translate(150 182)"><path data-hf-id="hf-ayo1" d="M-10 6 L-16 34 L-4 28 L2 38 L6 8Z" fill="#ff8a1f"/><circle data-hf-id="hf-4fhz" r="18" fill="#ff8a1f" stroke="#fff" stroke-width="4"/><circle data-hf-id="hf-puwr" r="7" fill="#fff"/></g>
+</svg></div>
+    <div data-hf-id="hf-rg4r" id="h-m2" class="char" style="left:465px;top:1160px;width:150px;height:165px"><svg data-hf-id="hf-opjg" id="h-m2-svg" viewBox="0 0 200 220" aria-hidden="true" width="150" height="165">
+  <path data-hf-id="hf-5t50" d="M40 34 C22 110 60 192 152 200 C176 202 188 192 184 180 C178 168 160 168 146 164 C118 156 104 104 112 50 C114 30 50 18 40 34Z" fill="#ffd93b" stroke="#d9a400" stroke-width="5"/>
+  <path data-hf-id="hf-0rcq" d="M42 34 L46 14 L60 18 L58 34Z" fill="#6b4b2a"/><circle data-hf-id="hf-jjti" cx="184" cy="184" r="6" fill="#6b4b2a"/>
+  <path data-hf-id="hf-dkcw" d="M56 64 C50 112 66 150 96 172" stroke="#fff3a6" stroke-width="8" fill="none" stroke-linecap="round" opacity=".9"/>
+  <circle data-hf-id="hf-7s07" cx="64" cy="110" r="9" fill="#0e1b3d"/><circle data-hf-id="hf-jxwa" cx="92" cy="112" r="9" fill="#0e1b3d"/>
+  <circle data-hf-id="hf-kjo2" cx="67" cy="106" r="3" fill="#fff"/><circle data-hf-id="hf-07yh" cx="95" cy="108" r="3" fill="#fff"/>
+  <path data-hf-id="hf-ku3f" d="M64 132 Q78 146 94 133" fill="none" stroke="#0e1b3d" stroke-width="6" stroke-linecap="round"/>
+  <g data-hf-id="hf-8ma1" transform="translate(128 186)"><path data-hf-id="hf-0f5l" d="M-10 6 L-16 32 L-4 26 L2 36 L6 8Z" fill="#13b5a6"/><circle data-hf-id="hf-krdg" r="17" fill="#13b5a6" stroke="#fff" stroke-width="4"/><circle data-hf-id="hf-9cor" r="7" fill="#fff"/></g>
+</svg></div>
+    <div data-hf-id="hf-fmib" id="h-m3" class="char" style="left:740px;top:1150px;width:150px;height:172px"><svg data-hf-id="hf-bxoi" id="h-m3-svg" viewBox="0 0 200 230" aria-hidden="true" width="150" height="172">
+  <path data-hf-id="hf-na16" d="M100 18 L104 44" stroke="#6b4b2a" stroke-width="7" stroke-linecap="round"/>
+  <path data-hf-id="hf-ud6o" d="M104 32 C120 12 150 14 160 26 C140 40 120 42 104 32Z" fill="#2e9e5b"/>
+  <circle data-hf-id="hf-yhum" cx="68" cy="74" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-6ovq" cx="132" cy="74" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-0n8g" cx="100" cy="66" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-3gt1" cx="54" cy="120" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-638l" cx="146" cy="120" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-qnjp" cx="76" cy="164" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-dmjt" cx="124" cy="164" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-7804" cx="100" cy="196" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/>
+  <circle data-hf-id="hf-un4a" cx="100" cy="122" r="46" fill="#9b55ff" stroke="#5b1fb8" stroke-width="4"/>
+  <circle data-hf-id="hf-ogsg" cx="84" cy="114" r="8" fill="#0e1b3d"/><circle data-hf-id="hf-h59g" cx="116" cy="114" r="8" fill="#0e1b3d"/>
+  <circle data-hf-id="hf-p05r" cx="86" cy="111" r="3" fill="#fff"/><circle data-hf-id="hf-67xb" cx="118" cy="111" r="3" fill="#fff"/>
+  <path data-hf-id="hf-akl0" d="M86 138 Q100 150 114 138" fill="none" stroke="#0e1b3d" stroke-width="6" stroke-linecap="round"/>
+  <g data-hf-id="hf-5do7" transform="translate(156 176)"><path data-hf-id="hf-aaci" d="M-10 6 L-16 32 L-4 26 L2 36 L6 8Z" fill="#e0218a"/><circle data-hf-id="hf-z73b" r="17" fill="#e0218a" stroke="#fff" stroke-width="4"/><circle data-hf-id="hf-8ydq" r="7" fill="#fff"/></g>
+</svg></div>
+    <svg data-hf-id="hf-r8xn" id="h-s1" class="slip" viewBox="0 0 110 70" style="left:470px;top:-90px" aria-hidden="true">
+  <rect data-hf-id="hf-ywdm" x="3" y="3" width="104" height="64" rx="6" fill="#ffffff" stroke="#b8c2ce" stroke-width="4"/>
+  <rect data-hf-id="hf-4fz3" x="12" y="18" width="24" height="24" rx="3" fill="none" stroke="#0e1b3d" stroke-width="4"/>
+  <path data-hf-id="hf-c2mz" d="M15 30 L22 37 L36 18" fill="none" stroke="#ff8a1f" stroke-width="5" stroke-linecap="round"/>
+  <rect data-hf-id="hf-qtw6" x="46" y="20" width="50" height="7" rx="3" fill="#b8c2ce"/><rect data-hf-id="hf-f9hj" x="46" y="36" width="36" height="7" rx="3" fill="#b8c2ce"/>
+</svg>
+    <svg data-hf-id="hf-4e62" id="h-s2" class="slip" viewBox="0 0 110 70" style="left:520px;top:-90px" aria-hidden="true">
+  <rect data-hf-id="hf-repa" x="3" y="3" width="104" height="64" rx="6" fill="#ffffff" stroke="#b8c2ce" stroke-width="4"/>
+  <rect data-hf-id="hf-9o4f" x="12" y="18" width="24" height="24" rx="3" fill="none" stroke="#0e1b3d" stroke-width="4"/>
+  <path data-hf-id="hf-owwr" d="M15 30 L22 37 L36 18" fill="none" stroke="#ff8a1f" stroke-width="5" stroke-linecap="round"/>
+  <rect data-hf-id="hf-p6t6" x="46" y="20" width="50" height="7" rx="3" fill="#b8c2ce"/><rect data-hf-id="hf-k89z" x="46" y="36" width="36" height="7" rx="3" fill="#b8c2ce"/>
+</svg>
+    <svg data-hf-id="hf-rlqe" id="h-s3" class="slip" viewBox="0 0 110 70" style="left:440px;top:-90px" aria-hidden="true">
+  <rect data-hf-id="hf-rt0b" x="3" y="3" width="104" height="64" rx="6" fill="#ffffff" stroke="#b8c2ce" stroke-width="4"/>
+  <rect data-hf-id="hf-99te" x="12" y="18" width="24" height="24" rx="3" fill="none" stroke="#0e1b3d" stroke-width="4"/>
+  <path data-hf-id="hf-oilq" d="M15 30 L22 37 L36 18" fill="none" stroke="#ff8a1f" stroke-width="5" stroke-linecap="round"/>
+  <rect data-hf-id="hf-pl47" x="46" y="20" width="50" height="7" rx="3" fill="#b8c2ce"/><rect data-hf-id="hf-jtyy" x="46" y="36" width="36" height="7" rx="3" fill="#b8c2ce"/>
+</svg>
+    <svg data-hf-id="hf-45ui" id="h-s4" class="slip" viewBox="0 0 110 70" style="left:500px;top:-90px" aria-hidden="true">
+  <rect data-hf-id="hf-s7bc" x="3" y="3" width="104" height="64" rx="6" fill="#ffffff" stroke="#b8c2ce" stroke-width="4"/>
+  <rect data-hf-id="hf-8vid" x="12" y="18" width="24" height="24" rx="3" fill="none" stroke="#0e1b3d" stroke-width="4"/>
+  <path data-hf-id="hf-o4ap" d="M15 30 L22 37 L36 18" fill="none" stroke="#ff8a1f" stroke-width="5" stroke-linecap="round"/>
+  <rect data-hf-id="hf-pzf8" x="46" y="20" width="50" height="7" rx="3" fill="#b8c2ce"/><rect data-hf-id="hf-jfnx" x="46" y="36" width="36" height="7" rx="3" fill="#b8c2ce"/>
+</svg>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // reveal a code line like typing: clip opens one character at a time
+    function typeLine(sel, at, chars) {
+      tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: Math.min(0.5, chars * 0.022), ease: `steps(${chars})` }, at);
+    }
+    function pop(sel, at, from = 0.4) {
+      tl.fromTo(sel, { scale: from, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2.2)" }, at);
+    }
+
+    // frame 0 is the thumbnail: the hook is already on screen, then it punches in
+    tl.fromTo("#h-bar", { scaleX: 1.08 }, { scaleX: 1, duration: 0.3, ease: "power3.out" }, 0);
+    tl.fromTo("#h-l1", { scale: 1.12 }, { scale: 1, duration: 0.35, ease: "power3.out" }, 0);
+    tl.fromTo("#h-l2", { scale: 1.16, x: 0 }, { scale: 1, x: 0, duration: 0.4, ease: "back.out(2)" }, 0.12);
+    tl.to("#h-l2", { x: 10, duration: 0.05, ease: "none", yoyo: true, repeat: 5 }, 0.55);
+    tl.fromTo("#h-under", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power2.out" }, 1.05);
+    tl.fromTo("#h-e1", { scale: 0, rotation: -30 }, { scale: 1, rotation: 0, duration: 0.4, ease: "back.out(2.4)" }, 0.7);
+    tl.fromTo("#h-e2", { scale: 0, rotation: 30 }, { scale: 1, rotation: 0, duration: 0.4, ease: "back.out(2.4)" }, 0.85);
+    tl.to("#h-e1", { rotation: -10, duration: 0.15, ease: "sine.inOut", yoyo: true, repeat: 3 }, 1.35);
+    tl.to("#h-e2", { y: -24, duration: 0.15, ease: "power2.out", yoyo: true, repeat: 3 }, 1.5);
+    // fruit candidates peek up from under the wall
+    [["#h-m1", 1.9], ["#h-m2", 2.0], ["#h-m3", 2.1]].forEach(([id, t]) => {
+      tl.fromTo(id, { y: 180, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "back.out(1.8)" }, t);
+    });
+    // ballots fall into the ballot box on the desk
+    [["#h-s1", 1.55, -12], ["#h-s2", 1.95, 10], ["#h-s3", 2.35, -6], ["#h-s4", 2.7, 14]].forEach(([id, land, r]) => {
+      tl.fromTo(id, { y: 0, rotation: r * 3, opacity: 1 }, { y: 1700, rotation: r, duration: 0.5, ease: "power2.in" }, land - 0.5);
+      tl.set(id, { opacity: 0 }, land);
+    });
+
+    window.__timelines["hook"] = tl;
+  </script>
+</template>

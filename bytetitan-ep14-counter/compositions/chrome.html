@@ -1,0 +1,170 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    #ch-header {
+      position: absolute;
+      left: 60px;
+      right: 60px;
+      top: 262px;
+      height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #ch-brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    #ch-logo {
+      width: 84px;
+      height: 84px;
+    }
+    #ch-wordmark {
+      font-family: "Archivo Black", sans-serif;
+      font-size: 46px;
+      color: #0e1b3d;
+      letter-spacing: -0.01em;
+    }
+    #ch-live {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 64px;
+      padding: 0 26px 0 22px;
+      border-radius: 12px;
+      background: #e0218a;
+      box-shadow: 0 6px 0 #9c1360;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 40px;
+      letter-spacing: 0.08em;
+      color: #ffffff;
+    }
+    #ch-live-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+    #ch-strap {
+      position: absolute;
+      left: 60px;
+      top: 356px;
+      font-family: "Oswald", sans-serif;
+      font-weight: 600;
+      font-size: 30px;
+      letter-spacing: 0.08em;
+      color: #4d5d7a;
+      white-space: nowrap;
+    }
+    #ch-strap b {
+      color: #c45a00;
+    }
+    /* ticker */
+    #ch-ticker {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 1478px;
+      height: 72px;
+      background: #13265c;
+      border-top: 5px solid #0a1638;
+      overflow: hidden;
+    }
+    #ch-crawl {
+      position: absolute;
+      left: 250px;
+      top: 0;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      font-family: "Oswald", sans-serif;
+      font-weight: 500;
+      font-size: 36px;
+      color: #ffffff;
+      letter-spacing: 0.03em;
+    }
+    #ch-crawl i {
+      font-style: normal;
+      color: #ff8a1f;
+      margin: 0 22px;
+    }
+    #ch-tab {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 236px;
+      height: 72px;
+      background: #ff8a1f;
+      overflow: hidden;
+      clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%);
+    }
+    .ch-tab-label {
+      position: absolute;
+      left: 0;
+      width: 210px;
+      top: 0;
+      height: 72px;
+      line-height: 72px;
+      text-align: center;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      letter-spacing: 0.06em;
+      color: #0e1b3d;
+    }
+  </style>
+  <div data-hf-id="hf-t4u5" id="root" data-composition-id="chrome" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-gslq" id="ch-header">
+      <div data-hf-id="hf-xovw" id="ch-brand">
+        <img data-hf-id="hf-g4rx" id="ch-logo" src="assets/bytetitan-logo.svg" alt="ByteTitan" />
+        <div data-hf-id="hf-7x0e" id="ch-wordmark">BYTETITAN</div>
+      </div>
+      <div data-hf-id="hf-uaeh" id="ch-live"><div data-hf-id="hf-4djt" id="ch-live-dot"></div>LIVE</div>
+    </div>
+    <div data-hf-id="hf-4osc" id="ch-strap">BEST SNACK ELECTION · <b data-hf-id="hf-0nrh">PYTHON IN 60s</b> · EP 14</div>
+
+    <div data-hf-id="hf-5pqn" id="ch-ticker">
+      <div data-hf-id="hf-dmyh" id="ch-crawl" data-layout-allow-overflow>
+        TEAM MANGO <i data-hf-id="hf-9mo9">●</i> TEAM BANANA <i data-hf-id="hf-j4e5">●</i> TEAM GRAPE <i data-hf-id="hf-ke2j">★</i> BALLOTS FLOODING IN FOR "BEST SNACK" <i data-hf-id="hf-3j7f">★</i>
+        from collections import Counter <i data-hf-id="hf-34we">★</i> ALL CANDIDATES ARE FRUIT <i data-hf-id="hf-2qld">★</i> NO KIWIS WERE HARMED <i data-hf-id="hf-2cac">★</i>
+        TEAM MANGO <i data-hf-id="hf-odac">●</i> TEAM BANANA <i data-hf-id="hf-jx07">●</i> TEAM GRAPE <i data-hf-id="hf-1xzb">★</i> count.most_common() CALLS IT EARLY <i data-hf-id="hf-1joa">★</i>
+        PYTHON IN 60 SECONDS · EP 14 <i data-hf-id="hf-15d9">★</i> MISSING KEY? STILL ZERO <i data-hf-id="hf-73yo">★</i> FOLLOW BYTETITAN <i data-hf-id="hf-6pnn">★</i>
+        TEAM MANGO <i data-hf-id="hf-p5we">●</i> TEAM BANANA <i data-hf-id="hf-orld">●</i> TEAM GRAPE <i data-hf-id="hf-gb69">★</i> BALLOTS FLOODING IN FOR "BEST SNACK" <i data-hf-id="hf-gpha">★</i>
+      </div>
+      <div data-hf-id="hf-n7hq" id="ch-tab">
+        <div data-hf-id="hf-khcx" class="ch-tab-label" id="ch-tab-0">BREAKING</div>
+        <div data-hf-id="hf-15jh" class="ch-tab-label" id="ch-tab-1">OLD WAY</div>
+        <div data-hf-id="hf-z78u" class="ch-tab-label" id="ch-tab-2">NEW TOOL</div>
+        <div data-hf-id="hf-aj3v" class="ch-tab-label" id="ch-tab-3">RESULTS</div>
+        <div data-hf-id="hf-6f62" class="ch-tab-label" id="ch-tab-4">STRINGS</div>
+        <div data-hf-id="hf-mbok" class="ch-tab-label" id="ch-tab-5">BONUS</div>
+        <div data-hf-id="hf-4h43" class="ch-tab-label" id="ch-tab-6">FOLLOW</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // LIVE dot blinks for the whole film (finite repeats, seek-safe)
+    tl.fromTo("#ch-live-dot", { opacity: 1 }, { opacity: 0.15, duration: 0.45, ease: "steps(1)", repeat: 65, yoyo: true }, 0);
+    tl.fromTo("#ch-live", { scale: 1 }, { scale: 1.06, duration: 0.18, ease: "power2.out", yoyo: true, repeat: 1 }, 0.1);
+    // ticker crawl: constant speed across 60 s
+    tl.fromTo("#ch-crawl", { x: 0 }, { x: -3900, duration: 60, ease: "none" }, 0);
+    // tab label slides on every scene cut
+    const cuts = [3.3, 13, 24, 36, 46, 54.4];
+    tl.set(".ch-tab-label", { y: 72 }, 0);
+    tl.set("#ch-tab-0", { y: 0 }, 0);
+    cuts.forEach((t, i) => {
+      tl.fromTo(`#ch-tab-${i}`, { y: 0 }, { y: -72, duration: 0.3, ease: "power3.in", immediateRender: false }, t - 0.15);
+      tl.fromTo(`#ch-tab-${i + 1}`, { y: 72 }, { y: 0, duration: 0.35, ease: "back.out(1.6)", immediateRender: false }, t);
+    });
+    window.__timelines["chrome"] = tl;
+  </script>
+</template>

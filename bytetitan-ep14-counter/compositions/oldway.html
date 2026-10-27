@@ -1,0 +1,238 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Noto Color Emoji";
+      src: local("Noto Color Emoji"), local("Apple Color Emoji"), local("Segoe UI Emoji");
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .emoji {
+      font-family: "Noto Color Emoji", sans-serif;
+      font-weight: 400;
+    }
+    .tag {
+      position: absolute;
+      height: 60px;
+      padding: 0 24px;
+      border-radius: 10px;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 34px;
+      letter-spacing: 0.06em;
+      line-height: 60px;
+      color: #0e1b3d;
+      white-space: nowrap;
+    }
+    .title {
+      position: absolute;
+      left: 70px;
+      right: 70px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 70px;
+      line-height: 1.05;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+    .code {
+      position: absolute;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 48px;
+      line-height: 64px;
+      color: #eaf0ff;
+      white-space: nowrap;
+    }
+    .ln {
+      display: block;
+      height: 64px;
+      white-space: pre;
+      clip-path: inset(0 100% 0 0);
+    }
+    .kw { color: #ff6ec7; }
+    .str { color: #ffb35c; }
+    .num { color: #3de0cf; }
+    .fn { color: #7cc4ff; }
+    .res { color: #3de0cf; }
+    .char {
+      position: absolute;
+    }
+    .slip {
+      position: absolute;
+      width: 110px;
+      height: 70px;
+    }
+
+    #o-tag { left: 96px; top: 462px; background: #dfe5ec; }
+    #o-code { left: 100px; top: 540px; }
+    #o-bracket {
+      position: absolute;
+      left: 72px;
+      top: 736px;
+      width: 18px;
+      height: 376px;
+      border: 7px solid #ff8a1f;
+      border-right: none;
+      border-radius: 10px 0 0 10px;
+      transform-origin: 50% 0;
+    }
+    #o-stamp {
+      position: absolute;
+      left: 668px;
+      top: 812px;
+      padding: 6px 18px;
+      border: 6px solid #e0218a;
+      border-radius: 14px;
+      background: rgba(224, 33, 138, 0.18);
+      font-family: "Archivo Black", sans-serif;
+      font-size: 50px;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+    #o-clerk { left: 700px; top: 1000px; width: 340px; height: 330px; }
+    #o-zzz {
+      position: absolute;
+      left: 940px;
+      top: 960px;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 44px;
+      color: #8fa3c7;
+    }
+  </style>
+  <div data-hf-id="hf-fic7" id="root" data-composition-id="oldway" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-2d57" id="o-tag" class="tag">THE OLD WAY <span data-hf-id="hf-x6zz" class="emoji">😩</span></div>
+    <div data-hf-id="hf-2hfy" id="o-code" class="code">
+      <span data-hf-id="hf-isd4" id="o-l0" class="ln">votes = [<span data-hf-id="hf-so94" class="str">"mango"</span>, <span data-hf-id="hf-vvy9" class="str">"banana"</span>,</span>
+      <span data-hf-id="hf-rvuc" id="o-l1" class="ln">         <span data-hf-id="hf-iatc" class="str">"mango"</span>, <span data-hf-id="hf-10aj" class="str">"grape"</span>,</span>
+      <span data-hf-id="hf-5vay" id="o-l2" class="ln">         <span data-hf-id="hf-h3w9" class="str">"mango"</span>, <span data-hf-id="hf-nzit" class="str">"banana"</span>]</span>
+      <span data-hf-id="hf-h0qq" id="o-l3" class="ln">count = {}</span>
+      <span data-hf-id="hf-7mkw" id="o-l4" class="ln"><span data-hf-id="hf-dtgu" class="kw">for</span> v <span data-hf-id="hf-ue7s" class="kw">in</span> votes:</span>
+      <span data-hf-id="hf-wvwx" id="o-l5" class="ln">    <span data-hf-id="hf-xko0" class="kw">if</span> v <span data-hf-id="hf-pykw" class="kw">in</span> count:</span>
+      <span data-hf-id="hf-k76i" id="o-l6" class="ln">        count[v] += <span data-hf-id="hf-kud6" class="num">1</span></span>
+      <span data-hf-id="hf-3hp4" id="o-l7" class="ln">    <span data-hf-id="hf-k96q" class="kw">else</span>:</span>
+      <span data-hf-id="hf-2ujf" id="o-l8" class="ln">        count[v] = <span data-hf-id="hf-dpi6" class="num">1</span></span>
+    </div>
+    <div data-hf-id="hf-r6wb" id="o-bracket"></div>
+    <div data-hf-id="hf-hw4n" id="o-stamp">6 LINES <span data-hf-id="hf-txvz" class="emoji">😩</span></div>
+    <svg data-hf-id="hf-6eky" id="o-p1" class="slip" viewBox="0 0 110 70" style="left:568px;top:1262px" aria-hidden="true">
+  <rect data-hf-id="hf-ywdm" x="3" y="3" width="104" height="64" rx="6" fill="#ffffff" stroke="#b8c2ce" stroke-width="4"/>
+  <rect data-hf-id="hf-4fz3" x="12" y="18" width="24" height="24" rx="3" fill="none" stroke="#0e1b3d" stroke-width="4"/>
+  <path data-hf-id="hf-c2mz" d="M15 30 L22 37 L36 18" fill="none" stroke="#ff8a1f" stroke-width="5" stroke-linecap="round"/>
+  <rect data-hf-id="hf-qtw6" x="46" y="20" width="50" height="7" rx="3" fill="#b8c2ce"/><rect data-hf-id="hf-f9hj" x="46" y="36" width="36" height="7" rx="3" fill="#b8c2ce"/>
+</svg>
+    <svg data-hf-id="hf-21ql" id="o-p2" class="slip" viewBox="0 0 110 70" style="left:620px;top:1250px" aria-hidden="true">
+  <rect data-hf-id="hf-repa" x="3" y="3" width="104" height="64" rx="6" fill="#ffffff" stroke="#b8c2ce" stroke-width="4"/>
+  <rect data-hf-id="hf-9o4f" x="12" y="18" width="24" height="24" rx="3" fill="none" stroke="#0e1b3d" stroke-width="4"/>
+  <path data-hf-id="hf-owwr" d="M15 30 L22 37 L36 18" fill="none" stroke="#ff8a1f" stroke-width="5" stroke-linecap="round"/>
+  <rect data-hf-id="hf-p6t6" x="46" y="20" width="50" height="7" rx="3" fill="#b8c2ce"/><rect data-hf-id="hf-k89z" x="46" y="36" width="36" height="7" rx="3" fill="#b8c2ce"/>
+</svg>
+    <svg data-hf-id="hf-2p2j" id="o-p3" class="slip" viewBox="0 0 110 70" style="left:585px;top:1226px" aria-hidden="true">
+  <rect data-hf-id="hf-rt0b" x="3" y="3" width="104" height="64" rx="6" fill="#ffffff" stroke="#b8c2ce" stroke-width="4"/>
+  <rect data-hf-id="hf-99te" x="12" y="18" width="24" height="24" rx="3" fill="none" stroke="#0e1b3d" stroke-width="4"/>
+  <path data-hf-id="hf-oilq" d="M15 30 L22 37 L36 18" fill="none" stroke="#ff8a1f" stroke-width="5" stroke-linecap="round"/>
+  <rect data-hf-id="hf-pl47" x="46" y="20" width="50" height="7" rx="3" fill="#b8c2ce"/><rect data-hf-id="hf-jtyy" x="46" y="36" width="36" height="7" rx="3" fill="#b8c2ce"/>
+</svg>
+    <svg data-hf-id="hf-lh54" id="o-p4" class="slip" viewBox="0 0 110 70" style="left:630px;top:1214px" aria-hidden="true">
+  <rect data-hf-id="hf-s7bc" x="3" y="3" width="104" height="64" rx="6" fill="#ffffff" stroke="#b8c2ce" stroke-width="4"/>
+  <rect data-hf-id="hf-8vid" x="12" y="18" width="24" height="24" rx="3" fill="none" stroke="#0e1b3d" stroke-width="4"/>
+  <path data-hf-id="hf-o4ap" d="M15 30 L22 37 L36 18" fill="none" stroke="#ff8a1f" stroke-width="5" stroke-linecap="round"/>
+  <rect data-hf-id="hf-pzf8" x="46" y="20" width="50" height="7" rx="3" fill="#b8c2ce"/><rect data-hf-id="hf-jfnx" x="46" y="36" width="36" height="7" rx="3" fill="#b8c2ce"/>
+</svg>
+    <svg data-hf-id="hf-u012" id="o-p5" class="slip" viewBox="0 0 110 70" style="left:575px;top:1192px" aria-hidden="true">
+  <rect data-hf-id="hf-pf65" x="3" y="3" width="104" height="64" rx="6" fill="#ffffff" stroke="#b8c2ce" stroke-width="4"/>
+  <rect data-hf-id="hf-bnnk" x="12" y="18" width="24" height="24" rx="3" fill="none" stroke="#0e1b3d" stroke-width="4"/>
+  <path data-hf-id="hf-npzo" d="M15 30 L22 37 L36 18" fill="none" stroke="#ff8a1f" stroke-width="5" stroke-linecap="round"/>
+  <rect data-hf-id="hf-qdq9" x="46" y="20" width="50" height="7" rx="3" fill="#b8c2ce"/><rect data-hf-id="hf-m7t4" x="46" y="36" width="36" height="7" rx="3" fill="#b8c2ce"/>
+</svg>
+    <svg data-hf-id="hf-anpo" id="o-p6" class="slip" viewBox="0 0 110 70" style="left:615px;top:1176px" aria-hidden="true">
+  <rect data-hf-id="hf-pth6" x="3" y="3" width="104" height="64" rx="6" fill="#ffffff" stroke="#b8c2ce" stroke-width="4"/>
+  <rect data-hf-id="hf-b9cj" x="12" y="18" width="24" height="24" rx="3" fill="none" stroke="#0e1b3d" stroke-width="4"/>
+  <path data-hf-id="hf-nbon" d="M15 30 L22 37 L36 18" fill="none" stroke="#ff8a1f" stroke-width="5" stroke-linecap="round"/>
+  <rect data-hf-id="hf-qs1a" x="46" y="20" width="50" height="7" rx="3" fill="#b8c2ce"/><rect data-hf-id="hf-lti3" x="46" y="36" width="36" height="7" rx="3" fill="#b8c2ce"/>
+</svg>
+    <div data-hf-id="hf-enqt" id="o-clerk-wrap" class="char" style="left:700px;top:1000px;width:340px;height:330px"><svg data-hf-id="hf-xvqq" id="o-clerk" viewBox="0 0 340 330" aria-hidden="true">
+  <path data-hf-id="hf-2rs9" d="M84 330 C84 238 118 198 170 198 C222 198 256 238 256 330Z" fill="#6b7a90"/>
+  <path data-hf-id="hf-jblk" d="M148 202 L170 236 L192 202" fill="#ffffff"/>
+  <g data-hf-id="hf-crot" id="o-clerk-head">
+    <circle data-hf-id="hf-5sj3" cx="170" cy="130" r="58" fill="#c98b5b"/>
+    <path data-hf-id="hf-rofc" d="M112 122 C108 70 146 58 172 62 C202 58 232 76 230 118 C216 98 198 96 184 102 C166 88 140 96 128 112 Z" fill="#2b2f3a"/>
+    <path data-hf-id="hf-qmrm" d="M150 64 L142 44 M172 62 L176 40 M196 66 L208 48" stroke="#2b2f3a" stroke-width="6" stroke-linecap="round"/>
+    <circle data-hf-id="hf-tmi2" cx="147" cy="134" r="19" fill="none" stroke="#0e1b3d" stroke-width="5"/>
+    <circle data-hf-id="hf-teze" cx="194" cy="134" r="19" fill="none" stroke="#0e1b3d" stroke-width="5"/>
+    <line data-hf-id="hf-q9eo" x1="166" y1="134" x2="175" y2="134" stroke="#0e1b3d" stroke-width="5"/>
+    <path data-hf-id="hf-ir8c" d="M137 138 Q147 132 157 138" stroke="#0e1b3d" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path data-hf-id="hf-lt33" d="M184 138 Q194 132 204 138" stroke="#0e1b3d" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path data-hf-id="hf-1ug2" d="M139 150 Q147 155 155 150 M186 150 Q194 155 202 150" stroke="#9a6340" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path data-hf-id="hf-tdf2" d="M154 172 Q162 166 170 172 Q178 178 186 170" stroke="#0e1b3d" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path data-hf-id="hf-tj62" id="o-clerk-sweat" d="M234 100 C240 112 244 120 238 126 C232 130 226 124 230 114Z" fill="#7fd3ff" opacity="0"/>
+  </g>
+  <rect data-hf-id="hf-2xzf" x="0" y="262" width="340" height="68" rx="8" fill="#e6ebf1" stroke="#0e1b3d" stroke-width="6"/>
+  <rect data-hf-id="hf-1v3g" x="28" y="244" width="196" height="76" rx="6" fill="#ffffff" stroke="#b8c2ce" stroke-width="4"/>
+  <g data-hf-id="hf-ks49" stroke="#0e1b3d" stroke-width="7" stroke-linecap="round" fill="none">
+    <path data-hf-id="hf-26yj" id="o-clerk-t1" d="M54 254 L54 308" pathLength="1"/>
+    <path data-hf-id="hf-mta2" id="o-clerk-t2" d="M74 254 L74 308" pathLength="1"/>
+    <path data-hf-id="hf-u9v1" id="o-clerk-t3" d="M94 254 L94 308" pathLength="1"/>
+    <path data-hf-id="hf-djai" id="o-clerk-t4" d="M114 254 L114 308" pathLength="1"/>
+    <path data-hf-id="hf-om5j" id="o-clerk-t5" d="M44 300 L126 260" pathLength="1"/>
+    <path data-hf-id="hf-uing" id="o-clerk-t6" d="M156 254 L156 308" pathLength="1"/>
+  </g>
+  <g data-hf-id="hf-uciz" id="o-clerk-arm">
+    <path data-hf-id="hf-49w5" d="M246 236 C226 250 196 262 168 270" stroke="#6b7a90" stroke-width="26" stroke-linecap="round" fill="none"/>
+    <circle data-hf-id="hf-l3wz" cx="164" cy="272" r="14" fill="#c98b5b"/>
+    <line data-hf-id="hf-zmmg" x1="160" y1="276" x2="146" y2="302" stroke="#ff8a1f" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg></div>
+    <div data-hf-id="hf-z2y5" id="o-zzz">Z<small data-hf-id="hf-ssuy">z</small>z</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // reveal a code line like typing: clip opens one character at a time
+    function typeLine(sel, at, chars) {
+      tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: Math.min(0.5, chars * 0.022), ease: `steps(${chars})` }, at);
+    }
+    function pop(sel, at, from = 0.4) {
+      tl.fromTo(sel, { scale: from, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2.2)" }, at);
+    }
+    typeLine("#o-l0", 1.00, 27);
+    typeLine("#o-l1", 1.25, 25);
+    typeLine("#o-l2", 1.50, 27);
+    typeLine("#o-l3", 2.00, 10);
+    typeLine("#o-l4", 2.80, 15);
+    typeLine("#o-l5", 4.10, 18);
+    typeLine("#o-l6", 4.60, 21);
+    typeLine("#o-l7", 5.10, 9);
+    typeLine("#o-l8", 5.55, 20);
+    pop("#o-tag", 0.35, 0.6);
+    // the tired clerk slides up behind his desk
+    tl.fromTo("#o-clerk-wrap", { y: 420 }, { y: 0, duration: 0.5, ease: "power3.out" }, 0.4);
+    // one slow tally mark per vote, a ballot lands on the pile after each
+    const marks = [5.4, 6.6, 7.8, 9.0, 10.2, 11.4];
+    const armX = [-110, -90, -70, -50, -70, -8];
+    tl.set(["#o-clerk-t1","#o-clerk-t2","#o-clerk-t3","#o-clerk-t4","#o-clerk-t5","#o-clerk-t6"], { strokeDasharray: 1, strokeDashoffset: 1 }, 0);
+    marks.forEach((m, i) => {
+      const t = m - 3.3;
+      tl.to("#o-clerk-arm", { x: armX[i], y: -16, duration: 0.25, ease: "power2.inOut" }, t - 0.25);
+      tl.to("#o-clerk-arm", { y: 6, duration: 0.35, ease: "none" }, t);
+      tl.fromTo("#o-clerk-t" + (i + 1), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.38, ease: "none" }, t);
+      tl.to("#o-clerk-head", { rotation: i % 2 ? 3 : -3, transformOrigin: "50% 80%", duration: 0.3, ease: "sine.inOut" }, t);
+      tl.fromTo("#o-p" + (i + 1), { y: -1450, rotation: (i % 2 ? 1 : -1) * 40, opacity: 1 },
+        { y: 0, rotation: (i % 2 ? 1 : -1) * (6 + i), duration: 0.45, ease: "power2.in" }, t);
+    });
+    tl.set(["#o-p1","#o-p2","#o-p3","#o-p4","#o-p5","#o-p6"], { opacity: 0 }, 0);
+    // sweat, then the six-line verdict
+    tl.fromTo("#o-clerk-sweat", { opacity: 0, y: 0 }, { opacity: 1, y: 0, duration: 0.2 }, 9.2 - 3.3);
+    tl.to("#o-clerk-sweat", { y: 40, opacity: 0, duration: 1.0, ease: "power1.in" }, 9.5 - 3.3);
+    tl.fromTo("#o-bracket", { scaleY: 0 }, { scaleY: 1, duration: 0.35, ease: "power2.out" }, 9.85 - 3.3);
+    tl.fromTo("#o-stamp", { scale: 2.2, rotation: -16, opacity: 0 }, { scale: 1, rotation: -8, opacity: 1, duration: 0.28, ease: "power4.in" }, 9.75 - 3.3);
+    tl.to("#o-stamp", { scale: 1.06, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1 }, 10.05 - 3.3);
+    // the clerk nods off
+    tl.to("#o-clerk-head", { rotation: 14, y: 10, transformOrigin: "50% 80%", duration: 0.6, ease: "power2.inOut" }, 12.0 - 3.3);
+    tl.fromTo("#o-zzz", { opacity: 0, y: 20 }, { opacity: 1, y: -10, duration: 0.5, ease: "power2.out" }, 12.15 - 3.3);
+
+    window.__timelines["oldway"] = tl;
+  </script>
+</template>

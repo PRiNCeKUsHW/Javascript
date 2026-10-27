@@ -1,0 +1,252 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Noto Color Emoji";
+      src: local("Noto Color Emoji"), local("Apple Color Emoji"), local("Segoe UI Emoji");
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .emoji {
+      font-family: "Noto Color Emoji", sans-serif;
+      font-weight: 400;
+    }
+    .tag {
+      position: absolute;
+      height: 60px;
+      padding: 0 24px;
+      border-radius: 10px;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 34px;
+      letter-spacing: 0.06em;
+      line-height: 60px;
+      color: #0e1b3d;
+      white-space: nowrap;
+    }
+    .title {
+      position: absolute;
+      left: 70px;
+      right: 70px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 70px;
+      line-height: 1.05;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+    .code {
+      position: absolute;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 48px;
+      line-height: 64px;
+      color: #eaf0ff;
+      white-space: nowrap;
+    }
+    .ln {
+      display: block;
+      height: 64px;
+      white-space: pre;
+      clip-path: inset(0 100% 0 0);
+    }
+    .kw { color: #ff6ec7; }
+    .str { color: #ffb35c; }
+    .num { color: #3de0cf; }
+    .fn { color: #7cc4ff; }
+    .res { color: #3de0cf; }
+    .char {
+      position: absolute;
+    }
+    .slip {
+      position: absolute;
+      width: 110px;
+      height: 70px;
+    }
+
+    #s-title { top: 462px; }
+    #s-code { left: 120px; top: 560px; }
+    #s-out { left: 120px; top: 652px; color: #3de0cf; }
+    .s-tile {
+      position: absolute;
+      top: 660px;
+      width: 100px;
+      height: 104px;
+      border-radius: 14px;
+      background: #ffffff;
+      border-bottom: 10px solid var(--c);
+      font-family: "Archivo Black", sans-serif;
+      font-size: 64px;
+      line-height: 96px;
+      text-align: center;
+      color: #0e1b3d;
+    }
+    .s-bin {
+      position: absolute;
+      top: 862px;
+      width: 220px;
+      height: 180px;
+    }
+    .s-bin-lid {
+      position: absolute;
+      left: -10px;
+      right: -10px;
+      top: 0;
+      height: 30px;
+      border-radius: 10px;
+      background: var(--c);
+    }
+    .s-bin-body {
+      position: absolute;
+      left: 6px;
+      right: 6px;
+      top: 26px;
+      bottom: 0;
+      border-radius: 0 0 18px 18px;
+      background: linear-gradient(180deg, #f7f9fc, #cfd7e1);
+      border: 5px solid #0e1b3d;
+      border-top: none;
+    }
+    .s-bin-letter {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 44px;
+      text-align: center;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 72px;
+      color: #0e1b3d;
+    }
+    .s-badge {
+      position: absolute;
+      right: -18px;
+      top: -36px;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: #0e1b3d;
+      border: 5px solid var(--c);
+    }
+    .s-n {
+      position: absolute;
+      inset: 0;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 40px;
+      line-height: 66px;
+      color: #ffffff;
+      opacity: 0;
+    }
+    #s-note {
+      position: absolute;
+      left: 110px;
+      right: 110px;
+      top: 1062px;
+      height: 76px;
+      border-radius: 14px;
+      border: 5px solid #ff8a1f;
+      background: rgba(255, 138, 31, 0.16);
+      text-align: center;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 40px;
+      line-height: 66px;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+  </style>
+  <div data-hf-id="hf-gvj7" id="root" data-composition-id="strings" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-l7dy" id="s-title" class="title">NOT JUST VOTES <span data-hf-id="hf-y7oo" class="emoji">🔤</span></div>
+    <div data-hf-id="hf-rrgq" id="s-code" class="code"><span data-hf-id="hf-8wr2" id="s-l1" class="ln"><span data-hf-id="hf-0tk8" class="fn">print</span>(<span data-hf-id="hf-tyg3" class="fn">Counter</span>(<span data-hf-id="hf-vvy9" class="str">"banana"</span>))</span></div>
+    <div data-hf-id="hf-p9f7" id="s-out" class="code">
+      <span data-hf-id="hf-jw3c" id="s-o0" class="ln">Counter({<span data-hf-id="hf-nmf3" class="str">'a'</span>: 3,</span>
+      <span data-hf-id="hf-9bty" id="s-o1" class="ln">         <span data-hf-id="hf-e07o" class="str">'n'</span>: 2, <span data-hf-id="hf-x17c" class="str">'b'</span>: 1})</span>
+    </div>
+    <div data-hf-id="hf-cc4i" id="s-t0" class="s-tile" style="left:200px;--c:#ff8a1f">B</div>
+    <div data-hf-id="hf-nmzw" id="s-t1" class="s-tile" style="left:316px;--c:#13b5a6">A</div>
+    <div data-hf-id="hf-fms8" id="s-t2" class="s-tile" style="left:432px;--c:#e0218a">N</div>
+    <div data-hf-id="hf-q237" id="s-t3" class="s-tile" style="left:548px;--c:#13b5a6">A</div>
+    <div data-hf-id="hf-bewv" id="s-t4" class="s-tile" style="left:664px;--c:#e0218a">N</div>
+    <div data-hf-id="hf-h45b" id="s-t5" class="s-tile" style="left:780px;--c:#13b5a6">A</div>
+    <div data-hf-id="hf-lrz1" id="s-bin0" class="s-bin" style="left:140px;--c:#ff8a1f">
+      <div data-hf-id="hf-xa2b" class="s-bin-lid"></div><div data-hf-id="hf-xhgc" class="s-bin-body"></div><div data-hf-id="hf-u49a" class="s-bin-letter">b</div>
+      <div data-hf-id="hf-z5ol" class="s-badge"><div data-hf-id="hf-wean" id="s-n0-0" class="s-n">0</div><div data-hf-id="hf-1s13" id="s-n0-1" class="s-n">1</div><div data-hf-id="hf-d4n3" id="s-n0-2" class="s-n">2</div><div data-hf-id="hf-p633" id="s-n0-3" class="s-n">3</div></div>
+    </div>
+    <div data-hf-id="hf-elkk" id="s-bin1" class="s-bin" style="left:430px;--c:#13b5a6">
+      <div data-hf-id="hf-0j9v" class="s-bin-lid"></div><div data-hf-id="hf-s68k" class="s-bin-body"></div><div data-hf-id="hf-uikb" class="s-bin-letter">a</div>
+      <div data-hf-id="hf-76c9" class="s-badge"><div data-hf-id="hf-e75c" id="s-n1-0" class="s-n">0</div><div data-hf-id="hf-w3m0" id="s-n1-1" class="s-n">1</div><div data-hf-id="hf-oveg" id="s-n1-2" class="s-n">2</div><div data-hf-id="hf-lp60" id="s-n1-3" class="s-n">3</div></div>
+    </div>
+    <div data-hf-id="hf-wxoe" id="s-bin2" class="s-bin" style="left:720px;--c:#e0218a">
+      <div data-hf-id="hf-04yu" class="s-bin-lid"></div><div data-hf-id="hf-qzbh" class="s-bin-body"></div><div data-hf-id="hf-vphe" class="s-bin-letter">n</div>
+      <div data-hf-id="hf-8d9c" class="s-badge"><div data-hf-id="hf-v8ft" id="s-n2-0" class="s-n">0</div><div data-hf-id="hf-jjgp" id="s-n2-1" class="s-n">1</div><div data-hf-id="hf-mpp5" id="s-n2-2" class="s-n">2</div><div data-hf-id="hf-w5ep" id="s-n2-3" class="s-n">3</div></div>
+    </div>
+    <div data-hf-id="hf-1v5p" id="s-note">Works on strings, lists, any iterable</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // reveal a code line like typing: clip opens one character at a time
+    function typeLine(sel, at, chars) {
+      tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: Math.min(0.5, chars * 0.022), ease: `steps(${chars})` }, at);
+    }
+    function pop(sel, at, from = 0.4) {
+      tl.fromTo(sel, { scale: from, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2.2)" }, at);
+    }
+
+    tl.fromTo("#s-title", { y: -30, opacity: 0, scale: 1.2 }, { y: 0, opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 0.45);
+    [0, 1, 2].forEach((i) => {
+      tl.set("#s-n" + i + "-0", { opacity: 1 }, 0);
+      tl.fromTo("#s-bin" + i, { y: 260, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "back.out(1.6)" }, 1.4 + i * 0.12);
+    });
+    typeLine("#s-l1", 1.10, 24);
+    [0, 1, 2, 3, 4, 5].forEach((i) => pop("#s-t" + i, 2.90 + i * 0.05, 0.3));
+    tl.to("#s-t0", { x: 0, duration: 0.3, ease: "power1.inOut" }, 3.30);
+    tl.to("#s-t0", { keyframes: { y: [0, -70, 220] }, duration: 0.3, ease: "power1.in" }, 3.30);
+    tl.to("#s-t0", { scale: 0.5, opacity: 0, duration: 0.08 }, 3.56);
+    tl.set("#s-n0-0", { opacity: 0 }, 3.60);
+    tl.set("#s-n0-1", { opacity: 1 }, 3.60);
+    tl.to("#s-bin0", { scaleY: 0.9, transformOrigin: "50% 100%", duration: 0.07, yoyo: true, repeat: 1 }, 3.60);
+    tl.to("#s-t1", { x: 174, duration: 0.3, ease: "power1.inOut" }, 3.60);
+    tl.to("#s-t1", { keyframes: { y: [0, -70, 220] }, duration: 0.3, ease: "power1.in" }, 3.60);
+    tl.to("#s-t1", { scale: 0.5, opacity: 0, duration: 0.08 }, 3.86);
+    tl.set("#s-n1-0", { opacity: 0 }, 3.90);
+    tl.set("#s-n1-1", { opacity: 1 }, 3.90);
+    tl.to("#s-bin1", { scaleY: 0.9, transformOrigin: "50% 100%", duration: 0.07, yoyo: true, repeat: 1 }, 3.90);
+    tl.to("#s-t2", { x: 348, duration: 0.3, ease: "power1.inOut" }, 3.90);
+    tl.to("#s-t2", { keyframes: { y: [0, -70, 220] }, duration: 0.3, ease: "power1.in" }, 3.90);
+    tl.to("#s-t2", { scale: 0.5, opacity: 0, duration: 0.08 }, 4.16);
+    tl.set("#s-n2-0", { opacity: 0 }, 4.20);
+    tl.set("#s-n2-1", { opacity: 1 }, 4.20);
+    tl.to("#s-bin2", { scaleY: 0.9, transformOrigin: "50% 100%", duration: 0.07, yoyo: true, repeat: 1 }, 4.20);
+    tl.to("#s-t3", { x: -58, duration: 0.3, ease: "power1.inOut" }, 4.20);
+    tl.to("#s-t3", { keyframes: { y: [0, -70, 220] }, duration: 0.3, ease: "power1.in" }, 4.20);
+    tl.to("#s-t3", { scale: 0.5, opacity: 0, duration: 0.08 }, 4.46);
+    tl.set("#s-n1-1", { opacity: 0 }, 4.50);
+    tl.set("#s-n1-2", { opacity: 1 }, 4.50);
+    tl.to("#s-bin1", { scaleY: 0.9, transformOrigin: "50% 100%", duration: 0.07, yoyo: true, repeat: 1 }, 4.50);
+    tl.to("#s-t4", { x: 116, duration: 0.3, ease: "power1.inOut" }, 4.50);
+    tl.to("#s-t4", { keyframes: { y: [0, -70, 220] }, duration: 0.3, ease: "power1.in" }, 4.50);
+    tl.to("#s-t4", { scale: 0.5, opacity: 0, duration: 0.08 }, 4.76);
+    tl.set("#s-n2-1", { opacity: 0 }, 4.80);
+    tl.set("#s-n2-2", { opacity: 1 }, 4.80);
+    tl.to("#s-bin2", { scaleY: 0.9, transformOrigin: "50% 100%", duration: 0.07, yoyo: true, repeat: 1 }, 4.80);
+    tl.to("#s-t5", { x: -290, duration: 0.3, ease: "power1.inOut" }, 4.80);
+    tl.to("#s-t5", { keyframes: { y: [0, -70, 220] }, duration: 0.3, ease: "power1.in" }, 4.80);
+    tl.to("#s-t5", { scale: 0.5, opacity: 0, duration: 0.08 }, 5.06);
+    tl.set("#s-n1-2", { opacity: 0 }, 5.10);
+    tl.set("#s-n1-3", { opacity: 1 }, 5.10);
+    tl.to("#s-bin1", { scaleY: 0.9, transformOrigin: "50% 100%", duration: 0.07, yoyo: true, repeat: 1 }, 5.10);
+    typeLine("#s-o0", 5.40, 16);
+    typeLine("#s-o1", 5.55, 25);
+    tl.fromTo("#s-note", { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.2)" }, 6.85);
+    // most common first: a, n, b take a bow
+    [[1, 44.2], [2, 44.5], [0, 44.8]].forEach(([b, t]) => {
+      tl.to("#s-bin" + b, { y: -30, duration: 0.15, ease: "power2.out", yoyo: true, repeat: 1 }, t - 36.0);
+    });
+
+    window.__timelines["strings"] = tl;
+  </script>
+</template>

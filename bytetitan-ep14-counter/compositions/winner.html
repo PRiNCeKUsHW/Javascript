@@ -1,0 +1,335 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Noto Color Emoji";
+      src: local("Noto Color Emoji"), local("Apple Color Emoji"), local("Segoe UI Emoji");
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .emoji {
+      font-family: "Noto Color Emoji", sans-serif;
+      font-weight: 400;
+    }
+    .tag {
+      position: absolute;
+      height: 60px;
+      padding: 0 24px;
+      border-radius: 10px;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 34px;
+      letter-spacing: 0.06em;
+      line-height: 60px;
+      color: #0e1b3d;
+      white-space: nowrap;
+    }
+    .title {
+      position: absolute;
+      left: 70px;
+      right: 70px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 70px;
+      line-height: 1.05;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+    .code {
+      position: absolute;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 48px;
+      line-height: 64px;
+      color: #eaf0ff;
+      white-space: nowrap;
+    }
+    .ln {
+      display: block;
+      height: 64px;
+      white-space: pre;
+      clip-path: inset(0 100% 0 0);
+    }
+    .kw { color: #ff6ec7; }
+    .str { color: #ffb35c; }
+    .num { color: #3de0cf; }
+    .fn { color: #7cc4ff; }
+    .res { color: #3de0cf; }
+    .char {
+      position: absolute;
+    }
+    .slip {
+      position: absolute;
+      width: 110px;
+      height: 70px;
+    }
+
+    .cf {
+      position: absolute;
+      border-radius: 3px;
+      opacity: 0;
+    }
+
+    #w-title { top: 462px; }
+    #w-code { left: 96px; top: 560px; }
+    #w-big { left: 380px; top: 716px; width: 320px; height: 352px; }
+    #w-ribbon {
+      position: absolute;
+      left: 380px;
+      width: 320px;
+      top: 1060px;
+      height: 76px;
+      background: #ff8a1f;
+      clip-path: polygon(0 0, 100% 0, 92% 50%, 100% 100%, 0 100%, 8% 50%);
+      font-family: "Archivo Black", sans-serif;
+      font-size: 46px;
+      line-height: 76px;
+      text-align: center;
+      color: #0e1b3d;
+    }
+    .w-row {
+      position: absolute;
+      left: 110px;
+      width: 860px;
+      height: 136px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 4px solid rgba(255, 255, 255, 0.25);
+    }
+    .w-rank {
+      position: absolute;
+      left: 22px;
+      top: 26px;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 50px;
+      line-height: 84px;
+      text-align: center;
+      color: #0e1b3d;
+    }
+    .w-icon { position: absolute; left: 124px; top: 8px; width: 108px; height: 120px; }
+    .w-name {
+      position: absolute;
+      left: 254px;
+      top: 30px;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 60px;
+      line-height: 76px;
+      color: #ffffff;
+    }
+    .w-count {
+      position: absolute;
+      right: 34px;
+      top: 22px;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 76px;
+      line-height: 92px;
+      color: #3de0cf;
+    }
+    #w-first {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 1072px;
+      text-align: center;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 40px;
+      letter-spacing: 0.08em;
+      color: #ffb020;
+    }
+    #w-grape { left: 880px; top: 1180px; width: 130px; height: 150px; }
+  </style>
+  <div data-hf-id="hf-7xnk" id="root" data-composition-id="winner" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-uezp" id="w-title" class="title">WHO'S WINNING? <span data-hf-id="hf-x2q3" class="emoji">🏆</span></div>
+    <div data-hf-id="hf-4t0m" id="w-code" class="code">
+      <span data-hf-id="hf-m0ue" id="w-l1" class="ln"><span data-hf-id="hf-0tk8" class="fn">print</span>(count.most_common(<span data-hf-id="hf-kud6" class="num">1</span>))</span>
+      <span data-hf-id="hf-y6wm" id="w-r1" class="ln res">[(<span data-hf-id="hf-nwug" class="str">'mango'</span>, 3)]</span>
+    </div>
+    <div data-hf-id="hf-e267" id="w-code2" class="code" style="left:96px;top:560px">
+      <span data-hf-id="hf-v4w7" id="w-l2" class="ln"><span data-hf-id="hf-htb4" class="fn">print</span>(count.most_common(<span data-hf-id="hf-l8o7" class="num">2</span>))</span>
+      <span data-hf-id="hf-mdw4" id="w-r2" class="ln res">[(<span data-hf-id="hf-4by8" class="str">'mango'</span>, 3), (<span data-hf-id="hf-lqa3" class="str">'banana'</span>, 2)]</span>
+    </div>
+    <div data-hf-id="hf-mvak" id="w-big" class="char"><svg data-hf-id="hf-ixlj" id="w-big-svg" viewBox="0 0 200 220" aria-hidden="true" width="320" height="352">
+  <path data-hf-id="hf-1nka" d="M104 34 C156 32 186 86 180 136 C174 190 132 214 96 208 C54 202 22 166 26 118 C30 68 58 36 104 34Z" fill="#ffb020" stroke="#c96a00" stroke-width="5"/>
+  <path data-hf-id="hf-iedt" d="M150 60 C176 90 182 140 166 176 C150 200 120 210 100 208 C140 190 168 140 150 60Z" fill="#ff7a1a" opacity=".55"/>
+  <ellipse data-hf-id="hf-9915" cx="68" cy="88" rx="14" ry="26" fill="#ffe08a" opacity=".9" transform="rotate(-20 68 88)"/>
+  <path data-hf-id="hf-mx90" d="M104 36 C112 14 140 6 160 12 C146 30 124 38 104 36Z" fill="#2e9e5b"/>
+  <path data-hf-id="hf-2f7n" d="M104 36 L100 22" stroke="#6b4b2a" stroke-width="6" stroke-linecap="round"/>
+  <circle data-hf-id="hf-ey95" cx="82" cy="118" r="10" fill="#0e1b3d"/><circle data-hf-id="hf-y8qq" cx="124" cy="118" r="10" fill="#0e1b3d"/>
+  <circle data-hf-id="hf-6be8" cx="85" cy="114" r="3.5" fill="#fff"/><circle data-hf-id="hf-yox7" cx="127" cy="114" r="3.5" fill="#fff"/>
+  <circle data-hf-id="hf-2ns1" cx="64" cy="140" r="9" fill="#ff5f7a" opacity=".45"/><circle data-hf-id="hf-gl5c" cx="142" cy="140" r="9" fill="#ff5f7a" opacity=".45"/>
+  <path data-hf-id="hf-ksat" d="M86 144 Q103 162 120 144" fill="none" stroke="#0e1b3d" stroke-width="6" stroke-linecap="round"/>
+  <g data-hf-id="hf-ubhq" transform="translate(150 182)"><path data-hf-id="hf-ayo1" d="M-10 6 L-16 34 L-4 28 L2 38 L6 8Z" fill="#ff8a1f"/><circle data-hf-id="hf-4fhz" r="18" fill="#ff8a1f" stroke="#fff" stroke-width="4"/><circle data-hf-id="hf-puwr" r="7" fill="#fff"/></g>
+</svg></div>
+    <div data-hf-id="hf-i752" id="w-ribbon">WINNER</div>
+    <div data-hf-id="hf-o2sp" id="w-row1" class="w-row" style="top:742px">
+      <div data-hf-id="hf-mpxi" class="w-rank" style="background:#ff8a1f">1</div>
+      <div data-hf-id="hf-xwzf" class="w-icon"><svg data-hf-id="hf-7cp3" id="w-row1-svg" viewBox="0 0 200 220" aria-hidden="true" width="108" height="120">
+  <path data-hf-id="hf-j3ny" d="M104 34 C156 32 186 86 180 136 C174 190 132 214 96 208 C54 202 22 166 26 118 C30 68 58 36 104 34Z" fill="#ffb020" stroke="#c96a00" stroke-width="5"/>
+  <path data-hf-id="hf-eyf9" d="M150 60 C176 90 182 140 166 176 C150 200 120 210 100 208 C140 190 168 140 150 60Z" fill="#ff7a1a" opacity=".55"/>
+  <ellipse data-hf-id="hf-odzh" cx="68" cy="88" rx="14" ry="26" fill="#ffe08a" opacity=".9" transform="rotate(-20 68 88)"/>
+  <path data-hf-id="hf-fw8c" d="M104 36 C112 14 140 6 160 12 C146 30 124 38 104 36Z" fill="#2e9e5b"/>
+  <path data-hf-id="hf-2fwj" d="M104 36 L100 22" stroke="#6b4b2a" stroke-width="6" stroke-linecap="round"/>
+  <circle data-hf-id="hf-d1p9" cx="82" cy="118" r="10" fill="#0e1b3d"/><circle data-hf-id="hf-9lwm" cx="124" cy="118" r="10" fill="#0e1b3d"/>
+  <circle data-hf-id="hf-ydqg" cx="85" cy="114" r="3.5" fill="#fff"/><circle data-hf-id="hf-w1vv" cx="127" cy="114" r="3.5" fill="#fff"/>
+  <circle data-hf-id="hf-pbed" cx="64" cy="140" r="9" fill="#ff5f7a" opacity=".45"/><circle data-hf-id="hf-5uy0" cx="142" cy="140" r="9" fill="#ff5f7a" opacity=".45"/>
+  <path data-hf-id="hf-9y1l" d="M86 144 Q103 162 120 144" fill="none" stroke="#0e1b3d" stroke-width="6" stroke-linecap="round"/>
+  <g data-hf-id="hf-xpki" transform="translate(150 182)"><path data-hf-id="hf-pd79" d="M-10 6 L-16 34 L-4 28 L2 38 L6 8Z" fill="#ff8a1f"/><circle data-hf-id="hf-ltvb" r="18" fill="#ff8a1f" stroke="#fff" stroke-width="4"/><circle data-hf-id="hf-9cor" r="7" fill="#fff"/></g>
+</svg></div>
+      <div data-hf-id="hf-rfo1" class="w-name">MANGO</div><div data-hf-id="hf-0sw2" class="w-count">3</div>
+    </div>
+    <div data-hf-id="hf-95uu" id="w-row2" class="w-row" style="top:904px">
+      <div data-hf-id="hf-5grl" class="w-rank" style="background:#13b5a6">2</div>
+      <div data-hf-id="hf-nv97" class="w-icon"><svg data-hf-id="hf-qprw" id="w-row2-svg" viewBox="0 0 200 220" aria-hidden="true" width="108" height="120">
+  <path data-hf-id="hf-5t50" d="M40 34 C22 110 60 192 152 200 C176 202 188 192 184 180 C178 168 160 168 146 164 C118 156 104 104 112 50 C114 30 50 18 40 34Z" fill="#ffd93b" stroke="#d9a400" stroke-width="5"/>
+  <path data-hf-id="hf-0rcq" d="M42 34 L46 14 L60 18 L58 34Z" fill="#6b4b2a"/><circle data-hf-id="hf-jjti" cx="184" cy="184" r="6" fill="#6b4b2a"/>
+  <path data-hf-id="hf-dkcw" d="M56 64 C50 112 66 150 96 172" stroke="#fff3a6" stroke-width="8" fill="none" stroke-linecap="round" opacity=".9"/>
+  <circle data-hf-id="hf-7s07" cx="64" cy="110" r="9" fill="#0e1b3d"/><circle data-hf-id="hf-jxwa" cx="92" cy="112" r="9" fill="#0e1b3d"/>
+  <circle data-hf-id="hf-kjo2" cx="67" cy="106" r="3" fill="#fff"/><circle data-hf-id="hf-07yh" cx="95" cy="108" r="3" fill="#fff"/>
+  <path data-hf-id="hf-ku3f" d="M64 132 Q78 146 94 133" fill="none" stroke="#0e1b3d" stroke-width="6" stroke-linecap="round"/>
+  <g data-hf-id="hf-8ma1" transform="translate(128 186)"><path data-hf-id="hf-0f5l" d="M-10 6 L-16 32 L-4 26 L2 36 L6 8Z" fill="#13b5a6"/><circle data-hf-id="hf-krdg" r="17" fill="#13b5a6" stroke="#fff" stroke-width="4"/><circle data-hf-id="hf-8ydq" r="7" fill="#fff"/></g>
+</svg></div>
+      <div data-hf-id="hf-6gys" class="w-name">BANANA</div><div data-hf-id="hf-0el1" class="w-count">2</div>
+    </div>
+    <div data-hf-id="hf-3awt" id="w-first">▲ SORTED · HIGHEST FIRST</div>
+    <div data-hf-id="hf-f66z" id="w-grape" class="char"><svg data-hf-id="hf-gqvm" id="w-grape-svg" viewBox="0 0 200 230" aria-hidden="true" width="130" height="150">
+  <path data-hf-id="hf-na16" d="M100 18 L104 44" stroke="#6b4b2a" stroke-width="7" stroke-linecap="round"/>
+  <path data-hf-id="hf-ud6o" d="M104 32 C120 12 150 14 160 26 C140 40 120 42 104 32Z" fill="#2e9e5b"/>
+  <circle data-hf-id="hf-yhum" cx="68" cy="74" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-6ovq" cx="132" cy="74" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-0n8g" cx="100" cy="66" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-3gt1" cx="54" cy="120" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-638l" cx="146" cy="120" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-qnjp" cx="76" cy="164" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-dmjt" cx="124" cy="164" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-7804" cx="100" cy="196" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/>
+  <circle data-hf-id="hf-un4a" cx="100" cy="122" r="46" fill="#9b55ff" stroke="#5b1fb8" stroke-width="4"/>
+  <circle data-hf-id="hf-ogsg" cx="84" cy="114" r="8" fill="#0e1b3d"/><circle data-hf-id="hf-h59g" cx="116" cy="114" r="8" fill="#0e1b3d"/>
+  <circle data-hf-id="hf-p05r" cx="86" cy="111" r="3" fill="#fff"/><circle data-hf-id="hf-67xb" cx="118" cy="111" r="3" fill="#fff"/>
+  <path data-hf-id="hf-akl0" d="M86 138 Q100 150 114 138" fill="none" stroke="#0e1b3d" stroke-width="6" stroke-linecap="round"/>
+  <g data-hf-id="hf-5do7" transform="translate(156 176)"><path data-hf-id="hf-aaci" d="M-10 6 L-16 32 L-4 26 L2 36 L6 8Z" fill="#e0218a"/><circle data-hf-id="hf-z73b" r="17" fill="#e0218a" stroke="#fff" stroke-width="4"/><circle data-hf-id="hf-8k2p" r="7" fill="#fff"/></g>
+</svg></div>
+    <div data-hf-id="hf-bwal" id="w-cf-0" class="cf" style="left:70px;top:400px;width:14px;height:22px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-bad4" id="w-cf-1" class="cf" style="left:267px;top:400px;width:21px;height:33px;background:#13b5a6"></div>
+    <div data-hf-id="hf-681a" id="w-cf-2" class="cf" style="left:464px;top:400px;width:18px;height:30px;background:#e0218a"></div>
+    <div data-hf-id="hf-84is" id="w-cf-3" class="cf" style="left:661px;top:400px;width:15px;height:27px;background:#ffffff"></div>
+    <div data-hf-id="hf-wgrq" id="w-cf-4" class="cf" style="left:858px;top:400px;width:22px;height:24px;background:#ffd93b"></div>
+    <div data-hf-id="hf-4nf3" id="w-cf-5" class="cf" style="left:115px;top:400px;width:19px;height:35px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-fl71" id="w-cf-6" class="cf" style="left:312px;top:400px;width:16px;height:32px;background:#13b5a6"></div>
+    <div data-hf-id="hf-8u5f" id="w-cf-7" class="cf" style="left:509px;top:400px;width:23px;height:29px;background:#e0218a"></div>
+    <div data-hf-id="hf-npsi" id="w-cf-8" class="cf" style="left:706px;top:400px;width:20px;height:26px;background:#ffffff"></div>
+    <div data-hf-id="hf-xqyh" id="w-cf-9" class="cf" style="left:903px;top:400px;width:17px;height:23px;background:#ffd93b"></div>
+    <div data-hf-id="hf-7euf" id="w-cf-10" class="cf" style="left:160px;top:400px;width:14px;height:34px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-5ezx" id="w-cf-11" class="cf" style="left:357px;top:400px;width:21px;height:31px;background:#13b5a6"></div>
+    <div data-hf-id="hf-qybg" id="w-cf-12" class="cf" style="left:554px;top:400px;width:18px;height:28px;background:#e0218a"></div>
+    <div data-hf-id="hf-rg6x" id="w-cf-13" class="cf" style="left:751px;top:400px;width:15px;height:25px;background:#ffffff"></div>
+    <div data-hf-id="hf-7pg1" id="w-cf-14" class="cf" style="left:948px;top:400px;width:22px;height:22px;background:#ffd93b"></div>
+    <div data-hf-id="hf-cloe" id="w-cf-15" class="cf" style="left:205px;top:400px;width:19px;height:33px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-ch2s" id="w-cf-16" class="cf" style="left:402px;top:400px;width:16px;height:30px;background:#13b5a6"></div>
+    <div data-hf-id="hf-hpo5" id="w-cf-17" class="cf" style="left:599px;top:400px;width:23px;height:27px;background:#e0218a"></div>
+    <div data-hf-id="hf-07ko" id="w-cf-18" class="cf" style="left:796px;top:400px;width:20px;height:24px;background:#ffffff"></div>
+    <div data-hf-id="hf-wb7a" id="w-cf-19" class="cf" style="left:993px;top:400px;width:17px;height:35px;background:#ffd93b"></div>
+    <div data-hf-id="hf-xxto" id="w-cf-20" class="cf" style="left:250px;top:400px;width:14px;height:32px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-sy6r" id="w-cf-21" class="cf" style="left:447px;top:400px;width:21px;height:29px;background:#13b5a6"></div>
+    <div data-hf-id="hf-xkk5" id="w-cf-22" class="cf" style="left:644px;top:400px;width:18px;height:26px;background:#e0218a"></div>
+    <div data-hf-id="hf-78fw" id="w-cf-23" class="cf" style="left:841px;top:400px;width:15px;height:23px;background:#ffffff"></div>
+    <div data-hf-id="hf-yqd3" id="w-cf-24" class="cf" style="left:98px;top:400px;width:22px;height:34px;background:#ffd93b"></div>
+    <div data-hf-id="hf-ts4k" id="w-cf-25" class="cf" style="left:295px;top:400px;width:19px;height:31px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-fai5" id="w-cf-26" class="cf" style="left:492px;top:400px;width:16px;height:28px;background:#13b5a6"></div>
+    <div data-hf-id="hf-3tic" id="w-cf-27" class="cf" style="left:689px;top:400px;width:23px;height:25px;background:#e0218a"></div>
+    <div data-hf-id="hf-wabt" id="w-cf-28" class="cf" style="left:886px;top:400px;width:20px;height:22px;background:#ffffff"></div>
+    <div data-hf-id="hf-s3hg" id="w-cf-29" class="cf" style="left:143px;top:400px;width:17px;height:33px;background:#ffd93b"></div>
+    <div data-hf-id="hf-mt0l" id="w-cf-30" class="cf" style="left:340px;top:400px;width:14px;height:30px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-ybs8" id="w-cf-31" class="cf" style="left:537px;top:400px;width:21px;height:27px;background:#13b5a6"></div>
+    <div data-hf-id="hf-sq32" id="w-cf-32" class="cf" style="left:734px;top:400px;width:18px;height:24px;background:#e0218a"></div>
+    <div data-hf-id="hf-ivnu" id="w-cf-33" class="cf" style="left:931px;top:400px;width:15px;height:35px;background:#ffffff"></div>
+    <div data-hf-id="hf-8vg2" id="w-cf-34" class="cf" style="left:188px;top:400px;width:22px;height:32px;background:#ffd93b"></div>
+    <div data-hf-id="hf-c02e" id="w-cf-35" class="cf" style="left:385px;top:400px;width:19px;height:29px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-mqgk" id="w-cf-36" class="cf" style="left:582px;top:400px;width:16px;height:26px;background:#13b5a6"></div>
+    <div data-hf-id="hf-0ihj" id="w-cf-37" class="cf" style="left:779px;top:400px;width:23px;height:23px;background:#e0218a"></div>
+    <div data-hf-id="hf-uxzb" id="w-cf-38" class="cf" style="left:976px;top:400px;width:20px;height:34px;background:#ffffff"></div>
+    <div data-hf-id="hf-r9o9" id="w-cf-39" class="cf" style="left:233px;top:400px;width:17px;height:31px;background:#ffd93b"></div>
+    <div data-hf-id="hf-cpbt" id="w-cf-40" class="cf" style="left:430px;top:400px;width:14px;height:28px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-son9" id="w-cf-41" class="cf" style="left:627px;top:400px;width:21px;height:25px;background:#13b5a6"></div>
+    <div data-hf-id="hf-299f" id="w-cf-42" class="cf" style="left:824px;top:400px;width:18px;height:22px;background:#e0218a"></div>
+    <div data-hf-id="hf-kxjp" id="w-cf-43" class="cf" style="left:81px;top:400px;width:15px;height:33px;background:#ffffff"></div>
+    <div data-hf-id="hf-9m3e" id="w-cg-0" class="cf" style="left:90px;top:400px;width:14px;height:22px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-vwp9" id="w-cg-1" class="cf" style="left:287px;top:400px;width:21px;height:33px;background:#13b5a6"></div>
+    <div data-hf-id="hf-kyyj" id="w-cg-2" class="cf" style="left:484px;top:400px;width:18px;height:30px;background:#e0218a"></div>
+    <div data-hf-id="hf-xlqd" id="w-cg-3" class="cf" style="left:681px;top:400px;width:15px;height:27px;background:#ffffff"></div>
+    <div data-hf-id="hf-a3tv" id="w-cg-4" class="cf" style="left:878px;top:400px;width:22px;height:24px;background:#ffd93b"></div>
+    <div data-hf-id="hf-g59y" id="w-cg-5" class="cf" style="left:175px;top:400px;width:19px;height:35px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-k11s" id="w-cg-6" class="cf" style="left:372px;top:400px;width:16px;height:32px;background:#13b5a6"></div>
+    <div data-hf-id="hf-mm3y" id="w-cg-7" class="cf" style="left:569px;top:400px;width:23px;height:29px;background:#e0218a"></div>
+    <div data-hf-id="hf-ktnn" id="w-cg-8" class="cf" style="left:766px;top:400px;width:20px;height:26px;background:#ffffff"></div>
+    <div data-hf-id="hf-h9qw" id="w-cg-9" class="cf" style="left:963px;top:400px;width:17px;height:23px;background:#ffd93b"></div>
+    <div data-hf-id="hf-em51" id="w-cg-10" class="cf" style="left:260px;top:400px;width:14px;height:34px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-sa9b" id="w-cg-11" class="cf" style="left:457px;top:400px;width:21px;height:31px;background:#13b5a6"></div>
+    <div data-hf-id="hf-riha" id="w-cg-12" class="cf" style="left:654px;top:400px;width:18px;height:28px;background:#e0218a"></div>
+    <div data-hf-id="hf-atz3" id="w-cg-13" class="cf" style="left:851px;top:400px;width:15px;height:25px;background:#ffffff"></div>
+    <div data-hf-id="hf-eoeg" id="w-cg-14" class="cf" style="left:148px;top:400px;width:22px;height:22px;background:#ffd93b"></div>
+    <div data-hf-id="hf-oate" id="w-cg-15" class="cf" style="left:345px;top:400px;width:19px;height:33px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-34aw" id="w-cg-16" class="cf" style="left:542px;top:400px;width:16px;height:30px;background:#13b5a6"></div>
+    <div data-hf-id="hf-vyfs" id="w-cg-17" class="cf" style="left:739px;top:400px;width:23px;height:27px;background:#e0218a"></div>
+    <div data-hf-id="hf-bgbl" id="w-cg-18" class="cf" style="left:936px;top:400px;width:20px;height:24px;background:#ffffff"></div>
+    <div data-hf-id="hf-ra3y" id="w-cg-19" class="cf" style="left:233px;top:400px;width:17px;height:35px;background:#ffd93b"></div>
+    <div data-hf-id="hf-000h" id="w-cg-20" class="cf" style="left:430px;top:400px;width:14px;height:32px;background:#ff8a1f"></div>
+    <div data-hf-id="hf-ri8e" id="w-cg-21" class="cf" style="left:627px;top:400px;width:21px;height:29px;background:#13b5a6"></div>
+    <div data-hf-id="hf-holc" id="w-cg-22" class="cf" style="left:824px;top:400px;width:18px;height:26px;background:#e0218a"></div>
+    <div data-hf-id="hf-cx06" id="w-cg-23" class="cf" style="left:121px;top:400px;width:15px;height:23px;background:#ffffff"></div>
+    <div data-hf-id="hf-pn85" id="w-cg-24" class="cf" style="left:318px;top:400px;width:22px;height:34px;background:#ffd93b"></div>
+    <div data-hf-id="hf-idpm" id="w-cg-25" class="cf" style="left:515px;top:400px;width:19px;height:31px;background:#ff8a1f"></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // reveal a code line like typing: clip opens one character at a time
+    function typeLine(sel, at, chars) {
+      tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: Math.min(0.5, chars * 0.022), ease: `steps(${chars})` }, at);
+    }
+    function pop(sel, at, from = 0.4) {
+      tl.fromTo(sel, { scale: from, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2.2)" }, at);
+    }
+
+    tl.fromTo("#w-title", { y: -30, opacity: 0, scale: 1.2 }, { y: 0, opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 0.35);
+    typeLine("#w-l1", 1.30, 27);
+    typeLine("#w-r1", 2.50, 14);
+    // camera flash (fx layer) and the winner pops
+    tl.fromTo("#w-big", { scale: 0, rotation: -20, opacity: 1 }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2.2)" }, 3.00);
+    tl.fromTo("#w-ribbon", { scaleX: 0, opacity: 1 }, { scaleX: 1, duration: 0.3, ease: "back.out(2)" }, 3.25);
+    tl.to("#w-big", { y: -26, duration: 0.2, ease: "power2.out", yoyo: true, repeat: 3 }, 3.60);
+    
+    for (let i = 0; i < 44; i++) {
+      const t0 = 3.0500000000000007 + ((i * 37) % 100) / 100 * 0.7;
+      const drift = Math.sin(i * 1.7) * 90;
+      tl.fromTo("#w-cf-" + i, { opacity: 0, y: -40, x: 0, rotation: (i * 47) % 360 },
+        { opacity: 1, duration: 0.05, ease: "none" }, t0);
+      tl.fromTo("#w-cf-" + i, { y: -40, x: 0, rotation: (i * 47) % 360, rotationX: 0 },
+        { y: 820 + (i % 5) * 30, x: drift, rotation: (i * 47) % 360 + 540, rotationX: 720, duration: 2.4 + (i % 4) * 0.15, ease: "power1.in", immediateRender: false }, t0);
+      tl.to("#w-cf-" + i, { opacity: 0, duration: 0.25, ease: "none" }, t0 + 2.4 + (i % 4) * 0.15 - 0.2);
+    }
+    // the top two
+    tl.to("#w-code", { y: -30, opacity: 0, duration: 0.2, ease: "power2.in" }, 3.95);
+    typeLine("#w-l2", 4.10, 27);
+    typeLine("#w-r2", 5.00, 29);
+    tl.to("#w-big, #w-ribbon", { scale: 0.2, opacity: 0, duration: 0.3, ease: "power3.in" }, 5.60);
+    tl.fromTo("#w-row1", { x: 1100 }, { x: 0, duration: 0.35, ease: "power3.out" }, 6.15);
+    tl.fromTo("#w-row2", { x: 1100 }, { x: 0, duration: 0.35, ease: "power3.out" }, 6.45);
+    tl.fromTo("#w-first", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 7.50);
+    // grape takes it well; mango keeps celebrating
+    tl.fromTo("#w-grape", { y: 200, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(1.8)" }, 9.00);
+    tl.to("#w-grape", { rotation: -10, duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 3 }, 9.60);
+    tl.to("#w-row1 .w-icon", { y: -22, duration: 0.18, ease: "power2.out", yoyo: true, repeat: 5 }, 10.30);
+    
+    for (let i = 0; i < 26; i++) {
+      const t0 = 8.200000000000003 + ((i * 37) % 100) / 100 * 0.5;
+      const drift = Math.sin(i * 1.7) * 90;
+      tl.fromTo("#w-cg-" + i, { opacity: 0, y: -40, x: 0, rotation: (i * 47) % 360 },
+        { opacity: 1, duration: 0.05, ease: "none" }, t0);
+      tl.fromTo("#w-cg-" + i, { y: -40, x: 0, rotation: (i * 47) % 360, rotationX: 0 },
+        { y: 820 + (i % 5) * 30, x: drift, rotation: (i * 47) % 360 + 540, rotationX: 720, duration: 2.4 + (i % 4) * 0.15, ease: "power1.in", immediateRender: false }, t0);
+      tl.to("#w-cg-" + i, { opacity: 0, duration: 0.25, ease: "none" }, t0 + 2.4 + (i % 4) * 0.15 - 0.2);
+    }
+
+    window.__timelines["winner"] = tl;
+  </script>
+</template>

@@ -1,0 +1,183 @@
+{
+ "voice": "hf_alpha",
+ "lang": "en-us",
+ "speed": 1.2,
+ "scenes": [
+  {
+   "id": "hook",
+   "start": 0.12,
+   "phrases": [
+    [
+     "Breaking news!",
+     "Breaking news!"
+    ],
+    [
+     "You're still counting items by hand in Python?",
+     "You're still counting items by hand in Python?"
+    ]
+   ],
+   "speed": 1.32
+  },
+  {
+   "id": "oldway",
+   "start": 3.4,
+   "phrases": [
+    [
+     "The old way?",
+     "The old way?"
+    ],
+    [
+     "Make an empty dictionary,",
+     "Make an empty dictionary,"
+    ],
+    [
+     "loop through every vote,",
+     "loop through every vote,"
+    ],
+    [
+     "check if it's already there,",
+     "check if it's already there,"
+    ],
+    [
+     "then add one.",
+     "then add one."
+    ],
+    [
+     "Six lines for a simple count.",
+     "Six lines for a simple count."
+    ]
+   ]
+  },
+  {
+   "id": "counter",
+   "start": 13.4,
+   "phrases": [
+    [
+     "Meet Counter,",
+     "Meet Counter,"
+    ],
+    [
+     "from the collections module.",
+     "from the collections module."
+    ],
+    [
+     "Hand it any list,",
+     "Hand it any list,"
+    ],
+    [
+     "and it counts everything in one line.",
+     "and it counts everything in one line."
+    ]
+   ]
+  },
+  {
+   "id": "winner",
+   "start": 24.35,
+   "phrases": [
+    [
+     "Want the winner?",
+     "Want the winner?"
+    ],
+    [
+     "Use most common.",
+     "Use most_common."
+    ],
+    [
+     "Ask for the top one,",
+     "Ask for the top one,"
+    ],
+    [
+     "or the top two.",
+     "or the top two."
+    ],
+    [
+     "It returns them sorted,",
+     "It returns them sorted,"
+    ],
+    [
+     "highest first.",
+     "highest first."
+    ]
+   ]
+  },
+  {
+   "id": "strings",
+   "start": 36.35,
+   "phrases": [
+    [
+     "It's not just for votes.",
+     "It's not just for votes."
+    ],
+    [
+     "Pass it a string",
+     "Pass it a string"
+    ],
+    [
+     "and it counts every letter.",
+     "and it counts every letter."
+    ],
+    [
+     "Perfect for word counts,",
+     "Perfect for word counts,"
+    ],
+    [
+     "anagram checks and more.",
+     "anagram checks and more."
+    ]
+   ]
+  },
+  {
+   "id": "bonus",
+   "start": 46.35,
+   "phrases": [
+    [
+     "And the best part?",
+     "And the best part?"
+    ],
+    [
+     "Ask for a missing item",
+     "Ask for a missing item"
+    ],
+    [
+     "and you get zero,",
+     "and you get zero,"
+    ],
+    [
+     "not a crash.",
+     "not a crash."
+    ],
+    [
+     "No key error,",
+     "No KeyError,"
+    ],
+    [
+     "no extra checks.",
+     "no extra checks."
+    ]
+   ]
+  },
+  {
+   "id": "outro",
+   "start": 54.3,
+   "phrases": [
+    [
+     "Follow Byte Titan for more Python results.",
+     "Follow ByteTitan for more Python results."
+    ],
+    [
+     "Next up,",
+     "Next up\u2026"
+    ],
+    [
+     "is versus double equals.",
+     "is vs =="
+    ],
+    [
+     "Stay tuned!",
+     "Stay tuned!"
+    ]
+   ],
+   "speed": 1.35
+  }
+ ]
+}
