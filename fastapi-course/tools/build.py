@@ -378,7 +378,7 @@ def build_title(sid, scene, meta, clips):
     #SID-num { position: absolute; left: 112px; top: 160px; font-family: "Outfit", sans-serif; font-weight: 800;
       font-size: 230px; line-height: 1; color: #05998b; }
     #SID-title { position: absolute; left: 120px; top: 410px; width: 1300px; font-family: "Outfit", sans-serif;
-      font-weight: 800; font-size: 96px; line-height: 1.04; color: #0f1b2d; }
+      font-weight: 800; font-size: 96px; line-height: 1.04; color: #0f1b2d; white-space: nowrap; }
     #SID-sub { position: absolute; left: 124px; top: 536px; width: 1300px; font-family: "Inter", sans-serif;
       font-weight: 500; font-size: 40px; color: #4b5a70; }
     #SID-art { position: absolute; left: 1460px; top: 180px; width: 320px; height: 352px; }
@@ -388,7 +388,7 @@ LEVELCSS
 """.replace("SID", sid).replace("LEVELCSS", LEVEL_CSS)
     label = "START HERE" if ch == 0 else f"LEVEL {ch}"
     body = f"""    <div id="{sid}-num">{'00' if ch == 0 else f'{ch:02d}'}</div>
-    <div id="{sid}-title">{inline(meta['title'])}</div>
+    <div id="{sid}-title" style="font-size:{min(96, int(1300 / (len(meta['title']) * 0.6)))}px">{inline(meta['title'])}</div>
     <div id="{sid}-sub">{inline(meta.get('subtitle', ''))}</div>
     <div id="{sid}-art">{byte_svg(sid + "-byte", 320)}</div>
     <div id="{sid}-label">{label}</div>
