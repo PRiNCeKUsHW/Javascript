@@ -145,6 +145,8 @@ def code_metrics(code_lines, max_h, max_w=1560):
     lh = min(54, max_h / (n + 0.6))
     fs = min(lh / 1.5, max_w / (max(longest, 20) * 0.6))
     fs = max(26, round(fs))
+    if round(fs * 1.5) * n > max_h:  # the floor would overflow a tall panel: shrink to fit
+        fs = max(21, int(max_h / n / 1.5))
     return fs, round(fs * 1.5)
 
 
