@@ -24,6 +24,11 @@ def blocks(scenes):
             c = sc.get(key)
             if c and c["lang"] in ("python", "py"):
                 yield f'{sc["type"]}: {sc["q"][:50]}', c["code"]
+        for i, c in enumerate(sc.get("fences") or []):
+            if c["lang"] in ("python", "py"):
+                yield f'mistake {"fix" if i else "bug"}: {sc["heading"]}', c["code"]
+        if sc["type"] == "tip" and sc.get("code") and sc["code"]["lang"] in ("python", "py"):
+            yield f'tip: {sc["heading"]}', sc["code"]["code"]
 
 
 def main(chapters):

@@ -210,3 +210,50 @@ def test_registration_project():
     assert "password" not in r.json() and r.json()["id"] == 1
     body["confirm_password"] = "other"
     assert c.post("/register", json=body).status_code == 422
+
+
+# --- level 3 additions: all errors at once, and the PATCH data-loss mistake
+def test_all_errors_reported_at_once():
+    try:
+        StrictStudent(name="R", age=12, email="nope")
+    except ValidationError as e:
+        errs = {err["loc"][0]: err["msg"] for err in e.errors()}
+    assert errs["name"] == "String should have at least 2 characters"
+    assert errs["age"] == "Input should be greater than or equal to 16"
+    assert errs["email"].startswith("value is not a valid email address")
+
+
+bug = FastAPI()
+STORE: dict[int, TaskRead] = {}
+
+
+@bug.patch("/wrong/{task_id}")
+def update_wrong(task_id: int, changes: TaskUpdate):
+    stored = STORE[task_id]
+    updates = changes.model_dump()
+    STORE[task_id] = stored.model_copy(update=updates)
+    return STORE[task_id]
+
+
+@bug.patch("/right/{task_id}")
+def update_right(task_id: int, changes: TaskUpdate):
+    stored = STORE[task_id]
+    updates = changes.model_dump(exclude_unset=True)
+    STORE[task_id] = stored.model_copy(update=updates)
+    return STORE[task_id]
+
+
+def test_patch_mistake_silently_loses_data():
+    bc = TestClient(bug)
+    STORE[1] = TaskRead(id=1, title="Write docs")
+    r = bc.patch("/wrong/1", json={"done": True})
+    assert r.status_code == 200 and r.json()["title"] is None  # silent data loss
+    STORE[1] = TaskRead(id=1, title="Write docs")
+    assert bc.patch("/right/1", json={"done": True}).json()["title"] == "Write docs"
+
+
+def test_field_examples():
+    class TaskCreate(BaseModel):
+        title: str = Field(min_length=1, max_length=100, examples=["Write the API docs"])
+
+    assert TaskCreate.model_json_schema()["properties"]["title"]["examples"] == ["Write the API docs"]

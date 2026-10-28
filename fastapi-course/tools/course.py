@@ -2,31 +2,38 @@
 
 Format
 ------
-Front matter between --- lines: chapter, title, subtitle.
+Front matter between --- lines: chapter, title, subtitle, badge, next.
 
 Blocks start with `::: <type> <args>` and end with `:::`.
 
-  ::: title                     `- item` = "in this chapter" point, `> text` = narration
-  ::: concept <Heading>         `- point` revealed with the `> narration` lines after it
+Narration lines are spoken in order. `>` uses the block's default speaker (Maya the
+instructor; in a boss round, Leo answers), `M>` is Maya, `L>` is Leo the learner.
+
+  ::: title                     `- item` = "in this level" point
+  ::: concept <Heading>         `- point` revealed with the narration after it;
+                                a point may start with an emoji used as its icon
   ::: recap                     like concept, titled "Key takeaways"
+  ::: tip <Heading>             a Pro tip card: `- points`, optional ```code
   ::: flow <Heading>            `- node` boxes joined by arrows
   ::: analogy <Heading>         `- real life => in FastAPI` rows (an optional emoji first)
-  ::: code <file> | <Heading>   one fenced code block, then beats:
+  ::: code <file> | <Heading>   one fenced code block, optionally a second ```output
+                                fence, then beats:
                                   `@3 > ...`    reveal through line 3, focus line 3
                                   `@3-5 > ...`  reveal through line 5, focus 3-5
                                   `@all > ...`  reveal everything, no focus
+                                  `@out > ...`  show the output panel
                                   `> ...`       keep the current state
-  ::: terminal <Heading>        `$ command`, `+ continuation of the command`, `| output line`, `> narration`
+  ::: mistake <Heading>         two fences (the mistake, then the fix); beats `@wrong`,
+                                `@right` or plain `>`
+  ::: terminal <Heading>        `$ command`, `+ continuation`, `| output line`, `> narration`
   ::: practice                  `q:` question, optional fenced code, `a:` then optional
-                                fenced code, `- points` and `> narration`
-  ::: project <Name>            `- requirement [Concept]`, optional ```text endpoints block,
-                                `stretch:` goal, `> narration`. Code blocks that follow it
-                                (before the boss round) are its solution walkthrough.
+                                fenced code, `- points` and narration
+  ::: project <Name>            `- requirement [Concept]`, optional ```text endpoints,
+                                `stretch:` goal; code blocks after it are its solution
   ::: interview <junior|mid|senior>
-                                `q:` question (interviewer voice), then `- point` / `> answer`
+                                `q:` question (the interviewer), then `- point` / `>` answer
   `qsay:` overrides how a question is spoken.
-
-Narration (`>`) is written to be spoken: no symbols the voice would read out.
+  `visual: <name>` adds an animated illustration to title, concept, recap, tip or analogy.
 """
 import re
 from pathlib import Path
@@ -34,6 +41,18 @@ from pathlib import Path
 
 class ScriptError(Exception):
     pass
+
+
+SAY = re.compile(r"^(M|L)?>\s*(.*)$")
+SPEAKER = {"M": "maya", "L": "leo", None: None}
+
+
+def narration(line):
+    """Return (speaker, text) for a narration line, or None."""
+    m = SAY.match(line)
+    if not m:
+        return None
+    return SPEAKER[m.group(1)], m.group(2).strip()
 
 
 def parse_chapter(path):
@@ -77,12 +96,22 @@ def take_fence(body, j):
     return lang, code, j + 1
 
 
+def beat(text_line, item=-1, **extra):
+    who, said = narration(text_line)
+    return {"say": said, "speaker": who, "item": item, **extra}
+
+
 def parse_block(kind, args, body, path):
-    if kind in ("title", "concept", "recap", "flow", "analogy"):
+    if kind in ("title", "concept", "recap", "flow", "analogy", "tip"):
         scene = {"type": kind, "heading": args or ("Key takeaways" if kind == "recap" else ""),
-                 "items": [], "beats": []}
-        for raw in body:
-            s = raw.strip()
+                 "items": [], "beats": [], "visual": None, "code": None}
+        j = 0
+        while j < len(body):
+            s = body[j].strip()
+            if s.startswith("```"):
+                lang, code, j = take_fence(body, j)
+                scene["code"] = {"lang": lang, "code": code}
+                continue
             if s.startswith("- "):
                 item = s[2:]
                 if kind == "analogy":
@@ -91,70 +120,99 @@ def parse_block(kind, args, body, path):
                     left, right = (x.strip() for x in item.split("=>", 1))
                     item = {"left": left, "right": right}
                 scene["items"].append(item)
-            elif s.startswith(">"):
-                scene["beats"].append({"say": s[1:].strip(), "item": len(scene["items"]) - 1})
+            elif s.startswith("visual:"):
+                scene["visual"] = s[7:].strip()
+            elif narration(s):
+                scene["beats"].append(beat(s, len(scene["items"]) - 1))
             elif s:
                 raise ScriptError(f"{path}: unexpected line in {kind}: {s}")
+            j += 1
         return scene
 
     if kind == "code":
         fname, _, heading = args.partition("|")
-        scene = {"type": "code", "file": fname.strip(), "heading": heading.strip(), "beats": []}
+        scene = {"type": "code", "file": fname.strip(), "heading": heading.strip(), "beats": [], "output": None}
         j = 0
         while j < len(body):
             s = body[j].strip()
             if s.startswith("```"):
-                scene["lang"], scene["code"], j = take_fence(body, j)
+                lang, code, j = take_fence(body, j)
+                if "code" in scene:
+                    scene["output"] = code
+                else:
+                    scene["lang"], scene["code"] = lang, code
                 continue
-            m = re.match(r"@(all|\d+(?:-\d+)?)\s*>\s*(.*)", s)
+            m = re.match(r"@(all|out|\d+(?:-\d+)?)\s*((?:M|L)?>.*)", s)
             if m:
                 spec = m.group(1)
                 if spec == "all":
-                    beat = {"reveal": "all", "focus": None}
+                    extra = {"reveal": "all", "focus": None}
+                elif spec == "out":
+                    extra = {"show_output": True}
                 else:
                     a, _, b = spec.partition("-")
                     a, b = int(a), int(b or a)
-                    beat = {"reveal": b, "focus": [a, b]}
-                beat["say"] = m.group(2)
-                scene["beats"].append(beat)
-            elif s.startswith(">"):
-                scene["beats"].append({"say": s[1:].strip()})
+                    extra = {"reveal": b, "focus": [a, b]}
+                scene["beats"].append(beat(m.group(2), **extra))
+            elif narration(s):
+                scene["beats"].append(beat(s))
             elif s:
                 raise ScriptError(f"{path}: unexpected line in code: {s}")
             j += 1
         if "code" not in scene:
             raise ScriptError(f"{path}: code block without code ({args})")
-        if len(scene["code"]) > 18:
-            raise ScriptError(f"{path}: {fname} has {len(scene['code'])} lines (max 18)")
+        limit = 13 if scene["output"] else 18
+        if len(scene["code"]) > limit:
+            raise ScriptError(f"{path}: {fname} has {len(scene['code'])} lines (max {limit})")
+        return scene
+
+    if kind == "mistake":
+        scene = {"type": "mistake", "heading": args, "fences": [], "beats": []}
+        j = 0
+        while j < len(body):
+            s = body[j].strip()
+            if s.startswith("```"):
+                lang, code, j = take_fence(body, j)
+                scene["fences"].append({"lang": lang, "code": code})
+                continue
+            m = re.match(r"@(wrong|right)\s*((?:M|L)?>.*)", s)
+            if m:
+                scene["beats"].append(beat(m.group(2), show=m.group(1)))
+            elif narration(s):
+                scene["beats"].append(beat(s))
+            elif s:
+                raise ScriptError(f"{path}: unexpected line in mistake: {s}")
+            j += 1
+        if len(scene["fences"]) != 2:
+            raise ScriptError(f"{path}: mistake needs exactly two code blocks ({args})")
         return scene
 
     if kind == "terminal":
         scene = {"type": "terminal", "heading": args, "steps": [], "beats": []}
         for raw in body:
-            s = raw.rstrip()
-            st = s.strip()
+            st = raw.strip()
             if st.startswith("+ "):
                 if not scene["steps"]:
                     raise ScriptError(f"{path}: continuation before a command")
                 scene["steps"][-1]["cont"].append(st[2:])
             elif st.startswith("$ "):
                 scene["steps"].append({"cmd": st[2:], "cont": [], "out": []})
-                scene["beats"].append({"step": len(scene["steps"]) - 1, "part": "cmd", "say": None})
+                scene["beats"].append({"step": len(scene["steps"]) - 1, "part": "cmd", "say": None, "speaker": None})
             elif st.startswith("|"):
                 if not scene["steps"]:
                     raise ScriptError(f"{path}: output before a command")
                 step = scene["steps"][-1]
                 if not step["out"]:
-                    scene["beats"].append({"step": len(scene["steps"]) - 1, "part": "out", "say": None})
+                    scene["beats"].append({"step": len(scene["steps"]) - 1, "part": "out", "say": None, "speaker": None})
                 step["out"].append(st[1:].lstrip() if st != "|" else "")
-            elif st.startswith(">"):
-                # attach narration to the latest command/output beat without one
+            elif narration(st):
+                who, said = narration(st)
                 for b in reversed(scene["beats"]):
                     if b["say"] is None:
-                        b["say"] = st[1:].strip()
+                        b["say"], b["speaker"] = said, who
                         break
                 else:
-                    scene["beats"].append({"say": st[1:].strip(), "step": None, "part": None})
+                    scene["beats"].append({"say": said, "speaker": who, "step": None, "part": None})
             elif st:
                 raise ScriptError(f"{path}: unexpected line in terminal: {st}")
         for b in scene["beats"]:
@@ -180,8 +238,8 @@ def parse_block(kind, args, body, path):
                 continue
             elif s.startswith("- "):
                 scene["items"].append(s[2:])
-            elif s.startswith(">"):
-                scene["beats"].append({"say": s[1:].strip(), "item": len(scene["items"]) - 1})
+            elif narration(s):
+                scene["beats"].append(beat(s, len(scene["items"]) - 1))
             elif s:
                 raise ScriptError(f"{path}: unexpected line in {kind}: {s}")
             j += 1
@@ -202,8 +260,8 @@ def parse_block(kind, args, body, path):
                 scene["items"].append(st[2:])
             elif st.startswith("stretch:"):
                 scene["stretch"] = st[8:].strip()
-            elif st.startswith(">"):
-                scene["beats"].append({"say": st[1:].strip(), "item": len(scene["items"]) - 1})
+            elif narration(st):
+                scene["beats"].append(beat(st, len(scene["items"]) - 1))
             elif st:
                 raise ScriptError(f"{path}: unexpected line in project: {st}")
             j += 1

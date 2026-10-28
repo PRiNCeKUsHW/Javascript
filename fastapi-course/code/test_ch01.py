@@ -79,3 +79,25 @@ def test_profile_project():
     assert c.get("/skills/1").json() == {"id": 1, "skill": "FastAPI"}
     assert c.get("/skills/10").status_code == 500  # the stretch goal fixes this with a 404
     assert c.get("/openapi.json").json()["info"]["title"] == "Personal Profile API"
+
+
+# --- type conversion demo and the missing-type-hint mistake
+demo = FastAPI()
+
+
+@demo.get("/items/{item_id}")
+def typed(item_id: int):
+    return {"item_id": item_id, "type": type(item_id).__name__}
+
+
+@demo.get("/untyped/{item_id}")
+def untyped(item_id):
+    return {"next_id": item_id + 1}
+
+
+def test_type_demo_and_mistake():
+    dc = TestClient(demo, raise_server_exceptions=False)
+    assert dc.get("/items/42").json() == {"item_id": 42, "type": "int"}
+    r = dc.get("/items/abc")
+    assert r.status_code == 422 and r.reason_phrase == "Unprocessable Content"
+    assert dc.get("/untyped/42").status_code == 500
