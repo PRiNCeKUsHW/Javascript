@@ -743,7 +743,7 @@ def build_complete(sid, scene, meta, clips):
     <div id="{sid}-big">{title}</div>
     {stars}
     <div id="{sid}-badge"><div id="{sid}-medal">{ch}</div><div id="{sid}-bt"><small>BADGE UNLOCKED</small><span>{html.escape(meta.get("badge", "FastAPI Learner"))}</span></div></div>
-    <div id="{sid}-next">Next level: <b>{html.escape(meta.get("next", ""))}</b></div>
+    <div id="{sid}-next">{f'Next level: <b>{html.escape(meta["next"])}</b>' if meta.get("next") else '<b>Course complete</b>: you are production ready 🚀'}</div>
     <div id="{sid}-cta">Comment your challenge answers 💬</div>
     <div id="{sid}-byte">{byte_svg(sid + "-b1", 280, "happy")}</div>"""
     js = [f'    tl.fromTo("#{sid}-bg", {{ opacity: 0 }}, {{ opacity: 1, duration: 0.4 }}, 0);',
@@ -1157,6 +1157,11 @@ def build(ch, allow_new=True):
     if meta["chapter"] == 0:
         done = [("maya", "That's the plan. Let's start with level one. And tell me in the comments why you're learning FastAPI."),
                 ("leo", "See you in level one!")]
+    elif not meta.get("next"):
+        done = [("maya", f"Congratulations, you finished the whole course, and unlocked the {meta.get('badge', '')} badge! "
+                         "Build one of these projects, deploy it, and share the link in the comments. I'd love to see it."),
+                ("leo", "From hello world to production. Thank you, Maya!"),
+                ("maya", "Thank you for learning with us. Now go build something great.")]
     else:
         done = [("maya", f"Congratulations, level {meta['chapter']} complete! You've unlocked the {meta.get('badge', '')} badge. "
                          f"Write your challenge answers in the comments. In the next level, we'll learn {meta.get('next', '')}."),

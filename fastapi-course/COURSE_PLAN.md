@@ -8,10 +8,15 @@ explained).
 ## Audience, language and teaching style
 
 - **Audience:** college students and working professionals who want FastAPI for projects, jobs and interviews.
-- **Language:** narration in **Hinglish** (Hindi + English tech terms, the way developers actually talk);
-  on-screen titles, points and code in English so they read like real documentation.
-- **Style:** easy first. Every new idea starts with an everyday analogy ("API ek restaurant ke waiter jaisa hai"),
-  then the code, then why it matters at work. Short sentences, one idea per slide, no jargon without a meaning.
+- **Language:** English narration and on-screen text (switched from Hinglish after the first pilot).
+- **Presenters:** a conversation, not a lecture.
+  - **Maya** (instructor, American female voice `af_heart`) explains.
+  - **Leo** (learner, American male voice `am_michael`) asks the questions viewers are thinking, and answers the mock-interview questions.
+  - **Mr. Grant** (interviewer, British male voice `bm_george`) runs the Boss Round.
+- **Style:** easy first. Every new idea starts with an everyday analogy ("an API works like a restaurant"),
+  then the code, then the common mistake beginners make, then why it matters at work. Short sentences, one idea per slide.
+- **Depth:** every claim shown on screen is checked. Outputs, timings, status codes and coverage numbers come from
+  real runs (`code/test_chNN.py`, a real Docker build), not made up.
 
 ## Outcome
 
@@ -25,25 +30,28 @@ explained).
 | Item | Choice |
 | --- | --- |
 | Canvas | 1920x1080, 30 fps, one MP4 per chapter + one full-course MP4 |
-| Length | about 3.5 hours in total: ~16 min per level (lesson ~7, challenges ~3, project ~2, boss round ~4) |
-| Narration | Hinglish, built-in local TTS. Instructor: Hindi female voice (`hf_alpha`). Mock interviewer: Hindi male voice (`hm_omega`). |
+| Length | about 3 hours in total: 10–16 min per level (lesson ~8, challenges ~3, project ~2, boss round ~3) |
+| Narration | English, local Kokoro TTS, three voices (Maya / Leo / Mr. Grant), loudness-normalised to −14 LUFS for YouTube |
 | Look | Light studio-white ground, FastAPI teal `#05998B` brand rail, dark editor panels for code, Inter / Outfit / JetBrains Mono |
 | Code | 34–38 px JetBrains Mono, syntax highlighted, revealed line by line in sync with the narration, the line being explained is highlighted |
-| Extras | Hinglish `.srt` subtitles per chapter, YouTube chapter timestamps for the full video |
+| Extras | English `.srt` subtitles per chapter and for the full course, YouTube timestamps for the full video and per episode |
 | Accuracy | Every Python snippet is compiled, and each chapter's main app is run under pytest before rendering |
 
 ## Segment types used in every chapter
 
 1. **Title card** — chapter number, title, what you will learn.
-2. **Concept** — heading + 3–5 points revealed as they are spoken.
-3. **Flow diagram** — e.g. request → middleware → router → dependencies → handler → response.
-4. **Code walkthrough** — a file builds up line by line; the active line is highlighted.
-5. **Terminal** — command typed, output appears.
-6. **Recap** — the chapter's key takeaways.
-7. **Challenge Time** (5 practice questions) — question on screen, 5-second "pause and solve" timer, then the solution.
-8. **Project Time** — the Level Project brief, build it yourself, then the solution walkthrough.
-9. **Boss Round** (5 mock-interview questions) — tagged Junior / Mid / Senior; interviewer voice asks, the model answer's key points build on screen.
-10. **Level Complete** — stars, a skill badge, the next level, "comment your answers".
+2. **Analogy** — everyday idea on the left, the FastAPI idea it maps to on the right.
+3. **Concept** — heading + 3–5 points revealed as they are spoken, next to an animated illustration.
+4. **Flow diagram** — e.g. request → middleware → router → dependencies → handler → response, with a moving packet.
+5. **Code walkthrough** — a file builds up line by line; the active line is highlighted; real output panel underneath.
+6. **Common mistake** — the buggy version with a BUG stamp, Leo's question, then the fix side by side.
+7. **Terminal** — command typed, real output appears.
+8. **Pro tip** — a habit from real teams.
+9. **Recap** — the chapter's key takeaways.
+10. **Challenge Time** (5 practice questions) — question on screen, 5-second "pause and solve" timer, then the solution.
+11. **Project Time** — the Level Project brief, build it yourself, then the solution walkthrough.
+12. **Boss Round** (5 mock-interview questions) — tagged Junior / Mid / Senior; Mr. Grant asks, Leo answers, Maya adds the tip that impresses interviewers.
+13. **Level Complete** — stars, a skill badge, the next level, "comment your answers".
 
 ## Theme: Code Quest
 
@@ -178,18 +186,26 @@ Why FastAPI, what we build, course roadmap, how practice and interview segments 
 - **Practice / Interview:** offset vs cursor pagination, WebSocket scaling, cache invalidation, …
 
 ### 12. Production Deployment
-- Running in production: `fastapi run` / Uvicorn workers, Gunicorn, behind a reverse proxy
-- Docker: slim multi-stage image, non-root user, health check
+- Running in production: `fastapi run --workers N --proxy-headers`, behind an HTTPS proxy / load balancer
+- Docker: slim image, cached layers, non-root user, `.dockerignore`, secrets at run time; Compose with Postgres and Redis
 - Configuration and secrets, structured JSON logging, request IDs
 - Health and readiness endpoints, metrics and tracing (Prometheus, OpenTelemetry)
 - CI/CD with GitHub Actions: lint, type-check, test, build and push image
 - Security and performance checklist; TaskHub's final architecture
 - **Practice / Interview:** zero-downtime deploys, scaling horizontally, 12-factor config, debugging prod, …
 
+### 13. Portfolio Projects
+- How to design any API: requirements → data model → endpoints → edge cases → tests → deploy
+- URL Shortener: base62 codes, Redis-cached 307 redirects, click analytics, expiring links
+- Blog / CMS: unique slugs, drafts visible only to authors, tags, comments, roles
+- E-commerce Orders: money in integer cents, atomic stock updates (the overselling race), idempotency keys, order state machine, payment webhooks
+- **Practice / Interview:** URL shortener design, double-charge prevention, overselling at scale, "walk me through your project"
+
 ## Production pipeline
 
 1. Each chapter is written as a structured script in `content/chNN.md` (segments, narration, code, practice, interview).
 2. `tools/verify_code.py` compiles every snippet and runs each chapter's example tests.
 3. `tools/build.py` makes the narration per line (local TTS), times every reveal to its line, and generates a HyperFrames project per chapter under `build/chNN/`.
-4. `npx hyperframes check` and frame snapshots for review, then render `renders/chNN.mp4`.
-5. `tools/assemble.py` joins the chapters into `renders/fastapi-full-course.mp4` and writes the YouTube chapter list and subtitles.
+4. `tools/pipeline.sh` waits for each build, runs `npx hyperframes check`, then `tools/render.sh` renders
+   `renders/chNN.mp4` and normalises loudness (`tools/loudnorm.sh`).
+5. `tools/assemble.py` joins the chapters into `renders/fastapi-full-course.mp4` and writes the YouTube chapter list, merged subtitles and a per-episode description with timestamps.
