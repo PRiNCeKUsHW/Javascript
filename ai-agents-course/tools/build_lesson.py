@@ -31,7 +31,7 @@ from pygments.token import Comment, Keyword, Name, Number, Operator, String, Tok
 ROOT = Path(__file__).resolve().parent.parent
 STUDIO = ROOT / "studio"
 TTS_CACHE = ROOT / "shared/tts_cache"
-KOKORO = Path.home() / ".cache/hyperframes/tts"
+KOKORO = Path(os.environ.get("KOKORO_DIR", Path.home() / ".cache/hyperframes/tts"))  # models/ + voices/
 SR = 24000
 FPS = 60
 VOICE, LANG, SPEED = "am_michael", "en-us", 1.0

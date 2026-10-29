@@ -18,9 +18,24 @@
       "project": "Python AI Toolkit",
       "status": "IN_PROGRESS",
       "lessons": [],
-      "paths": {},
+      "paths": {
+        "module": "modules/module-01-python-ai-engineering",
+        "project": "modules/module-01-python-ai-engineering/project/python-ai-toolkit"
+      },
       "validation": null,
-      "render": null,
+      "render": {
+        "lessons_rendered": [
+          1,
+          2,
+          3
+        ],
+        "lessons_pending": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
       "blockers": []
     },
     {
@@ -233,5 +248,5 @@
     "Enterprise Knowledge Assistant",
     "AI Workflow Automation Platform"
   ],
-  "updated": "2026-10-29T03:33:39Z"
+  "updated": "2026-10-29T06:03:16Z"
 }

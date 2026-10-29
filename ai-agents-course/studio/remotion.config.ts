@@ -11,6 +11,9 @@ Config.setRspack(true);
 Config.setVideoImageFormat("jpeg");
 Config.setOverwriteOutput(true);
 Config.setDefaultPremountInSeconds(2);
-// pre-installed headless Chromium (the container cannot download Remotion's own copy)
-Config.setBrowserExecutable("/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell");
-Config.setConcurrency(4);
+// Use a pre-installed headless Chromium when REMOTION_BROWSER (or the cloud default) exists;
+// otherwise Remotion downloads its own browser on first render.
+import fs from "node:fs";
+const browser = process.env.REMOTION_BROWSER ?? "/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell";
+if (fs.existsSync(browser)) Config.setBrowserExecutable(browser);
+Config.setConcurrency(Number(process.env.REMOTION_CONCURRENCY ?? 4));

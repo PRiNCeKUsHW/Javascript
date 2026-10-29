@@ -12,7 +12,8 @@ const out = outArg ?? `../logs/snapshots/${id}`;
 fs.mkdirSync(out, { recursive: true });
 const data = JSON.parse(fs.readFileSync(`src/data/${id}.json`, "utf8"));
 const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts") });
-const browserExecutable = "/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell";
+const cloudBrowser = "/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell";
+const browserExecutable = process.env.REMOTION_BROWSER ?? (fs.existsSync(cloudBrowser) ? cloudBrowser : null);
 const composition = await selectComposition({ serveUrl, id, browserExecutable });
 const frames = extra.length ? extra : data.scenes.map((s) => s.from + Math.floor(s.duration * at));
 for (const [i, frame] of frames.entries()) {
