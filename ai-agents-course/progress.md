@@ -22,8 +22,8 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
 - Remotion downloads its own Chrome Headless Shell on the first render or still.
 - Windows-built captures show Windows details (Python 3.14.3, `.venv/Scripts/python`). Module 1 was
   not rebuilt here. Module 2 lessons avoid OS-specific output where possible.
-- Known: Module 1 `test_friendly_error_for_missing_file` fails on Windows only (the message prints
-  `data\missing.json`), so 41/42 tests pass here. The project code was not changed.
+- Fixed: Module 1 `test_friendly_error_for_missing_file` now builds the expected path with `Path`, so it
+  passes on Windows too (project code unchanged, so it still matches the videos).
 
 ## Next: Module 2: LLM Fundamentals and API Integration (project: AI Study Assistant)
 

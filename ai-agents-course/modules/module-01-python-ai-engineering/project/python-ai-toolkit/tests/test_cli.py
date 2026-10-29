@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from toolkit.cli import main
 
@@ -30,4 +31,6 @@ def test_report_strict_fails_on_invalid(in_project, capsys):
 
 def test_friendly_error_for_missing_file(in_project, capsys):
     assert main(["validate", "data/missing.json"]) == 1
-    assert capsys.readouterr().err == "error: file not found: data/missing.json\n"
+    # Path() prints with the OS separator: data/missing.json, or data\missing.json on Windows
+    expected = f"error: file not found: {Path('data/missing.json')}\n"
+    assert capsys.readouterr().err == expected
