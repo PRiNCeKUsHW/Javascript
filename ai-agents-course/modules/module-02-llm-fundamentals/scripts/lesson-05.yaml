@@ -21,11 +21,11 @@ scenes:
     chapter: Error types
     heading: Errors you will meet, and what to do
     cards:
-      - {tag: "400 · 404", title: Fix the request, body: "Bad parameters or an unknown model. Retrying won't help.", code: "BadRequestError · NotFoundError", tone: amber, say: "Errors fall into groups. A four hundred or four oh four means your request is wrong: a bad parameter, or a model name that doesn't exist. Retrying won't help. Fix the request."}
-      - {tag: "401 · 403", title: Fix the key, body: "Missing, wrong or under-privileged API key.", code: "AuthenticationError · PermissionDeniedError", tone: coral, say: "Four oh one and four oh three are about your key: missing, wrong, or without permission. Again, don't retry. Fix the key."}
+      - {tag: "400 · 404", title: Fix the request, body: "Bad parameters or an unknown model. Retrying won't help.", code: "BadRequestError", tone: amber, say: "Errors fall into groups. A four hundred or four oh four means your request is wrong: a bad parameter, or a model name that doesn't exist. Retrying won't help. Fix the request."}
+      - {tag: "401 · 403", title: Fix the key, body: "Missing, wrong or under-privileged API key.", code: "AuthenticationError", tone: coral, say: "Four oh one and four oh three are about your key: missing, wrong, or without permission. Again, don't retry. Fix the key."}
       - {tag: "429", title: Slow down, body: "Rate limit reached. Wait, then retry.", code: "RateLimitError", tone: violet, say: "Four twenty-nine means you've hit a rate limit. Waiting and retrying is exactly right."}
-      - {tag: "5xx · 529", title: Retry later, body: "A server problem or overload, often temporary.", code: "InternalServerError · OverloadedError", tone: blue, say: "Five hundreds, including five twenty-nine for overloaded, are server-side problems that are often temporary. Retry after a short wait."}
-      - {tag: network, title: Check the connection, body: "No response at all, or a timeout.", code: "APIConnectionError · APITimeoutError", tone: teal, say: "And connection errors and timeouts mean no proper response came back at all. Those are also worth a retry."}
+      - {tag: "5xx · 529", title: Retry later, body: "A server problem or overload, often temporary.", code: "InternalServerError", tone: blue, say: "Five hundreds, including five twenty-nine for overloaded, are server-side problems that are often temporary. Retry after a short wait."}
+      - {tag: network, title: Check the connection, body: "No response at all, or a timeout.", code: "APIConnectionError", tone: teal, say: "And connection errors and timeouts mean no proper response came back at all. Those are also worth a retry."}
       - {tag: rule, title: "Retry only what can recover", body: "429, 5xx and network errors: yes. 4xx: no.", tone: muted, say: "The rule is simple: retry rate limits, server errors, and network problems. Never blindly retry the other four hundreds."}
 
   - type: code

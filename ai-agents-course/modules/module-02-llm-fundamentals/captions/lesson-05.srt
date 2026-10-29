@@ -1,0 +1,490 @@
+1
+00:00:00,700 --> 00:00:02,669
+A demo that works once is easy.
+
+2
+00:00:02,889 --> 00:00:08,215
+A program that keeps working when the
+network drops, when you hit a rate limit, or
+
+3
+00:00:08,215 --> 00:00:11,528
+when costs start to
+climb, takes deliberate design.
+
+4
+00:00:11,748 --> 00:00:16,523
+This lesson covers the production
+basics every AI application needs.
+
+5
+00:00:17,823 --> 00:00:22,450
+You'll recognise the API's error
+types, and know what to do about each one.
+
+6
+00:00:22,800 --> 00:00:24,534
+Catch errors in the right order.
+
+7
+00:00:24,884 --> 00:00:29,065
+Understand rate limits, and
+the SDK's automatic retries.
+
+8
+00:00:29,415 --> 00:00:32,491
+And calculate and
+control what each call costs.
+
+9
+00:00:33,791 --> 00:00:35,304
+Errors fall into groups.
+
+10
+00:00:35,524 --> 00:00:41,422
+A four hundred or four oh four means
+your request is wrong: a bad parameter, or a
+
+11
+00:00:41,422 --> 00:00:43,606
+model name that doesn't exist.
+
+12
+00:00:43,826 --> 00:00:45,146
+Retrying won't help.
+
+13
+00:00:45,366 --> 00:00:46,545
+Fix the request.
+
+14
+00:00:46,895 --> 00:00:51,788
+Four oh one and four oh three are
+about your key: missing, wrong, or without
+
+15
+00:00:51,788 --> 00:00:52,496
+permission.
+
+16
+00:00:52,716 --> 00:00:54,027
+Again, don't retry.
+
+17
+00:00:54,247 --> 00:00:55,259
+Fix the key.
+
+18
+00:00:55,609 --> 00:00:58,333
+Four twenty-nine means
+you've hit a rate limit.
+
+19
+00:00:58,553 --> 00:01:01,113
+Waiting and retrying is exactly right.
+
+20
+00:01:01,463 --> 00:01:07,024
+Five hundreds, including five
+twenty-nine for overloaded, are server-side problems
+
+21
+00:01:07,024 --> 00:01:08,719
+that are often temporary.
+
+22
+00:01:08,939 --> 00:01:10,770
+Retry after a short wait.
+
+23
+00:01:11,120 --> 00:01:16,026
+And connection errors and timeouts
+mean no proper response came back at all.
+
+24
+00:01:16,246 --> 00:01:18,086
+Those are also worth a retry.
+
+25
+00:01:18,436 --> 00:01:23,324
+The rule is simple: retry rate
+limits, server errors, and network problems.
+
+26
+00:01:23,544 --> 00:01:26,535
+Never blindly retry
+the other four hundreds.
+
+27
+00:01:27,835 --> 00:01:33,782
+For this demo only, we turn off
+automatic retries, so every error reaches our code.
+
+28
+00:01:34,132 --> 00:01:36,309
+The call goes inside a try block.
+
+29
+00:01:36,659 --> 00:01:41,735
+Then we catch specific exception
+classes, most specific first: an authentication
+
+30
+00:01:41,735 --> 00:01:43,703
+error, then a rate limit error.
+
+31
+00:01:44,053 --> 00:01:50,292
+API status error is the parent class of
+every HTTP error, so it catches anything we
+
+32
+00:01:50,292 --> 00:01:53,750
+haven't handled, and
+gives us the status code.
+
+33
+00:01:53,970 --> 00:01:59,109
+Connection errors aren't HTTP errors
+at all, so they have their own class.
+
+34
+00:01:59,329 --> 00:02:03,060
+If you catch the parent first,
+the specific handlers never run.
+
+35
+00:02:04,360 --> 00:02:09,853
+To demonstrate errors without breaking
+anything, the fake API reads an environment
+
+36
+00:02:09,853 --> 00:02:11,997
+variable telling it how to fail.
+
+37
+00:02:12,347 --> 00:02:15,490
+With no failure, a
+normal placeholder reply.
+
+38
+00:02:15,840 --> 00:02:18,727
+A four oh one becomes, check your API key.
+
+39
+00:02:19,077 --> 00:02:21,848
+A four twenty-nine becomes, rate limited.
+
+40
+00:02:22,198 --> 00:02:27,503
+And a five twenty-nine, an overloaded
+server, falls through to the general status
+
+41
+00:02:27,503 --> 00:02:28,027
+handler.
+
+42
+00:02:29,327 --> 00:02:34,530
+Every API account has rate limits: how
+many requests and tokens you may use per
+
+43
+00:02:34,530 --> 00:02:34,991
+minute.
+
+44
+00:02:35,211 --> 00:02:37,930
+When you exceed them,
+you get a four twenty-nine.
+
+45
+00:02:38,280 --> 00:02:42,199
+The standard response is to
+retry with exponential backoff.
+
+46
+00:02:42,549 --> 00:02:47,957
+Wait a short time, plus a little
+randomness so that many clients don't all retry at
+
+47
+00:02:47,957 --> 00:02:49,976
+the same moment, and try again.
+
+48
+00:02:50,326 --> 00:02:53,291
+If it fails again,
+wait roughly twice as long.
+
+49
+00:02:53,511 --> 00:02:57,868
+Good news: the Anthropic SDK
+already does all of this for you.
+
+50
+00:02:58,088 --> 00:03:03,887
+It retries rate limits, server errors,
+and connection errors twice by default, with
+
+51
+00:03:03,887 --> 00:03:08,218
+backoff, and it respects the
+retry after header the API sends.
+
+52
+00:03:09,518 --> 00:03:13,729
+You control this with max
+retries, on the client or per request.
+
+53
+00:03:13,949 --> 00:03:16,708
+Two is the default, and zero turns it off.
+
+54
+00:03:18,008 --> 00:03:22,701
+Here the fake API fails with a four
+twenty-nine and then a five hundred.
+
+55
+00:03:22,921 --> 00:03:29,393
+Setting ANTHROPIC LOG to info shows what
+the SDK does: it waits about half a second,
+
+56
+00:03:29,393 --> 00:03:33,940
+retries, waits about a
+second, retries again, and succeeds.
+
+57
+00:03:34,160 --> 00:03:36,498
+Our code didn't need a single extra line.
+
+58
+00:03:37,798 --> 00:03:39,769
+Set a timeout you're comfortable with.
+
+59
+00:03:39,989 --> 00:03:42,263
+The SDK default is ten minutes.
+
+60
+00:03:42,483 --> 00:03:45,047
+For long replies,
+stream instead of waiting.
+
+61
+00:03:45,397 --> 00:03:48,256
+When something fails, log the request ID.
+
+62
+00:03:48,476 --> 00:03:51,560
+It identifies exactly
+which request went wrong.
+
+63
+00:03:51,910 --> 00:03:57,031
+Use separate keys for separate apps and
+environments, so you can revoke one without
+
+64
+00:03:57,031 --> 00:03:58,264
+breaking the others.
+
+65
+00:03:58,614 --> 00:04:02,171
+And never send keys to the
+model, or print them in logs.
+
+66
+00:04:02,391 --> 00:04:05,201
+Logs are often far less
+protected than you think.
+
+67
+00:04:06,501 --> 00:04:07,352
+Now, money.
+
+68
+00:04:07,572 --> 00:04:13,017
+You pay per token, with separate prices
+for input and output, quoted per million
+
+69
+00:04:13,017 --> 00:04:13,494
+tokens.
+
+70
+00:04:13,844 --> 00:04:19,955
+Claude Opus 5.5, the most capable of the
+three and our default, costs four dollars
+
+71
+00:04:19,955 --> 00:04:24,651
+per million input tokens, and
+twenty per million output tokens.
+
+72
+00:04:25,001 --> 00:04:27,385
+Sonnet 5.5 costs half that.
+
+73
+00:04:27,735 --> 00:04:32,561
+And Haiku 5.5 is far
+cheaper, for simple, high-volume work.
+
+74
+00:04:32,911 --> 00:04:36,458
+These are list prices in October 2026.
+
+75
+00:04:36,678 --> 00:04:40,499
+Prices change, so always
+check the official pricing page.
+
+76
+00:04:40,719 --> 00:04:45,232
+And notice that output tokens
+cost five times more than input tokens.
+
+77
+00:04:46,532 --> 00:04:48,281
+Here's the cost calculation.
+
+78
+00:04:48,501 --> 00:04:50,467
+Prices are per million tokens.
+
+79
+00:04:50,817 --> 00:04:56,323
+Count tokens measures a request before
+you send it, so you can warn about, or block,
+
+80
+00:04:56,323 --> 00:04:59,535
+a request that would be
+too big or too expensive.
+
+81
+00:04:59,885 --> 00:05:03,170
+After the call, usage
+gives the actual tokens.
+
+82
+00:05:03,390 --> 00:05:07,019
+Multiply each by its
+price, and divide by a million.
+
+83
+00:05:07,369 --> 00:05:11,590
+And then the important habit:
+multiply by your expected traffic.
+
+84
+00:05:12,890 --> 00:05:14,709
+A fraction of a cent per call.
+
+85
+00:05:14,929 --> 00:05:19,598
+But the same call ten thousand
+times a day costs real money every day.
+
+86
+00:05:19,818 --> 00:05:23,529
+In offline mode these
+token counts are rough estimates.
+
+87
+00:05:23,749 --> 00:05:25,580
+With a real key, they're exact.
+
+88
+00:05:26,880 --> 00:05:28,765
+Five ways to control cost.
+
+89
+00:05:28,985 --> 00:05:33,790
+First, send less: trim history,
+and include only relevant documents.
+
+90
+00:05:34,140 --> 00:05:38,227
+Second, ask for concise
+answers, with a sensible max tokens.
+
+91
+00:05:38,577 --> 00:05:41,136
+Third, use lower effort for simple tasks.
+
+92
+00:05:41,486 --> 00:05:46,874
+Fourth, pick the smallest model that
+does the job well, measured on real examples,
+
+93
+00:05:46,874 --> 00:05:47,662
+not guessed.
+
+94
+00:05:48,012 --> 00:05:52,719
+And fifth, track spending in code,
+with a budget that stops runaway loops.
+
+95
+00:05:52,939 --> 00:05:54,892
+Our project does exactly this.
+
+96
+00:05:56,192 --> 00:05:57,000
+Quick check.
+
+97
+00:05:57,220 --> 00:05:59,449
+Which of these errors
+should your code retry?
+
+98
+00:06:05,149 --> 00:06:06,548
+The four twenty-nine.
+
+99
+00:06:06,768 --> 00:06:08,935
+A rate limit recovers after waiting.
+
+100
+00:06:09,155 --> 00:06:13,957
+The others fail the same way every
+time, until you fix the request or the key.
+
+101
+00:06:15,257 --> 00:06:19,389
+Four hundreds, except four
+twenty-nine, need a fix, not a retry.
+
+102
+00:06:19,739 --> 00:06:25,435
+Rate limits, server errors, and network
+errors are retried with backoff, and the SDK
+
+103
+00:06:25,435 --> 00:06:26,655
+does that for you.
+
+104
+00:06:27,005 --> 00:06:30,292
+Catch specific exception
+classes before the general one.
+
+105
+00:06:30,642 --> 00:06:34,763
+And cost is tokens times
+price, so count, track, and budget.
+
+106
+00:06:35,113 --> 00:06:37,648
+You now know everything the project needs.
+
+107
+00:06:37,868 --> 00:06:41,430
+Next lesson, we start
+building the AI Study Assistant.
