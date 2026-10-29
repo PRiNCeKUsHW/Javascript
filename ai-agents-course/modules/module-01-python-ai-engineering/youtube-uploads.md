@@ -1,7 +1,7 @@
 # Module 1 upload kit (one entry per lesson video)
 
 Playlist name: **AI Agents with Python 2026 (Beginner to Production)**
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 Captions: upload `captions/lesson-NN.srt` as English subtitles for each video.
 
 Shared thumbnail style (paste before each lesson's prompt):
@@ -38,7 +38,7 @@ Chapters
 06:45 Recap
 
 Next: Lesson 2, the data every AI app is made of.
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 Docs: https://docs.python.org/3/library/venv.html
 
 #Python #AIAgents #AIEngineering #PythonTutorial #LLM
@@ -77,7 +77,7 @@ Chapters
 06:30 Quick check
 06:50 Recap
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 Docs: https://docs.python.org/3/tutorial/datastructures.html
 
 #Python #AIAgents #PythonTutorial #PythonForBeginners #LLM
@@ -118,7 +118,7 @@ Chapters
 07:35 Quick check
 07:57 Recap
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 Docs: https://docs.python.org/3/library/dataclasses.html
 
 #Python #AIAgents #PythonTutorial #OOP #LLM
@@ -154,7 +154,7 @@ Chapters
 06:41 Quick check
 07:01 Recap
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 Docs: https://docs.python.org/3/library/json.html · https://docs.python.org/3/library/pathlib.html
 
 #Python #AIAgents #PythonTutorial #JSON #LLM
@@ -190,7 +190,7 @@ Chapters
 06:29 Quick check
 06:50 Recap
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 Docs: https://www.python-httpx.org · https://docs.python.org/3/library/asyncio.html
 
 #Python #AsyncIO #AIAgents #PythonTutorial #LLM
@@ -231,7 +231,7 @@ Chapters
 07:37 First results
 08:02 Recap
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering/project/python-ai-toolkit
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering/project/python-ai-toolkit
 
 #Python #PythonProject #AIAgents #AIEngineering #LLM
 ```
@@ -273,7 +273,7 @@ Chapters
 10:17 Next up
 
 Next: Module 2, LLM fundamentals and API integration.
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering/project/python-ai-toolkit
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering/project/python-ai-toolkit
 Docs: https://docs.python.org/3/library/argparse.html · https://docs.pytest.org
 
 #Python #Pytest #AIAgents #PythonProject #LLM

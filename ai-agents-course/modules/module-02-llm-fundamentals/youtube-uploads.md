@@ -1,7 +1,7 @@
 # Module 2 upload kit (one entry per lesson video)
 
 Playlist: **AI Agents with Python 2026: Beginner to Production** (videos #8-#14).
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 Captions: upload `captions/lesson-NN.srt` as English subtitles for each video.
 
 Note for every description: the demos run in **offline mode** (a built-in fake API with placeholder
@@ -39,7 +39,7 @@ Chapters
 04:47 Quick check
 05:06 Recap
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 Docs: https://platform.claude.com/docs/en/about-claude/models/overview
 
 #Python #LLM #ClaudeAPI #AIAgents #AIEngineering
@@ -76,7 +76,7 @@ Chapters
 04:45 Quick check
 05:03 Recap
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 Docs: https://github.com/anthropics/anthropic-sdk-python
 
 #Python #ClaudeAPI #LLM #AIAgents #PythonTutorial
@@ -112,7 +112,7 @@ Chapters
 03:12 Quick check
 03:32 Recap
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 
 #Python #LLM #Chatbot #ClaudeAPI #AIAgents
 ```
@@ -148,7 +148,7 @@ Chapters
 04:58 Quick check
 05:18 Recap
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 Docs: https://platform.claude.com/docs/en/build-with-claude/structured-outputs
 
 #Python #LLM #Pydantic #ClaudeAPI #AIAgents
@@ -184,7 +184,7 @@ Chapters
 05:55 Quick check
 06:14 Recap
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 Docs: https://platform.claude.com/docs/en/api/errors · https://platform.claude.com/docs/en/api/rate-limits
 
 #Python #LLM #ClaudeAPI #AIEngineering #AIAgents
@@ -222,7 +222,7 @@ Chapters
 05:08 First run
 05:36 Recap
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals/project/ai-study-assistant
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals/project/ai-study-assistant
 
 #Python #LLM #ClaudeAPI #PythonProject #AIAgents
 ```
@@ -264,7 +264,7 @@ Chapters
 07:14 Next up
 
 Next: Module 3, prompt engineering and structured outputs.
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals/project/ai-study-assistant
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals/project/ai-study-assistant
 
 #Python #LLM #Pytest #ClaudeAPI #AIAgents
 ```
