@@ -29,21 +29,21 @@ scenes:
     chapter: Architecture
     heading: "Architecture: small modules, one job each"
     nodes:
-      - {id: cli, label: cli.py, sub: commands & arguments, x: 864, y: 70, w: 340, h: 110, tone: amber, mono: true}
-      - {id: loader, label: loader.py, sub: read + validate file, x: 260, y: 290, w: 330, h: 110, tone: blue, mono: true}
-      - {id: models, label: models.py, sub: UsageRecord, x: 260, y: 520, w: 330, h: 110, tone: blue, mono: true}
-      - {id: stats, label: stats.py, sub: summarize(), x: 700, y: 290, w: 300, h: 110, tone: teal, mono: true}
-      - {id: report, label: report.py, sub: Markdown / JSON, x: 1100, y: 290, w: 300, h: 110, tone: teal, mono: true}
-      - {id: config, label: config.py, sub: env vars + prices, x: 1480, y: 290, w: 320, h: 110, tone: violet, mono: true}
-      - {id: fetch, label: fetch.py, sub: async downloads, x: 1480, y: 520, w: 320, h: 110, tone: violet, mono: true}
-      - {id: errors, label: errors.py, sub: ToolkitError, x: 864, y: 560, w: 330, h: 110, tone: coral, mono: true}
+      - {id: cli, label: cli.py, sub: commands & arguments, x: 864, y: 60, w: 340, h: 110, tone: amber, mono: true}
+      - {id: loader, label: loader.py, sub: read + validate, x: 160, y: 320, w: 280, h: 110, tone: blue, mono: true}
+      - {id: stats, label: stats.py, sub: summarize(), x: 512, y: 320, w: 280, h: 110, tone: teal, mono: true}
+      - {id: report, label: report.py, sub: Markdown / JSON, x: 864, y: 320, w: 280, h: 110, tone: teal, mono: true}
+      - {id: config, label: config.py, sub: env vars + prices, x: 1216, y: 320, w: 280, h: 110, tone: violet, mono: true}
+      - {id: fetch, label: fetch.py, sub: async downloads, x: 1568, y: 320, w: 280, h: 110, tone: violet, mono: true}
+      - {id: models, label: models.py, sub: UsageRecord, x: 160, y: 540, w: 280, h: 110, tone: blue, mono: true}
+      - {id: errors, label: errors.py, sub: "ToolkitError, raised anywhere", x: 864, y: 540, w: 420, h: 110, tone: coral, mono: true}
     edges:
       - {from: cli, to: loader}
       - {from: loader, to: models}
       - {from: cli, to: stats}
       - {from: cli, to: report}
       - {from: cli, to: config}
-      - {from: cli, to: fetch, bend: 0.12}
+      - {from: cli, to: fetch}
     say: >
       Before writing code, decide how to split it. Each file gets one job.
     steps:

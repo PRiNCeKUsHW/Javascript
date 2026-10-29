@@ -68,6 +68,9 @@ export const DiagramScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
             const [x2, y2] = exitPoint(b, bend ? mx : a.x, bend ? my : a.y);
             const d = bend ? `M${x1},${y1} Q${mx},${my} ${x2},${y2}` : `M${x1},${y1} L${x2},${y2}`;
             const len = Math.hypot(x2 - x1, y2 - y1) * (bend ? 1.25 : 1);
+            // label on the curve itself (a quadratic's midpoint), not at its control point
+            const lx = bend ? 0.25 * x1 + 0.5 * mx + 0.25 * x2 : (x1 + x2) / 2;
+            const ly = bend ? 0.25 * y1 + 0.5 * my + 0.25 * y2 : (y1 + y2) / 2;
             const p = appear(frame, shownAt[id], 26);
             const active = flow.has(id);
             const col = active ? C.teal : anyFocus && !(focus.has(e.from) || focus.has(e.to)) ? C.line : C.faint;
@@ -82,8 +85,8 @@ export const DiagramScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
                 ) : null}
                 {e.label && p > 0.5 ? (
                   <g opacity={(p - 0.5) * 2}>
-                    <rect x={mx - e.label.length * 7.6 - 14} y={my - 21} width={e.label.length * 15.2 + 28} height={42} rx={21} fill={C.ink} stroke={C.line} />
-                    <text x={mx} y={my + 8} textAnchor="middle" fontFamily={MONO} fontSize={23} fill={active ? C.teal : C.muted}>
+                    <rect x={lx - e.label.length * 7.6 - 14} y={ly - 21} width={e.label.length * 15.2 + 28} height={42} rx={21} fill={C.ink} stroke={C.line} />
+                    <text x={lx} y={ly + 8} textAnchor="middle" fontFamily={MONO} fontSize={23} fill={active ? C.teal : C.muted}>
                       {e.label}
                     </text>
                   </g>

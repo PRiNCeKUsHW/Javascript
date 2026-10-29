@@ -25,7 +25,7 @@ export const scrollFor = (total: number, visible: number, hl: number[], upto?: n
   if (total <= visible) return 0;
   const focus = hl.length ? (Math.min(...hl) + Math.max(...hl)) / 2 : upto ?? 1;
   const top = hl.length && Math.max(...hl) - Math.min(...hl) >= visible ? Math.min(...hl) - 1 : focus - visible / 2;
-  return Math.max(0, Math.min(total - visible, top));
+  return Math.round(Math.max(0, Math.min(total - visible, top)));
 };
 
 export const CodeView: React.FC<{
@@ -43,7 +43,15 @@ export const CodeView: React.FC<{
   const scroll = lerp(prev.scroll, cur.scroll, t);
   const gutter = lineNumbers ? fontSize * 2.6 : 0;
   return (
-    <div style={{ position: "relative", height, overflow: "hidden" }}>
+    <div
+      style={{
+        position: "relative",
+        height,
+        overflow: "hidden",
+        // fade the padding bands so a scrolled panel never shows half-cut lines at its edges
+        maskImage: "linear-gradient(180deg, transparent 0px, #000 20px, #000 calc(100% - 20px), transparent 100%)",
+      }}
+    >
       <div style={{ position: "absolute", left: 0, right: 0, top: 20 - scroll * lh }}>
         {tokens.map((line, idx) => {
           const i = idx + 1;

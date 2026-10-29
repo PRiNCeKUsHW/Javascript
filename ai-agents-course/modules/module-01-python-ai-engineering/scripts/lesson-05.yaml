@@ -72,8 +72,8 @@ scenes:
     nodes:
       - {id: client, label: Your Python code, sub: the client, x: 260, y: 300, w: 340, h: 140, tone: teal}
       - {id: server, label: Web API, sub: "a model, a search service...", x: 1460, y: 300, w: 380, h: 140, tone: violet}
-      - {id: req, label: "GET /usage_sample.json", sub: "method · URL · headers · optional body", x: 860, y: 120, w: 560, h: 120, tone: blue, mono: true}
-      - {id: res, label: "200 OK · application/json", sub: "status code · headers · body", x: 860, y: 480, w: 560, h: 120, tone: amber, mono: true}
+      - {id: req, label: "GET /usage_sample.json", sub: "method · URL · headers · optional body", x: 860, y: 60, w: 560, h: 110, tone: blue, mono: true}
+      - {id: res, label: "200 OK · application/json", sub: "status code · headers · body", x: 860, y: 545, w: 560, h: 110, tone: amber, mono: true}
     edges:
       - {from: client, to: server, label: request, bend: -0.18}
       - {from: server, to: client, label: response, bend: -0.18}

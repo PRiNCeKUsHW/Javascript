@@ -1,0 +1,736 @@
+1
+00:00:00,700 --> 00:00:01,725
+Welcome back.
+
+2
+00:00:01,945 --> 00:00:03,390
+The data layer works.
+
+3
+00:00:03,610 --> 00:00:08,709
+Now we add the report writer, the
+downloader, and the command line, then run the
+
+4
+00:00:08,709 --> 00:00:14,063
+finished tool, test it, fix the common
+errors, and finish the module with a quiz and
+
+5
+00:00:14,063 --> 00:00:14,828
+a challenge.
+
+6
+00:00:16,128 --> 00:00:19,392
+Render markdown takes a
+summary and returns text.
+
+7
+00:00:19,612 --> 00:00:24,599
+It doesn't print anything, so it's easy
+to test, and the caller decides where the
+
+8
+00:00:24,599 --> 00:00:25,214
+text goes.
+
+9
+00:00:25,564 --> 00:00:30,871
+The report is built as a list of
+lines, using f-string formats from lesson two.
+
+10
+00:00:31,091 --> 00:00:36,563
+Colon point one percent shows a
+percentage, and colon point four f shows four
+
+11
+00:00:36,563 --> 00:00:37,629
+decimal places.
+
+12
+00:00:37,979 --> 00:00:40,735
+A Markdown table has one row per model.
+
+13
+00:00:41,085 --> 00:00:46,909
+Then the top tags, numbered with
+enumerate, a warning if any model had no price, and
+
+14
+00:00:46,909 --> 00:00:50,098
+finally join glues
+everything into one string.
+
+15
+00:00:51,398 --> 00:00:56,814
+The JSON report builds nested
+dictionaries in exactly the shape we want, rounding
+
+16
+00:00:56,814 --> 00:00:59,222
+the floats so the output stays tidy.
+
+17
+00:00:59,572 --> 00:01:04,754
+A dictionary comprehension builds the
+per-model section, and a list comprehension
+
+18
+00:01:04,754 --> 00:01:05,778
+builds the tags.
+
+19
+00:01:05,998 --> 00:01:10,760
+Sets aren't valid JSON, so the
+unpriced models become a sorted list.
+
+20
+00:01:11,110 --> 00:01:13,982
+And json dot dumps turns it all into text.
+
+21
+00:01:15,282 --> 00:01:18,460
+Fetch one is the async
+request from lesson five.
+
+22
+00:01:18,680 --> 00:01:22,362
+Get the URL, raise for
+status, and parse the JSON.
+
+23
+00:01:22,712 --> 00:01:26,388
+Each kind of failure
+becomes one readable toolkit error.
+
+24
+00:01:26,608 --> 00:01:32,462
+An error status, a network problem like
+a refused connection, or a body that isn't
+
+25
+00:01:32,462 --> 00:01:32,819
+JSON.
+
+26
+00:01:33,169 --> 00:01:35,451
+And the body has to be a list of records.
+
+27
+00:01:35,801 --> 00:01:41,915
+Fetch all opens one client, gathers
+every download at the same time, and flattens
+
+28
+00:01:41,915 --> 00:01:46,218
+the batches into one list,
+keeping the order of the URLs.
+
+29
+00:01:46,438 --> 00:01:49,342
+The optional transport
+parameter is for testing.
+
+30
+00:01:49,562 --> 00:01:52,815
+It lets tests replace the
+real network with a fake one.
+
+31
+00:01:54,115 --> 00:01:59,090
+The standard library's argparse
+turns command line text into Python values.
+
+32
+00:01:59,310 --> 00:02:03,014
+It also generates help text
+and error messages for free.
+
+33
+00:02:03,364 --> 00:02:07,619
+Sub parsers give us separate
+commands, like git commit and git push.
+
+34
+00:02:07,839 --> 00:02:12,991
+Validate takes one file, and type
+equals Path converts it to a Path object.
+
+35
+00:02:13,341 --> 00:02:19,008
+Report adds options: a format
+restricted to two choices, an optional output file,
+
+36
+00:02:19,008 --> 00:02:22,087
+and a strict flag
+that is True when present.
+
+37
+00:02:22,437 --> 00:02:27,042
+Fetch accepts one or more
+URLs, and requires an output file.
+
+38
+00:02:28,342 --> 00:02:31,971
+Each command is a
+function that returns an exit code.
+
+39
+00:02:32,191 --> 00:02:37,859
+Validate prints every problem and
+returns one if anything was wrong, so scripts and
+
+40
+00:02:37,859 --> 00:02:40,045
+CI pipelines can detect failure.
+
+41
+00:02:40,395 --> 00:02:42,520
+Report loads settings and records.
+
+42
+00:02:42,740 --> 00:02:47,974
+Warnings go to standard error, so they
+never mix into a report that's being saved or
+
+43
+00:02:47,974 --> 00:02:48,347
+piped.
+
+44
+00:02:48,567 --> 00:02:51,435
+With strict, any
+invalid record is a failure.
+
+45
+00:02:51,655 --> 00:02:55,599
+Then we summarise and choose
+a renderer, Markdown or JSON.
+
+46
+00:02:55,949 --> 00:02:59,653
+The text is written to a
+file if out was given, or printed.
+
+47
+00:03:00,003 --> 00:03:05,497
+Fetch uses asyncio dot run to call
+our async function from normal code.
+
+48
+00:03:05,847 --> 00:03:10,894
+A dictionary maps each command name to
+its function, so there's no long chain of
+
+49
+00:03:10,894 --> 00:03:11,146
+ifs.
+
+50
+00:03:11,366 --> 00:03:16,655
+And main is the single place that
+catches toolkit errors, printing one clean line
+
+51
+00:03:16,655 --> 00:03:19,397
+and returning one, instead of a traceback.
+
+52
+00:03:20,697 --> 00:03:24,830
+And dunder main is what runs
+when you type python dash m toolkit.
+
+53
+00:03:25,050 --> 00:03:30,580
+It calls main, and raises system exit
+with the return value, which becomes the
+
+54
+00:03:30,580 --> 00:03:31,998
+program's exit code.
+
+55
+00:03:33,298 --> 00:03:34,729
+Let's run the finished tool.
+
+56
+00:03:34,949 --> 00:03:38,997
+Help is generated by
+argparse, listing the three commands.
+
+57
+00:03:39,347 --> 00:03:41,343
+The sample file is fully valid.
+
+58
+00:03:41,693 --> 00:03:44,951
+The broken file
+reports four precise problems.
+
+59
+00:03:45,301 --> 00:03:50,191
+And the exit code is one, which is
+how other programs know validation failed.
+
+60
+00:03:51,491 --> 00:03:52,843
+The Markdown report.
+
+61
+00:03:53,063 --> 00:03:55,744
+Ten requests with an
+eighty percent success rate.
+
+62
+00:03:55,964 --> 00:03:59,200
+And notice the average
+latency, over four seconds.
+
+63
+00:03:59,420 --> 00:04:02,443
+That's because one failed
+request took thirty seconds.
+
+64
+00:04:02,663 --> 00:04:08,004
+An average hides outliers like that,
+which is why one of this module's challenges
+
+65
+00:04:08,004 --> 00:04:09,916
+asks you to add a percentile.
+
+66
+00:04:11,216 --> 00:04:17,001
+With format json and out, the report is
+saved to a file instead, and the folder is
+
+67
+00:04:17,001 --> 00:04:18,553
+created automatically.
+
+68
+00:04:18,903 --> 00:04:23,745
+Here's the start of that JSON file,
+ready for a dashboard or another program.
+
+69
+00:04:24,095 --> 00:04:28,780
+In strict mode, the broken file
+fails, with the warning on standard error.
+
+70
+00:04:29,130 --> 00:04:31,099
+And settings come from the environment.
+
+71
+00:04:31,319 --> 00:04:36,559
+Point the prices file at something that
+doesn't exist, and you get one clear error
+
+72
+00:04:36,559 --> 00:04:37,773
+line, no traceback.
+
+73
+00:04:39,073 --> 00:04:40,177
+Finally, fetch.
+
+74
+00:04:40,397 --> 00:04:46,152
+A local web server is serving the data
+folder on port eighty-seven sixty-five, just
+
+75
+00:04:46,152 --> 00:04:47,539
+like in lesson five.
+
+76
+00:04:47,889 --> 00:04:52,352
+To keep the command short, we store
+the base address in a shell variable.
+
+77
+00:04:52,702 --> 00:04:58,120
+Both files download concurrently, and
+fifteen records are merged into one file.
+
+78
+00:04:58,470 --> 00:05:04,358
+Validating the merged file finds the
+eleven good records and the same four problems.
+
+79
+00:05:04,708 --> 00:05:09,697
+And if a server can't be reached,
+again, one clear line explains what happened.
+
+80
+00:05:10,997 --> 00:05:13,258
+A demo shows that the tool works today.
+
+81
+00:05:13,478 --> 00:05:15,922
+Tests make sure it keeps
+working when you change it.
+
+82
+00:05:16,142 --> 00:05:17,363
+We use pytest.
+
+83
+00:05:17,713 --> 00:05:23,041
+A pytest test is just a function whose
+name starts with test, using plain assert
+
+84
+00:05:23,041 --> 00:05:23,773
+statements.
+
+85
+00:05:23,993 --> 00:05:25,438
+Good row is a fixture.
+
+86
+00:05:25,658 --> 00:05:31,688
+Pytest sees the parameter name and
+passes in a fresh valid dictionary, defined once
+
+87
+00:05:31,688 --> 00:05:33,069
+in conftest dot py.
+
+88
+00:05:33,419 --> 00:05:36,498
+Parametrize runs the
+same test once per value.
+
+89
+00:05:36,718 --> 00:05:42,004
+Here, five tests, each deleting a
+different required field, and checking that the
+
+90
+00:05:42,004 --> 00:05:43,504
+error names that field.
+
+91
+00:05:43,854 --> 00:05:49,217
+This one feeds in nine kinds of bad
+data, including the sneaky True posing as a
+
+92
+00:05:49,217 --> 00:05:53,019
+number, and checks each is
+rejected for the right field.
+
+93
+00:05:54,319 --> 00:06:00,734
+Tests must not depend on a real network,
+which could be slow or down. httpx's mock
+
+94
+00:06:00,734 --> 00:06:06,602
+transport replaces the network with
+a function that returns fake responses.
+
+95
+00:06:06,952 --> 00:06:10,496
+So we can check that two
+downloads are merged in the right order.
+
+96
+00:06:10,846 --> 00:06:16,018
+And that a four oh four, or a response
+that isn't a list, becomes a toolkit error.
+
+97
+00:06:16,238 --> 00:06:19,342
+These run in
+milliseconds, with no server at all.
+
+98
+00:06:20,642 --> 00:06:21,851
+Run the whole suite.
+
+99
+00:06:22,071 --> 00:06:25,450
+Forty-two tests, all
+passing, in a fraction of a second.
+
+100
+00:06:25,800 --> 00:06:29,099
+With dash v, pytest
+lists each test by name.
+
+101
+00:06:29,449 --> 00:06:32,895
+And mypy confirms that all
+our type hints are consistent.
+
+102
+00:06:34,195 --> 00:06:37,231
+First, running a file
+inside the package directly.
+
+103
+00:06:37,451 --> 00:06:42,363
+Python can't find the toolkit package,
+because it searches from the toolkit folder
+
+104
+00:06:42,363 --> 00:06:42,782
+itself.
+
+105
+00:06:43,002 --> 00:06:47,305
+The fix: stay in the project
+root and run python dash m toolkit.
+
+106
+00:06:47,655 --> 00:06:50,143
+Second, forgetting
+the virtual environment.
+
+107
+00:06:50,493 --> 00:06:56,473
+With the environment deactivated, the
+system Python doesn't have httpx installed.
+
+108
+00:06:56,693 --> 00:06:59,304
+The fix is to activate dot venv again.
+
+109
+00:07:00,604 --> 00:07:06,233
+Is not valid JSON usually means a
+trailing comma, single quotes, or a comment.
+
+110
+00:07:06,453 --> 00:07:08,750
+The message gives you the line and column.
+
+111
+00:07:09,100 --> 00:07:13,556
+File not found usually means you
+ran the command from another folder.
+
+112
+00:07:13,776 --> 00:07:16,004
+Relative paths start
+from where you run it.
+
+113
+00:07:16,354 --> 00:07:22,148
+On Windows, if PowerShell refuses to
+run the activate script, run Set Execution
+
+114
+00:07:22,148 --> 00:07:26,035
+Policy for the current
+user with Remote Signed, once.
+
+115
+00:07:26,385 --> 00:07:31,896
+And if text comes out garbled, make
+sure every read and write uses utf eight.
+
+116
+00:07:33,196 --> 00:07:38,581
+You used lists, dictionaries, and sets,
+and built conversations as lists of message
+
+117
+00:07:38,581 --> 00:07:39,424
+dictionaries.
+
+118
+00:07:39,774 --> 00:07:43,283
+You wrote functions,
+dataclasses, and your own exceptions.
+
+119
+00:07:43,633 --> 00:07:48,826
+You organised a package, and worked
+with files, JSON, and environment variables.
+
+120
+00:07:49,176 --> 00:07:54,792
+You added type hints, made HTTP
+requests, and ran downloads concurrently.
+
+121
+00:07:55,142 --> 00:08:00,273
+And you built a tested command line
+tool with clear errors and proper exit codes.
+
+122
+00:08:01,573 --> 00:08:03,402
+Module quiz, question one.
+
+123
+00:08:03,622 --> 00:08:05,891
+An agent may only use two tools.
+
+124
+00:08:06,111 --> 00:08:09,784
+Which structure gives the fastest
+check for whether a tool is allowed?
+
+125
+00:08:15,484 --> 00:08:16,164
+A set.
+
+126
+00:08:16,384 --> 00:08:20,224
+Membership checks on a set
+stay fast however large it grows.
+
+127
+00:08:21,524 --> 00:08:22,560
+Question two.
+
+128
+00:08:22,780 --> 00:08:25,993
+What does frozen equals
+True add to our usage record?
+
+129
+00:08:31,693 --> 00:08:35,046
+Fields can't be changed
+after the record is created.
+
+130
+00:08:35,266 --> 00:08:39,039
+And note, a dataclass does
+not validate types by itself.
+
+131
+00:08:39,259 --> 00:08:41,508
+That's why from dict checks every field.
+
+132
+00:08:42,808 --> 00:08:43,870
+Question three.
+
+133
+00:08:44,090 --> 00:08:47,865
+Which block runs every time,
+whether or not an error happens?
+
+134
+00:08:53,565 --> 00:08:54,337
+Finally.
+
+135
+00:08:54,557 --> 00:08:56,346
+That's why it's used for cleanup.
+
+136
+00:08:57,646 --> 00:08:58,708
+Question four.
+
+137
+00:08:58,928 --> 00:09:01,897
+Why does fetch all use asyncio dot gather?
+
+138
+00:09:07,597 --> 00:09:12,744
+To download everything concurrently,
+so the total time is roughly the slowest
+
+139
+00:09:12,744 --> 00:09:15,218
+download, not the sum of all of them.
+
+140
+00:09:16,518 --> 00:09:17,780
+And question five.
+
+141
+00:09:18,000 --> 00:09:20,999
+Where should the real API
+key for your project live?
+
+142
+00:09:26,699 --> 00:09:31,063
+In an environment variable, or
+a dot env file that git ignores.
+
+143
+00:09:31,283 --> 00:09:34,875
+The example file only
+ever holds fake placeholders.
+
+144
+00:09:36,175 --> 00:09:39,428
+If you want to go further,
+here's your extension challenge.
+
+145
+00:09:39,648 --> 00:09:43,380
+Pick one or more, and for each
+one, write the code and a test.
+
+146
+00:09:43,730 --> 00:09:46,339
+Add a top N option to the report command.
+
+147
+00:09:46,689 --> 00:09:52,740
+Add ninety-fifth percentile latency,
+which, unlike the average, isn't distorted by
+
+148
+00:09:52,740 --> 00:09:53,994
+one slow request.
+
+149
+00:09:54,344 --> 00:09:58,113
+Add a breakdown per day,
+using the created at timestamp.
+
+150
+00:09:58,463 --> 00:10:03,000
+Or add a CSV output format,
+with the standard csv module.
+
+151
+00:10:04,300 --> 00:10:08,894
+These are the official
+documentation pages for everything we used.
+
+152
+00:10:09,114 --> 00:10:14,153
+Links are in the description, and the
+full source code is in the course repository.
+
+153
+00:10:18,253 --> 00:10:20,047
+That's Module 1 complete.
+
+154
+00:10:20,267 --> 00:10:25,038
+You now have the Python foundation
+that the rest of this course is built on.
+
+155
+00:10:25,258 --> 00:10:30,763
+In Module 2, you'll finally talk to a
+language model: tokens, context windows,
+
+156
+00:10:30,763 --> 00:10:36,551
+message history, structured output, rate
+limits, and costs, and you'll build an AI
+
+157
+00:10:36,551 --> 00:10:40,856
+Study Assistant that explains
+concepts and generates quizzes.
+
+158
+00:10:41,076 --> 00:10:41,939
+See you there.

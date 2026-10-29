@@ -19,7 +19,10 @@ export const CodeScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
   const notesSide = hasNotes && !notesBelow;
   const panelW = notesSide ? CONTENT_W - 560 : CONTENT_W;
   const panelH = SAFE.bottom - SAFE.top - (s.heading ? 120 : 0) - 58 - (notesBelow ? 150 : 0);
-  const fs = codeFont(s.tokens, panelW);
+  // shrink (down to 24 px) so the whole snippet fits; scroll only when it still doesn't
+  const fitH = Math.floor((panelH - 44) / (s.tokens.length * 1.55));
+  const fsW = codeFont(s.tokens, panelW);
+  const fs = fitH >= 24 ? Math.min(fsW, fitH) : fsW;
   const vis = visibleLines(panelH, fs);
   const total = s.tokens.length;
   const bodyH = Math.min(panelH, total * fs * 1.55 + 44);
