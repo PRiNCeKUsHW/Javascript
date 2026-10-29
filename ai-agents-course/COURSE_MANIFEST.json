@@ -9,7 +9,7 @@
     "audio": "aac"
   },
   "design_system": "COURSE_DESIGN_SYSTEM.md",
-  "next_module": 2,
+  "next_module": 3,
   "modules": [
     {
       "number": 1,
@@ -48,11 +48,31 @@
       "title": "LLM Fundamentals and API Integration",
       "part": "I — Foundations",
       "project": "AI Study Assistant",
-      "status": "IN_PROGRESS",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
+      "status": "COMPLETED",
+      "lessons": [
+        "How LLMs Work: Tokens, Context Windows and Generation",
+        "Your First API Call: Keys, Requests and Responses",
+        "Conversations: Message History and the Growing Context",
+        "Controlling Output: Limits, Streaming and Structured JSON",
+        "Production Basics: Errors, Rate Limits, Retries and Costs",
+        "Project, Part 1: AI Study Assistant, Client, Costs and Explanations",
+        "Project, Part 2: Quizzes, Chat, Tests and Wrap-up"
+      ],
+      "paths": {
+        "module": "modules/module-02-llm-fundamentals",
+        "project": "modules/module-02-llm-fundamentals/project/ai-study-assistant"
+      },
+      "validation": {
+        "report": "modules/module-02-llm-fundamentals/validation-report.md",
+        "checks_passed": 70,
+        "checks_total": 70
+      },
+      "render": {
+        "lessons": 7,
+        "full_module": "renders/module-02-full.mp4",
+        "duration": "41:05",
+        "format": "1920x1080 60fps H.264 + AAC"
+      },
       "blockers": []
     },
     {
@@ -253,5 +273,5 @@
     "Enterprise Knowledge Assistant",
     "AI Workflow Automation Platform"
   ],
-  "updated": "2026-10-29T10:41:51Z"
+  "updated": "2026-10-29T14:57:58Z"
 }

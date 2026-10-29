@@ -25,7 +25,16 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
 - Fixed: Module 1 `test_friendly_error_for_missing_file` now builds the expected path with `Path`, so it
   passes on Windows too (project code unchanged, so it still matches the videos).
 
-## Next: Module 2: LLM Fundamentals and API Integration (project: AI Study Assistant)
+## Module 2: LLM Fundamentals and API Integration: COMPLETED (2026-10-29)
+
+- 7 lessons rendered (1920x1080 60 fps), full module video 41:05 with 59 chapters and 632 captions.
+- Project: AI Study Assistant, 23 tests passing; every demo runs offline against `study/fake_api.py`.
+- Validation: 70/70 checks (`modules/module-02-llm-fundamentals/validation-report.md`).
+- Upload kits: `modules/module-02-llm-fundamentals/youtube-uploads.md` (videos #8-#14).
+
+## Next: Module 3: Prompt Engineering and Structured Outputs (project: AI Resume Analyzer)
+
+Notes carried over from Module 1:
 
 Notes for the next modules, learned in Module 1:
 - Keep project code ≤ 84 characters per line so code panels stay ≥ 27 px.
