@@ -9,7 +9,7 @@
     "audio": "aac"
   },
   "design_system": "COURSE_DESIGN_SYSTEM.md",
-  "next_module": 3,
+  "next_module": 4,
   "modules": [
     {
       "number": 1,
@@ -80,11 +80,31 @@
       "title": "Prompt Engineering and Structured Outputs",
       "part": "I — Foundations",
       "project": "AI Resume Analyzer",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
+      "status": "COMPLETED",
+      "lessons": [
+        "Prompt Anatomy: Instructions, Context and Constraints",
+        "Examples, XML Tags and Task Decomposition",
+        "Structured Outputs: Pydantic Schemas and Parsing Failures",
+        "Prompt Versioning and Evaluations",
+        "Project, Part 1: AI Resume Analyzer, Extraction and Comparison",
+        "Project, Part 2: Reports, Demo, Tests and Wrap-up"
+      ],
+      "paths": {
+        "module": "modules/module-03-prompt-engineering",
+        "project": "modules/module-03-prompt-engineering/project/ai-resume-analyzer"
+      },
+      "validation": {
+        "report": "modules/module-03-prompt-engineering/validation-report.md",
+        "checks_passed": 62,
+        "checks_total": 62
+      },
+      "render": {
+        "lessons": 6,
+        "full_module": "renders/module-03-full.mp4",
+        "duration": "30:32",
+        "format": "1920x1080 60fps H.264 + AAC",
+        "delivery": "single full-module video"
+      },
       "blockers": []
     },
     {
@@ -273,5 +293,5 @@
     "Enterprise Knowledge Assistant",
     "AI Workflow Automation Platform"
   ],
-  "updated": "2026-10-29T14:57:58Z"
+  "updated": "2026-10-29T18:57:39Z"
 }
