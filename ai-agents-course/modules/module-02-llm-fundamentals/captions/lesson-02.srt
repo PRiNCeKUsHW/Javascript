@@ -1,0 +1,389 @@
+1
+00:00:00,700 --> 00:00:02,888
+Time to talk to a model from Python.
+
+2
+00:00:03,109 --> 00:00:08,915
+In this lesson you'll set up an API key
+safely, install the official Anthropic SDK,
+
+3
+00:00:08,915 --> 00:00:14,792
+send your first message, and then take
+the response apart, because every field in it
+
+4
+00:00:14,792 --> 00:00:16,891
+matters when you build agents.
+
+5
+00:00:18,191 --> 00:00:20,930
+You'll create and store an API key safely.
+
+6
+00:00:21,280 --> 00:00:24,310
+Install the official Anthropic Python SDK.
+
+7
+00:00:24,660 --> 00:00:27,191
+Send a request with messages dot create.
+
+8
+00:00:27,541 --> 00:00:32,818
+And read the response: its content
+blocks, its stop reason, and its token usage.
+
+9
+00:00:34,118 --> 00:00:37,183
+First, create an API
+key in the Claude Console.
+
+10
+00:00:37,403 --> 00:00:42,011
+Note that API usage is billed
+separately from a Claude chat subscription.
+
+11
+00:00:42,361 --> 00:00:47,212
+Store it in an environment
+variable called ANTHROPIC API KEY.
+
+12
+00:00:47,432 --> 00:00:52,923
+The SDK reads that variable
+automatically, so the key never appears in your code.
+
+13
+00:00:53,273 --> 00:00:57,735
+Never paste a key into code, a
+chat, a screenshot, or a git commit.
+
+14
+00:00:57,955 --> 00:01:02,890
+If a key ever leaks, delete it in the
+Console straight away and create a new one.
+
+15
+00:01:03,240 --> 00:01:04,228
+No key yet?
+
+16
+00:01:04,448 --> 00:01:05,441
+No problem.
+
+17
+00:01:05,661 --> 00:01:11,358
+Everything in this module also runs in
+offline mode, which I'll explain in a moment.
+
+18
+00:01:12,658 --> 00:01:15,840
+As always, start with a
+fresh virtual environment.
+
+19
+00:01:16,190 --> 00:01:18,497
+Then install the anthropic package.
+
+20
+00:01:18,717 --> 00:01:24,298
+I'm pinning version 2 point 3 point 0,
+the version this course was recorded with.
+
+21
+00:01:24,518 --> 00:01:30,671
+It brings its own HTTP library and
+pydantic, which we'll use for structured output.
+
+22
+00:01:31,021 --> 00:01:32,139
+And set your key.
+
+23
+00:01:32,359 --> 00:01:38,180
+On Windows PowerShell, use dollar
+env colon ANTHROPIC API KEY instead.
+
+24
+00:01:38,400 --> 00:01:42,330
+Or keep it in a dot env
+file, as you learned in Module 1.
+
+25
+00:01:43,630 --> 00:01:45,488
+An honest note about the demos.
+
+26
+00:01:45,708 --> 00:01:50,990
+So that every demo is free and
+repeatable, and so you can follow along without a
+
+27
+00:01:50,990 --> 00:01:56,207
+key, the replies you'll see come from
+a small fake API built into this module's
+
+28
+00:01:56,207 --> 00:01:56,735
+project.
+
+29
+00:01:56,955 --> 00:02:03,552
+It speaks the same protocol as the real
+API, so the real SDK code runs unchanged,
+
+30
+00:02:03,552 --> 00:02:06,891
+including streaming, errors, and retries.
+
+31
+00:02:07,111 --> 00:02:11,706
+But the replies are placeholders,
+clearly marked offline demo reply.
+
+32
+00:02:11,926 --> 00:02:13,477
+They are not model output.
+
+33
+00:02:13,697 --> 00:02:17,399
+With your key set, exactly
+the same code talks to Claude.
+
+34
+00:02:18,699 --> 00:02:24,142
+In your own projects, you create a
+client with anthropic dot Anthropic, which reads
+
+35
+00:02:24,142 --> 00:02:26,044
+the key from the environment.
+
+36
+00:02:26,264 --> 00:02:31,277
+Our lesson helper does the same when a
+key is set, and uses the offline fake when it
+
+37
+00:02:31,277 --> 00:02:31,635
+isn't.
+
+38
+00:02:31,985 --> 00:02:34,434
+Messages dot create sends a request.
+
+39
+00:02:34,654 --> 00:02:40,609
+Three arguments are required: the model
+ID, max tokens, the longest reply you'll
+
+40
+00:02:40,609 --> 00:02:43,066
+accept, and the list of messages.
+
+41
+00:02:43,286 --> 00:02:48,862
+Each message is a dictionary with a role
+and content, exactly the shape you built in
+
+42
+00:02:48,862 --> 00:02:49,460
+Module 1.
+
+43
+00:02:49,810 --> 00:02:52,270
+The reply's content is a list of blocks.
+
+44
+00:02:52,490 --> 00:02:55,742
+Here there's a single text
+block, so we print its text.
+
+45
+00:02:56,092 --> 00:03:01,183
+And we print two more fields: why the
+model stopped, and how many tokens went in and
+
+46
+00:03:01,183 --> 00:03:01,426
+out.
+
+47
+00:03:02,726 --> 00:03:04,809
+Here's the run, in offline mode.
+
+48
+00:03:05,029 --> 00:03:10,459
+A placeholder reply, a stop reason of
+end turn, which means the model finished
+
+49
+00:03:10,459 --> 00:03:12,686
+naturally, and the token counts.
+
+50
+00:03:12,906 --> 00:03:16,540
+With a real key you'd see a
+real one-sentence answer here.
+
+51
+00:03:17,840 --> 00:03:21,406
+Let's explore the response
+object in the interactive prompt.
+
+52
+00:03:21,756 --> 00:03:27,157
+Every response has an ID, which you
+include when reporting problems, the model that
+
+53
+00:03:27,157 --> 00:03:29,369
+answered, and the role, assistant.
+
+54
+00:03:29,589 --> 00:03:31,785
+Content is a list of typed blocks.
+
+55
+00:03:32,135 --> 00:03:34,191
+The stop reason and the usage.
+
+56
+00:03:34,411 --> 00:03:38,731
+Usage is what you are billed for,
+so production code always records it.
+
+57
+00:03:38,951 --> 00:03:40,930
+We'll do exactly that in the project.
+
+58
+00:03:42,230 --> 00:03:43,653
+Why is content a list?
+
+59
+00:03:43,873 --> 00:03:46,868
+Because a reply can
+contain different kinds of block.
+
+60
+00:03:47,088 --> 00:03:49,087
+Text blocks hold the written answer.
+
+61
+00:03:49,437 --> 00:03:51,890
+Thinking blocks can
+hold the model's reasoning.
+
+62
+00:03:52,110 --> 00:03:56,657
+On current models it's hidden by
+default, but the block may still be there.
+
+63
+00:03:57,007 --> 00:04:02,413
+And tool use blocks are requests to run
+one of your tools, which is how agents act.
+
+64
+00:04:02,633 --> 00:04:04,811
+You'll handle those in Module 5.
+
+65
+00:04:05,161 --> 00:04:08,803
+So robust code never
+assumes the first block is text.
+
+66
+00:04:09,023 --> 00:04:12,526
+It checks each block's
+type, as the next example does.
+
+67
+00:04:13,826 --> 00:04:19,078
+The system parameter gives the model its
+role and rules for the whole conversation.
+
+68
+00:04:19,298 --> 00:04:21,402
+It sits outside the messages list.
+
+69
+00:04:21,622 --> 00:04:25,621
+Here: be a patient tutor, and
+answer in at most two sentences.
+
+70
+00:04:25,971 --> 00:04:30,961
+And here's the robust way to read the
+answer: loop over the blocks and only print
+
+71
+00:04:30,961 --> 00:04:31,700
+text blocks.
+
+72
+00:04:33,000 --> 00:04:37,601
+In offline mode the placeholder
+can't follow the instructions, of course.
+
+73
+00:04:37,821 --> 00:04:40,444
+A real model would
+answer in two sentences.
+
+74
+00:04:40,664 --> 00:04:44,643
+Prompt design gets a whole
+module of its own, Module 3.
+
+75
+00:04:45,943 --> 00:04:46,751
+Quick check.
+
+76
+00:04:46,971 --> 00:04:50,809
+Which three arguments does
+messages dot create require?
+
+77
+00:04:56,509 --> 00:04:58,842
+Model, max tokens, and messages.
+
+78
+00:04:59,062 --> 00:05:03,136
+The key comes from the
+environment, and the system prompt is optional.
+
+79
+00:05:04,436 --> 00:05:08,733
+API keys live in an
+environment variable, never in your code.
+
+80
+00:05:09,083 --> 00:05:13,630
+Messages dot create needs a
+model, max tokens, and messages.
+
+81
+00:05:13,980 --> 00:05:18,657
+The response gives you content
+blocks, a stop reason, and token usage.
+
+82
+00:05:19,007 --> 00:05:21,672
+And the system prompt
+sets the role and the rules.
+
+83
+00:05:22,022 --> 00:05:24,001
+Next lesson: conversations.
+
+84
+00:05:24,221 --> 00:05:29,036
+You'll see exactly why the model
+forgets, and how to manage message history
+
+85
+00:05:29,036 --> 00:05:29,614
+properly.

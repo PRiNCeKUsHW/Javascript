@@ -1,0 +1,204 @@
+module_title: LLM Fundamentals and API Integration
+title: "Production Basics: Errors, Rate Limits, Retries and Costs"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 2 · Lesson 5
+    title: Errors, rate limits, retries and costs
+    subtitle: What happens when the API says no, and what every call really costs.
+    say: >
+      A demo that works once is easy. A program that keeps working when the network drops, when you hit a rate limit, or when costs start to climb, takes deliberate design.
+      This lesson covers the production basics every AI application needs.
+
+  - type: objectives
+    items:
+      - {text: "Recognise the API's error types and what to do about each", say: "You'll recognise the API's error types, and know what to do about each one."}
+      - {text: "Catch errors in the right order", say: "Catch errors in the right order."}
+      - {text: "Understand rate limits and the SDK's automatic retries", say: "Understand rate limits, and the SDK's automatic retries."}
+      - {text: "Calculate and control what each call costs", say: "And calculate and control what each call costs."}
+
+  - type: cards
+    chapter: Error types
+    heading: Errors you will meet, and what to do
+    cards:
+      - {tag: "400 · 404", title: Fix the request, body: "Bad parameters or an unknown model. Retrying won't help.", code: "BadRequestError · NotFoundError", tone: amber, say: "Errors fall into groups. A four hundred or four oh four means your request is wrong: a bad parameter, or a model name that doesn't exist. Retrying won't help. Fix the request."}
+      - {tag: "401 · 403", title: Fix the key, body: "Missing, wrong or under-privileged API key.", code: "AuthenticationError · PermissionDeniedError", tone: coral, say: "Four oh one and four oh three are about your key: missing, wrong, or without permission. Again, don't retry. Fix the key."}
+      - {tag: "429", title: Slow down, body: "Rate limit reached. Wait, then retry.", code: "RateLimitError", tone: violet, say: "Four twenty-nine means you've hit a rate limit. Waiting and retrying is exactly right."}
+      - {tag: "5xx · 529", title: Retry later, body: "A server problem or overload, often temporary.", code: "InternalServerError · OverloadedError", tone: blue, say: "Five hundreds, including five twenty-nine for overloaded, are server-side problems that are often temporary. Retry after a short wait."}
+      - {tag: network, title: Check the connection, body: "No response at all, or a timeout.", code: "APIConnectionError · APITimeoutError", tone: teal, say: "And connection errors and timeouts mean no proper response came back at all. Those are also worth a retry."}
+      - {tag: rule, title: "Retry only what can recover", body: "429, 5xx and network errors: yes. 4xx: no.", tone: muted, say: "The rule is simple: retry rate limits, server errors, and network problems. Never blindly retry the other four hundreds."}
+
+  - type: code
+    chapter: Catching errors
+    heading: Catch specific errors, most specific first
+    title: errors.py
+    file: source/lesson-05/errors.py
+    steps:
+      - lines: "6"
+        note: "`max_retries=0` only for this demo, so each error surfaces."
+        say: >
+          For this demo only, we turn off automatic retries, so every error reaches our code.
+      - lines: "10-13"
+        say: >
+          The call goes inside a try block.
+      - lines: "14-17"
+        note: "Specific classes first: key problems, then rate limits."
+        say: >
+          Then we catch specific exception classes, most specific first: an authentication error, then a rate limit error.
+      - lines: "18-21"
+        note: "`APIStatusError` is the parent of all HTTP errors; connection errors are separate."
+        say: >
+          API status error is the parent class of every HTTP error, so it catches anything we haven't handled, and gives us the status code. Connection errors aren't HTTP errors at all, so they have their own class.
+          If you catch the parent first, the specific handlers never run.
+
+  - type: terminal
+    title: terminal — lesson-05
+    cwd: source/lesson-05
+    say: >
+      To demonstrate errors without breaking anything, the fake API reads an environment variable telling it how to fail.
+    steps:
+      - cmd: python errors.py
+        say: >
+          With no failure, a normal placeholder reply.
+      - cmd: STUDY_FAKE_FAIL=401 python errors.py
+        say: >
+          A four oh one becomes, check your API key.
+      - cmd: STUDY_FAKE_FAIL=429 python errors.py
+        say: >
+          A four twenty-nine becomes, rate limited.
+      - cmd: STUDY_FAKE_FAIL=529 python errors.py
+        say: >
+          And a five twenty-nine, an overloaded server, falls through to the general status handler.
+
+  - type: diagram
+    chapter: Rate limits and retries
+    heading: Retries with exponential backoff
+    nodes:
+      - {id: call1, label: "Try 1", sub: "429: too many requests", x: 220, y: 300, w: 280, h: 120, tone: coral}
+      - {id: wait1, label: "wait ≈ 0.5 s", sub: "plus a little randomness", x: 640, y: 120, w: 300, h: 100, tone: muted}
+      - {id: call2, label: "Try 2", sub: "500: server error", x: 860, y: 300, w: 280, h: 120, tone: coral}
+      - {id: wait2, label: "wait ≈ 1 s", sub: "doubles each time", x: 1100, y: 480, w: 300, h: 100, tone: muted}
+      - {id: call3, label: "Try 3", sub: "200: success", x: 1480, y: 300, w: 280, h: 120, tone: teal}
+    edges:
+      - {from: call1, to: wait1}
+      - {from: wait1, to: call2}
+      - {from: call2, to: wait2}
+      - {from: wait2, to: call3}
+    say: >
+      Every API account has rate limits: how many requests and tokens you may use per minute. When you exceed them, you get a four twenty-nine.
+    steps:
+      - show: [call1]
+        say: >
+          The standard response is to retry with exponential backoff.
+      - show: [wait1, call2, "call1->wait1", "wait1->call2"]
+        flow: ["call1->wait1", "wait1->call2"]
+        say: >
+          Wait a short time, plus a little randomness so that many clients don't all retry at the same moment, and try again.
+      - show: [wait2, call3, "call2->wait2", "wait2->call3"]
+        flow: ["call2->wait2", "wait2->call3"]
+        caption: "The Anthropic SDK does this for you: 2 retries by default"
+        say: >
+          If it fails again, wait roughly twice as long. Good news: the Anthropic SDK already does all of this for you. It retries rate limits, server errors, and connection errors twice by default, with backoff, and it respects the retry after header the API sends.
+
+  - type: code
+    title: retries.py
+    file: source/lesson-05/retries.py
+    steps:
+      - lines: "4"
+        note: "`max_retries` controls the SDK's automatic retries (default 2)."
+        say: >
+          You control this with max retries, on the client or per request. Two is the default, and zero turns it off.
+
+  - type: terminal
+    title: terminal — lesson-05
+    cwd: source/lesson-05
+    steps:
+      - cmd: ANTHROPIC_LOG=info STUDY_FAKE_FAIL=429,500 python retries.py
+        say: >
+          Here the fake API fails with a four twenty-nine and then a five hundred. Setting ANTHROPIC LOG to info shows what the SDK does: it waits about half a second, retries, waits about a second, retries again, and succeeds.
+          Our code didn't need a single extra line.
+
+  - type: bullets
+    heading: Timeouts and keys in production
+    items:
+      - {text: "Set a timeout you can live with: `Anthropic(timeout=60.0)`", sub: "the SDK default is 10 minutes; stream long replies instead", say: "Set a timeout you're comfortable with. The SDK default is ten minutes. For long replies, stream instead of waiting."}
+      - {text: "Log `response._request_id` when something fails", sub: "it identifies the request if you need support", say: "When something fails, log the request ID. It identifies exactly which request went wrong."}
+      - {text: "One key per app and environment; rotate keys you suspect", say: "Use separate keys for separate apps and environments, so you can revoke one without breaking the others."}
+      - {text: "Never send keys to the model or print them in logs", tone: coral, say: "And never send keys to the model, or print them in logs. Logs are often far less protected than you think."}
+
+  - type: cards
+    chapter: Costs
+    heading: "What it costs: price per million tokens"
+    say: >
+      Now, money. You pay per token, with separate prices for input and output, quoted per million tokens.
+    cards:
+      - {tag: Opus 5.5, title: "$4 in · $20 out", body: "Most capable; this course's default", code: "claude-opus-5-5", tone: violet, say: "Claude Opus 5.5, the most capable of the three and our default, costs four dollars per million input tokens, and twenty per million output tokens."}
+      - {tag: Sonnet 5.5, title: "$2 in · $10 out", body: "Fast and strong for everyday work", code: "claude-sonnet-5-5", tone: blue, say: "Sonnet 5.5 costs half that."}
+      - {tag: Haiku 5.5, title: "$0.10 in · $0.50 out", body: "Cheapest, for simple high-volume tasks", code: "claude-haiku-5-5", tone: teal, say: "And Haiku 5.5 is far cheaper, for simple, high-volume work."}
+    outro: >
+      These are list prices in October 2026. Prices change, so always check the official pricing page. And notice that output tokens cost five times more than input tokens.
+
+  - type: code
+    title: costs.py
+    file: source/lesson-05/costs.py
+    steps:
+      - lines: "4"
+        note: "Prices in dollars per **million** tokens."
+        say: >
+          Here's the cost calculation. Prices are per million tokens.
+      - lines: "9-10"
+        note: "`count_tokens` measures a request before you send it."
+        say: >
+          Count tokens measures a request before you send it, so you can warn about, or block, a request that would be too big or too expensive.
+      - lines: "14-17"
+        note: "Cost = in × input price + out × output price, ÷ 1,000,000."
+        say: >
+          After the call, usage gives the actual tokens. Multiply each by its price, and divide by a million.
+      - lines: "18"
+        note: "Small per call, big at scale."
+        say: >
+          And then the important habit: multiply by your expected traffic.
+
+  - type: terminal
+    title: terminal — lesson-05
+    cwd: source/lesson-05
+    steps:
+      - cmd: python costs.py
+        say: >
+          A fraction of a cent per call. But the same call ten thousand times a day costs real money every day. In offline mode these token counts are rough estimates. With a real key, they're exact.
+
+  - type: steps
+    heading: Five ways to keep costs under control
+    items:
+      - {text: "Send less: trim history, include only relevant documents", say: "Five ways to control cost. First, send less: trim history, and include only relevant documents."}
+      - {text: "Cap the output with `max_tokens`, and ask for concise answers", say: "Second, ask for concise answers, with a sensible max tokens."}
+      - {text: "Use lower `effort` for simple tasks", say: "Third, use lower effort for simple tasks."}
+      - {text: "Pick the smallest model that does the job well, measured on real examples", say: "Fourth, pick the smallest model that does the job well, measured on real examples, not guessed."}
+      - {text: "Track spending in code, with a budget that stops runaway loops", say: "And fifth, track spending in code, with a budget that stops runaway loops. Our project does exactly this."}
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "Which error should your code retry?"
+    options:
+      - "401 Authentication error"
+      - "400 Bad request"
+      - "429 Rate limit"
+      - "404 Not found"
+    answer: 2
+    explain: "A 429 recovers after waiting. 400, 401 and 404 fail the same way every time until you fix the request or the key."
+    say_question: >
+      Quick check. Which of these errors should your code retry?
+    say_answer: >
+      The four twenty-nine. A rate limit recovers after waiting. The others fail the same way every time, until you fix the request or the key.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 5 recap
+    items:
+      - {text: "4xx (except 429): fix the request or the key; don't retry", say: "Four hundreds, except four twenty-nine, need a fix, not a retry."}
+      - {text: "429, 5xx, network: retry with backoff; the SDK does it for you", say: "Rate limits, server errors, and network errors are retried with backoff, and the SDK does that for you."}
+      - {text: "Catch specific exception classes before `APIStatusError`", say: "Catch specific exception classes before the general one."}
+      - {text: "Cost = tokens × price; count, track and budget", say: "And cost is tokens times price, so count, track, and budget."}
+    outro: >
+      You now know everything the project needs. Next lesson, we start building the AI Study Assistant.

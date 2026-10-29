@@ -6,6 +6,7 @@ usage:
   python tools/module.py validate 1              # checks everything and writes validation-report.md
 """
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -128,6 +129,30 @@ def assemble(m):
 
 
 # ---------------------------------------------------------------- validate
+# documented commands each project must pass from a fresh install ({bin} = the venv's bin folder)
+PROJECT_CHECKS = {
+    "python-ai-toolkit": [
+        ("mypy", "{bin}/mypy --no-incremental toolkit"),
+        ("validate sample (exit 0)", "{bin}/python -m toolkit validate data/usage_sample.json"),
+        ("validate broken (exit 1)", "{bin}/python -m toolkit validate data/usage_broken.json; test $? -eq 1"),
+        ("report md", "{bin}/python -m toolkit report data/usage_sample.json | grep -q 'Requests: 10'"),
+        ("report json --out", "{bin}/python -m toolkit report data/usage_sample.json --format json "
+                              "--out reports/u.json && python3 -m json.tool reports/u.json > /dev/null"),
+    ],
+    "ai-study-assistant": [
+        ("mypy", "{bin}/mypy --no-incremental study"),
+        ("explain (offline)", "{bin}/python -m study explain recursion 2>&1 | grep -q 'stop: end_turn'"),
+        ("quiz --out + grade", "{bin}/python -m study quiz loops --count 2 --out q/q.json --answers A,B "
+                               "| grep -q 'Score: 2/2' && python3 -m json.tool q/q.json > /dev/null"),
+        ("chat keeps history", "printf 'hi\\nagain\\n' | {bin}/python -m study chat | grep -q 'carried 2 earlier'"),
+        ("retry then succeed", "STUDY_FAKE_FAIL=429,500 {bin}/python -m study explain x 2>&1 | grep -q end_turn"),
+        ("clean error (exit 1)", "STUDY_FAKE_FAIL=401 {bin}/python -m study explain x; test $? -eq 1"),
+    ],
+}
+# project checks run offline and reproducibly: no real key, proxy or scripted failures
+CHECK_ENV = {k: v for k, v in os.environ.items()
+             if not k.startswith(("ANTHROPIC_", "STUDY_", "TOOLKIT_"))}
+
 def run(cmd, cwd, **kw):
     if isinstance(cmd, str) and sys.platform == "win32":
         # the shell steps need POSIX sh (Git Bash), not cmd.exe; python3 there is the Microsoft Store stub
@@ -203,17 +228,9 @@ def validate(m):
                 ("venv + pip install -r requirements.txt",
                  f"python3 -m venv .venv && {VENV_BIN}/pip install -q --disable-pip-version-check -r requirements.txt"),
                 ("pytest", f"{VENV_BIN}/python -m pytest -q -p no:cacheprovider"),
-                ("mypy", f"{VENV_BIN}/mypy --no-incremental toolkit"),
-                ("validate sample (exit 0)", f"{VENV_BIN}/python -m toolkit validate data/usage_sample.json"),
-                ("validate broken (exit 1)",
-                 f"{VENV_BIN}/python -m toolkit validate data/usage_broken.json; test $? -eq 1"),
-                ("report md",
-                 f"{VENV_BIN}/python -m toolkit report data/usage_sample.json | grep -q 'Requests: 10'"),
-                ("report json --out", f"{VENV_BIN}/python -m toolkit report data/usage_sample.json --format json "
-                                      "--out reports/u.json && python3 -m json.tool reports/u.json > /dev/null"),
-            ]
+            ] + [(name, cmd.format(bin=VENV_BIN)) for name, cmd in PROJECT_CHECKS.get(proj.name, [])]
             for name, cmd in steps:
-                p = run(cmd, work, timeout=600)
+                p = run(cmd, work, timeout=600, env=CHECK_ENV)
                 tail = (p.stdout + p.stderr).strip().splitlines()[-1:] if (p.stdout + p.stderr).strip() else [""]
                 check(f"project {proj.name}: {name}", p.returncode == 0, tail[0][:120])
 

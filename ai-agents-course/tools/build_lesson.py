@@ -393,8 +393,11 @@ def build(module, lesson, allow_new=True):
     env = dict(os.environ, PATH=f"{VENV_BIN}{os.pathsep}{os.environ['PATH']}", PYTHONDONTWRITEBYTECODE="1",
                VIRTUAL_ENV=str(ROOT / ".venv"), COLUMNS="88", NO_COLOR="1")
     env = shell_env(env)
-    env.pop("TOOLKIT_CURRENCY", None)
-    env.pop("TOOLKIT_PRICES_FILE", None)
+    # recordings must be reproducible and never use a real key or proxy
+    for name in ("TOOLKIT_CURRENCY", "TOOLKIT_PRICES_FILE", "ANTHROPIC_API_KEY",
+                 "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "STUDY_MODEL",
+                 "STUDY_BUDGET_USD", "STUDY_MAX_RETRIES", "STUDY_FAKE_FAIL"):
+        env.pop(name, None)
 
     pieces, events, captions, scenes, chapters = [], [], [], [], []
     t = 0.0

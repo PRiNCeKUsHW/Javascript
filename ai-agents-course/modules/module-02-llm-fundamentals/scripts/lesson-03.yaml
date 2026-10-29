@@ -1,0 +1,153 @@
+module_title: LLM Fundamentals and API Integration
+title: "Conversations: Message History and the Growing Context"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 2 · Lesson 3
+    title: Conversations and message history
+    subtitle: The API is stateless. Your code owns the conversation, and its cost.
+    say: >
+      Every chat app and every agent is a conversation: a list of messages that grows over time.
+      In this lesson you'll see that the API remembers nothing, that your code owns the history, and that a growing history means a growing bill.
+
+  - type: objectives
+    items:
+      - {text: "Build a multi-turn conversation correctly", say: "You'll build a multi-turn conversation correctly."}
+      - {text: "Spot and fix the classic forgotten-reply bug", say: "Spot and fix the classic forgotten reply bug."}
+      - {text: "Measure how input tokens grow every turn", say: "Measure how input tokens grow with every turn."}
+      - {text: "Choose a strategy for long conversations", say: "And choose a strategy for keeping long conversations under control."}
+
+  - type: diagram
+    chapter: A stateless API
+    heading: Every request carries the whole conversation
+    nodes:
+      - {id: r1, label: "Request 1", sub: "user", x: 260, y: 120, w: 300, h: 100, tone: blue}
+      - {id: r2, label: "Request 2", sub: "user · assistant · user", x: 260, y: 300, w: 300, h: 100, tone: blue}
+      - {id: r3, label: "Request 3", sub: "5 messages", x: 260, y: 480, w: 300, h: 100, tone: blue}
+      - {id: api, label: Messages API, sub: remembers nothing, x: 900, y: 300, w: 340, h: 150, tone: violet}
+      - {id: app, label: Your app, sub: "keeps the list: history", x: 1450, y: 300, w: 340, h: 150, tone: teal}
+    edges:
+      - {from: r1, to: api}
+      - {from: r2, to: api}
+      - {from: r3, to: api}
+      - {from: api, to: app, label: reply}
+    say: >
+      Here's how a conversation really works.
+    steps:
+      - show: [r1, api, "r1->api"]
+        flow: ["r1->api"]
+        say: >
+          The first request contains one user message.
+      - show: [app, "api->app"]
+        flow: ["api->app"]
+        focus: [api, app]
+        say: >
+          The API replies, and then forgets everything. Your app stores the user message and the reply in a list.
+      - show: [r2, "r2->api"]
+        flow: ["r2->api"]
+        focus: [r2, api]
+        say: >
+          The second request sends the whole list: the first question, the first reply, and the new question.
+      - show: [r3, "r3->api"]
+        flow: ["r3->api"]
+        focus: [r3, api]
+        caption: "Roles alternate: user, assistant, user, … The first message is always user."
+        say: >
+          And the third request sends five messages. Roles alternate between user and assistant, and the first message is always from the user.
+
+  - type: code
+    chapter: Building the history
+    heading: Building a conversation in Python
+    title: conversation.py
+    file: source/lesson-03/conversation.py
+    steps:
+      - lines: "5"
+        note: "The history is just a list of message dictionaries."
+        say: >
+          The history is just a Python list of message dictionaries.
+      - lines: "7-10"
+        note: "Append the question, then send the **whole** list."
+        say: >
+          For each question, we append it to the history, and send the whole list as messages.
+      - lines: "11-12"
+        note: "Append the reply too, or the model never sees it."
+        say: >
+          Then we append the assistant's reply. This line is the one people forget.
+      - lines: "13-15"
+        say: >
+          Finally we print how many messages we sent, and how many input tokens that cost.
+
+  - type: terminal
+    title: terminal — lesson-03
+    cwd: source/lesson-03
+    steps:
+      - cmd: python conversation.py
+        say: >
+          Look at the numbers. One message, then three, then five. And the input tokens grow every turn, because every request re-sends everything before it.
+          The offline fake even reports how many earlier messages it received, so you can see the history arriving.
+
+  - type: code
+    chapter: The forgotten reply
+    heading: "Bug: forgetting to store the reply"
+    title: forgetful.py
+    file: source/lesson-03/forgetful.py
+    steps:
+      - lines: "7-11"
+        tone: coral
+        note: "The assistant's reply is never appended."
+        say: >
+          Here's the classic bug. The loop appends each question, but never the reply.
+      - lines: "13"
+        tone: coral
+        note: "Two user messages in a row: the API merges them into one turn."
+        say: >
+          So the history contains two user messages in a row. The API accepts that, and merges them into a single user turn. But the model never sees what it said before, so it can't refer to its own earlier answers.
+
+  - type: terminal
+    title: terminal — lesson-03
+    cwd: source/lesson-03
+    steps:
+      - cmd: python forgetful.py
+        say: >
+          User, user. No assistant turn. In a chat app, that shows up as an assistant that seems to have amnesia. Always store the reply right after you receive it.
+
+  - type: cards
+    chapter: Long conversations
+    heading: Keeping long conversations under control
+    say: >
+      Since every turn re-sends the whole history, long conversations get slower and more expensive, and eventually hit the context window. There are a few standard strategies.
+    cards:
+      - {tag: window, title: Sliding window, body: "Keep only the most recent turns; drop the oldest pairs", tone: teal, say: "The simplest is a sliding window: keep the most recent turns, and drop the oldest user and assistant pair once you're over a budget. Our project does this."}
+      - {tag: summary, title: Summarise, body: "Replace old turns with a short summary (Module 6)", tone: blue, say: "A smarter option replaces old turns with a short summary written by the model. That's part of Module 6 on memory."}
+      - {tag: memory, title: Store facts, body: "Save key facts to a database, add only what's relevant", tone: violet, say: "And agents often store key facts in a database, and add back only what's relevant to the current question."}
+      - {tag: cache, title: Prompt caching, body: "Re-sent, unchanged prefixes can be billed at a large discount", tone: amber, say: "Finally, prompt caching lets an unchanged prefix of the conversation be billed at a large discount when you re-send it. You'll use it later in the course."}
+
+  - type: callout
+    kind: warn
+    title: "Trim in pairs, and keep the first message a user turn"
+    body: "When you drop old messages, remove a **user and assistant pair** together, so roles keep alternating and the history still starts with `user`."
+    say: >
+      One practical rule when trimming. Drop messages in pairs, a user message and its reply together, so the roles keep alternating and the history still starts with a user turn.
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "A conversation has 10 earlier messages. How many messages does your next request send?"
+    options: ["1", "2", "11", "It depends on the model's memory"]
+    answer: 2
+    explain: "The API is stateless: you send all 10 earlier messages plus the new one (unless you trim the history on purpose)."
+    say_question: >
+      Quick check. A conversation already has ten messages. How many messages does your next request send?
+    say_answer: >
+      Eleven: all ten earlier messages plus the new one, unless you deliberately trim the history.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 3 recap
+    items:
+      - {text: "The API is stateless; your code keeps the history list", say: "The API is stateless, and your code keeps the history."}
+      - {text: "Append the question **and** the reply, every turn", say: "Append both the question and the reply, every turn."}
+      - {text: "Input tokens, and cost, grow with every turn", say: "Input tokens, and cost, grow with every turn."}
+      - {text: "Trim in user and assistant pairs, or summarise", say: "So trim in pairs, or summarise, to keep conversations under control."}
+    outro: >
+      Next, you'll control the output itself: length limits, streaming, and structured JSON.

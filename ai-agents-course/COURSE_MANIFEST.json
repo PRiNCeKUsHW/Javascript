@@ -48,7 +48,7 @@
       "title": "LLM Fundamentals and API Integration",
       "part": "I — Foundations",
       "project": "AI Study Assistant",
-      "status": "NOT_STARTED",
+      "status": "IN_PROGRESS",
       "lessons": [],
       "paths": {},
       "validation": null,
@@ -253,5 +253,5 @@
     "Enterprise Knowledge Assistant",
     "AI Workflow Automation Platform"
   ],
-  "updated": "2026-10-29T09:47:59Z"
+  "updated": "2026-10-29T10:41:51Z"
 }

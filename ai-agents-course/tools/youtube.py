@@ -26,6 +26,20 @@ MODULES = {
                   "python cli project"],
         "tags": "#Python #AIAgents #AIEngineering #PythonTutorial #LLM",
     },
+    2: {
+        "title": "LLM Fundamentals and API Integration",
+        "project": "AI Study Assistant",
+        "project_dir": "ai-study-assistant",
+        "project_blurb": "a command-line tutor built on the Anthropic Python SDK that streams "
+                         "explanations, writes quizzes as validated JSON, chats with trimmed history, "
+                         "and tracks the cost of every call against a budget, with 23 tests.",
+        "prereq": "Module 1 (Python for AI Engineering) or equivalent Python. An Anthropic API key is "
+                  "optional: every demo also runs in an offline mode with a built-in fake API.",
+        "terms": ["llm api python", "anthropic api tutorial", "claude api python", "tokens and context window",
+                  "llm streaming python", "structured output json", "api rate limits retries",
+                  "llm api cost", "ai study assistant project"],
+        "tags": "#Python #LLM #ClaudeAPI #AIAgents #AIEngineering",
+    },
 }
 
 

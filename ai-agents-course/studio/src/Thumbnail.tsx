@@ -18,6 +18,14 @@ export const THUMBS: ThumbProps[] = [
     tagline: "Build a real CLI project from zero",
     code: ["$ python -m toolkit report", "Requests: 10 (8 ok, 2 errors)", "Success rate: 80.0%", "Estimated cost: 0.0498 USD"],
   },
+  {
+    id: "thumb-m02",
+    module: 2,
+    lines: ["CALL AN LLM", "FROM PYTHON", "THE RIGHT WAY"],
+    accentLine: 1,
+    tagline: "Tokens · streaming · JSON · costs",
+    code: ["client.messages.create(", '  model="claude-opus-5-5",', "  max_tokens=1000,", "  messages=history)"],
+  },
 ];
 
 export const Thumbnail: React.FC<ThumbProps> = ({ module, lines, accentLine, tagline, code }) => (

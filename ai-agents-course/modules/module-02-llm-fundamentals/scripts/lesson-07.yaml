@@ -1,0 +1,297 @@
+module_title: LLM Fundamentals and API Integration
+title: "Project, Part 2: Quizzes, Chat, Tests and Wrap-up"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 2 · Lesson 7 · Project
+    title: "Build the AI Study Assistant, part 2"
+    subtitle: Structured quizzes, chat with memory, the full demo, tests, and the module quiz.
+    loop: [Ask, Stream, Measure, Budget]
+    say: >
+      Welcome back. Explanations work. Now we add quizzes as structured output, a chat mode with trimmed history, and the command line that ties it together.
+      Then we'll run the full demo, look at the tests, and finish the module.
+
+  - type: code
+    chapter: Quizzes as structured output
+    heading: "models.py: the quiz schema"
+    title: study/models.py
+    file: project/ai-study-assistant/study/models.py
+    steps:
+      - lines: "4-8"
+        note: "Exactly 4 options; an answer index from 0 to 3."
+        say: >
+          A question has its text, exactly four options, the index of the correct option, and an explanation of why it's right.
+      - lines: "11-13"
+        say: >
+          A quiz is a topic plus a list of questions. This one class becomes the JSON schema the model must follow.
+
+  - type: code
+    heading: "make_quiz(): parse, validate, check"
+    title: study/assistant.py
+    file: project/ai-study-assistant/study/assistant.py
+    lines: "93-109"
+    steps:
+      - lines: "96"
+        say: >
+          Make quiz fills in the request: write N multiple-choice questions about a topic.
+      - lines: "97-102"
+        note: "`beta.messages.parse(..., output_format=Quiz)` with medium effort."
+        say: >
+          It calls parse with output format set to Quiz, so the reply is constrained to the schema. Quizzes need more care than explanations, so we use medium effort, and a generous max tokens.
+      - lines: "103-105"
+        note: "Anything that doesn't fit the schema → one clear error."
+        say: >
+          If the reply somehow doesn't fit the schema, for example three options instead of four, the SDK's validation raises a pydantic validation error, and we turn it into one clear message.
+      - lines: "106-109"
+        note: "A truncated quiz is never returned."
+        say: >
+          Finally, if the quiz was cut off by max tokens, we refuse to return a half-finished quiz, and suggest asking for fewer questions.
+
+  - type: code
+    chapter: Chat with history
+    heading: "ChatSession: history with a token budget"
+    title: study/assistant.py
+    file: project/ai-study-assistant/study/assistant.py
+    lines: "128-163"
+    steps:
+      - lines: "128-130"
+        note: "A quick local estimate; use `count_tokens` when you need exact numbers."
+        say: >
+          For trimming, a quick local estimate is good enough: about four characters per token. When you need an exact number, use the token counting endpoint instead.
+      - lines: "136-143"
+        say: >
+          A chat session holds the history list and a token budget for it.
+      - lines: "145-152"
+        note: "Drop the oldest **pair**, so roles still alternate."
+        say: >
+          Trim drops the oldest user and assistant pair while the history is over budget, exactly the rule from lesson three. It always keeps at least the latest exchange.
+      - lines: "154-163"
+        note: "If the call fails, remove the unanswered question."
+        say: >
+          Send appends the question, trims, and calls the model with the whole history. If the call fails, it removes the unanswered question, so the history never ends up with two user turns in a row. Then the reply is stored.
+
+  - type: code
+    chapter: The command line
+    heading: "cli.py: one branch per command"
+    title: study/cli.py
+    file: project/ai-study-assistant/study/cli.py
+    lines: "59-111"
+    steps:
+      - lines: "62-70"
+        note: "Streamed text goes to stdout; the footer goes to stderr."
+        say: >
+          For explain, the on text callback prints each piece immediately. The footer with tokens and cost goes to standard error, so it never mixes into output you save or pipe.
+      - lines: "71-84"
+        say: >
+          Quiz prints the questions with letters, optionally saves the JSON, and grades your answers if you pass them.
+      - lines: "85-92"
+        note: "One message per line from standard input."
+        say: >
+          Chat reads one message per line from standard input, so it works interactively, and from a file for demos and tests.
+      - lines: "102-111"
+        note: "Every `StudyError` becomes a one-line message and exit code 1."
+        say: >
+          And main builds the settings, the client, and the assistant, and turns any study error into one clean line and exit code one, just like Module 1's toolkit.
+
+  - type: terminal
+    chapter: Demo
+    heading: "Demo: quiz and chat"
+    title: terminal — ai-study-assistant
+    cwd: project/ai-study-assistant
+    steps:
+      - cmd: python -m study quiz "Python dictionaries" --count 2 --answers A,C
+        say: >
+          A two-question quiz, graded. These are the fake API's placeholder questions, but they went through exactly the same structured output path: schema, parsing, and validation.
+      - cmd: printf 'What is a token?\nAnd a context window?\n' | python -m study chat
+        say: >
+          And a chat with two messages piped in. Look at the second reply: the request carried two earlier messages. That's our history at work.
+      - cmd: python -m study tokens "How are tokens counted?"
+        say: >
+          The tokens command uses the counting endpoint. Offline, it's labelled as an estimate.
+
+  - type: terminal
+    title: terminal — ai-study-assistant
+    cwd: project/ai-study-assistant
+    font: 24
+    steps:
+      - cmd: ANTHROPIC_LOG=info STUDY_FAKE_FAIL=429 python -m study explain "retries"
+        keep: "2-3,5-"
+        say: >
+          Now the failure paths. A single rate limit: the SDK retries automatically and the explanation still arrives.
+      - cmd: STUDY_FAKE_FAIL=429,429,429 python -m study explain "retries"
+        exit: 1
+        say: >
+          Three rate limits in a row exhausts the two retries, and we get one clear error line, not a traceback.
+      - cmd: STUDY_FAKE_FAIL=refusal python -m study explain "anything"
+        exit: 1
+        say: >
+          And a refusal is reported plainly too.
+
+  - type: code
+    chapter: Testing
+    heading: "Tests: the real SDK against the fake API"
+    title: tests/test_assistant.py
+    file: project/ai-study-assistant/tests/test_assistant.py
+    lines: "8-53"
+    steps:
+      - lines: "8-20"
+        note: "The fake API records what the SDK really sent."
+        say: >
+          The tests use the fake API as a test double. This one checks that the explanation arrived in pieces, that the pieces add up to the final text, and, by inspecting what the fake received, that the request really was streamed, with fallbacks, and with the right prompt.
+      - lines: "23-26"
+        say: >
+          This test proves max tokens truncation is detected.
+      - lines: "43-53"
+        note: "Retries are tested with the SDK's real retry logic."
+        say: >
+          And these two test the SDK's real retry behaviour: two failures then success makes three requests, and three rate limits in a row becomes our clean error.
+
+  - type: terminal
+    title: terminal — ai-study-assistant
+    cwd: project/ai-study-assistant
+    steps:
+      - cmd: python -m pytest -q
+        run: python -m pytest -q -p no:cacheprovider
+        say: >
+          Twenty-three tests, all passing, with no key and no network. A conftest fixture also removes any real key from the environment during tests, so they can never cost you money.
+      - cmd: mypy study
+        run: mypy --no-incremental study
+        say: >
+          And mypy is happy with every type hint, including the SDK's own types.
+
+  - type: cards
+    chapter: Troubleshooting
+    heading: Common problems, and fixes
+    cards:
+      - {tag: "401", title: "API key was rejected", body: "Check `ANTHROPIC_API_KEY`: no quotes or spaces, not revoked, from the right workspace.", tone: coral, say: "If your key is rejected, check the environment variable: no stray quotes or spaces, not revoked, and from the right workspace."}
+      - {tag: "offline", title: "Unexpected offline mode", body: "The key isn't visible to Python. Export it in the same terminal, or use `.env`.", tone: amber, say: "If you expected real answers but see offline mode, Python can't see the key. Set it in the same terminal session."}
+      - {tag: "429", title: "Rate limited", body: "Wait, reduce parallel requests, or raise `STUDY_MAX_RETRIES`.", tone: violet, say: "Repeated rate limits mean you're sending too fast for your account's limits. Slow down, or allow more retries."}
+      - {tag: "max_tokens", title: "Cut-off answers or quizzes", body: "Raise `--max-tokens`, or ask for fewer questions.", tone: blue, say: "And for cut-off answers, raise max tokens, or ask for less."}
+
+  - type: recap
+    chapter: Module recap
+    heading: Module 2 recap
+    items:
+      - {text: "LLMs predict tokens; tokens drive cost, limits and speed", say: "Language models predict tokens, and tokens drive cost, limits, and speed."}
+      - {text: "`messages.create`: content blocks, `stop_reason`, `usage`", say: "You called the API and read content blocks, stop reasons, and usage."}
+      - {text: "The API is stateless: send and trim the history yourself", say: "You managed stateless conversations, with trimmed history."}
+      - {text: "Streaming and structured output with `parse`", say: "You streamed replies, and got validated structured output."}
+      - {text: "Errors, retries, refusals, costs and budgets", say: "And you handled errors, retries, refusals, costs, and budgets, in a fully tested project."}
+
+  - type: quiz
+    chapter: Module quiz
+    number: 1
+    of: 5
+    question: "Why do output tokens matter more for cost than many beginners expect?"
+    options:
+      - "They're free"
+      - "They usually cost several times more than input tokens"
+      - "They're only counted when streaming"
+      - "They don't count toward the context window"
+    answer: 1
+    explain: "On Claude Opus 5.5, output tokens cost $20 per million vs $4 for input: five times more. Ask for concise answers."
+    say_question: >
+      Module quiz, question one. Why do output tokens matter so much for cost?
+    say_answer: >
+      They usually cost several times more than input tokens. Five times more, on Claude Opus 5.5.
+
+  - type: quiz
+    number: 2
+    of: 5
+    question: "What does `stop_reason == \"max_tokens\"` tell you?"
+    options:
+      - "The request was rate limited"
+      - "The reply was cut off at your limit and may be incomplete"
+      - "The model refused"
+      - "The context window is full of history"
+    answer: 1
+    explain: "The reply hit `max_tokens` and stopped, possibly mid-sentence or mid-JSON. Raise the limit or ask for less."
+    say_question: >
+      Question two. What does a stop reason of max tokens tell you?
+    say_answer: >
+      The reply was cut off at your limit, and may be incomplete.
+
+  - type: quiz
+    number: 3
+    of: 5
+    question: "A chat app's bot forgets everything said earlier. What's the most likely bug?"
+    options:
+      - "The model's memory is full"
+      - "The app doesn't send the earlier messages with each request"
+      - "The API key expired"
+      - "Streaming is turned off"
+    answer: 1
+    explain: "The API is stateless. The app must send the history (and store each reply) on every request."
+    say_question: >
+      Question three. A chat bot forgets everything said earlier. What's the most likely bug?
+    say_answer: >
+      The app isn't sending the earlier messages with each request. The API is stateless.
+
+  - type: quiz
+    number: 4
+    of: 5
+    question: "Which errors are worth retrying automatically?"
+    options:
+      - "400 and 404"
+      - "401 and 403"
+      - "429, 5xx and connection errors"
+      - "Every error"
+    answer: 2
+    explain: "Rate limits, server errors and network failures can recover. The Anthropic SDK retries them twice by default, with backoff."
+    say_question: >
+      Question four. Which errors are worth retrying automatically?
+    say_answer: >
+      Rate limits, server errors, and connection errors. And the SDK already retries them for you.
+
+  - type: quiz
+    number: 5
+    of: 5
+    question: "What does `client.messages.parse(..., output_format=Quiz)` give you?"
+    options:
+      - "Plain text you must parse yourself"
+      - "A validated `Quiz` object in `parsed_output`"
+      - "A guarantee the quiz is factually correct"
+      - "A faster, cheaper request"
+    answer: 1
+    explain: "You get a validated object that matches the schema. Structure is guaranteed, **truth is not**: facts still need checking."
+    say_question: >
+      And question five. What does parse with output format equals Quiz give you?
+    say_answer: >
+      A validated Quiz object. The structure is guaranteed, but the facts are not. A valid quiz can still contain a wrong answer.
+
+  - type: callout
+    chapter: Extension challenge
+    kind: challenge
+    title: "Extend the Study Assistant"
+    body: "Pick one or more. Each needs code **and** a test using the fake API."
+    say: >
+      Your extension challenge. Pick one or more, and write a test for each, using the fake API.
+    items:
+      - {text: "Add `--model` to switch between Opus, Sonnet and Haiku, and compare costs", say: "Add a model option, and compare costs between Opus, Sonnet, and Haiku."}
+      - {text: "Show the exact token count with `count_tokens` before each chat turn", say: "Show the exact token count before each chat turn."}
+      - {text: "Add `quiz --take`: ask questions interactively, then show explanations", say: "Add an interactive quiz mode that shows the explanations at the end."}
+      - {text: "Save chat history to a JSON file and reload it next time", say: "Or save chat history to a file and reload it next time, a first step towards Module 6."}
+
+  - type: links
+    chapter: Documentation
+    heading: Official documentation
+    items:
+      - {title: Models overview, url: platform.claude.com/docs/en/about-claude/models/overview}
+      - {title: Python SDK, url: github.com/anthropics/anthropic-sdk-python}
+      - {title: Streaming, url: platform.claude.com/docs/en/build-with-claude/streaming}
+      - {title: Structured outputs, url: platform.claude.com/docs/en/build-with-claude/structured-outputs}
+      - {title: Token counting, url: platform.claude.com/docs/en/build-with-claude/token-counting}
+      - {title: Errors, url: platform.claude.com/docs/en/api/errors}
+      - {title: Rate limits, url: platform.claude.com/docs/en/api/rate-limits}
+      - {title: Pricing, url: platform.claude.com/docs/en/about-claude/pricing}
+    say: >
+      These are the official documentation pages for everything in this module. Links are in the description, along with the full source code.
+
+  - type: title
+    chapter: Next up
+    kicker: Coming next · Module 3
+    title: Prompt Engineering and Structured Outputs
+    subtitle: "Instructions, examples, constraints, Pydantic validation, prompt versions and evaluations. Project: an AI Resume Analyzer."
+    say: >
+      That's Module 2 complete. You can now call a language model from Python reliably, affordably, and testably.
+      In Module 3, you'll learn to write prompts that work consistently, validate every output with Pydantic, version your prompts, and evaluate them, while building an AI Resume Analyzer. See you there.

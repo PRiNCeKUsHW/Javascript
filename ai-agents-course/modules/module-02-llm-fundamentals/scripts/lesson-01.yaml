@@ -1,0 +1,172 @@
+module_title: LLM Fundamentals and API Integration
+title: "How LLMs Work: Tokens, Context Windows and Generation"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 2 · Lesson 1
+    title: How a language model actually works
+    subtitle: Tokens, next-token prediction, context windows, and the settings you control.
+    say: >
+      Welcome to Module 2. In Module 1 you built a solid Python foundation. Now we meet the engine behind every agent in this course: the large language model.
+      Before writing a single API call, you need a clear mental model of what these systems do, and just as importantly, what they don't do.
+
+  - type: objectives
+    items:
+      - {text: "Explain next-token prediction in plain words", say: "You will be able to explain next-token prediction in plain words."}
+      - {text: "Understand tokens, and why they decide cost, limits and speed", say: "Understand tokens, and why they decide your cost, your limits, and your speed."}
+      - {text: "Reason about the context window and what fills it", say: "Reason about the context window, and what fills it up."}
+      - {text: "Know the controls you actually have over generation", say: "And know which controls you actually have over generation, on current models."}
+
+  - type: diagram
+    chapter: Next-token prediction
+    heading: An LLM predicts the next token, again and again
+    nodes:
+      - {id: input, label: "\"Agents call\"", sub: text so far, x: 230, y: 300, w: 300, tone: amber, mono: true}
+      - {id: model, label: Language model, sub: billions of learned weights, x: 760, y: 300, w: 360, h: 150, tone: violet}
+      - {id: probs, label: "tools 62% · APIs 21% · …", sub: likely next tokens, x: 1370, y: 140, w: 470, tone: blue, mono: true}
+      - {id: pick, label: "\"Agents call tools\"", sub: the chosen token is appended, x: 1370, y: 480, w: 470, tone: teal, mono: true}
+    edges:
+      - {from: input, to: model}
+      - {from: model, to: probs}
+      - {from: probs, to: pick}
+      - {from: pick, to: model, label: repeat, bend: 0.25}
+    say: >
+      Here is the core idea, simplified but accurate.
+    steps:
+      - show: [input, model, "input->model"]
+        focus: [input, model]
+        flow: ["input->model"]
+        say: >
+          A language model takes the text so far as input. During training it saw an enormous amount of text, and its weights encode patterns of how text continues.
+      - show: [probs, "model->probs"]
+        focus: [model, probs]
+        flow: ["model->probs"]
+        caption: "Illustrative numbers, not real model output"
+        say: >
+          Its output is not a whole answer. It is a probability for every possible next token. These percentages are just an illustration.
+      - show: [pick, "probs->pick", "pick->model"]
+        focus: [pick, model]
+        flow: ["probs->pick", "pick->model"]
+        say: >
+          One token is chosen and appended to the text, and the whole thing goes back in to predict the next one. A long answer is just this loop, run hundreds or thousands of times.
+      - focus: [model]
+        caption: "It predicts plausible text. It does not look facts up."
+        say: >
+          This explains a lot of behaviour. The model produces plausible text, not looked-up facts. It can be confidently wrong, which is often called hallucination, and its knowledge stops at its training cut-off.
+          That's why agents give models tools and documents to check facts, which is exactly what this course builds.
+
+  - type: cards
+    chapter: Tokens
+    heading: "Tokens: the units a model reads and writes"
+    say: >
+      So what is a token? It's a chunk of text, often a whole short word, a piece of a longer word, a space, or a punctuation mark.
+    cards:
+      - {tag: illustration, title: "\"Agents call tools.\"", body: "might become: Agents · ␣call · ␣tools · .", code: "≈ 4 tokens", tone: amber, say: "For example, agents call tools, full stop, might be split into four tokens. This is an illustration. The exact split depends on each model's tokenizer."}
+      - {tag: rule of thumb, title: "About 4 characters", body: "per token for English text. Code and other languages often use more.", code: "1,000 words ≈ 1,300+ tokens", tone: blue, say: "A rough rule of thumb for English is about four characters per token. Code, unusual words, and many other languages use more tokens for the same text."}
+      - {tag: exact, title: "Count, don't guess", body: "The API has a free token-counting endpoint for the exact model you use.", code: "count_tokens(...)", tone: teal, say: "When you need an exact number, don't guess, and don't use another company's tokenizer. Ask the API: it has a token counting endpoint for the exact model you're using. You'll use it in lesson five."}
+
+  - type: bullets
+    heading: Why tokens matter to you
+    items:
+      - {text: "**Cost**: you pay per input token and per output token", sub: "output tokens usually cost several times more", say: "Tokens matter for three reasons. First, cost. You pay per input token and per output token, and output tokens usually cost several times more."}
+      - {text: "**Limits**: every request has a maximum size", sub: "the context window, and a cap on the reply", say: "Second, limits. Every request has a maximum size, measured in tokens."}
+      - {text: "**Speed**: replies are generated one token at a time", sub: "longer answers take longer: streaming helps", say: "And third, speed. Replies are generated one token at a time, so long answers take longer. Streaming, in lesson four, makes that wait feel much shorter."}
+
+  - type: diagram
+    chapter: The context window
+    heading: Everything must fit in the context window
+    nodes:
+      - {id: system, label: System prompt, sub: instructions and rules, x: 300, y: 110, w: 460, h: 112, tone: violet}
+      - {id: history, label: Conversation history, sub: every earlier message, x: 300, y: 250, w: 460, h: 112, tone: blue}
+      - {id: docs, label: Documents & tool results, sub: what the agent looked up, x: 300, y: 390, w: 460, h: 112, tone: amber}
+      - {id: new, label: The new message, x: 300, y: 530, w: 460, h: 112, tone: teal}
+      - {id: window, label: "Context window", sub: "Claude Opus 5.5: 1,000,000 tokens", x: 1180, y: 250, w: 520, h: 150, tone: teal}
+      - {id: output, label: "The reply", sub: "up to 128,000 output tokens", x: 1180, y: 480, w: 520, h: 120, tone: coral}
+    edges:
+      - {from: system, to: window}
+      - {from: history, to: window}
+      - {from: docs, to: window}
+      - {from: new, to: window}
+      - {from: window, to: output}
+    say: >
+      The context window is the maximum number of tokens the model can consider in one request, input and output together.
+    steps:
+      - show: [system, history, docs, new]
+        say: >
+          Everything you send goes in: the system prompt with your instructions, the whole conversation so far, any documents or tool results, and the new message.
+      - show: [window, "system->window", "history->window", "docs->window", "new->window"]
+        focus: [window]
+        say: >
+          Current models have very large windows. Claude Opus 5.5, the model we use in this course, accepts up to one million tokens.
+      - show: [output, "window->output"]
+        focus: [window, output]
+        flow: ["window->output"]
+        say: >
+          The reply must fit too, and it has its own cap: up to one hundred and twenty-eight thousand output tokens on this model.
+      - focus: [history, docs]
+        caption: "Big windows still cost money: every token you send is billed"
+        say: >
+          A huge window does not mean you should fill it. Every token you send is billed on every request, and focused context usually gives better answers. Managing what goes into the window is a core agent engineering skill.
+
+  - type: compare
+    chapter: Models have no memory
+    heading: The model has no memory between requests
+    left:
+      title: What it feels like
+      tone: muted
+      items:
+        - "You chat, and it \"remembers\" your name"
+        - "It seems to learn during the conversation"
+    right:
+      title: What really happens
+      tone: teal
+      items:
+        - "Your app **sends the whole conversation** every time"
+        - "The model's weights never change while you chat"
+        - "Forget to send history, and it's gone"
+    steps:
+      - show: left
+        say: >
+          One more crucial fact. When you chat with an assistant, it seems to remember what you said earlier.
+      - show: right
+        say: >
+          But the model itself has no memory between requests. Your application sends the whole conversation every time. The model's weights don't change while you chat.
+          If your code forgets to send the history, the conversation is gone. You'll see this happen in lesson three.
+
+  - type: cards
+    chapter: Your controls
+    heading: The controls you have on current Claude models
+    cards:
+      - {tag: system, title: System prompt, body: "Role, rules and style for the whole conversation", tone: violet, say: "You control generation with a few levers. The system prompt sets the role, rules, and style."}
+      - {tag: max_tokens, title: Output cap, body: "The most tokens the reply may use", tone: amber, say: "Max tokens caps the length of the reply."}
+      - {tag: effort, title: Effort, body: "How much the model thinks: low to max", tone: teal, say: "Effort controls how much reasoning the model does, from low to max. Higher effort means better answers on hard problems, but more tokens."}
+      - {tag: model, title: Model choice, body: "Opus, Sonnet or Haiku: capability vs cost", tone: blue, say: "And you choose the model itself: Opus, Sonnet, or Haiku, trading capability against cost and speed."}
+    outro: >
+      You may have read about temperature and top p in older tutorials. On current Claude models those sampling settings are no longer accepted. You steer the model with instructions, effort, and the model you pick.
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "You ask a chatbot your name in a new request, but your app didn't send the earlier messages. What happens?"
+    options:
+      - "It remembers anyway"
+      - "It doesn't know: the model has no memory between requests"
+      - "The API returns an error"
+      - "It looks it up in its training data"
+    answer: 1
+    explain: "Each request is independent. The model only sees what you send in that request, so the app must resend the history."
+    say_question: >
+      Quick check. Your app sends a new request without the earlier messages. What happens?
+    say_answer: >
+      The model simply doesn't know. It has no memory between requests. It only sees what you send in that request.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 1 recap
+    items:
+      - {text: "An LLM predicts the next token, in a loop", say: "A language model predicts the next token, over and over."}
+      - {text: "It produces plausible text, not looked-up facts", say: "It produces plausible text, not looked-up facts, so important claims need checking."}
+      - {text: "Tokens drive cost, limits and speed; count them with the API", say: "Tokens drive cost, limits, and speed, and the API can count them exactly."}
+      - {text: "Everything must fit the context window; the app resends history", say: "Everything must fit in the context window, and your app resends the history every time."}
+    outro: >
+      Next lesson, you make your first real API call, and take the response apart piece by piece.

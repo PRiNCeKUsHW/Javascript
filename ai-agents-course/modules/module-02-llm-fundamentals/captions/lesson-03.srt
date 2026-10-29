@@ -1,0 +1,298 @@
+1
+00:00:00,700 --> 00:00:06,665
+Every chat app and every agent is a
+conversation: a list of messages that grows over
+
+2
+00:00:06,665 --> 00:00:07,020
+time.
+
+3
+00:00:07,240 --> 00:00:12,309
+In this lesson you'll see that the API
+remembers nothing, that your code owns the
+
+4
+00:00:12,309 --> 00:00:15,876
+history, and that a growing
+history means a growing bill.
+
+5
+00:00:17,176 --> 00:00:20,115
+You'll build a
+multi-turn conversation correctly.
+
+6
+00:00:20,465 --> 00:00:23,266
+Spot and fix the
+classic forgotten reply bug.
+
+7
+00:00:23,616 --> 00:00:26,467
+Measure how input
+tokens grow with every turn.
+
+8
+00:00:26,817 --> 00:00:30,898
+And choose a strategy for
+keeping long conversations under control.
+
+9
+00:00:32,198 --> 00:00:34,477
+Here's how a conversation really works.
+
+10
+00:00:34,827 --> 00:00:37,647
+The first request
+contains one user message.
+
+11
+00:00:37,997 --> 00:00:41,059
+The API replies, and
+then forgets everything.
+
+12
+00:00:41,279 --> 00:00:44,912
+Your app stores the user
+message and the reply in a list.
+
+13
+00:00:45,262 --> 00:00:50,273
+The second request sends the whole
+list: the first question, the first reply, and
+
+14
+00:00:50,273 --> 00:00:51,324
+the new question.
+
+15
+00:00:51,674 --> 00:00:54,178
+And the third request sends five messages.
+
+16
+00:00:54,398 --> 00:00:59,830
+Roles alternate between user and
+assistant, and the first message is always from the
+
+17
+00:00:59,830 --> 00:01:00,153
+user.
+
+18
+00:01:01,453 --> 00:01:05,282
+The history is just a Python
+list of message dictionaries.
+
+19
+00:01:05,632 --> 00:01:10,632
+For each question, we append it to the
+history, and send the whole list as messages.
+
+20
+00:01:10,982 --> 00:01:13,114
+Then we append the assistant's reply.
+
+21
+00:01:13,334 --> 00:01:15,481
+This line is the one people forget.
+
+22
+00:01:15,831 --> 00:01:21,194
+Finally we print how many messages we
+sent, and how many input tokens that cost.
+
+23
+00:01:22,494 --> 00:01:23,637
+Look at the numbers.
+
+24
+00:01:23,857 --> 00:01:26,062
+One message, then three, then five.
+
+25
+00:01:26,282 --> 00:01:31,398
+And the input tokens grow every turn,
+because every request re-sends everything
+
+26
+00:01:31,398 --> 00:01:32,046
+before it.
+
+27
+00:01:32,266 --> 00:01:37,919
+The offline fake even reports how many
+earlier messages it received, so you can see
+
+28
+00:01:37,919 --> 00:01:39,349
+the history arriving.
+
+29
+00:01:40,649 --> 00:01:41,975
+Here's the classic bug.
+
+30
+00:01:42,195 --> 00:01:45,444
+The loop appends each
+question, but never the reply.
+
+31
+00:01:45,794 --> 00:01:48,942
+So the history contains
+two user messages in a row.
+
+32
+00:01:49,162 --> 00:01:53,522
+The API accepts that, and
+merges them into a single user turn.
+
+33
+00:01:53,742 --> 00:01:58,963
+But the model never sees what it said
+before, so it can't refer to its own earlier
+
+34
+00:01:58,963 --> 00:01:59,473
+answers.
+
+35
+00:02:00,773 --> 00:02:01,838
+User, user.
+
+36
+00:02:02,058 --> 00:02:03,333
+No assistant turn.
+
+37
+00:02:03,553 --> 00:02:07,910
+In a chat app, that shows up as an
+assistant that seems to have amnesia.
+
+38
+00:02:08,130 --> 00:02:11,138
+Always store the reply
+right after you receive it.
+
+39
+00:02:12,438 --> 00:02:17,958
+Since every turn re-sends the whole
+history, long conversations get slower and more
+
+40
+00:02:17,958 --> 00:02:21,218
+expensive, and
+eventually hit the context window.
+
+41
+00:02:21,438 --> 00:02:23,375
+There are a few standard strategies.
+
+42
+00:02:23,725 --> 00:02:29,093
+The simplest is a sliding window: keep
+the most recent turns, and drop the oldest
+
+43
+00:02:29,093 --> 00:02:32,406
+user and assistant pair
+once you're over a budget.
+
+44
+00:02:32,626 --> 00:02:34,072
+Our project does this.
+
+45
+00:02:34,422 --> 00:02:39,527
+A smarter option replaces old turns
+with a short summary written by the model.
+
+46
+00:02:39,747 --> 00:02:41,884
+That's part of Module 6 on memory.
+
+47
+00:02:42,234 --> 00:02:47,618
+And agents often store key facts in a
+database, and add back only what's relevant to
+
+48
+00:02:47,618 --> 00:02:48,964
+the current question.
+
+49
+00:02:49,314 --> 00:02:54,732
+Finally, prompt caching lets an
+unchanged prefix of the conversation be billed at a
+
+50
+00:02:54,732 --> 00:02:57,016
+large discount when you re-send it.
+
+51
+00:02:57,236 --> 00:02:59,067
+You'll use it later in the course.
+
+52
+00:03:00,367 --> 00:03:02,249
+One practical rule when trimming.
+
+53
+00:03:02,469 --> 00:03:07,885
+Drop messages in pairs, a user message
+and its reply together, so the roles keep
+
+54
+00:03:07,885 --> 00:03:11,812
+alternating and the history
+still starts with a user turn.
+
+55
+00:03:13,112 --> 00:03:13,919
+Quick check.
+
+56
+00:03:14,139 --> 00:03:16,926
+A conversation already has ten messages.
+
+57
+00:03:17,146 --> 00:03:19,932
+How many messages does
+your next request send?
+
+58
+00:03:25,632 --> 00:03:31,113
+Eleven: all ten earlier messages plus
+the new one, unless you deliberately trim the
+
+59
+00:03:31,113 --> 00:03:31,642
+history.
+
+60
+00:03:32,942 --> 00:03:36,413
+The API is stateless, and
+your code keeps the history.
+
+61
+00:03:36,763 --> 00:03:39,892
+Append both the question
+and the reply, every turn.
+
+62
+00:03:40,242 --> 00:03:43,354
+Input tokens, and
+cost, grow with every turn.
+
+63
+00:03:43,704 --> 00:03:48,409
+So trim in pairs, or summarise,
+to keep conversations under control.
+
+64
+00:03:48,759 --> 00:03:53,869
+Next, you'll control the output itself:
+length limits, streaming, and structured
+
+65
+00:03:53,869 --> 00:03:54,189
+JSON.

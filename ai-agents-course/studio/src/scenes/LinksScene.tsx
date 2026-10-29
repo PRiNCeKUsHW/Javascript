@@ -18,7 +18,7 @@ export const LinksScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
           return (
             <div key={i} style={{ opacity: a, transform: `translateX(${(1 - a) * 30}px)`, display: "flex", alignItems: "center", gap: 30, background: C.surface, border: `1px solid ${C.line}`, borderRadius: 16, padding: "13px 30px" }}>
               <div style={{ fontFamily: MONO, fontSize: 24, color: C.teal, width: 40 }}>{String(i + 1).padStart(2, "0")}</div>
-              <div style={{ fontFamily: FONT, fontSize: 31, fontWeight: 700, color: C.text, width: 600 }}>
+              <div style={{ fontFamily: FONT, fontSize: 31, fontWeight: 700, color: C.text, width: 440, flexShrink: 0 }}>
                 <Rich text={it.title} />
               </div>
               <div style={{ fontFamily: MONO, fontSize: 25, color: C.blue }}>{it.url}</div>
