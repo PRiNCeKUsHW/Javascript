@@ -67,7 +67,7 @@ def _section(text: str, *words: str) -> str:
 
 
 def _years(text: str) -> int:
-    match = re.search(r"(\d+)\+?\s+years", text)
+    match = re.search(r"(\d+)\+?\s+years?\b", text)
     return int(match.group(1)) if match else 0
 
 

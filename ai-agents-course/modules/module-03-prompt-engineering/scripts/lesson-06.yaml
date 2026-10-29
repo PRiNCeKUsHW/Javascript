@@ -71,8 +71,7 @@ scenes:
     cwd: project/ai-resume-analyzer
     font: 24
     steps:
-      - cmd: ANTHROPIC_LOG=info RESUME_FAKE_FAIL=429,500 python -m resume extract data/resume_sam.md | head -3
-        keep: "2-3,5-"
+      - cmd: ANTHROPIC_LOG=info RESUME_FAKE_FAIL=429,500 python -m resume extract data/resume_sam.md 2>&1 | grep -E "Retrying|name"
         say: >
           Failures on purpose. A rate limit and then a server error: the SDK retries twice, and the extraction still succeeds.
       - cmd: RESUME_FAKE_FAIL=refusal python -m resume analyze data/resume_sam.md data/job_backend.md

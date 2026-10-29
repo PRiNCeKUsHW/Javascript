@@ -1,0 +1,316 @@
+1
+00:00:00,700 --> 00:00:01,775
+Project time.
+
+2
+00:00:01,995 --> 00:00:07,910
+We're building an AI resume analyzer:
+give it a resume and a job posting, and it
+
+3
+00:00:07,910 --> 00:00:09,906
+writes a skills-gap report.
+
+4
+00:00:10,126 --> 00:00:15,561
+It uses everything from this module:
+versioned prompts, structured outputs, task
+
+5
+00:00:15,561 --> 00:00:18,890
+decomposition,
+grounding checks, and evaluations.
+
+6
+00:00:20,190 --> 00:00:25,478
+The input is a resume and a job
+posting, as plain text or Markdown files.
+
+7
+00:00:25,828 --> 00:00:31,263
+The output is a skills-gap report, in
+Markdown for people, or JSON for other
+
+8
+00:00:31,263 --> 00:00:31,907
+programs.
+
+9
+00:00:32,257 --> 00:00:36,707
+Every report records which prompt
+versions produced it, and what it cost.
+
+10
+00:00:37,057 --> 00:00:43,670
+And like Module 2, it runs offline with a
+fake API, it's fully tested, and it has an
+
+11
+00:00:43,670 --> 00:00:44,851
+evaluation set.
+
+12
+00:00:46,151 --> 00:00:47,211
+Here's the plan.
+
+13
+00:00:47,431 --> 00:00:52,626
+The command line calls the analyzer,
+which runs the pipeline: extract with the
+
+14
+00:00:52,626 --> 00:00:55,689
+model, compare in
+code, advise with the model.
+
+15
+00:00:56,039 --> 00:01:00,997
+It takes its prompts from the versioned
+registry, and its schemas from the Pydantic
+
+16
+00:01:00,997 --> 00:01:01,415
+models.
+
+17
+00:01:01,765 --> 00:01:07,153
+Skills handles different spellings and
+the grounding check, report formats the
+
+18
+00:01:07,153 --> 00:01:10,884
+result, and evals runs the
+analyzer on labelled cases.
+
+19
+00:01:11,234 --> 00:01:15,298
+And the client is either the
+real API, or the offline fake.
+
+20
+00:01:16,598 --> 00:01:21,885
+A word about the offline fake, because
+this project's output looks much more real
+
+21
+00:01:21,885 --> 00:01:23,778
+than Module 2's placeholders.
+
+22
+00:01:23,998 --> 00:01:30,040
+The fake speaks the Messages API
+protocol, so the real SDK runs unchanged.
+
+23
+00:01:30,260 --> 00:01:35,591
+But instead of a model, it uses keyword
+rules: it finds skill names from a fixed
+
+24
+00:01:35,591 --> 00:01:38,256
+list, and fills in the requested schema.
+
+25
+00:01:38,606 --> 00:01:39,733
+It's not a model.
+
+26
+00:01:39,953 --> 00:01:45,539
+It ignores the prompt wording, it misses
+negation, and it only knows a fixed list of
+
+27
+00:01:45,539 --> 00:01:46,005
+skills.
+
+28
+00:01:46,225 --> 00:01:51,487
+Every result you see in this video
+comes from these rules, because no API key was
+
+29
+00:01:51,487 --> 00:01:52,657
+used to record it.
+
+30
+00:01:53,957 --> 00:01:59,251
+A call records one model request: the
+prompt's label and fingerprint, the tokens,
+
+31
+00:01:59,251 --> 00:02:00,101
+and the cost.
+
+32
+00:02:00,451 --> 00:02:06,362
+A gap report holds the extracted profile
+and job, the comparison results, any skills
+
+33
+00:02:06,362 --> 00:02:10,585
+the grounding check dropped,
+the suggestions, and the calls.
+
+34
+00:02:10,935 --> 00:02:16,049
+The score and the experience gap are
+arithmetic, so they're properties computed in
+
+35
+00:02:16,049 --> 00:02:16,361
+code.
+
+36
+00:02:16,581 --> 00:02:18,740
+We never ask the model to do sums.
+
+37
+00:02:20,040 --> 00:02:26,394
+Resumes and job postings spell skills
+differently: Postgres or PostgreSQL, k8s or
+
+38
+00:02:26,394 --> 00:02:27,257
+Kubernetes.
+
+39
+00:02:27,477 --> 00:02:30,744
+The aliases table maps
+each spelling to one name.
+
+40
+00:02:31,094 --> 00:02:35,886
+Normalize collapses spaces,
+lowercases, and applies the aliases.
+
+41
+00:02:36,106 --> 00:02:38,936
+Now Postgres and
+PostgreSQL compare as equal.
+
+42
+00:02:40,236 --> 00:02:43,455
+Compare normalises the
+candidate's skills into a set.
+
+43
+00:02:43,805 --> 00:02:48,791
+Then each must-have is matched or
+missing, and each nice-to-have that's missing is
+
+44
+00:02:48,791 --> 00:02:49,217
+listed.
+
+45
+00:02:49,437 --> 00:02:54,480
+The results keep the job posting's own
+wording, so the report reads naturally.
+
+46
+00:02:55,780 --> 00:03:01,084
+Extract profile calls the structured
+method with the profile schema and low effort,
+
+47
+00:03:01,084 --> 00:03:02,937
+because extraction is simple.
+
+48
+00:03:03,157 --> 00:03:07,310
+Then the grounding check keeps
+only skills the resume really names.
+
+49
+00:03:07,660 --> 00:03:10,172
+Extract job does the same for the posting.
+
+50
+00:03:10,522 --> 00:03:15,777
+Suggest fills the advice template with
+the comparison results, and uses medium
+
+51
+00:03:15,777 --> 00:03:19,551
+effort, because writing
+good advice takes more judgment.
+
+52
+00:03:19,901 --> 00:03:21,835
+And analyze runs the pipeline.
+
+53
+00:03:22,055 --> 00:03:27,298
+Note the condition: if nothing is
+missing, code skips the advice call entirely.
+
+54
+00:03:27,518 --> 00:03:29,627
+That's one less model call, for free.
+
+55
+00:03:30,927 --> 00:03:36,381
+Let's run it on Sam, a fictional
+backend developer, and a fictional backend job
+
+56
+00:03:36,381 --> 00:03:36,933
+posting.
+
+57
+00:03:37,283 --> 00:03:40,443
+Five of six must-have
+skills: eighty-three percent.
+
+58
+00:03:40,663 --> 00:03:46,569
+Postgres in the resume matched
+PostgreSQL in the posting, thanks to normalisation,
+
+59
+00:03:46,569 --> 00:03:49,595
+and GitHub Actions counted as CI slash CD.
+
+60
+00:03:49,815 --> 00:03:51,343
+Kubernetes is missing.
+
+61
+00:03:51,693 --> 00:03:56,813
+And the footer records the three prompt
+versions with their fingerprints, the model,
+
+62
+00:03:56,813 --> 00:03:58,337
+the tokens, and the cost.
+
+63
+00:03:58,557 --> 00:04:00,582
+Offline, the tokens are estimates.
+
+64
+00:04:01,882 --> 00:04:05,734
+The model extracts, and code
+compares, scores, and decides.
+
+65
+00:04:06,084 --> 00:04:08,279
+Aliases make different spellings match.
+
+66
+00:04:08,629 --> 00:04:12,149
+And every report records
+its prompts, tokens, and cost.
+
+67
+00:04:12,499 --> 00:04:18,001
+In part two: the suggestions and the
+report, the command line, the full demo with
+
+68
+00:04:18,001 --> 00:04:20,718
+failures, the tests, and the evaluation.
+
+69
+00:04:20,938 --> 00:04:22,439
+Then we wrap up the module.

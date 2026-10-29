@@ -47,7 +47,7 @@ scenes:
     chapter: What is guaranteed
     heading: "What structured outputs guarantee"
     cards:
-      - {tag: guaranteed, title: Shape, body: "Valid JSON with your fields and types: the API constrains the reply to the schema", code: "output_format=CandidateProfile", tone: teal, say: "With structured outputs, the API constrains the reply to your schema. You get valid JSON, with your fields and your types."}
+      - {tag: guaranteed, title: Shape, body: "Valid JSON with your fields and types: the API constrains the reply to the schema", code: "parse(output_format=...)", tone: teal, say: "With structured outputs, the API constrains the reply to your schema. You get valid JSON, with your fields and your types."}
       - {tag: checked by the SDK, title: Limits, body: "Some constraints (like ge/le) can't be enforced by the API; the SDK validates them with Pydantic", code: "pydantic.ValidationError", tone: amber, say: "Some constraints, like minimum and maximum values, can't be enforced during generation. The SDK moves them into the field description, and validates them with Pydantic when the reply arrives. If one fails, you get a validation error."}
       - {tag: not guaranteed, title: Truth, body: "A perfectly valid reply can still contain a wrong or invented value", tone: coral, say: "And what's never guaranteed is truth. A perfectly valid reply can still contain a wrong value, or a skill the resume never mentions."}
 

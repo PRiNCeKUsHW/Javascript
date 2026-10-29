@@ -1,0 +1,372 @@
+1
+00:00:00,700 --> 00:00:02,310
+Welcome to Module 3.
+
+2
+00:00:02,530 --> 00:00:06,596
+In Module 2 you learned to
+call a language model reliably.
+
+3
+00:00:06,816 --> 00:00:10,054
+Now we make the model do
+the right thing, consistently.
+
+4
+00:00:10,274 --> 00:00:11,621
+That's prompt engineering.
+
+5
+00:00:11,841 --> 00:00:16,125
+Not magic words, but clear writing,
+structured outputs, and measurement.
+
+6
+00:00:16,345 --> 00:00:22,424
+By the end of this module you'll build an
+AI resume analyzer that turns a resume and
+
+7
+00:00:22,424 --> 00:00:25,246
+a job posting into a skills-gap report.
+
+8
+00:00:26,546 --> 00:00:30,293
+You'll be able to name the parts
+of a prompt, and what each part does.
+
+9
+00:00:30,643 --> 00:00:33,123
+Turn a vague request into a specific one.
+
+10
+00:00:33,473 --> 00:00:36,859
+State constraints plainly,
+with the reason behind them.
+
+11
+00:00:37,209 --> 00:00:41,522
+And recognise prompting advice
+that current models no longer need.
+
+12
+00:00:42,822 --> 00:00:45,215
+A good prompt usually has five parts.
+
+13
+00:00:45,435 --> 00:00:49,810
+Not every prompt needs all five, but
+knowing them tells you what's missing.
+
+14
+00:00:50,160 --> 00:00:51,414
+First, context.
+
+15
+00:00:51,634 --> 00:00:54,587
+Who is the output for,
+and what happens to it next?
+
+16
+00:00:54,807 --> 00:00:58,933
+This is the part beginners leave
+out, and the part that matters most.
+
+17
+00:00:59,283 --> 00:01:03,050
+Second, the task: one clear
+sentence saying what to produce.
+
+18
+00:01:03,400 --> 00:01:08,572
+Third, the data: the document the model
+works on, kept clearly separate from your
+
+19
+00:01:08,572 --> 00:01:09,402
+instructions.
+
+20
+00:01:09,752 --> 00:01:14,047
+Fourth, constraints: what counts,
+what doesn't, and the shape of the answer.
+
+21
+00:01:14,397 --> 00:01:18,288
+And fifth, examples, when the
+format or the judgment is subtle.
+
+22
+00:01:18,508 --> 00:01:20,547
+We'll cover those in the next lesson.
+
+23
+00:01:21,847 --> 00:01:26,199
+Here are two prompts for the same
+task, both from this module's project.
+
+24
+00:01:26,419 --> 00:01:31,673
+The first one is how most people start:
+a generic role, and one short instruction.
+
+25
+00:01:31,893 --> 00:01:35,281
+It isn't wrong, but it
+leaves every decision to the model.
+
+26
+00:01:35,501 --> 00:01:36,668
+Which skills count?
+
+27
+00:01:36,888 --> 00:01:38,093
+Soft skills too?
+
+28
+00:01:38,313 --> 00:01:39,384
+In what format?
+
+29
+00:01:39,604 --> 00:01:42,440
+Should it guess skills
+the resume only implies?
+
+30
+00:01:42,790 --> 00:01:48,092
+The second version says who uses the
+output, and what happens to it: code compares
+
+31
+00:01:48,092 --> 00:01:49,515
+it with a job posting.
+
+32
+00:01:49,735 --> 00:01:55,371
+That one sentence explains why accuracy
+matters more than completeness, so the model
+
+33
+00:01:55,371 --> 00:01:59,665
+can make the right call in
+situations the prompt never mentions.
+
+34
+00:02:00,965 --> 00:02:03,954
+Context is the cheapest
+improvement you can make.
+
+35
+00:02:04,174 --> 00:02:07,264
+Say who the output is
+for, and how it will be used.
+
+36
+00:02:07,614 --> 00:02:11,222
+Describe the quality bar:
+what does a great answer look like?
+
+37
+00:02:11,572 --> 00:02:13,975
+And explain the reason behind each rule.
+
+38
+00:02:14,195 --> 00:02:18,602
+A rule with a reason
+generalises to cases you never thought of.
+
+39
+00:02:18,822 --> 00:02:20,054
+A bare rule doesn't.
+
+40
+00:02:20,404 --> 00:02:25,763
+When a prompt is too short, the model
+fills the gaps with safe defaults, and you get
+
+41
+00:02:25,763 --> 00:02:26,720
+generic output.
+
+42
+00:02:26,940 --> 00:02:29,365
+Give more context than seems necessary.
+
+43
+00:02:30,665 --> 00:02:35,396
+You'll find prompts full of capital
+letters: critical, must, never, important.
+
+44
+00:02:35,616 --> 00:02:40,508
+That style was written for older
+models that sometimes ignored instructions.
+
+45
+00:02:40,728 --> 00:02:45,895
+Current models follow instructions
+closely, so shouting makes them over-apply the
+
+46
+00:02:45,895 --> 00:02:50,807
+rule, and stacked prohibitions can
+even pull them toward the very mistake you
+
+47
+00:02:50,807 --> 00:02:51,318
+mention.
+
+48
+00:02:51,668 --> 00:02:56,901
+Instead, state the rule once, in a
+normal voice, say exactly what counts, and give
+
+49
+00:02:56,901 --> 00:02:57,603
+the reason.
+
+50
+00:02:57,823 --> 00:03:03,447
+A concrete edge case, like "no
+experience with Kubernetes", is worth more than any
+
+51
+00:03:03,447 --> 00:03:05,230
+number of capital letters.
+
+52
+00:03:06,530 --> 00:03:08,473
+Prompting advice ages quickly.
+
+53
+00:03:08,694 --> 00:03:13,777
+Here are four patterns you'll still see
+in tutorials, and what to use instead on
+
+54
+00:03:13,777 --> 00:03:15,175
+current Claude models.
+
+55
+00:03:15,525 --> 00:03:16,766
+Think step by step.
+
+56
+00:03:16,986 --> 00:03:22,429
+Current models already reason before
+they answer, and you control how much with the
+
+57
+00:03:22,429 --> 00:03:25,380
+effort setting from
+Module 2, not with prose.
+
+58
+00:03:25,730 --> 00:03:31,061
+Reply only in JSON, followed by
+regular expressions to dig the JSON out.
+
+59
+00:03:31,281 --> 00:03:36,661
+Use structured outputs instead: the
+API constrains the reply to your schema.
+
+60
+00:03:36,881 --> 00:03:38,072
+That's lesson three.
+
+61
+00:03:38,422 --> 00:03:43,550
+Prefilling, where you start the
+assistant's reply for it, is rejected with a four
+
+62
+00:03:43,550 --> 00:03:46,019
+hundred error on current Claude models.
+
+63
+00:03:46,239 --> 00:03:48,064
+Structured outputs replace it.
+
+64
+00:03:48,414 --> 00:03:52,645
+And don't add a reasoning field to
+your JSON for the model to fill in.
+
+65
+00:03:52,865 --> 00:03:56,851
+If you need to know why, ask for
+a short explanation of the answer.
+
+66
+00:03:58,151 --> 00:03:59,891
+Is the longer prompt expensive?
+
+67
+00:04:00,111 --> 00:04:03,261
+This script renders both
+versions for a short resume.
+
+68
+00:04:03,481 --> 00:04:06,835
+Version two is about
+two hundred tokens longer.
+
+69
+00:04:07,055 --> 00:04:12,202
+At four dollars per million input
+tokens, that's less than a tenth of a cent per
+
+70
+00:04:12,202 --> 00:04:12,524
+call.
+
+71
+00:04:12,744 --> 00:04:15,997
+Input tokens are cheap,
+and wrong answers are not.
+
+72
+00:04:17,297 --> 00:04:18,105
+Quick check.
+
+73
+00:04:18,325 --> 00:04:20,678
+Which change most improves a vague prompt?
+
+74
+00:04:26,378 --> 00:04:29,864
+Saying who uses the
+output, and why accuracy matters.
+
+75
+00:04:30,084 --> 00:04:35,795
+Context and reasons let the model make
+good decisions in cases you never listed.
+
+76
+00:04:37,095 --> 00:04:42,063
+A prompt has context, a task, data,
+constraints, and sometimes examples.
+
+77
+00:04:42,413 --> 00:04:44,946
+Context and reasons beat bare rules.
+
+78
+00:04:45,296 --> 00:04:48,113
+Write in plain language, at normal volume.
+
+79
+00:04:48,463 --> 00:04:51,959
+And use effort and
+structured outputs, not old tricks.
+
+80
+00:04:52,309 --> 00:04:57,966
+Next lesson: examples, separating data
+from instructions with tags, and splitting a
+
+81
+00:04:57,966 --> 00:04:59,875
+big task into smaller steps.
