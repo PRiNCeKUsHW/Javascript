@@ -2,19 +2,13 @@
 
 Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, and only after real checks).
 
-## Module 1: Python for AI Engineering (status: IN_PROGRESS → render finishing in the cloud session)
+## Module 1: Python for AI Engineering: COMPLETED
 
-Done and verified:
-- 7 lesson scripts (`scripts/lesson-01..07.yaml`), built: narration, captions, timelines (≈57 min total)
-- Project `project/python-ai-toolkit`: 42 pytest tests pass, mypy clean, README
-- Visual QA by still frames for every lesson; layout fixes applied
-- Thumbnail `assets/thumbnail-module-01.png`; `youtube.md`, `youtube-uploads.md` (per-lesson titles,
-  descriptions, chapters, tags, ChatGPT thumbnail prompts); `quiz.md`; `lesson-plan.md`; module README
-- Rendered and checked so far (cloud session): lessons 1, 2, 3 (1920x1080, 60 fps, H.264 + AAC)
-
-Remaining for Module 1 (being finished in the cloud session; videos are NOT in git):
-- render lessons 4–7 → `python tools/module.py assemble 1` → `python tools/module.py validate 1`
-- if every check passes: `python tools/manifest.py set 1 COMPLETED`
+- 7 lessons rendered (1920x1080, 60 fps, H.264 + AAC, about -17 LUFS); full module video 56:58 with 66 chapters
+- `validation-report.md`: 69/69 checks passed (formats, durations, captions, loudness, no black frames,
+  no long silences, fresh-venv install, 42 tests, mypy, documented CLI commands)
+- Lessons 4 and 5 were re-rendered after a fix: compare scenes now show dimmed panels during intro narration
+- Videos and audio are not in git (too large); they were delivered from the cloud session
 
 ## Next: Module 2: LLM Fundamentals and API Integration (project: AI Study Assistant)
 

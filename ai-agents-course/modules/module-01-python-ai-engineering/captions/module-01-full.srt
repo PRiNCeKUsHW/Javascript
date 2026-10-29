@@ -1,0 +1,4083 @@
+1
+00:00:00,700 --> 00:00:04,561
+Welcome to AI Agents with
+Python, Beginner to Production.
+
+2
+00:00:04,781 --> 00:00:10,293
+Over this course you will go from
+writing your first Python data structures to
+
+3
+00:00:10,293 --> 00:00:16,159
+deploying a full AI agent application
+with authentication, retrieval, tools, tests,
+
+4
+00:00:16,159 --> 00:00:17,219
+and monitoring.
+
+5
+00:00:17,439 --> 00:00:22,879
+This first lesson explains what an agent
+actually is, how the course works, and then
+
+6
+00:00:22,879 --> 00:00:25,145
+gets your Python environment ready.
+
+7
+00:00:26,445 --> 00:00:31,417
+Let's start with a precise definition,
+because the word agent is used loosely.
+
+8
+00:00:31,767 --> 00:00:36,360
+An AI agent is a program that is
+given a goal, not a fixed script.
+
+9
+00:00:36,580 --> 00:00:41,478
+You describe what you want, for example,
+research this topic and write me a brief.
+
+10
+00:00:41,828 --> 00:00:45,971
+The program asks a language
+model to decide what to do next.
+
+11
+00:00:46,191 --> 00:00:48,874
+The model does not run anything by itself.
+
+12
+00:00:49,094 --> 00:00:53,936
+It only returns a decision, as
+text or as a structured tool request.
+
+13
+00:00:54,286 --> 00:00:59,809
+Your Python code then performs that
+action with a tool, such as a web search, a
+
+14
+00:00:59,809 --> 00:01:04,842
+database query, or a calculator,
+and feeds the result back to the model.
+
+15
+00:01:05,192 --> 00:01:06,644
+This repeats in a loop.
+
+16
+00:01:06,864 --> 00:01:12,338
+Decide, act, observe, and continue,
+until the goal is reached or a safety limit
+
+17
+00:01:12,338 --> 00:01:12,962
+stops it.
+
+18
+00:01:13,182 --> 00:01:17,983
+That loop is the heart of every agent
+in this course, and you will build it from
+
+19
+00:01:17,983 --> 00:01:19,183
+scratch in Module 4.
+
+20
+00:01:20,483 --> 00:01:23,106
+Here is how the
+eighteen modules fit together.
+
+21
+00:01:23,456 --> 00:01:29,447
+Part one builds your foundations: Python
+for AI work, calling language model APIs,
+
+22
+00:01:29,447 --> 00:01:33,612
+and prompt engineering with
+validated, structured output.
+
+23
+00:01:33,962 --> 00:01:39,863
+Part two builds agents from scratch, with
+no framework hiding the details: the loop,
+
+24
+00:01:39,863 --> 00:01:43,305
+tool calling, memory,
+and making agents reliable.
+
+25
+00:01:43,655 --> 00:01:49,412
+Part three connects agents to knowledge
+and tools, with the Model Context Protocol,
+
+26
+00:01:49,412 --> 00:01:52,672
+embeddings, and
+retrieval-augmented generation.
+
+27
+00:01:53,022 --> 00:01:59,170
+Part four covers orchestration:
+LangGraph workflows, multi-agent systems, and web
+
+28
+00:01:59,170 --> 00:02:00,384
+research agents.
+
+29
+00:02:00,734 --> 00:02:05,818
+Part five is about quality and
+security: testing and evaluating agents, and
+
+30
+00:02:05,818 --> 00:02:09,546
+defending them against
+prompt injection and data leaks.
+
+31
+00:02:09,896 --> 00:02:16,072
+And part six takes everything to
+production, with FastAPI, Docker, monitoring, and a
+
+32
+00:02:16,072 --> 00:02:19,381
+full-stack AI
+workspace as the final project.
+
+33
+00:02:20,681 --> 00:02:25,149
+Every module follows the same
+rhythm, so you always know where you are.
+
+34
+00:02:25,499 --> 00:02:30,453
+First, the concepts, explained from
+zero, with small examples you can run.
+
+35
+00:02:30,803 --> 00:02:33,471
+Then a real project, built step by step.
+
+36
+00:02:33,691 --> 00:02:34,702
+Not a teaser.
+
+37
+00:02:34,922 --> 00:02:38,733
+Complete code, tests, and a
+README you can run yourself.
+
+38
+00:02:39,083 --> 00:02:42,632
+Next, the errors people
+actually hit, and how to fix them.
+
+39
+00:02:42,982 --> 00:02:47,953
+And finally, a recap, a short quiz
+with explained answers, and an extension
+
+40
+00:02:47,953 --> 00:02:50,338
+challenge if you want to go further.
+
+41
+00:02:51,638 --> 00:02:52,858
+Now, Module 1.
+
+42
+00:02:53,078 --> 00:02:58,898
+Agents are software, so before we touch
+a language model, you need the Python that
+
+43
+00:02:58,898 --> 00:03:00,956
+AI engineering actually uses.
+
+44
+00:03:01,306 --> 00:03:06,996
+You will work with the core data types,
+lists, dictionaries, and sets, in the shapes
+
+45
+00:03:06,996 --> 00:03:09,028
+AI applications use every day.
+
+46
+00:03:09,378 --> 00:03:13,670
+You will write functions and
+classes, and handle errors with exceptions.
+
+47
+00:03:14,020 --> 00:03:19,966
+You will organise code into modules and
+packages, read and write files and JSON, and
+
+48
+00:03:19,966 --> 00:03:22,726
+keep settings in environment variables.
+
+49
+00:03:23,076 --> 00:03:28,795
+And you will add type hints, make HTTP
+requests, and get a first, practical look at
+
+50
+00:03:28,795 --> 00:03:29,897
+async and await.
+
+51
+00:03:31,197 --> 00:03:35,982
+Everything comes together in this
+module's project, the Python AI Toolkit.
+
+52
+00:03:36,202 --> 00:03:42,348
+It is a command line tool that reads a
+log of language model API calls, validates
+
+53
+00:03:42,348 --> 00:03:45,079
+every record, and produces a report.
+
+54
+00:03:45,429 --> 00:03:46,871
+Here is the finished tool.
+
+55
+00:03:47,091 --> 00:03:52,806
+The validate command checks every record
+and explains exactly what is wrong, like a
+
+56
+00:03:52,806 --> 00:03:55,422
+negative token count, or a missing id.
+
+57
+00:03:55,772 --> 00:04:01,587
+And the report command summarises a
+clean log: requests, success rate, tokens,
+
+58
+00:04:01,587 --> 00:04:03,674
+estimated cost, and latency.
+
+59
+00:04:03,894 --> 00:04:07,353
+By the end of this module, you
+will have written every line of it.
+
+60
+00:04:08,653 --> 00:04:13,712
+To follow along you need a
+computer running Windows, macOS, or Linux.
+
+61
+00:04:14,062 --> 00:04:16,690
+You need Python 3.11 or newer.
+
+62
+00:04:16,910 --> 00:04:19,598
+I am recording with Python 3.13.
+
+63
+00:04:19,948 --> 00:04:21,012
+A code editor.
+
+64
+00:04:21,232 --> 00:04:25,829
+VS Code with the official
+Python extension is a good free choice.
+
+65
+00:04:26,179 --> 00:04:28,161
+And no AI experience at all.
+
+66
+00:04:28,381 --> 00:04:33,450
+If you have written a little code in any
+language, that helps, but every concept is
+
+67
+00:04:33,450 --> 00:04:34,610
+explained as we go.
+
+68
+00:04:35,910 --> 00:04:37,782
+Let's set up a clean workspace.
+
+69
+00:04:38,002 --> 00:04:40,354
+Open a terminal in an empty folder.
+
+70
+00:04:40,704 --> 00:04:42,518
+First, check your Python version.
+
+71
+00:04:42,738 --> 00:04:46,356
+On Windows the command is
+usually just python, or py.
+
+72
+00:04:46,576 --> 00:04:49,160
+Anything from 3.11 up is fine.
+
+73
+00:04:49,510 --> 00:04:51,668
+Next, create a virtual environment.
+
+74
+00:04:51,888 --> 00:04:57,473
+This makes a private folder, called dot
+venv, with its own copy of Python and its
+
+75
+00:04:57,473 --> 00:04:59,059
+own installed packages.
+
+76
+00:04:59,279 --> 00:05:04,530
+Every project gets one, so the
+libraries of one project can never break another.
+
+77
+00:05:04,880 --> 00:05:05,728
+Activate it.
+
+78
+00:05:05,948 --> 00:05:11,313
+On macOS and Linux, use source,
+dot venv, slash bin, slash activate.
+
+79
+00:05:11,533 --> 00:05:15,974
+On Windows, run dot venv,
+backslash Scripts, backslash activate.
+
+80
+00:05:16,194 --> 00:05:19,884
+Now, the python command
+points inside your project folder.
+
+81
+00:05:20,234 --> 00:05:24,125
+With the environment active,
+pip installs packages into it.
+
+82
+00:05:24,345 --> 00:05:31,368
+We install httpx, the HTTP library we
+will use later in this module, and we pin the
+
+83
+00:05:31,368 --> 00:05:35,345
+exact version, so that
+your results match mine.
+
+84
+00:05:35,695 --> 00:05:40,956
+Finally, pip freeze records the exact
+versions you installed into a requirements
+
+85
+00:05:40,956 --> 00:05:41,285
+file.
+
+86
+00:05:41,505 --> 00:05:47,507
+Anyone can rebuild the same environment
+with pip install, dash r, requirements dot
+
+87
+00:05:47,507 --> 00:05:47,873
+text.
+
+88
+00:05:49,173 --> 00:05:50,137
+One warning.
+
+89
+00:05:50,357 --> 00:05:55,730
+If pip complains about an externally
+managed environment, or packages seem to
+
+90
+00:05:55,730 --> 00:06:00,335
+vanish, you are almost certainly
+outside your virtual environment.
+
+91
+00:06:00,555 --> 00:06:05,895
+Activate it again, and check that which
+python, or where python on Windows, points
+
+92
+00:06:05,895 --> 00:06:07,523
+into your project folder.
+
+93
+00:06:08,823 --> 00:06:13,567
+This is the project layout we will
+grow into by the end of the module.
+
+94
+00:06:13,917 --> 00:06:18,944
+At the top: the virtual environment,
+which is never committed to git, a settings
+
+95
+00:06:18,944 --> 00:06:21,331
+template, and the pinned requirements.
+
+96
+00:06:21,681 --> 00:06:25,552
+Configuration and sample
+data live in their own folders.
+
+97
+00:06:25,902 --> 00:06:28,978
+The real code lives in
+a package called toolkit.
+
+98
+00:06:29,198 --> 00:06:34,232
+The special file dunder main lets us
+run the whole package with python dash m
+
+99
+00:06:34,232 --> 00:06:34,755
+toolkit.
+
+100
+00:06:35,105 --> 00:06:37,080
+And tests live in their own folder.
+
+101
+00:06:37,300 --> 00:06:43,226
+Keeping code, data, configuration, and
+tests separate is a habit that pays off in
+
+102
+00:06:43,226 --> 00:06:45,201
+every AI project you build.
+
+103
+00:06:46,501 --> 00:06:52,190
+An agent is a program that decides,
+acts, observes, and repeats, working towards a
+
+104
+00:06:52,190 --> 00:06:52,537
+goal.
+
+105
+00:06:52,887 --> 00:06:54,558
+The model only decides.
+
+106
+00:06:54,778 --> 00:06:57,171
+Your Python code performs the actions.
+
+107
+00:06:57,521 --> 00:07:02,090
+Every project gets its own
+virtual environment, with pinned versions.
+
+108
+00:07:02,440 --> 00:07:08,058
+In the next lesson, we write real
+Python: the data types that every AI application
+
+109
+00:07:08,058 --> 00:07:09,017
+is built from.
+
+110
+00:07:09,237 --> 00:07:10,100
+See you there.
+
+111
+00:07:11,420 --> 00:07:17,511
+Every AI application, from a simple
+chatbot to a team of agents, moves the same few
+
+112
+00:07:17,511 --> 00:07:19,052
+kinds of data around.
+
+113
+00:07:19,272 --> 00:07:23,297
+Text, numbers, lists of
+messages, and dictionaries of settings.
+
+114
+00:07:23,517 --> 00:07:29,128
+In this lesson you will learn those
+building blocks properly, using the exact shapes
+
+115
+00:07:29,128 --> 00:07:31,065
+that language model APIs use.
+
+116
+00:07:32,365 --> 00:07:36,454
+You will create variables and
+recognise Python's basic types.
+
+117
+00:07:36,804 --> 00:07:39,018
+Format text cleanly with f-strings.
+
+118
+00:07:39,368 --> 00:07:43,225
+Use lists, dictionaries, and
+sets, and know when to pick each one.
+
+119
+00:07:43,575 --> 00:07:49,018
+And build a chat conversation as a list
+of dictionaries, which is exactly the format
+
+120
+00:07:49,018 --> 00:07:51,415
+you will send to a model in Module 2.
+
+121
+00:07:52,715 --> 00:07:55,379
+A variable is a name
+that points at a value.
+
+122
+00:07:55,599 --> 00:07:59,664
+Every value has a type, and the
+type decides what you can do with it.
+
+123
+00:08:00,014 --> 00:08:02,257
+A string, s t r, holds text.
+
+124
+00:08:02,477 --> 00:08:05,598
+Prompts, model names,
+and replies are all strings.
+
+125
+00:08:05,948 --> 00:08:08,954
+An int is a whole
+number, like a token count.
+
+126
+00:08:09,304 --> 00:08:13,591
+A float is a decimal number,
+like a temperature setting or a price.
+
+127
+00:08:13,941 --> 00:08:17,799
+A bool is either True or
+False, with a capital T and F.
+
+128
+00:08:18,149 --> 00:08:20,034
+And None means no value at all.
+
+129
+00:08:20,254 --> 00:08:24,492
+It's often used for something
+that is optional, or not loaded yet.
+
+130
+00:08:25,792 --> 00:08:27,536
+Here they are in a small script.
+
+131
+00:08:27,886 --> 00:08:30,987
+Each line creates a
+variable with the equals sign.
+
+132
+00:08:31,207 --> 00:08:33,309
+You do not declare the type yourself.
+
+133
+00:08:33,529 --> 00:08:35,480
+Python works it out from the value.
+
+134
+00:08:35,830 --> 00:08:39,499
+The built-in type function
+tells you what kind of value you have.
+
+135
+00:08:39,719 --> 00:08:43,313
+That is very handy when
+something behaves unexpectedly.
+
+136
+00:08:43,663 --> 00:08:45,008
+This is an f-string.
+
+137
+00:08:45,228 --> 00:08:50,862
+Put the letter f before the quotes, and
+anything inside curly braces is evaluated
+
+138
+00:08:50,862 --> 00:08:52,740
+and inserted into the text.
+
+139
+00:08:52,960 --> 00:08:55,438
+You will build
+prompts this way all the time.
+
+140
+00:08:55,788 --> 00:08:58,893
+A name can be pointed
+at a new value at any time.
+
+141
+00:08:59,113 --> 00:09:01,373
+And f-strings can format values too.
+
+142
+00:09:01,593 --> 00:09:04,183
+Colon comma adds thousands separators.
+
+143
+00:09:05,483 --> 00:09:10,487
+Run it, and you see the three types,
+the formatted sentence, and the new limit of
+
+144
+00:09:10,487 --> 00:09:11,723
+two thousand tokens.
+
+145
+00:09:12,073 --> 00:09:13,531
+Now a classic mistake.
+
+146
+00:09:13,751 --> 00:09:18,951
+Joining a string and a number with plus
+fails with a type error, because Python will
+
+147
+00:09:18,951 --> 00:09:21,675
+not guess how to
+combine text with a number.
+
+148
+00:09:22,025 --> 00:09:26,425
+The fix is an f-string, or
+converting the number with s t r first.
+
+149
+00:09:26,645 --> 00:09:28,932
+Read the last line of any error first.
+
+150
+00:09:29,152 --> 00:09:31,004
+It names the problem precisely.
+
+151
+00:09:32,304 --> 00:09:33,300
+Next, lists.
+
+152
+00:09:33,520 --> 00:09:37,711
+A list keeps items in order, and
+you can change it after creating it.
+
+153
+00:09:38,061 --> 00:09:39,778
+Square brackets create a list.
+
+154
+00:09:39,998 --> 00:09:41,808
+Here, three user messages.
+
+155
+00:09:42,158 --> 00:09:45,371
+You read an item by its
+position, called its index.
+
+156
+00:09:45,591 --> 00:09:51,166
+Indexes start at zero, so zero is the
+first item, and minus one is the last.
+
+157
+00:09:51,386 --> 00:09:54,373
+The len function gives
+you the number of items.
+
+158
+00:09:54,723 --> 00:09:56,230
+Append adds to the end.
+
+159
+00:09:56,450 --> 00:09:57,983
+A slice takes a range.
+
+160
+00:09:58,203 --> 00:10:03,016
+One colon three means start at
+index one and stop before index three.
+
+161
+00:10:03,366 --> 00:10:05,199
+A for loop visits every item.
+
+162
+00:10:05,419 --> 00:10:10,580
+Wrapping the list in enumerate gives you
+a running number as well, starting wherever
+
+163
+00:10:10,580 --> 00:10:11,256
+you choose.
+
+164
+00:10:12,556 --> 00:10:17,687
+The output shows the first and last
+message, the count of three, the slice, and then
+
+165
+00:10:17,687 --> 00:10:20,191
+the numbered list after Bye was appended.
+
+166
+00:10:21,491 --> 00:10:25,213
+Dictionaries are the most
+important structure in this whole course.
+
+167
+00:10:25,433 --> 00:10:30,397
+A dictionary maps keys to values, so
+you look things up by name instead of by
+
+168
+00:10:30,397 --> 00:10:30,977
+position.
+
+169
+00:10:31,327 --> 00:10:33,466
+This dictionary is a chat message.
+
+170
+00:10:33,686 --> 00:10:37,948
+It has a role, saying who is
+speaking, and the content, which is the text.
+
+171
+00:10:38,168 --> 00:10:40,896
+This is the same shape real chat APIs use.
+
+172
+00:10:41,246 --> 00:10:45,851
+Square brackets with a key read a
+value, and assigning to a new key adds it.
+
+173
+00:10:46,201 --> 00:10:48,615
+The get method is the safe way to read.
+
+174
+00:10:48,835 --> 00:10:52,544
+If the key is missing, you get
+the default instead of an error.
+
+175
+00:10:52,894 --> 00:10:54,230
+Now combine the two.
+
+176
+00:10:54,450 --> 00:10:59,771
+A list of message dictionaries is a
+whole conversation: a system instruction, the
+
+177
+00:10:59,771 --> 00:11:02,661
+user's question, and
+the assistant's answer.
+
+178
+00:11:02,881 --> 00:11:07,569
+When you call a model in Module 2,
+this is precisely what you will send.
+
+179
+00:11:07,919 --> 00:11:13,486
+Looping over it, the f-string pads each
+role to nine characters, so the output lines
+
+180
+00:11:13,486 --> 00:11:14,149
+up neatly.
+
+181
+00:11:15,449 --> 00:11:19,710
+Here is the result, including
+the aligned conversation at the end.
+
+182
+00:11:20,060 --> 00:11:23,624
+And here is the error you
+will meet most often: a key error.
+
+183
+00:11:23,844 --> 00:11:26,930
+The key content does not
+exist in this dictionary.
+
+184
+00:11:27,280 --> 00:11:30,971
+When a key might be missing,
+use get with a sensible default.
+
+185
+00:11:31,191 --> 00:11:35,046
+When it must exist, check it
+explicitly and give a clear message.
+
+186
+00:11:35,266 --> 00:11:38,191
+You will do exactly that
+in this module's project.
+
+187
+00:11:39,491 --> 00:11:41,212
+The third collection is the set.
+
+188
+00:11:41,432 --> 00:11:46,175
+A set holds unique items, with no
+duplicates and no particular order.
+
+189
+00:11:46,525 --> 00:11:50,267
+Turning a list of tags into
+a set removes the duplicates.
+
+190
+00:11:50,487 --> 00:11:55,539
+Because sets have no order, we sort the
+set before printing it, so the output is
+
+191
+00:11:55,539 --> 00:11:56,297
+predictable.
+
+192
+00:11:56,647 --> 00:12:02,049
+The in operator checks membership, and
+on a set it stays fast however large the set
+
+193
+00:12:02,049 --> 00:12:02,440
+grows.
+
+194
+00:12:02,790 --> 00:12:05,651
+Sets also support maths-like operations.
+
+195
+00:12:05,871 --> 00:12:11,417
+Here, the tools an agent requested,
+minus the tools it is allowed to use, gives
+
+196
+00:12:11,417 --> 00:12:13,524
+exactly the forbidden request.
+
+197
+00:12:13,744 --> 00:12:15,401
+Keep this idea in mind.
+
+198
+00:12:15,621 --> 00:12:18,568
+Tool allowlists come
+back in the security module.
+
+199
+00:12:19,868 --> 00:12:25,252
+Three unique tags, membership is True,
+and delete files is flagged as not allowed.
+
+200
+00:12:26,552 --> 00:12:29,634
+One last tool for this
+lesson: comprehensions.
+
+201
+00:12:29,854 --> 00:12:34,678
+They build a new list or dictionary
+from an existing collection, in a single
+
+202
+00:12:34,678 --> 00:12:35,566
+readable line.
+
+203
+00:12:35,916 --> 00:12:41,117
+Here are three request records, a list
+of dictionaries, just like a usage log.
+
+204
+00:12:41,467 --> 00:12:44,553
+This list comprehension
+reads almost like English.
+
+205
+00:12:44,773 --> 00:12:49,367
+Take r's id, for each r in
+records, if r's status is ok.
+
+206
+00:12:49,717 --> 00:12:55,933
+Curly braces with a key, colon, value
+build a dictionary instead, here mapping each
+
+207
+00:12:55,933 --> 00:12:57,206
+id to its tokens.
+
+208
+00:12:57,556 --> 00:13:02,350
+And without any brackets, the same
+pattern can feed straight into a function like
+
+209
+00:13:02,350 --> 00:13:02,586
+sum.
+
+210
+00:13:03,886 --> 00:13:09,623
+Two successful ids, a dictionary of
+tokens, and eight hundred and fifty tokens in
+
+211
+00:13:09,623 --> 00:13:10,048
+total.
+
+212
+00:13:11,348 --> 00:13:16,955
+Use a list when order matters, like the
+messages in a conversation, or the steps of
+
+213
+00:13:16,955 --> 00:13:17,427
+a plan.
+
+214
+00:13:17,777 --> 00:13:23,530
+Use a dictionary when you look things up
+by name, like a message, a configuration,
+
+215
+00:13:23,530 --> 00:13:25,564
+or a record from a JSON file.
+
+216
+00:13:25,914 --> 00:13:31,196
+Use a set for uniqueness and fast
+membership checks, like allowed tools or IDs
+
+217
+00:13:31,196 --> 00:13:32,889
+you've already processed.
+
+218
+00:13:33,239 --> 00:13:38,325
+And a tuple, written with parentheses,
+is a fixed group of values that will not
+
+219
+00:13:38,325 --> 00:13:40,643
+change, such as a tag and its count.
+
+220
+00:13:41,943 --> 00:13:42,751
+Quick check.
+
+221
+00:13:42,971 --> 00:13:44,404
+What does this code print?
+
+222
+00:13:44,624 --> 00:13:46,682
+Pause the video if you need a moment.
+
+223
+00:13:52,382 --> 00:13:53,852
+The answer is unknown.
+
+224
+00:13:54,072 --> 00:13:57,322
+The get method returns the
+default when the key is missing.
+
+225
+00:13:57,542 --> 00:14:00,488
+Only square-bracket
+access would raise a key error.
+
+226
+00:14:01,788 --> 00:14:07,042
+Variables are names pointing at values,
+and the type function tells you what a value
+
+227
+00:14:07,042 --> 00:14:07,229
+is.
+
+228
+00:14:07,579 --> 00:14:12,202
+F-strings are the clean way to build
+text, and they can format numbers too.
+
+229
+00:14:12,552 --> 00:14:17,173
+Lists keep order, dictionaries look
+up by key, and sets keep things unique.
+
+230
+00:14:17,523 --> 00:14:22,379
+And a conversation is a list of
+dictionaries, each with a role and some content.
+
+231
+00:14:22,729 --> 00:14:28,771
+Next lesson: functions, classes, and
+exceptions, so you can organise this data into
+
+232
+00:14:28,771 --> 00:14:30,518
+reusable, reliable code.
+
+233
+00:14:31,825 --> 00:14:34,824
+In the last lesson you
+learned how to hold data.
+
+234
+00:14:35,044 --> 00:14:38,569
+Now you will learn how to
+organise the code that works on it.
+
+235
+00:14:38,789 --> 00:14:44,407
+Functions give logic a name, classes
+bundle data with behaviour, and exceptions let
+
+236
+00:14:44,407 --> 00:14:47,453
+your program fail
+clearly and recover safely.
+
+237
+00:14:47,673 --> 00:14:52,675
+Agents call tools that fail all the
+time, so this last part matters a lot.
+
+238
+00:14:53,975 --> 00:14:58,819
+You will write functions with
+parameters, default values, and return values.
+
+239
+00:14:59,169 --> 00:15:02,849
+Avoid a classic bug that
+can leak data between users.
+
+240
+00:15:03,199 --> 00:15:06,528
+Create your own classes,
+and the shorter dataclasses.
+
+241
+00:15:06,878 --> 00:15:11,810
+And handle, raise, and define your own
+exceptions, and read a traceback calmly.
+
+242
+00:15:13,110 --> 00:15:16,431
+A function is a named,
+reusable block of code.
+
+243
+00:15:16,651 --> 00:15:19,912
+You define it once, and
+call it as often as you like.
+
+244
+00:15:20,262 --> 00:15:22,185
+The def keyword starts a function.
+
+245
+00:15:22,405 --> 00:15:25,870
+Inside the parentheses are
+its parameters, the inputs.
+
+246
+00:15:26,090 --> 00:15:30,160
+The text in triple quotes is a
+docstring, describing what it does.
+
+247
+00:15:30,380 --> 00:15:33,418
+And return sends the
+result back to whoever called it.
+
+248
+00:15:33,768 --> 00:15:38,557
+You can pass arguments by
+position, or by name, as keyword arguments.
+
+249
+00:15:38,777 --> 00:15:42,394
+Keywords make calls with
+several numbers much easier to read.
+
+250
+00:15:42,614 --> 00:15:44,769
+Notice the underscores in two million.
+
+251
+00:15:44,989 --> 00:15:46,287
+Python ignores them.
+
+252
+00:15:46,507 --> 00:15:48,319
+They are just there for readability.
+
+253
+00:15:48,669 --> 00:15:51,415
+This second function has a default value.
+
+254
+00:15:51,635 --> 00:15:55,045
+If the caller does not
+pass max words, it uses eight.
+
+255
+00:15:55,265 --> 00:15:58,294
+It returns early when the
+text is already short enough.
+
+256
+00:15:58,514 --> 00:16:01,957
+Otherwise it keeps the
+first words and adds an ellipsis.
+
+257
+00:16:02,307 --> 00:16:07,805
+Here we call it three times: once with a
+long sentence, once with a short one, and
+
+258
+00:16:07,805 --> 00:16:09,682
+once overriding the default.
+
+259
+00:16:10,982 --> 00:16:16,379
+The costs come back as plain numbers,
+the long sentence is shortened, and the last
+
+260
+00:16:16,379 --> 00:16:18,091
+call keeps only two words.
+
+261
+00:16:19,391 --> 00:16:24,639
+Give each function one job, and name
+it with a verb, like estimate cost or load
+
+262
+00:16:24,639 --> 00:16:25,170
+records.
+
+263
+00:16:25,520 --> 00:16:27,916
+Return results instead of printing them.
+
+264
+00:16:28,136 --> 00:16:32,620
+Then the caller decides what to do,
+and you can test the function easily.
+
+265
+00:16:32,970 --> 00:16:38,384
+Use keyword arguments whenever a call
+would otherwise be a mystery list of numbers.
+
+266
+00:16:38,734 --> 00:16:42,185
+And never use a mutable
+default, like an empty list.
+
+267
+00:16:42,405 --> 00:16:43,628
+Let me show you why.
+
+268
+00:16:44,928 --> 00:16:46,820
+This function stores chat history.
+
+269
+00:16:47,040 --> 00:16:52,432
+The default empty list looks harmless,
+but Python creates it only once, when the
+
+270
+00:16:52,432 --> 00:16:53,781
+function is defined.
+
+271
+00:16:54,001 --> 00:16:57,446
+Every call that uses the
+default shares that same list.
+
+272
+00:16:57,796 --> 00:17:03,477
+So Alice sends a message, then Bob
+sends one, and Bob's history contains Alice's
+
+273
+00:17:03,477 --> 00:17:04,045
+message.
+
+274
+00:17:04,265 --> 00:17:10,229
+In an AI app, that is a privacy bug: one
+user's conversation leaking into another's.
+
+275
+00:17:10,579 --> 00:17:13,051
+The fix is the standard Python pattern.
+
+276
+00:17:13,271 --> 00:17:17,013
+Default to None, and create a
+fresh list inside the function.
+
+277
+00:17:18,313 --> 00:17:19,564
+The output proves it.
+
+278
+00:17:19,784 --> 00:17:22,943
+With the buggy version,
+Bob sees Alice's message.
+
+279
+00:17:23,163 --> 00:17:25,977
+With the fixed
+version, each call starts clean.
+
+280
+00:17:27,277 --> 00:17:28,365
+Now, classes.
+
+281
+00:17:28,585 --> 00:17:30,581
+Functions organise behaviour.
+
+282
+00:17:30,801 --> 00:17:35,165
+Classes organise data together
+with the behaviour that belongs to it.
+
+283
+00:17:35,515 --> 00:17:37,021
+A class is a blueprint.
+
+284
+00:17:37,241 --> 00:17:41,578
+It describes what every object of
+that kind has, and what it can do.
+
+285
+00:17:41,928 --> 00:17:47,322
+An object, also called an instance, is
+one real thing built from that blueprint.
+
+286
+00:17:47,542 --> 00:17:49,671
+You can create as many as you like.
+
+287
+00:17:50,021 --> 00:17:52,986
+Attributes are the
+data stored on each object.
+
+288
+00:17:53,336 --> 00:17:58,421
+And methods are functions that belong to
+the class and work on that object's data.
+
+289
+00:17:59,721 --> 00:18:01,681
+Here is a Conversation class.
+
+290
+00:18:01,901 --> 00:18:06,470
+The special dunder init method
+runs whenever a new object is created.
+
+291
+00:18:06,690 --> 00:18:12,556
+Its first parameter, self, is the object
+being built, so self dot messages stores a
+
+292
+00:18:12,556 --> 00:18:14,746
+list on that particular object.
+
+293
+00:18:15,096 --> 00:18:16,705
+Add and last are methods.
+
+294
+00:18:16,925 --> 00:18:22,096
+They also take self first, so they can
+read and change this object's messages.
+
+295
+00:18:22,446 --> 00:18:26,683
+Methods with double underscores
+plug your class into Python itself.
+
+296
+00:18:26,903 --> 00:18:31,751
+Defining dunder len makes the
+built-in len function work on a conversation.
+
+297
+00:18:32,101 --> 00:18:34,889
+Creating an object
+looks like calling a function.
+
+298
+00:18:35,109 --> 00:18:38,928
+We add two messages, then print
+the length and the last message.
+
+299
+00:18:39,278 --> 00:18:43,754
+A second conversation is a
+completely separate object, with its own list.
+
+300
+00:18:45,054 --> 00:18:50,057
+Three messages in the first
+conversation, and just the system message in the other.
+
+301
+00:18:51,357 --> 00:18:58,123
+Many classes in AI code mostly hold
+data: a model configuration, a usage record, a
+
+302
+00:18:58,123 --> 00:18:59,113
+tool result.
+
+303
+00:18:59,333 --> 00:19:04,215
+For those, Python's dataclass
+decorator writes the boring parts for you.
+
+304
+00:19:04,565 --> 00:19:08,353
+You just list the fields, with
+their types and optional defaults.
+
+305
+00:19:08,573 --> 00:19:13,635
+The decorator generates the init
+method, a readable print form, and equality
+
+306
+00:19:13,635 --> 00:19:14,368
+comparison.
+
+307
+00:19:14,718 --> 00:19:16,243
+Notice the stop field.
+
+308
+00:19:16,463 --> 00:19:18,679
+Remember the mutable default bug?
+
+309
+00:19:18,899 --> 00:19:24,116
+Dataclasses protect you from it: for a
+list default, you must use field with a
+
+310
+00:19:24,116 --> 00:19:25,186
+default factory.
+
+311
+00:19:25,536 --> 00:19:30,940
+Creating objects, printing one, and
+comparing two with the same values, which counts
+
+312
+00:19:30,940 --> 00:19:31,519
+as equal.
+
+313
+00:19:32,819 --> 00:19:37,659
+The generated print form shows every
+field, and the equality check is True.
+
+314
+00:19:37,879 --> 00:19:41,224
+In the project, our
+usage record is a dataclass.
+
+315
+00:19:42,524 --> 00:19:43,624
+Now, exceptions.
+
+316
+00:19:43,844 --> 00:19:47,118
+When something goes wrong,
+Python raises an exception.
+
+317
+00:19:47,338 --> 00:19:49,829
+If nothing handles it, the program stops.
+
+318
+00:19:50,179 --> 00:19:52,915
+Put code that might
+fail inside a try block.
+
+319
+00:19:53,135 --> 00:19:56,785
+Converting text to a number
+fails if the text isn't a number.
+
+320
+00:19:57,135 --> 00:20:00,734
+The except block runs only
+if that specific error happens.
+
+321
+00:20:00,954 --> 00:20:05,084
+Here we handle a value error by
+reporting it and returning zero.
+
+322
+00:20:05,434 --> 00:20:08,760
+The else block runs only
+when the try block succeeded.
+
+323
+00:20:09,110 --> 00:20:12,830
+And finally always runs,
+whether things went well or not.
+
+324
+00:20:13,050 --> 00:20:16,785
+That makes it the right place for
+cleanup, like closing a connection.
+
+325
+00:20:18,085 --> 00:20:19,191
+Look at the order.
+
+326
+00:20:19,411 --> 00:20:24,781
+For one twenty, the finally message
+prints before the value, because finally runs on
+
+327
+00:20:24,781 --> 00:20:26,571
+the way out of the function.
+
+328
+00:20:26,791 --> 00:20:31,581
+For a b c, the error is handled,
+finally still runs, and we get zero.
+
+329
+00:20:32,881 --> 00:20:36,750
+You can define your own
+exceptions by inheriting from Exception.
+
+330
+00:20:36,970 --> 00:20:42,135
+A base class for your project, with more
+specific ones below it, is a great pattern.
+
+331
+00:20:42,485 --> 00:20:47,213
+The raise statement stops the function
+immediately and hands the problem to the
+
+332
+00:20:47,213 --> 00:20:47,632
+caller.
+
+333
+00:20:47,852 --> 00:20:51,840
+A negative cost is a
+programming error, so that's a value error.
+
+334
+00:20:52,060 --> 00:20:57,126
+Going over budget is a business rule,
+so it gets our own budget exceeded error.
+
+335
+00:20:57,476 --> 00:21:01,372
+The caller catches only
+budget exceeded, and stops charging.
+
+336
+00:21:01,592 --> 00:21:07,121
+Agents need exactly this kind of guard,
+a hard spending limit, which we'll build
+
+337
+00:21:07,121 --> 00:21:08,572
+properly in Module 7.
+
+338
+00:21:09,872 --> 00:21:14,762
+The first two charges succeed, and
+the third is refused with a clear message.
+
+339
+00:21:16,062 --> 00:21:18,391
+On the left is a pattern you must avoid.
+
+340
+00:21:18,611 --> 00:21:23,453
+A bare except with pass hides every
+error, including bugs in your own code.
+
+341
+00:21:23,673 --> 00:21:27,980
+The program carries on with no
+result, and you have no idea why.
+
+342
+00:21:28,330 --> 00:21:32,539
+On the right, you catch only the
+error you expect and know how to handle.
+
+343
+00:21:32,759 --> 00:21:36,965
+Anything unexpected still
+surfaces, so you can see it and fix it.
+
+344
+00:21:38,265 --> 00:21:41,779
+When an exception isn't
+handled, Python prints a traceback.
+
+345
+00:21:41,999 --> 00:21:44,532
+It looks scary, but
+read it from the bottom up.
+
+346
+00:21:44,752 --> 00:21:48,423
+The last line is the error:
+a key error for the key model.
+
+347
+00:21:48,773 --> 00:21:53,910
+The lines above it show the path the
+program took, with the most recent call last.
+
+348
+00:21:54,130 --> 00:21:59,734
+Here, the failing line is config, model,
+inside get model, called from start agent.
+
+349
+00:21:59,954 --> 00:22:05,185
+So the fix is to make sure the
+configuration contains a model, or to read it with
+
+350
+00:22:05,185 --> 00:22:06,348
+get and a default.
+
+351
+00:22:07,648 --> 00:22:08,456
+Quick check.
+
+352
+00:22:08,676 --> 00:22:13,808
+Why is a function with history
+equals an empty list as a default dangerous?
+
+353
+00:22:19,508 --> 00:22:24,372
+Because the default list is created
+once and shared by every call that uses it.
+
+354
+00:22:24,592 --> 00:22:28,302
+Default to None and create a
+fresh list inside the function.
+
+355
+00:22:29,602 --> 00:22:33,849
+Functions do one job, have a
+clear name, and return their result.
+
+356
+00:22:34,199 --> 00:22:36,267
+Default mutable arguments to None.
+
+357
+00:22:36,617 --> 00:22:41,998
+Classes bundle data and behaviour, and
+dataclasses make data-heavy classes short.
+
+358
+00:22:42,348 --> 00:22:47,240
+Catch specific exceptions, raise
+meaningful ones, and read tracebacks from the
+
+359
+00:22:47,240 --> 00:22:47,867
+bottom up.
+
+360
+00:22:48,217 --> 00:22:54,020
+Next, you will split code across files
+and packages, and work with files, JSON, and
+
+361
+00:22:54,020 --> 00:22:55,559
+environment variables.
+
+362
+00:22:56,870 --> 00:22:59,918
+Real AI projects are never a single file.
+
+363
+00:23:00,138 --> 00:23:06,159
+They read prompts and documents from
+disk, exchange JSON with APIs, and need secret
+
+364
+00:23:06,159 --> 00:23:09,422
+API keys that must
+never end up in your code.
+
+365
+00:23:09,642 --> 00:23:11,441
+This lesson covers all of that.
+
+366
+00:23:12,741 --> 00:23:17,267
+You will split code into modules
+and packages, and import between them.
+
+367
+00:23:17,617 --> 00:23:20,115
+Read and write files safely with pathlib.
+
+368
+00:23:20,465 --> 00:23:25,183
+Convert between JSON and Python
+objects, and handle invalid JSON.
+
+369
+00:23:25,533 --> 00:23:29,659
+And keep configuration and
+secrets in environment variables.
+
+370
+00:23:30,959 --> 00:23:33,365
+First, how Python code is organised.
+
+371
+00:23:33,715 --> 00:23:35,953
+A module is simply a Python file.
+
+372
+00:23:36,173 --> 00:23:41,878
+Anything defined in cleaning dot py,
+functions, classes, variables, can be imported
+
+373
+00:23:41,878 --> 00:23:42,566
+elsewhere.
+
+374
+00:23:42,916 --> 00:23:48,034
+A package is a folder of modules
+with a file called dunder init dot py.
+
+375
+00:23:48,254 --> 00:23:53,862
+That file runs when the package is
+imported, and it often re-exports the most useful
+
+376
+00:23:53,862 --> 00:23:54,263
+names.
+
+377
+00:23:54,613 --> 00:24:00,013
+Your program imports the package by
+name, exactly like it imports anything else.
+
+378
+00:24:00,363 --> 00:24:06,688
+And there are two other sources of
+modules: the standard library, which ships with
+
+379
+00:24:06,688 --> 00:24:13,012
+Python, like json, pathlib, and os, and
+third-party packages you install with pip,
+
+380
+00:24:13,012 --> 00:24:13,860
+like httpx.
+
+381
+00:24:15,160 --> 00:24:16,475
+Here is the module.
+
+382
+00:24:16,695 --> 00:24:22,337
+Normalize collapses runs of whitespace
+by splitting the text into words and joining
+
+383
+00:24:22,337 --> 00:24:24,309
+them back with single spaces.
+
+384
+00:24:24,659 --> 00:24:26,965
+And word count reuses normalize.
+
+385
+00:24:27,185 --> 00:24:29,478
+Small functions that build on each other.
+
+386
+00:24:30,778 --> 00:24:36,230
+The package's init file imports the two
+functions, so users can call them directly
+
+387
+00:24:36,230 --> 00:24:36,962
+on textkit.
+
+388
+00:24:37,312 --> 00:24:40,174
+And dunder all
+documents which names are public.
+
+389
+00:24:41,474 --> 00:24:42,805
+Two import styles.
+
+390
+00:24:43,025 --> 00:24:47,007
+Import textkit gives you the
+whole package, used with a prefix.
+
+391
+00:24:47,227 --> 00:24:51,616
+From textkit dot cleaning import
+word count brings in a single name.
+
+392
+00:24:51,966 --> 00:24:53,810
+The main function does the work.
+
+393
+00:24:54,160 --> 00:24:56,552
+This final check is a Python idiom.
+
+394
+00:24:56,772 --> 00:25:01,823
+Dunder name equals dunder main is
+true only when the file is run directly.
+
+395
+00:25:02,043 --> 00:25:06,037
+If another file imports it,
+main does not run automatically.
+
+396
+00:25:07,337 --> 00:25:10,634
+Running main gives the
+cleaned text and the word count.
+
+397
+00:25:10,984 --> 00:25:16,073
+And because textkit is a proper package,
+any other code in this folder can import it
+
+398
+00:25:16,073 --> 00:25:16,315
+too.
+
+399
+00:25:17,615 --> 00:25:22,455
+If you see module not found error for
+your own package, you are almost always
+
+400
+00:25:22,455 --> 00:25:24,781
+running Python from the wrong folder.
+
+401
+00:25:25,001 --> 00:25:28,867
+Python looks for imports starting
+in the folder of the script you run.
+
+402
+00:25:29,087 --> 00:25:33,222
+Run from the project root, and
+for packages, use python dash m.
+
+403
+00:25:34,522 --> 00:25:35,594
+Next, files.
+
+404
+00:25:35,814 --> 00:25:39,659
+Prompts, documents, logs,
+and reports all live in files.
+
+405
+00:25:39,879 --> 00:25:42,440
+The modern way to
+work with them is pathlib.
+
+406
+00:25:42,790 --> 00:25:45,364
+A Path object represents a file path.
+
+407
+00:25:45,584 --> 00:25:48,140
+Write text creates or overwrites the file.
+
+408
+00:25:48,360 --> 00:25:51,168
+Always pass encoding equals utf eight.
+
+409
+00:25:51,388 --> 00:25:56,715
+The default encoding is different on
+Windows, and AI text is full of characters
+
+410
+00:25:56,715 --> 00:25:58,198
+outside basic English.
+
+411
+00:25:58,548 --> 00:26:04,101
+Read text returns the whole file as one
+string, and splitlines turns it into a list
+
+412
+00:26:04,101 --> 00:26:04,703
+of lines.
+
+413
+00:26:05,053 --> 00:26:08,432
+For more control, open
+the file inside a with block.
+
+414
+00:26:08,652 --> 00:26:11,477
+The mode a means
+append, so we add to the end.
+
+415
+00:26:11,697 --> 00:26:16,353
+The with statement guarantees the
+file is closed, even if something fails.
+
+416
+00:26:16,703 --> 00:26:21,849
+Finally, number the lines, and ask the
+path a few questions: does it exist, what is
+
+417
+00:26:21,849 --> 00:26:24,143
+its suffix, and how many bytes is it.
+
+418
+00:26:25,443 --> 00:26:29,958
+Two lines written, a third
+appended, and the file is thirty-four bytes.
+
+419
+00:26:31,258 --> 00:26:36,260
+JSON is a text format for data,
+and it is everywhere in AI engineering.
+
+420
+00:26:36,480 --> 00:26:43,041
+Model APIs send and receive JSON, tool
+calls are described in JSON, and logs are
+
+421
+00:26:43,041 --> 00:26:43,943
+often JSON.
+
+422
+00:26:44,293 --> 00:26:46,599
+JSON looks very similar to Python.
+
+423
+00:26:46,819 --> 00:26:52,262
+Objects in curly braces, arrays in
+square brackets, strings, numbers, true, false,
+
+424
+00:26:52,262 --> 00:26:52,859
+and null.
+
+425
+00:26:53,209 --> 00:26:56,320
+Python's json module maps them directly.
+
+426
+00:26:56,540 --> 00:27:01,758
+Objects become dictionaries, arrays
+become lists, and true, false, and null become
+
+427
+00:27:01,758 --> 00:27:03,158
+True, False, and None.
+
+428
+00:27:03,378 --> 00:27:05,354
+But JSON is stricter than Python.
+
+429
+00:27:05,574 --> 00:27:09,503
+Strings need double quotes, and
+trailing commas are not allowed.
+
+430
+00:27:10,803 --> 00:27:13,673
+We start from an
+ordinary Python dictionary.
+
+431
+00:27:14,023 --> 00:27:19,227
+json dot dumps, with an s for
+string, converts Python into JSON text.
+
+432
+00:27:19,447 --> 00:27:21,203
+Indent two makes it readable.
+
+433
+00:27:21,423 --> 00:27:22,892
+Then we save it to a file.
+
+434
+00:27:23,242 --> 00:27:29,532
+json dot loads does the reverse, turning
+JSON text back into Python objects, so the
+
+435
+00:27:29,532 --> 00:27:31,881
+tokens are a real number again.
+
+436
+00:27:32,231 --> 00:27:35,789
+And invalid JSON
+raises a JSON decode error.
+
+437
+00:27:36,009 --> 00:27:37,483
+Here, a trailing comma.
+
+438
+00:27:37,703 --> 00:27:43,073
+Language models sometimes produce
+slightly broken JSON, so you will handle this
+
+439
+00:27:43,073 --> 00:27:43,889
+error a lot.
+
+440
+00:27:45,189 --> 00:27:50,620
+Notice true and null in the JSON text,
+the token count plus one, and the precise
+
+441
+00:27:50,620 --> 00:27:53,810
+error message, which
+even tells you the column.
+
+442
+00:27:55,110 --> 00:27:58,244
+Environment variables
+keep secrets out of your code.
+
+443
+00:27:58,464 --> 00:28:04,266
+An API key written in a source file ends
+up in git history, in screenshots, and in
+
+444
+00:28:04,266 --> 00:28:04,620
+logs.
+
+445
+00:28:04,970 --> 00:28:09,938
+They also let settings change without
+editing code, such as a different model on
+
+446
+00:28:09,938 --> 00:28:11,801
+your laptop and in production.
+
+447
+00:28:12,151 --> 00:28:17,527
+And every platform supports them:
+your terminal, Docker, cloud hosts, and CI
+
+448
+00:28:17,527 --> 00:28:18,234
+pipelines.
+
+449
+00:28:18,454 --> 00:28:21,405
+You'll use them all the way to Module 17.
+
+450
+00:28:22,705 --> 00:28:28,858
+The os module exposes environment
+variables as a dictionary-like object called
+
+451
+00:28:28,858 --> 00:28:29,489
+environ.
+
+452
+00:28:29,709 --> 00:28:34,100
+Get returns None if the variable
+isn't set, or a default you choose.
+
+453
+00:28:34,450 --> 00:28:39,604
+If the key is missing, say so clearly
+instead of failing later in a confusing way.
+
+454
+00:28:39,824 --> 00:28:41,699
+And never print the secret itself.
+
+455
+00:28:41,919 --> 00:28:44,817
+Printing its length is
+enough to confirm it loaded.
+
+456
+00:28:46,117 --> 00:28:51,196
+With nothing set, the script refuses
+to continue and uses the default model.
+
+457
+00:28:51,546 --> 00:28:57,014
+On macOS or Linux, you can set
+variables for a single command like this.
+
+458
+00:28:57,234 --> 00:28:59,511
+This is a fake key, just for the demo.
+
+459
+00:28:59,731 --> 00:29:05,555
+On Windows PowerShell, you'd first run
+dollar env, colon, DEMO API KEY, equals, and
+
+460
+00:29:05,555 --> 00:29:06,959
+the value in quotes.
+
+461
+00:29:08,259 --> 00:29:13,888
+Typing variables every time gets tedious,
+so projects keep them in a file called dot
+
+462
+00:29:13,888 --> 00:29:14,156
+env.
+
+463
+00:29:14,376 --> 00:29:19,767
+You commit a template called dot env dot
+example, with fake values, so others know
+
+464
+00:29:19,767 --> 00:29:20,556
+what to set.
+
+465
+00:29:20,906 --> 00:29:26,933
+The real dot env file holds your actual
+keys, and it is listed in dot gitignore, so
+
+466
+00:29:26,933 --> 00:29:28,458
+git never records it.
+
+467
+00:29:28,678 --> 00:29:33,807
+In the project, we'll write a tiny
+loader that reads dot env into the environment.
+
+468
+00:29:34,027 --> 00:29:36,773
+Real variables always win over the file.
+
+469
+00:29:38,073 --> 00:29:38,881
+Quick check.
+
+470
+00:29:39,101 --> 00:29:42,817
+Which call turns this JSON
+text into a Python dictionary?
+
+471
+00:29:48,517 --> 00:29:50,042
+json dot loads.
+
+472
+00:29:50,262 --> 00:29:51,734
+The s stands for string.
+
+473
+00:29:51,954 --> 00:29:57,344
+Dumps goes the other way, and load
+without an s reads from an open file object.
+
+474
+00:29:58,644 --> 00:30:03,402
+A module is a file, and a package
+is a folder with a dunder init file.
+
+475
+00:30:03,752 --> 00:30:07,303
+Use pathlib, and always
+set the encoding to utf eight.
+
+476
+00:30:07,653 --> 00:30:12,292
+Convert with json loads and
+dumps, and catch JSON decode errors.
+
+477
+00:30:12,642 --> 00:30:17,846
+Secrets live in environment variables,
+and only the example file is committed.
+
+478
+00:30:18,196 --> 00:30:24,996
+In the next lesson, you'll add type
+hints, talk to web APIs over HTTP, and see why
+
+479
+00:30:24,996 --> 00:30:27,235
+async makes AI apps faster.
+
+480
+00:30:28,539 --> 00:30:33,683
+Every language model you will use
+in this course lives behind a web API.
+
+481
+00:30:33,903 --> 00:30:37,854
+You send an HTTP request,
+and you wait for the answer.
+
+482
+00:30:38,074 --> 00:30:44,484
+This lesson gives you the three tools
+that make that work well: type hints, HTTP
+
+483
+00:30:44,484 --> 00:30:47,768
+requests with httpx, and async and await.
+
+484
+00:30:49,068 --> 00:30:53,569
+You will annotate functions with type
+hints, and check them with a type checker.
+
+485
+00:30:53,919 --> 00:30:58,492
+Understand HTTP requests,
+responses, and status codes.
+
+486
+00:30:58,842 --> 00:31:04,041
+Call web APIs with httpx,
+including timeouts and error handling.
+
+487
+00:31:04,391 --> 00:31:08,184
+And run slow operations at the
+same time with async and await.
+
+488
+00:31:09,484 --> 00:31:12,937
+A type hint is a label
+saying what type a value should be.
+
+489
+00:31:13,157 --> 00:31:18,336
+After each parameter you write a colon
+and a type, and after the parentheses an
+
+490
+00:31:18,336 --> 00:31:20,040
+arrow and the return type.
+
+491
+00:31:20,260 --> 00:31:23,636
+This function takes a list
+of floats and returns a float.
+
+492
+00:31:23,986 --> 00:31:28,538
+Here, the dictionary maps strings to
+floats, and the vertical bar means or.
+
+493
+00:31:28,758 --> 00:31:32,728
+The function returns a float,
+or None when the model isn't found.
+
+494
+00:31:33,078 --> 00:31:36,072
+Called correctly,
+everything works as you'd expect.
+
+495
+00:31:36,422 --> 00:31:38,102
+But here's the important part.
+
+496
+00:31:38,322 --> 00:31:41,104
+Python does not enforce
+hints when the code runs.
+
+497
+00:31:41,324 --> 00:31:45,863
+Passing a string is allowed, and it
+only crashes deep inside the function.
+
+498
+00:31:47,163 --> 00:31:52,749
+Running it: two good results, and then a
+confusing type error from inside sum, far
+
+499
+00:31:52,749 --> 00:31:54,588
+away from the real mistake.
+
+500
+00:31:54,938 --> 00:31:59,973
+A type checker like mypy reads your
+hints without running the code, and points at
+
+501
+00:31:59,973 --> 00:32:03,889
+the exact line with the wrong
+argument, before you ever run it.
+
+502
+00:32:04,109 --> 00:32:07,350
+Your editor uses the
+same hints for autocompletion.
+
+503
+00:32:08,650 --> 00:32:11,957
+The simple types:
+str, int, float, and bool.
+
+504
+00:32:12,307 --> 00:32:17,607
+Collections say what's inside: a list
+of strings, or a dictionary from strings to
+
+505
+00:32:17,607 --> 00:32:17,934
+ints.
+
+506
+00:32:18,284 --> 00:32:21,803
+A vertical bar with None
+means the value might be missing.
+
+507
+00:32:22,153 --> 00:32:25,938
+A tuple hint lists each
+position, like a string and an int.
+
+508
+00:32:26,288 --> 00:32:32,538
+In Module 3, a library called Pydantic
+will use exactly these hints to validate real
+
+509
+00:32:32,538 --> 00:32:33,729
+data at runtime.
+
+510
+00:32:33,949 --> 00:32:36,115
+That's where hints become really powerful.
+
+511
+00:32:37,415 --> 00:32:42,830
+HTTP is the language of web
+APIs, and it is simpler than it sounds.
+
+512
+00:32:43,180 --> 00:32:48,901
+There are two sides: a client, which is
+your Python code, and a server, such as a
+
+513
+00:32:48,901 --> 00:32:50,384
+model provider's API.
+
+514
+00:32:50,734 --> 00:32:52,351
+The client sends a request.
+
+515
+00:32:52,571 --> 00:32:58,859
+It has a method, such as GET to read or
+POST to send data, a URL, headers with extra
+
+516
+00:32:58,859 --> 00:33:02,752
+information like your API
+key, and sometimes a body.
+
+517
+00:33:03,102 --> 00:33:09,351
+The server sends back a response: a
+status code saying how it went, headers, and a
+
+518
+00:33:09,351 --> 00:33:12,857
+body, which for AI
+APIs is almost always JSON.
+
+519
+00:33:14,157 --> 00:33:16,470
+Codes in the two hundreds mean success.
+
+520
+00:33:16,690 --> 00:33:19,873
+Two hundred is OK, two oh one is created.
+
+521
+00:33:20,223 --> 00:33:23,191
+Four hundreds mean the
+problem is on your side.
+
+522
+00:33:23,411 --> 00:33:29,069
+Bad input, a missing or wrong
+API key, or a URL that doesn't exist.
+
+523
+00:33:29,289 --> 00:33:30,609
+Retrying won't help.
+
+524
+00:33:30,829 --> 00:33:32,008
+Fix the request.
+
+525
+00:33:32,358 --> 00:33:34,896
+Four twenty-nine deserves its own card.
+
+526
+00:33:35,116 --> 00:33:36,846
+It means you hit a rate limit.
+
+527
+00:33:37,066 --> 00:33:42,556
+Every model API has them, and Module
+2 shows how to wait and retry properly.
+
+528
+00:33:42,906 --> 00:33:45,673
+And five hundreds mean
+the server had a problem.
+
+529
+00:33:45,893 --> 00:33:49,764
+Those are often temporary,
+so a careful retry can succeed.
+
+530
+00:33:51,064 --> 00:33:52,919
+Now let's make real requests.
+
+531
+00:33:53,139 --> 00:33:59,210
+So that this works offline, I'm serving
+the project's sample data from a small local
+
+532
+00:33:59,210 --> 00:34:02,969
+web server, using
+Python's built-in http dot server.
+
+533
+00:34:03,319 --> 00:34:09,065
+httpx dot get sends a GET
+request and returns a response object.
+
+534
+00:34:09,285 --> 00:34:10,725
+Always pass a timeout.
+
+535
+00:34:10,945 --> 00:34:14,528
+A network call that hangs
+forever will freeze your agent.
+
+536
+00:34:14,748 --> 00:34:18,545
+The response tells us the status
+code and the content type header.
+
+537
+00:34:18,895 --> 00:34:24,408
+Raise for status turns any error status
+into an exception, so failures can't slip by
+
+538
+00:34:24,408 --> 00:34:25,064
+unnoticed.
+
+539
+00:34:25,284 --> 00:34:29,287
+Then dot json parses the
+body into Python objects.
+
+540
+00:34:29,637 --> 00:34:35,388
+And here we request a file that doesn't
+exist, and catch the HTTP status error to
+
+541
+00:34:35,388 --> 00:34:36,878
+read its status code.
+
+542
+00:34:38,178 --> 00:34:40,851
+First, start the local
+server in the background.
+
+543
+00:34:41,071 --> 00:34:43,431
+It serves the files in the data folder.
+
+544
+00:34:43,781 --> 00:34:45,067
+Then run the script.
+
+545
+00:34:45,287 --> 00:34:50,815
+Status two hundred with a JSON content
+type, ten records loaded, and a clean four oh
+
+546
+00:34:50,815 --> 00:34:52,526
+four for the missing file.
+
+547
+00:34:53,826 --> 00:34:59,028
+A language model call can take several
+seconds, and during that time your program is
+
+548
+00:34:59,028 --> 00:35:00,825
+just waiting for the network.
+
+549
+00:35:01,175 --> 00:35:06,582
+If an agent needs three independent
+answers and asks for them one by one, the waits
+
+550
+00:35:06,582 --> 00:35:07,038
+add up.
+
+551
+00:35:07,258 --> 00:35:10,438
+Three calls of one
+second each take three seconds.
+
+552
+00:35:10,788 --> 00:35:15,741
+With async, you start all three, wait
+for them together, and finish in about one
+
+553
+00:35:15,741 --> 00:35:16,174
+second.
+
+554
+00:35:16,394 --> 00:35:18,235
+That's not more computing power.
+
+555
+00:35:18,455 --> 00:35:20,609
+It's simply not wasting time waiting.
+
+556
+00:35:21,909 --> 00:35:25,984
+Async def defines a
+coroutine, a function that can pause.
+
+557
+00:35:26,204 --> 00:35:31,864
+Await means: pause here until this
+finishes, and let other work run meanwhile.
+
+558
+00:35:31,864 --> 00:35:36,145
+asyncio dot sleep stands in
+for waiting on a network reply.
+
+559
+00:35:36,495 --> 00:35:41,257
+This version awaits each call in a
+loop, so they still run one after another.
+
+560
+00:35:41,607 --> 00:35:47,220
+This version passes all three to
+asyncio dot gather, which runs them concurrently
+
+561
+00:35:47,220 --> 00:35:51,239
+and returns the results in
+the same order you passed them.
+
+562
+00:35:51,589 --> 00:35:56,955
+Finally, asyncio dot run starts
+the event loop that drives coroutines.
+
+563
+00:35:57,175 --> 00:35:58,787
+We time both versions.
+
+564
+00:36:00,087 --> 00:36:01,340
+A real measurement.
+
+565
+00:36:01,560 --> 00:36:05,001
+Three seconds one by
+one, one second concurrently.
+
+566
+00:36:06,301 --> 00:36:09,072
+httpx has an async client too.
+
+567
+00:36:09,292 --> 00:36:14,473
+The fetch coroutine awaits the request
+and returns how many records came back.
+
+568
+00:36:14,823 --> 00:36:19,475
+Async with opens one shared
+client, and closes it properly afterwards.
+
+569
+00:36:19,695 --> 00:36:22,878
+Gather fetches every URL at the same time.
+
+570
+00:36:23,098 --> 00:36:26,186
+This is exactly how the
+project's fetch command works.
+
+571
+00:36:27,486 --> 00:36:31,973
+Both files downloaded
+concurrently: ten records and five records.
+
+572
+00:36:33,273 --> 00:36:36,008
+Await only works inside an async function.
+
+573
+00:36:36,358 --> 00:36:41,301
+Start the event loop once, at the top
+of your program, with asyncio dot run.
+
+574
+00:36:41,651 --> 00:36:44,890
+Async speeds up waiting,
+for the network or the disk.
+
+575
+00:36:45,110 --> 00:36:47,519
+It doesn't make heavy calculations faster.
+
+576
+00:36:47,869 --> 00:36:52,541
+And never call blocking code, like
+time dot sleep, inside a coroutine.
+
+577
+00:36:52,761 --> 00:36:54,546
+It freezes every other task.
+
+578
+00:36:54,766 --> 00:36:56,844
+Use the async version instead.
+
+579
+00:36:58,144 --> 00:36:58,951
+Quick check.
+
+580
+00:36:59,171 --> 00:37:02,094
+An API replies with
+status four twenty-nine.
+
+581
+00:37:02,314 --> 00:37:04,671
+What does it mean, and
+what should your code do?
+
+582
+00:37:10,371 --> 00:37:11,503
+Too many requests.
+
+583
+00:37:11,723 --> 00:37:14,413
+You hit a rate limit, so wait, then retry.
+
+584
+00:37:14,633 --> 00:37:18,074
+You'll implement this
+properly, with backoff, in Module 2.
+
+585
+00:37:19,374 --> 00:37:24,646
+Type hints document your intent, and a
+type checker verifies them before the code
+
+586
+00:37:24,646 --> 00:37:24,971
+runs.
+
+587
+00:37:25,321 --> 00:37:31,221
+HTTP is a request and a response, and
+the status code tells you how it went.
+
+588
+00:37:31,571 --> 00:37:35,640
+Use httpx with a
+timeout, and raise for status.
+
+589
+00:37:35,990 --> 00:37:40,462
+And use async, await, and
+gather to wait for many calls at once.
+
+590
+00:37:40,812 --> 00:37:43,852
+You now have every
+Python skill the project needs.
+
+591
+00:37:44,072 --> 00:37:47,914
+In the next lesson, we start
+building the Python AI Toolkit.
+
+592
+00:37:49,222 --> 00:37:50,185
+Time to build.
+
+593
+00:37:50,405 --> 00:37:55,878
+Over the next two lessons, you'll write
+the Python AI Toolkit from an empty folder
+
+594
+00:37:55,878 --> 00:37:57,881
+to a tested command line tool.
+
+595
+00:37:58,101 --> 00:38:01,188
+Every concept from this
+module appears somewhere in it.
+
+596
+00:38:01,408 --> 00:38:05,129
+In this lesson we plan it,
+model the data, and validate it.
+
+597
+00:38:06,429 --> 00:38:12,200
+Every AI team needs to answer simple
+questions about their language model usage.
+
+598
+00:38:12,420 --> 00:38:13,882
+How many requests failed?
+
+599
+00:38:14,102 --> 00:38:15,980
+How many tokens did we use?
+
+600
+00:38:16,200 --> 00:38:17,660
+Roughly what did it cost?
+
+601
+00:38:17,880 --> 00:38:19,691
+Here is what our tool must do.
+
+602
+00:38:20,041 --> 00:38:24,973
+Read a JSON log of model API
+calls, with one record per request.
+
+603
+00:38:25,323 --> 00:38:31,116
+Validate every record, and explain each
+problem precisely, without crashing on bad
+
+604
+00:38:31,116 --> 00:38:31,469
+data.
+
+605
+00:38:31,819 --> 00:38:37,645
+Summarise the good records: success
+rate, tokens, estimated cost, latency, and the
+
+606
+00:38:37,645 --> 00:38:38,853
+most common tags.
+
+607
+00:38:39,203 --> 00:38:43,891
+Write that report as Markdown for
+people, or JSON for other programs.
+
+608
+00:38:44,241 --> 00:38:48,057
+Download logs from
+several URLs at the same time.
+
+609
+00:38:48,407 --> 00:38:53,273
+And take its settings from environment
+variables, with automated tests for all of
+
+610
+00:38:53,273 --> 00:38:53,453
+it.
+
+611
+00:38:54,753 --> 00:38:57,468
+Before writing code,
+decide how to split it.
+
+612
+00:38:57,688 --> 00:38:59,433
+Each file gets one job.
+
+613
+00:38:59,783 --> 00:39:04,732
+At the top, cli dot py reads the
+command line and calls everything else.
+
+614
+00:39:04,952 --> 00:39:08,479
+It's the only part that
+knows about arguments and printing.
+
+615
+00:39:08,829 --> 00:39:14,445
+The loader reads a file, and models turns
+each raw dictionary into a validated usage
+
+616
+00:39:14,445 --> 00:39:14,913
+record.
+
+617
+00:39:15,263 --> 00:39:18,482
+Stats calculates the
+summary, and report formats it.
+
+618
+00:39:18,702 --> 00:39:22,833
+Calculating and formatting are
+separate, so each is easy to test.
+
+619
+00:39:23,183 --> 00:39:28,681
+Config reads settings and prices,
+and fetch downloads logs over HTTP.
+
+620
+00:39:29,031 --> 00:39:31,690
+And errors defines our exception classes.
+
+621
+00:39:31,910 --> 00:39:37,461
+Any module can raise a toolkit error, and
+the command line catches it in exactly one
+
+622
+00:39:37,461 --> 00:39:37,857
+place.
+
+623
+00:39:39,157 --> 00:39:40,264
+Here's the input.
+
+624
+00:39:40,484 --> 00:39:43,647
+A JSON list, with one
+object per model call.
+
+625
+00:39:43,997 --> 00:39:49,358
+Each record has an id, the model
+used, and the prompt and completion tokens.
+
+626
+00:39:49,578 --> 00:39:55,018
+Prompt tokens are what you sent, and
+completion tokens are what the model generated.
+
+627
+00:39:55,238 --> 00:39:57,765
+Providers usually price them differently.
+
+628
+00:39:58,115 --> 00:40:05,535
+It also has the latency in
+milliseconds, a status of ok or error, a list of tags
+
+629
+00:40:05,535 --> 00:40:10,730
+describing the task, and a
+timestamp in ISO 8601 format.
+
+630
+00:40:10,950 --> 00:40:16,204
+Elsewhere in this file, request four
+failed after thirty seconds, which looks like a
+
+631
+00:40:16,204 --> 00:40:16,704
+timeout.
+
+632
+00:40:16,924 --> 00:40:19,778
+Real logs contain
+exactly this kind of mess.
+
+633
+00:40:21,078 --> 00:40:25,031
+We start with the errors,
+because every other module uses them.
+
+634
+00:40:25,251 --> 00:40:29,571
+Toolkit error is the base class
+for anything we raise on purpose.
+
+635
+00:40:29,921 --> 00:40:32,804
+Validation error is a more specific kind.
+
+636
+00:40:33,024 --> 00:40:38,052
+It calls the parent's init with a
+readable message, and also stores which field
+
+637
+00:40:38,052 --> 00:40:39,961
+failed, so tests can check it.
+
+638
+00:40:41,261 --> 00:40:42,582
+Now the data model.
+
+639
+00:40:42,802 --> 00:40:47,476
+Allowed status is a set, because we
+only ever ask, is this status in the set?
+
+640
+00:40:47,826 --> 00:40:49,484
+Require is a small helper.
+
+641
+00:40:49,704 --> 00:40:55,108
+It returns a field's value, or raises
+a validation error saying the field is
+
+642
+00:40:55,108 --> 00:40:58,165
+required, instead of
+a confusing key error.
+
+643
+00:40:58,515 --> 00:41:01,230
+This helper checks for
+a non-negative integer.
+
+644
+00:41:01,450 --> 00:41:03,022
+There's one subtle trap here.
+
+645
+00:41:03,242 --> 00:41:08,371
+In Python, True and False are a kind
+of int, so we reject bools explicitly.
+
+646
+00:41:08,721 --> 00:41:13,113
+The record itself is a
+dataclass, with a type hint for every field.
+
+647
+00:41:13,333 --> 00:41:19,108
+Frozen equals True makes it read-only,
+so nothing can quietly modify a record after
+
+648
+00:41:19,108 --> 00:41:19,873
+validation.
+
+649
+00:41:20,223 --> 00:41:22,107
+Total tokens is a property.
+
+650
+00:41:22,327 --> 00:41:27,450
+It's calculated from the other fields,
+but you use it like a normal attribute,
+
+651
+00:41:27,450 --> 00:41:28,764
+without parentheses.
+
+652
+00:41:30,064 --> 00:41:33,762
+From dict is a class
+method, an alternative constructor.
+
+653
+00:41:33,982 --> 00:41:39,394
+It receives the class itself as cls,
+and builds a record from a raw dictionary.
+
+654
+00:41:39,614 --> 00:41:42,775
+First, it checks that the
+item is a dictionary at all.
+
+655
+00:41:43,125 --> 00:41:44,705
+Then each field gets checked.
+
+656
+00:41:44,925 --> 00:41:48,140
+The id and the model
+must be non-empty strings.
+
+657
+00:41:48,490 --> 00:41:54,341
+Latency must be a non-negative number,
+either an int or a float, but again, not a
+
+658
+00:41:54,341 --> 00:41:54,702
+bool.
+
+659
+00:41:55,052 --> 00:41:57,013
+The status must be in the allowed set.
+
+660
+00:41:57,233 --> 00:42:01,623
+The message lists the valid
+options, which makes the error easy to fix.
+
+661
+00:42:01,973 --> 00:42:07,411
+Tags are optional, so we use get with an
+empty list as the default, and then check
+
+662
+00:42:07,411 --> 00:42:09,267
+that it's a list of strings.
+
+663
+00:42:09,617 --> 00:42:13,957
+For the timestamp, datetime
+dot fromisoformat does the parsing.
+
+664
+00:42:14,177 --> 00:42:19,565
+If it fails, we raise our own error,
+from None, so the user sees one clear message
+
+665
+00:42:19,565 --> 00:42:21,799
+instead of two chained tracebacks.
+
+666
+00:42:22,149 --> 00:42:25,886
+Finally, we call cls
+with every validated value.
+
+667
+00:42:26,106 --> 00:42:29,342
+If we get here, the
+record is guaranteed to be valid.
+
+668
+00:42:30,642 --> 00:42:35,877
+Let's try the model in the interactive
+Python prompt, before any other code exists.
+
+669
+00:42:36,097 --> 00:42:39,042
+Start it by typing
+python in the project folder.
+
+670
+00:42:39,392 --> 00:42:41,946
+We build a valid dictionary step by step.
+
+671
+00:42:42,166 --> 00:42:45,942
+From dict gives us a
+record, and total tokens is fifteen.
+
+672
+00:42:46,292 --> 00:42:48,619
+Now change one field to minus one.
+
+673
+00:42:48,839 --> 00:42:52,614
+Our validation error names
+the field and the bad value.
+
+674
+00:42:52,834 --> 00:42:58,077
+Double star row copies the dictionary,
+and the new key overrides the old value.
+
+675
+00:42:59,377 --> 00:43:02,694
+Read JSON handles the
+two ways reading can fail.
+
+676
+00:43:02,914 --> 00:43:06,782
+The file might not exist,
+or it might not be valid JSON.
+
+677
+00:43:07,002 --> 00:43:12,464
+Both become a toolkit error with a clear
+message, including the line and column for
+
+678
+00:43:12,464 --> 00:43:13,056
+bad JSON.
+
+679
+00:43:13,406 --> 00:43:18,920
+Load records returns a tuple of two
+lists: the valid records, and a message for
+
+680
+00:43:18,920 --> 00:43:20,176
+every invalid one.
+
+681
+00:43:20,396 --> 00:43:22,786
+The top level of the file must be a list.
+
+682
+00:43:23,136 --> 00:43:27,949
+Then we loop with enumerate, so we
+can report record numbers starting at one.
+
+683
+00:43:28,169 --> 00:43:33,761
+Each record that fails validation is
+recorded as a problem, and the loop carries on.
+
+684
+00:43:33,981 --> 00:43:37,429
+One bad record never stops
+the good ones from loading.
+
+685
+00:43:38,729 --> 00:43:44,046
+Settings is a small frozen dataclass
+with the two things we can configure: the
+
+686
+00:43:44,046 --> 00:43:46,500
+prices file, and the currency label.
+
+687
+00:43:46,850 --> 00:43:49,710
+Load dot env is our tiny dot env reader.
+
+688
+00:43:49,930 --> 00:43:55,516
+It skips blank lines and comments,
+splits each line at the first equals sign, and
+
+689
+00:43:55,516 --> 00:44:01,102
+uses set default, so a variable that's
+already set in the real environment always
+
+690
+00:44:01,102 --> 00:44:02,412
+wins over the file.
+
+691
+00:44:02,762 --> 00:44:06,615
+Load settings reads both
+variables, with sensible defaults.
+
+692
+00:44:06,965 --> 00:44:12,488
+And load prices reads the prices file,
+skipping keys that start with an underscore,
+
+693
+00:44:12,488 --> 00:44:14,218
+which we use for comments.
+
+694
+00:44:14,438 --> 00:44:18,969
+These are example prices for
+fictional models, per million tokens.
+
+695
+00:44:19,189 --> 00:44:21,423
+They are not real provider prices.
+
+696
+00:44:22,723 --> 00:44:26,683
+Prices is a type alias, a
+short name for a long type hint.
+
+697
+00:44:27,033 --> 00:44:31,720
+Model stats holds running totals
+for one model, all starting at zero.
+
+698
+00:44:32,070 --> 00:44:34,408
+Summary holds every number in the report.
+
+699
+00:44:34,628 --> 00:44:39,820
+Notice the default factories again,
+and two properties that calculate the total
+
+700
+00:44:39,820 --> 00:44:43,961
+tokens and the success rate,
+guarding against dividing by zero.
+
+701
+00:44:44,311 --> 00:44:50,148
+Estimate cost multiplies prompt and
+completion tokens by their prices, and divides
+
+702
+00:44:50,148 --> 00:44:51,073
+by a million.
+
+703
+00:44:51,293 --> 00:44:54,382
+An unknown model returns
+None instead of crashing.
+
+704
+00:44:55,682 --> 00:45:01,403
+Summarize prepares a dictionary of
+per-model stats, a counter for tags, a set of
+
+705
+00:45:01,403 --> 00:45:04,335
+models with no price, and a running cost.
+
+706
+00:45:04,685 --> 00:45:06,474
+One loop does all the counting.
+
+707
+00:45:06,694 --> 00:45:10,426
+Set default creates a model's
+stats the first time we see it.
+
+708
+00:45:10,646 --> 00:45:15,823
+Unpriced models are collected, not
+fatal, and the counter tallies every tag.
+
+709
+00:45:16,173 --> 00:45:21,587
+Finally, comprehensions and sum compute
+the totals, and most common gives the top
+
+710
+00:45:21,587 --> 00:45:22,322
+three tags.
+
+711
+00:45:22,542 --> 00:45:25,099
+Everything from
+lesson two, working together.
+
+712
+00:45:26,399 --> 00:45:30,354
+The command line doesn't exist
+yet, but the pieces already work.
+
+713
+00:45:30,574 --> 00:45:32,649
+Let's call them from the Python prompt.
+
+714
+00:45:32,999 --> 00:45:38,097
+Loading the broken file gives one
+valid record and four problems, each with a
+
+715
+00:45:38,097 --> 00:45:39,156
+precise message.
+
+716
+00:45:39,506 --> 00:45:44,946
+And summarising the clean sample
+gives ten requests, eight successful, eleven
+
+717
+00:45:44,946 --> 00:45:50,315
+thousand and ninety-five tokens, the
+estimated cost, and the top three tags.
+
+718
+00:45:51,615 --> 00:45:54,374
+We planned small
+modules with one job each.
+
+719
+00:45:54,724 --> 00:46:00,296
+We validate data at the edge, turning raw
+dictionaries into trusted records or clear
+
+720
+00:46:00,296 --> 00:46:00,760
+errors.
+
+721
+00:46:01,110 --> 00:46:04,346
+We collect problems instead
+of crashing on the first one.
+
+722
+00:46:04,696 --> 00:46:07,188
+And we keep calculating
+separate from formatting.
+
+723
+00:46:07,538 --> 00:46:12,755
+In part two, we write the report, the
+downloader, and the command line, then run the
+
+724
+00:46:12,755 --> 00:46:15,674
+finished tool, test
+it, and wrap up the module.
+
+725
+00:46:16,998 --> 00:46:18,023
+Welcome back.
+
+726
+00:46:18,243 --> 00:46:19,688
+The data layer works.
+
+727
+00:46:19,908 --> 00:46:25,007
+Now we add the report writer, the
+downloader, and the command line, then run the
+
+728
+00:46:25,007 --> 00:46:30,361
+finished tool, test it, fix the common
+errors, and finish the module with a quiz and
+
+729
+00:46:30,361 --> 00:46:31,126
+a challenge.
+
+730
+00:46:32,426 --> 00:46:35,690
+Render markdown takes a
+summary and returns text.
+
+731
+00:46:35,910 --> 00:46:40,897
+It doesn't print anything, so it's easy
+to test, and the caller decides where the
+
+732
+00:46:40,897 --> 00:46:41,512
+text goes.
+
+733
+00:46:41,862 --> 00:46:47,169
+The report is built as a list of
+lines, using f-string formats from lesson two.
+
+734
+00:46:47,389 --> 00:46:52,861
+Colon point one percent shows a
+percentage, and colon point four f shows four
+
+735
+00:46:52,861 --> 00:46:53,927
+decimal places.
+
+736
+00:46:54,277 --> 00:46:57,033
+A Markdown table has one row per model.
+
+737
+00:46:57,383 --> 00:47:03,207
+Then the top tags, numbered with
+enumerate, a warning if any model had no price, and
+
+738
+00:47:03,207 --> 00:47:06,396
+finally join glues
+everything into one string.
+
+739
+00:47:07,696 --> 00:47:13,112
+The JSON report builds nested
+dictionaries in exactly the shape we want, rounding
+
+740
+00:47:13,112 --> 00:47:15,520
+the floats so the output stays tidy.
+
+741
+00:47:15,870 --> 00:47:21,052
+A dictionary comprehension builds the
+per-model section, and a list comprehension
+
+742
+00:47:21,052 --> 00:47:22,076
+builds the tags.
+
+743
+00:47:22,296 --> 00:47:27,058
+Sets aren't valid JSON, so the
+unpriced models become a sorted list.
+
+744
+00:47:27,408 --> 00:47:30,280
+And json dot dumps turns it all into text.
+
+745
+00:47:31,580 --> 00:47:34,758
+Fetch one is the async
+request from lesson five.
+
+746
+00:47:34,978 --> 00:47:38,660
+Get the URL, raise for
+status, and parse the JSON.
+
+747
+00:47:39,010 --> 00:47:42,686
+Each kind of failure
+becomes one readable toolkit error.
+
+748
+00:47:42,906 --> 00:47:48,760
+An error status, a network problem like
+a refused connection, or a body that isn't
+
+749
+00:47:48,760 --> 00:47:49,117
+JSON.
+
+750
+00:47:49,467 --> 00:47:51,749
+And the body has to be a list of records.
+
+751
+00:47:52,099 --> 00:47:58,213
+Fetch all opens one client, gathers
+every download at the same time, and flattens
+
+752
+00:47:58,213 --> 00:48:02,516
+the batches into one list,
+keeping the order of the URLs.
+
+753
+00:48:02,736 --> 00:48:05,640
+The optional transport
+parameter is for testing.
+
+754
+00:48:05,860 --> 00:48:09,113
+It lets tests replace the
+real network with a fake one.
+
+755
+00:48:10,413 --> 00:48:15,388
+The standard library's argparse
+turns command line text into Python values.
+
+756
+00:48:15,608 --> 00:48:19,312
+It also generates help text
+and error messages for free.
+
+757
+00:48:19,662 --> 00:48:23,917
+Sub parsers give us separate
+commands, like git commit and git push.
+
+758
+00:48:24,137 --> 00:48:29,289
+Validate takes one file, and type
+equals Path converts it to a Path object.
+
+759
+00:48:29,639 --> 00:48:35,306
+Report adds options: a format
+restricted to two choices, an optional output file,
+
+760
+00:48:35,306 --> 00:48:38,385
+and a strict flag
+that is True when present.
+
+761
+00:48:38,735 --> 00:48:43,340
+Fetch accepts one or more
+URLs, and requires an output file.
+
+762
+00:48:44,640 --> 00:48:48,269
+Each command is a
+function that returns an exit code.
+
+763
+00:48:48,489 --> 00:48:54,157
+Validate prints every problem and
+returns one if anything was wrong, so scripts and
+
+764
+00:48:54,157 --> 00:48:56,343
+CI pipelines can detect failure.
+
+765
+00:48:56,693 --> 00:48:58,818
+Report loads settings and records.
+
+766
+00:48:59,038 --> 00:49:04,272
+Warnings go to standard error, so they
+never mix into a report that's being saved or
+
+767
+00:49:04,272 --> 00:49:04,645
+piped.
+
+768
+00:49:04,865 --> 00:49:07,733
+With strict, any
+invalid record is a failure.
+
+769
+00:49:07,953 --> 00:49:11,897
+Then we summarise and choose
+a renderer, Markdown or JSON.
+
+770
+00:49:12,247 --> 00:49:15,951
+The text is written to a
+file if out was given, or printed.
+
+771
+00:49:16,301 --> 00:49:21,795
+Fetch uses asyncio dot run to call
+our async function from normal code.
+
+772
+00:49:22,145 --> 00:49:27,192
+A dictionary maps each command name to
+its function, so there's no long chain of
+
+773
+00:49:27,192 --> 00:49:27,444
+ifs.
+
+774
+00:49:27,664 --> 00:49:32,953
+And main is the single place that
+catches toolkit errors, printing one clean line
+
+775
+00:49:32,953 --> 00:49:35,695
+and returning one, instead of a traceback.
+
+776
+00:49:36,995 --> 00:49:41,128
+And dunder main is what runs
+when you type python dash m toolkit.
+
+777
+00:49:41,348 --> 00:49:46,878
+It calls main, and raises system exit
+with the return value, which becomes the
+
+778
+00:49:46,878 --> 00:49:48,296
+program's exit code.
+
+779
+00:49:49,596 --> 00:49:51,027
+Let's run the finished tool.
+
+780
+00:49:51,247 --> 00:49:55,295
+Help is generated by
+argparse, listing the three commands.
+
+781
+00:49:55,645 --> 00:49:57,641
+The sample file is fully valid.
+
+782
+00:49:57,991 --> 00:50:01,249
+The broken file
+reports four precise problems.
+
+783
+00:50:01,599 --> 00:50:06,489
+And the exit code is one, which is
+how other programs know validation failed.
+
+784
+00:50:07,789 --> 00:50:09,141
+The Markdown report.
+
+785
+00:50:09,361 --> 00:50:12,042
+Ten requests with an
+eighty percent success rate.
+
+786
+00:50:12,262 --> 00:50:15,498
+And notice the average
+latency, over four seconds.
+
+787
+00:50:15,718 --> 00:50:18,741
+That's because one failed
+request took thirty seconds.
+
+788
+00:50:18,961 --> 00:50:24,302
+An average hides outliers like that,
+which is why one of this module's challenges
+
+789
+00:50:24,302 --> 00:50:26,214
+asks you to add a percentile.
+
+790
+00:50:27,514 --> 00:50:33,299
+With format json and out, the report is
+saved to a file instead, and the folder is
+
+791
+00:50:33,299 --> 00:50:34,851
+created automatically.
+
+792
+00:50:35,201 --> 00:50:40,043
+Here's the start of that JSON file,
+ready for a dashboard or another program.
+
+793
+00:50:40,393 --> 00:50:45,078
+In strict mode, the broken file
+fails, with the warning on standard error.
+
+794
+00:50:45,428 --> 00:50:47,397
+And settings come from the environment.
+
+795
+00:50:47,617 --> 00:50:52,857
+Point the prices file at something that
+doesn't exist, and you get one clear error
+
+796
+00:50:52,857 --> 00:50:54,071
+line, no traceback.
+
+797
+00:50:55,371 --> 00:50:56,475
+Finally, fetch.
+
+798
+00:50:56,695 --> 00:51:02,450
+A local web server is serving the data
+folder on port eighty-seven sixty-five, just
+
+799
+00:51:02,450 --> 00:51:03,837
+like in lesson five.
+
+800
+00:51:04,187 --> 00:51:08,650
+To keep the command short, we store
+the base address in a shell variable.
+
+801
+00:51:09,000 --> 00:51:14,418
+Both files download concurrently, and
+fifteen records are merged into one file.
+
+802
+00:51:14,768 --> 00:51:20,656
+Validating the merged file finds the
+eleven good records and the same four problems.
+
+803
+00:51:21,006 --> 00:51:25,995
+And if a server can't be reached,
+again, one clear line explains what happened.
+
+804
+00:51:27,295 --> 00:51:29,556
+A demo shows that the tool works today.
+
+805
+00:51:29,776 --> 00:51:32,220
+Tests make sure it keeps
+working when you change it.
+
+806
+00:51:32,440 --> 00:51:33,661
+We use pytest.
+
+807
+00:51:34,011 --> 00:51:39,339
+A pytest test is just a function whose
+name starts with test, using plain assert
+
+808
+00:51:39,339 --> 00:51:40,071
+statements.
+
+809
+00:51:40,291 --> 00:51:41,736
+Good row is a fixture.
+
+810
+00:51:41,956 --> 00:51:47,986
+Pytest sees the parameter name and
+passes in a fresh valid dictionary, defined once
+
+811
+00:51:47,986 --> 00:51:49,367
+in conftest dot py.
+
+812
+00:51:49,717 --> 00:51:52,796
+Parametrize runs the
+same test once per value.
+
+813
+00:51:53,016 --> 00:51:58,302
+Here, five tests, each deleting a
+different required field, and checking that the
+
+814
+00:51:58,302 --> 00:51:59,802
+error names that field.
+
+815
+00:52:00,152 --> 00:52:05,515
+This one feeds in nine kinds of bad
+data, including the sneaky True posing as a
+
+816
+00:52:05,515 --> 00:52:09,317
+number, and checks each is
+rejected for the right field.
+
+817
+00:52:10,617 --> 00:52:17,032
+Tests must not depend on a real network,
+which could be slow or down. httpx's mock
+
+818
+00:52:17,032 --> 00:52:22,900
+transport replaces the network with
+a function that returns fake responses.
+
+819
+00:52:23,250 --> 00:52:26,794
+So we can check that two
+downloads are merged in the right order.
+
+820
+00:52:27,144 --> 00:52:32,316
+And that a four oh four, or a response
+that isn't a list, becomes a toolkit error.
+
+821
+00:52:32,536 --> 00:52:35,640
+These run in
+milliseconds, with no server at all.
+
+822
+00:52:36,940 --> 00:52:38,149
+Run the whole suite.
+
+823
+00:52:38,369 --> 00:52:41,748
+Forty-two tests, all
+passing, in a fraction of a second.
+
+824
+00:52:42,098 --> 00:52:45,397
+With dash v, pytest
+lists each test by name.
+
+825
+00:52:45,747 --> 00:52:49,193
+And mypy confirms that all
+our type hints are consistent.
+
+826
+00:52:50,493 --> 00:52:53,529
+First, running a file
+inside the package directly.
+
+827
+00:52:53,749 --> 00:52:58,661
+Python can't find the toolkit package,
+because it searches from the toolkit folder
+
+828
+00:52:58,661 --> 00:52:59,080
+itself.
+
+829
+00:52:59,300 --> 00:53:03,603
+The fix: stay in the project
+root and run python dash m toolkit.
+
+830
+00:53:03,953 --> 00:53:06,441
+Second, forgetting
+the virtual environment.
+
+831
+00:53:06,791 --> 00:53:12,771
+With the environment deactivated, the
+system Python doesn't have httpx installed.
+
+832
+00:53:12,991 --> 00:53:15,602
+The fix is to activate dot venv again.
+
+833
+00:53:16,902 --> 00:53:22,531
+Is not valid JSON usually means a
+trailing comma, single quotes, or a comment.
+
+834
+00:53:22,751 --> 00:53:25,048
+The message gives you the line and column.
+
+835
+00:53:25,398 --> 00:53:29,854
+File not found usually means you
+ran the command from another folder.
+
+836
+00:53:30,074 --> 00:53:32,302
+Relative paths start
+from where you run it.
+
+837
+00:53:32,652 --> 00:53:38,446
+On Windows, if PowerShell refuses to
+run the activate script, run Set Execution
+
+838
+00:53:38,446 --> 00:53:42,333
+Policy for the current
+user with Remote Signed, once.
+
+839
+00:53:42,683 --> 00:53:48,194
+And if text comes out garbled, make
+sure every read and write uses utf eight.
+
+840
+00:53:49,494 --> 00:53:54,879
+You used lists, dictionaries, and sets,
+and built conversations as lists of message
+
+841
+00:53:54,879 --> 00:53:55,722
+dictionaries.
+
+842
+00:53:56,072 --> 00:53:59,581
+You wrote functions,
+dataclasses, and your own exceptions.
+
+843
+00:53:59,931 --> 00:54:05,124
+You organised a package, and worked
+with files, JSON, and environment variables.
+
+844
+00:54:05,474 --> 00:54:11,090
+You added type hints, made HTTP
+requests, and ran downloads concurrently.
+
+845
+00:54:11,440 --> 00:54:16,571
+And you built a tested command line
+tool with clear errors and proper exit codes.
+
+846
+00:54:17,871 --> 00:54:19,700
+Module quiz, question one.
+
+847
+00:54:19,920 --> 00:54:22,189
+An agent may only use two tools.
+
+848
+00:54:22,409 --> 00:54:26,082
+Which structure gives the fastest
+check for whether a tool is allowed?
+
+849
+00:54:31,782 --> 00:54:32,462
+A set.
+
+850
+00:54:32,682 --> 00:54:36,522
+Membership checks on a set
+stay fast however large it grows.
+
+851
+00:54:37,822 --> 00:54:38,858
+Question two.
+
+852
+00:54:39,078 --> 00:54:42,291
+What does frozen equals
+True add to our usage record?
+
+853
+00:54:47,991 --> 00:54:51,344
+Fields can't be changed
+after the record is created.
+
+854
+00:54:51,564 --> 00:54:55,337
+And note, a dataclass does
+not validate types by itself.
+
+855
+00:54:55,557 --> 00:54:57,806
+That's why from dict checks every field.
+
+856
+00:54:59,106 --> 00:55:00,168
+Question three.
+
+857
+00:55:00,388 --> 00:55:04,163
+Which block runs every time,
+whether or not an error happens?
+
+858
+00:55:09,863 --> 00:55:10,635
+Finally.
+
+859
+00:55:10,855 --> 00:55:12,644
+That's why it's used for cleanup.
+
+860
+00:55:13,944 --> 00:55:15,006
+Question four.
+
+861
+00:55:15,226 --> 00:55:18,195
+Why does fetch all use asyncio dot gather?
+
+862
+00:55:23,895 --> 00:55:29,042
+To download everything concurrently,
+so the total time is roughly the slowest
+
+863
+00:55:29,042 --> 00:55:31,516
+download, not the sum of all of them.
+
+864
+00:55:32,816 --> 00:55:34,078
+And question five.
+
+865
+00:55:34,298 --> 00:55:37,297
+Where should the real API
+key for your project live?
+
+866
+00:55:42,997 --> 00:55:47,361
+In an environment variable, or
+a dot env file that git ignores.
+
+867
+00:55:47,581 --> 00:55:51,173
+The example file only
+ever holds fake placeholders.
+
+868
+00:55:52,473 --> 00:55:55,726
+If you want to go further,
+here's your extension challenge.
+
+869
+00:55:55,946 --> 00:55:59,678
+Pick one or more, and for each
+one, write the code and a test.
+
+870
+00:56:00,028 --> 00:56:02,637
+Add a top N option to the report command.
+
+871
+00:56:02,987 --> 00:56:09,038
+Add ninety-fifth percentile latency,
+which, unlike the average, isn't distorted by
+
+872
+00:56:09,038 --> 00:56:10,292
+one slow request.
+
+873
+00:56:10,642 --> 00:56:14,411
+Add a breakdown per day,
+using the created at timestamp.
+
+874
+00:56:14,761 --> 00:56:19,298
+Or add a CSV output format,
+with the standard csv module.
+
+875
+00:56:20,598 --> 00:56:25,192
+These are the official
+documentation pages for everything we used.
+
+876
+00:56:25,412 --> 00:56:30,451
+Links are in the description, and the
+full source code is in the course repository.
+
+877
+00:56:34,551 --> 00:56:36,345
+That's Module 1 complete.
+
+878
+00:56:36,565 --> 00:56:41,336
+You now have the Python foundation
+that the rest of this course is built on.
+
+879
+00:56:41,556 --> 00:56:47,061
+In Module 2, you'll finally talk to a
+language model: tokens, context windows,
+
+880
+00:56:47,061 --> 00:56:52,849
+message history, structured output, rate
+limits, and costs, and you'll build an AI
+
+881
+00:56:52,849 --> 00:56:57,154
+Study Assistant that explains
+concepts and generates quizzes.
+
+882
+00:56:57,374 --> 00:56:58,237
+See you there.

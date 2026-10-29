@@ -9,32 +9,37 @@
     "audio": "aac"
   },
   "design_system": "COURSE_DESIGN_SYSTEM.md",
-  "next_module": 1,
+  "next_module": 2,
   "modules": [
     {
       "number": 1,
       "title": "Python for AI Engineering",
       "part": "I — Foundations",
       "project": "Python AI Toolkit",
-      "status": "IN_PROGRESS",
-      "lessons": [],
+      "status": "COMPLETED",
+      "lessons": [
+        "Welcome, the Agent Loop, and Your Python Setup",
+        "Python Core Data: Variables, Lists, Dictionaries and Sets",
+        "Functions, Classes and Exceptions",
+        "Modules, Packages, Files, JSON and Environment Variables",
+        "Type Hints, HTTP Requests and Async",
+        "Project, Part 1: Plan, Data Model and Validation",
+        "Project, Part 2: Reports, CLI, Tests and Wrap-up"
+      ],
       "paths": {
         "module": "modules/module-01-python-ai-engineering",
         "project": "modules/module-01-python-ai-engineering/project/python-ai-toolkit"
       },
-      "validation": null,
+      "validation": {
+        "report": "modules/module-01-python-ai-engineering/validation-report.md",
+        "checks_passed": 69,
+        "checks_total": 69
+      },
       "render": {
-        "lessons_rendered": [
-          1,
-          2,
-          3
-        ],
-        "lessons_pending": [
-          4,
-          5,
-          6,
-          7
-        ]
+        "lessons": 7,
+        "full_module": "renders/module-01-full.mp4",
+        "duration": "56:58",
+        "format": "1920x1080 60fps H.264 + AAC"
       },
       "blockers": []
     },
@@ -248,5 +253,5 @@
     "Enterprise Knowledge Assistant",
     "AI Workflow Automation Platform"
   ],
-  "updated": "2026-10-29T06:03:16Z"
+  "updated": "2026-10-29T09:47:59Z"
 }
