@@ -1,0 +1,241 @@
+module_title: Python for AI Engineering
+title: "Python Core Data: Variables, Lists, Dictionaries and Sets"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 1 · Lesson 2
+    title: The data every AI app is made of
+    subtitle: Variables, strings, lists, dictionaries and sets, shown with the shapes real AI code uses.
+    say: >
+      Every AI application, from a simple chatbot to a team of agents, moves the same few kinds of data around.
+      Text, numbers, lists of messages, and dictionaries of settings.
+      In this lesson you will learn those building blocks properly, using the exact shapes that language model APIs use.
+
+  - type: objectives
+    items:
+      - {text: "Create variables and recognise the basic types", say: "You will create variables and recognise Python's basic types."}
+      - {text: "Format text with f-strings", say: "Format text cleanly with f-strings."}
+      - {text: "Use lists, dictionaries and sets, and know when to pick each", say: "Use lists, dictionaries, and sets, and know when to pick each one."}
+      - {text: "Build a chat conversation as a list of dictionaries", say: "And build a chat conversation as a list of dictionaries, which is exactly the format you will send to a model in Module 2."}
+
+  - type: cards
+    chapter: Variables and types
+    heading: Python's basic types
+    say: >
+      A variable is a name that points at a value. Every value has a type, and the type decides what you can do with it.
+    cards:
+      - {tag: str, title: Text, code: '"model-small"', tone: teal, say: "A string, s t r, holds text. Prompts, model names, and replies are all strings."}
+      - {tag: int, title: Whole numbers, code: "500", tone: blue, say: "An int is a whole number, like a token count."}
+      - {tag: float, title: Decimals, code: "0.2", tone: violet, say: "A float is a decimal number, like a temperature setting or a price."}
+      - {tag: bool, title: True or False, code: "False", tone: amber, say: "A bool is either True or False, with a capital T and F."}
+      - {tag: None, title: No value yet, code: "None", tone: coral, say: "And None means no value at all. It's often used for something that is optional, or not loaded yet."}
+
+  - type: code
+    title: variables.py
+    file: source/lesson-02/variables.py
+    say: >
+      Here they are in a small script.
+    steps:
+      - lines: "2-6"
+        note: "`=` assigns: the name on the left now points at the value on the right."
+        say: >
+          Each line creates a variable with the equals sign. You do not declare the type yourself. Python works it out from the value.
+      - lines: "8"
+        note: "`type()` tells you what kind of value a name points at."
+        say: >
+          The built-in type function tells you what kind of value you have. That is very handy when something behaves unexpectedly.
+      - lines: "9"
+        note: "An **f-string** puts values inside `{curly braces}` straight into text."
+        say: >
+          This is an f-string. Put the letter f before the quotes, and anything inside curly braces is evaluated and inserted into the text.
+          You will build prompts this way all the time.
+      - lines: "11-12"
+        note: "`:,` inside the braces adds thousands separators."
+        say: >
+          A name can be pointed at a new value at any time. And f-strings can format values too. Colon comma adds thousands separators.
+
+  - type: terminal
+    title: terminal — lesson-02
+    cwd: source/lesson-02
+    steps:
+      - cmd: python variables.py
+        say: >
+          Run it, and you see the three types, the formatted sentence, and the new limit of two thousand tokens.
+      - cmd: "python -c 'print(\"Tokens: \" + 500)'"
+        exit: 1
+        say: >
+          Now a classic mistake. Joining a string and a number with plus fails with a type error, because Python will not guess how to combine text with a number.
+    outro: >
+      The fix is an f-string, or converting the number with s t r first. Read the last line of any error first. It names the problem precisely.
+
+  - type: code
+    chapter: Lists
+    heading: "Lists: ordered collections"
+    title: lists.py
+    file: source/lesson-02/lists.py
+    say: >
+      Next, lists. A list keeps items in order, and you can change it after creating it.
+    steps:
+      - lines: "2"
+        say: >
+          Square brackets create a list. Here, three user messages.
+      - lines: "3-5"
+        note: "Indexes start at **0**. Negative indexes count from the end."
+        say: >
+          You read an item by its position, called its index. Indexes start at zero, so zero is the first item, and minus one is the last.
+          The len function gives you the number of items.
+      - lines: "7-8"
+        note: "A slice `[1:3]` includes index 1, but **stops before** index 3."
+        say: >
+          Append adds to the end. A slice takes a range. One colon three means start at index one and stop before index three.
+      - lines: "10-11"
+        note: "`enumerate` gives you a counter **and** the item."
+        say: >
+          A for loop visits every item. Wrapping the list in enumerate gives you a running number as well, starting wherever you choose.
+
+  - type: terminal
+    title: terminal — lesson-02
+    cwd: source/lesson-02
+    steps:
+      - cmd: python lists.py
+        say: >
+          The output shows the first and last message, the count of three, the slice, and then the numbered list after Bye was appended.
+
+  - type: code
+    chapter: Dictionaries
+    heading: "Dictionaries: look things up by key"
+    title: dicts.py
+    file: source/lesson-02/dicts.py
+    say: >
+      Dictionaries are the most important structure in this whole course. A dictionary maps keys to values, so you look things up by name instead of by position.
+    steps:
+      - lines: "2"
+        note: "This is exactly the shape of a chat message sent to a language model API."
+        say: >
+          This dictionary is a chat message. It has a role, saying who is speaking, and the content, which is the text.
+          This is the same shape real chat APIs use.
+      - lines: "3-4"
+        say: >
+          Square brackets with a key read a value, and assigning to a new key adds it.
+      - lines: "5"
+        note: "`.get(key, default)` never raises an error for a missing key."
+        say: >
+          The get method is the safe way to read. If the key is missing, you get the default instead of an error.
+      - lines: "8-12"
+        note: "A **list of dictionaries** = a conversation."
+        say: >
+          Now combine the two. A list of message dictionaries is a whole conversation: a system instruction, the user's question, and the assistant's answer.
+          When you call a model in Module 2, this is precisely what you will send.
+      - lines: "13-14"
+        say: >
+          Looping over it, the f-string pads each role to nine characters, so the output lines up neatly.
+
+  - type: terminal
+    title: terminal — lesson-02
+    cwd: source/lesson-02
+    steps:
+      - cmd: python dicts.py
+        say: >
+          Here is the result, including the aligned conversation at the end.
+      - cmd: "python -c 'm = {\"role\": \"user\"}; print(m[\"content\"])'"
+        exit: 1
+        say: >
+          And here is the error you will meet most often: a key error. The key content does not exist in this dictionary.
+    outro: >
+      When a key might be missing, use get with a sensible default. When it must exist, check it explicitly and give a clear message. You will do exactly that in this module's project.
+
+  - type: code
+    chapter: Sets
+    heading: "Sets: unique items, fast membership"
+    title: sets.py
+    file: source/lesson-02/sets.py
+    say: >
+      The third collection is the set. A set holds unique items, with no duplicates and no particular order.
+    steps:
+      - lines: "2-5"
+        note: "Duplicates disappear. Sets are unordered, so sort them for display."
+        say: >
+          Turning a list of tags into a set removes the duplicates. Because sets have no order, we sort the set before printing it, so the output is predictable.
+      - lines: "6"
+        note: "`in` on a set is fast, even with millions of items."
+        say: >
+          The in operator checks membership, and on a set it stays fast however large the set grows.
+      - lines: "8-10"
+        note: "Set difference: what was requested but is **not allowed**. Remember this for agent security."
+        say: >
+          Sets also support maths-like operations. Here, the tools an agent requested, minus the tools it is allowed to use, gives exactly the forbidden request.
+          Keep this idea in mind. Tool allowlists come back in the security module.
+
+  - type: terminal
+    title: terminal — lesson-02
+    cwd: source/lesson-02
+    steps:
+      - cmd: python sets.py
+        say: >
+          Three unique tags, membership is True, and delete files is flagged as not allowed.
+
+  - type: code
+    chapter: Comprehensions
+    heading: Comprehensions
+    title: comprehensions.py
+    file: source/lesson-02/comprehensions.py
+    say: >
+      One last tool for this lesson: comprehensions. They build a new list or dictionary from an existing collection, in a single readable line.
+    steps:
+      - lines: "2-6"
+        say: >
+          Here are three request records, a list of dictionaries, just like a usage log.
+      - lines: "7-8"
+        note: "`[expression for item in items if condition]`"
+        say: >
+          This list comprehension reads almost like English. Take r's id, for each r in records, if r's status is ok.
+      - lines: "10-11"
+        note: "`{key: value for item in items}` builds a dictionary."
+        say: >
+          Curly braces with a key, colon, value build a dictionary instead, here mapping each id to its tokens.
+      - lines: "13"
+        say: >
+          And without any brackets, the same pattern can feed straight into a function like sum.
+
+  - type: terminal
+    title: terminal — lesson-02
+    cwd: source/lesson-02
+    steps:
+      - cmd: python comprehensions.py
+        say: >
+          Two successful ids, a dictionary of tokens, and eight hundred and fifty tokens in total.
+
+  - type: cards
+    chapter: Choosing a structure
+    heading: Which structure should I use?
+    cards:
+      - {tag: list, title: Order matters, body: "messages in a conversation, steps in a plan", code: '["Hi", "Bye"]', tone: teal, say: "Use a list when order matters, like the messages in a conversation, or the steps of a plan."}
+      - {tag: dict, title: Look up by name, body: "a message, a config, a JSON record", code: '{"role": "user"}', tone: blue, say: "Use a dictionary when you look things up by name, like a message, a configuration, or a record from a JSON file."}
+      - {tag: set, title: Unique or membership, body: "allowed tools, seen IDs, unique tags", code: '{"search", "calc"}', tone: violet, say: "Use a set for uniqueness and fast membership checks, like allowed tools or IDs you've already processed."}
+      - {tag: tuple, title: Fixed group, body: "a pair that never changes, like (tag, count)", code: '("support", 3)', tone: amber, say: "And a tuple, written with parentheses, is a fixed group of values that will not change, such as a tag and its count."}
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "What does this code print?"
+    code: |
+      message = {"role": "user", "content": "Hi"}
+      print(message.get("model", "unknown"))
+    options: ["`None`", "`unknown`", "A `KeyError`", "`model`"]
+    answer: 1
+    explain: "`.get()` returns the default, `\"unknown\"`, when the key is missing. Only `message[\"model\"]` would raise a `KeyError`."
+    say_question: >
+      Quick check. What does this code print? Pause the video if you need a moment.
+    say_answer: >
+      The answer is unknown. The get method returns the default when the key is missing. Only square-bracket access would raise a key error.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 2 recap
+    items:
+      - {text: "Variables point at values; `type()` reveals the type", say: "Variables are names pointing at values, and the type function tells you what a value is."}
+      - {text: "f-strings build text: `f\"{model} with {max_tokens:,} tokens\"`", say: "F-strings are the clean way to build text, and they can format numbers too."}
+      - {text: "Lists keep order, dicts look up by key, sets keep things unique", say: "Lists keep order, dictionaries look up by key, and sets keep things unique."}
+      - {text: "A conversation is a list of `{\"role\", \"content\"}` dicts", say: "And a conversation is a list of dictionaries, each with a role and some content."}
+    outro: >
+      Next lesson: functions, classes, and exceptions, so you can organise this data into reusable, reliable code.

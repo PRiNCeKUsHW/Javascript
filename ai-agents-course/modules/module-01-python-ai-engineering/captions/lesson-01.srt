@@ -1,0 +1,505 @@
+1
+00:00:00,700 --> 00:00:04,561
+Welcome to AI Agents with
+Python, Beginner to Production.
+
+2
+00:00:04,781 --> 00:00:10,293
+Over this course you will go from
+writing your first Python data structures to
+
+3
+00:00:10,293 --> 00:00:16,159
+deploying a full AI agent application
+with authentication, retrieval, tools, tests,
+
+4
+00:00:16,159 --> 00:00:17,219
+and monitoring.
+
+5
+00:00:17,439 --> 00:00:22,879
+This first lesson explains what an agent
+actually is, how the course works, and then
+
+6
+00:00:22,879 --> 00:00:25,145
+gets your Python environment ready.
+
+7
+00:00:26,445 --> 00:00:31,417
+Let's start with a precise definition,
+because the word agent is used loosely.
+
+8
+00:00:31,767 --> 00:00:36,360
+An AI agent is a program that is
+given a goal, not a fixed script.
+
+9
+00:00:36,580 --> 00:00:41,478
+You describe what you want, for example,
+research this topic and write me a brief.
+
+10
+00:00:41,828 --> 00:00:45,971
+The program asks a language
+model to decide what to do next.
+
+11
+00:00:46,191 --> 00:00:48,874
+The model does not run anything by itself.
+
+12
+00:00:49,094 --> 00:00:53,936
+It only returns a decision, as
+text or as a structured tool request.
+
+13
+00:00:54,286 --> 00:00:59,809
+Your Python code then performs that
+action with a tool, such as a web search, a
+
+14
+00:00:59,809 --> 00:01:04,842
+database query, or a calculator,
+and feeds the result back to the model.
+
+15
+00:01:05,192 --> 00:01:06,644
+This repeats in a loop.
+
+16
+00:01:06,864 --> 00:01:12,338
+Decide, act, observe, and continue,
+until the goal is reached or a safety limit
+
+17
+00:01:12,338 --> 00:01:12,962
+stops it.
+
+18
+00:01:13,182 --> 00:01:17,983
+That loop is the heart of every agent
+in this course, and you will build it from
+
+19
+00:01:17,983 --> 00:01:19,183
+scratch in Module 4.
+
+20
+00:01:20,483 --> 00:01:23,106
+Here is how the
+eighteen modules fit together.
+
+21
+00:01:23,456 --> 00:01:29,447
+Part one builds your foundations: Python
+for AI work, calling language model APIs,
+
+22
+00:01:29,447 --> 00:01:33,612
+and prompt engineering with
+validated, structured output.
+
+23
+00:01:33,962 --> 00:01:39,863
+Part two builds agents from scratch, with
+no framework hiding the details: the loop,
+
+24
+00:01:39,863 --> 00:01:43,305
+tool calling, memory,
+and making agents reliable.
+
+25
+00:01:43,655 --> 00:01:49,412
+Part three connects agents to knowledge
+and tools, with the Model Context Protocol,
+
+26
+00:01:49,412 --> 00:01:52,672
+embeddings, and
+retrieval-augmented generation.
+
+27
+00:01:53,022 --> 00:01:59,170
+Part four covers orchestration:
+LangGraph workflows, multi-agent systems, and web
+
+28
+00:01:59,170 --> 00:02:00,384
+research agents.
+
+29
+00:02:00,734 --> 00:02:05,818
+Part five is about quality and
+security: testing and evaluating agents, and
+
+30
+00:02:05,818 --> 00:02:09,546
+defending them against
+prompt injection and data leaks.
+
+31
+00:02:09,896 --> 00:02:16,072
+And part six takes everything to
+production, with FastAPI, Docker, monitoring, and a
+
+32
+00:02:16,072 --> 00:02:19,381
+full-stack AI
+workspace as the final project.
+
+33
+00:02:20,681 --> 00:02:25,149
+Every module follows the same
+rhythm, so you always know where you are.
+
+34
+00:02:25,499 --> 00:02:30,453
+First, the concepts, explained from
+zero, with small examples you can run.
+
+35
+00:02:30,803 --> 00:02:33,471
+Then a real project, built step by step.
+
+36
+00:02:33,691 --> 00:02:34,702
+Not a teaser.
+
+37
+00:02:34,922 --> 00:02:38,733
+Complete code, tests, and a
+README you can run yourself.
+
+38
+00:02:39,083 --> 00:02:42,632
+Next, the errors people
+actually hit, and how to fix them.
+
+39
+00:02:42,982 --> 00:02:47,953
+And finally, a recap, a short quiz
+with explained answers, and an extension
+
+40
+00:02:47,953 --> 00:02:50,338
+challenge if you want to go further.
+
+41
+00:02:51,638 --> 00:02:52,858
+Now, Module 1.
+
+42
+00:02:53,078 --> 00:02:58,898
+Agents are software, so before we touch
+a language model, you need the Python that
+
+43
+00:02:58,898 --> 00:03:00,956
+AI engineering actually uses.
+
+44
+00:03:01,306 --> 00:03:06,996
+You will work with the core data types,
+lists, dictionaries, and sets, in the shapes
+
+45
+00:03:06,996 --> 00:03:09,028
+AI applications use every day.
+
+46
+00:03:09,378 --> 00:03:13,670
+You will write functions and
+classes, and handle errors with exceptions.
+
+47
+00:03:14,020 --> 00:03:19,966
+You will organise code into modules and
+packages, read and write files and JSON, and
+
+48
+00:03:19,966 --> 00:03:22,726
+keep settings in environment variables.
+
+49
+00:03:23,076 --> 00:03:28,795
+And you will add type hints, make HTTP
+requests, and get a first, practical look at
+
+50
+00:03:28,795 --> 00:03:29,897
+async and await.
+
+51
+00:03:31,197 --> 00:03:35,982
+Everything comes together in this
+module's project, the Python AI Toolkit.
+
+52
+00:03:36,202 --> 00:03:42,348
+It is a command line tool that reads a
+log of language model API calls, validates
+
+53
+00:03:42,348 --> 00:03:45,079
+every record, and produces a report.
+
+54
+00:03:45,429 --> 00:03:46,871
+Here is the finished tool.
+
+55
+00:03:47,091 --> 00:03:52,806
+The validate command checks every record
+and explains exactly what is wrong, like a
+
+56
+00:03:52,806 --> 00:03:55,422
+negative token count, or a missing id.
+
+57
+00:03:55,772 --> 00:04:01,587
+And the report command summarises a
+clean log: requests, success rate, tokens,
+
+58
+00:04:01,587 --> 00:04:03,674
+estimated cost, and latency.
+
+59
+00:04:03,894 --> 00:04:07,353
+By the end of this module, you
+will have written every line of it.
+
+60
+00:04:08,653 --> 00:04:13,712
+To follow along you need a
+computer running Windows, macOS, or Linux.
+
+61
+00:04:14,062 --> 00:04:16,690
+You need Python 3.11 or newer.
+
+62
+00:04:16,910 --> 00:04:19,598
+I am recording with Python 3.13.
+
+63
+00:04:19,948 --> 00:04:21,012
+A code editor.
+
+64
+00:04:21,232 --> 00:04:25,829
+VS Code with the official
+Python extension is a good free choice.
+
+65
+00:04:26,179 --> 00:04:28,161
+And no AI experience at all.
+
+66
+00:04:28,381 --> 00:04:33,450
+If you have written a little code in any
+language, that helps, but every concept is
+
+67
+00:04:33,450 --> 00:04:34,610
+explained as we go.
+
+68
+00:04:35,910 --> 00:04:37,782
+Let's set up a clean workspace.
+
+69
+00:04:38,002 --> 00:04:40,354
+Open a terminal in an empty folder.
+
+70
+00:04:40,704 --> 00:04:42,518
+First, check your Python version.
+
+71
+00:04:42,738 --> 00:04:46,356
+On Windows the command is
+usually just python, or py.
+
+72
+00:04:46,576 --> 00:04:49,160
+Anything from 3.11 up is fine.
+
+73
+00:04:49,510 --> 00:04:51,668
+Next, create a virtual environment.
+
+74
+00:04:51,888 --> 00:04:57,473
+This makes a private folder, called dot
+venv, with its own copy of Python and its
+
+75
+00:04:57,473 --> 00:04:59,059
+own installed packages.
+
+76
+00:04:59,279 --> 00:05:04,530
+Every project gets one, so the
+libraries of one project can never break another.
+
+77
+00:05:04,880 --> 00:05:05,728
+Activate it.
+
+78
+00:05:05,948 --> 00:05:11,313
+On macOS and Linux, use source,
+dot venv, slash bin, slash activate.
+
+79
+00:05:11,533 --> 00:05:15,974
+On Windows, run dot venv,
+backslash Scripts, backslash activate.
+
+80
+00:05:16,194 --> 00:05:19,884
+Now, the python command
+points inside your project folder.
+
+81
+00:05:20,234 --> 00:05:24,125
+With the environment active,
+pip installs packages into it.
+
+82
+00:05:24,345 --> 00:05:31,368
+We install httpx, the HTTP library we
+will use later in this module, and we pin the
+
+83
+00:05:31,368 --> 00:05:35,345
+exact version, so that
+your results match mine.
+
+84
+00:05:35,695 --> 00:05:40,956
+Finally, pip freeze records the exact
+versions you installed into a requirements
+
+85
+00:05:40,956 --> 00:05:41,285
+file.
+
+86
+00:05:41,505 --> 00:05:47,507
+Anyone can rebuild the same environment
+with pip install, dash r, requirements dot
+
+87
+00:05:47,507 --> 00:05:47,873
+text.
+
+88
+00:05:49,173 --> 00:05:50,137
+One warning.
+
+89
+00:05:50,357 --> 00:05:55,730
+If pip complains about an externally
+managed environment, or packages seem to
+
+90
+00:05:55,730 --> 00:06:00,335
+vanish, you are almost certainly
+outside your virtual environment.
+
+91
+00:06:00,555 --> 00:06:05,895
+Activate it again, and check that which
+python, or where python on Windows, points
+
+92
+00:06:05,895 --> 00:06:07,523
+into your project folder.
+
+93
+00:06:08,823 --> 00:06:13,567
+This is the project layout we will
+grow into by the end of the module.
+
+94
+00:06:13,917 --> 00:06:18,944
+At the top: the virtual environment,
+which is never committed to git, a settings
+
+95
+00:06:18,944 --> 00:06:21,331
+template, and the pinned requirements.
+
+96
+00:06:21,681 --> 00:06:25,552
+Configuration and sample
+data live in their own folders.
+
+97
+00:06:25,902 --> 00:06:28,978
+The real code lives in
+a package called toolkit.
+
+98
+00:06:29,198 --> 00:06:34,232
+The special file dunder main lets us
+run the whole package with python dash m
+
+99
+00:06:34,232 --> 00:06:34,755
+toolkit.
+
+100
+00:06:35,105 --> 00:06:37,080
+And tests live in their own folder.
+
+101
+00:06:37,300 --> 00:06:43,226
+Keeping code, data, configuration, and
+tests separate is a habit that pays off in
+
+102
+00:06:43,226 --> 00:06:45,201
+every AI project you build.
+
+103
+00:06:46,501 --> 00:06:52,190
+An agent is a program that decides,
+acts, observes, and repeats, working towards a
+
+104
+00:06:52,190 --> 00:06:52,537
+goal.
+
+105
+00:06:52,887 --> 00:06:54,558
+The model only decides.
+
+106
+00:06:54,778 --> 00:06:57,171
+Your Python code performs the actions.
+
+107
+00:06:57,521 --> 00:07:02,090
+Every project gets its own
+virtual environment, with pinned versions.
+
+108
+00:07:02,440 --> 00:07:08,058
+In the next lesson, we write real
+Python: the data types that every AI application
+
+109
+00:07:08,058 --> 00:07:09,017
+is built from.
+
+110
+00:07:09,237 --> 00:07:10,100
+See you there.

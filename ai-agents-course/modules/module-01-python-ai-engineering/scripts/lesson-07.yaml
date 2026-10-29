@@ -1,0 +1,423 @@
+module_title: Python for AI Engineering
+title: "Project, Part 2: Reports, CLI, Tests and Wrap-up"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 1 · Lesson 7 · Project
+    title: "Build the Python AI Toolkit, part 2"
+    subtitle: Reports, downloads, the command line, a full demo, tests, and the module quiz.
+    loop: [Plan, Model, Validate, Report]
+    say: >
+      Welcome back. The data layer works. Now we add the report writer, the downloader, and the command line,
+      then run the finished tool, test it, fix the common errors, and finish the module with a quiz and a challenge.
+
+  - type: code
+    chapter: Writing reports
+    heading: "report.py: Markdown for people"
+    title: toolkit/report.py
+    file: project/python-ai-toolkit/toolkit/report.py
+    lines: "1-33"
+    steps:
+      - lines: "6-8"
+        note: "Takes a finished `Summary`, returns a string. It never prints."
+        say: >
+          Render markdown takes a summary and returns text. It doesn't print anything, so it's easy to test, and the caller decides where the text goes.
+      - lines: "9-18"
+        note: "f-string formats: `:.1%` percent, `:,` thousands, `:.4f` four decimals."
+        say: >
+          The report is built as a list of lines, using f-string formats from lesson two. Colon point one percent shows a percentage, and colon point four f shows four decimal places.
+      - lines: "19-26"
+        say: >
+          A Markdown table has one row per model.
+      - lines: "27-33"
+        note: "`\"\\n\".join(lines)` glues the lines together."
+        say: >
+          Then the top tags, numbered with enumerate, a warning if any model had no price, and finally join glues everything into one string.
+
+  - type: code
+    heading: "report.py: JSON for programs"
+    title: toolkit/report.py
+    file: project/python-ai-toolkit/toolkit/report.py
+    lines: "36-57"
+    steps:
+      - lines: "38-48"
+        note: "Nested dictionaries mirror the JSON we want."
+        say: >
+          The JSON report builds nested dictionaries in exactly the shape we want, rounding the floats so the output stays tidy.
+      - lines: "49-55"
+        note: "A dict comprehension and a list comprehension."
+        say: >
+          A dictionary comprehension builds the per-model section, and a list comprehension builds the tags.
+          Sets aren't valid JSON, so the unpriced models become a sorted list.
+      - lines: "57"
+        say: >
+          And json dot dumps turns it all into text.
+
+  - type: code
+    chapter: Downloading logs
+    heading: "fetch.py: concurrent downloads"
+    title: toolkit/fetch.py
+    file: project/python-ai-toolkit/toolkit/fetch.py
+    steps:
+      - lines: "11-15"
+        say: >
+          Fetch one is the async request from lesson five. Get the URL, raise for status, and parse the JSON.
+      - lines: "16-23"
+        note: "Each kind of failure becomes one readable `ToolkitError`."
+        say: >
+          Each kind of failure becomes one readable toolkit error. An error status, a network problem like a refused connection, or a body that isn't JSON.
+      - lines: "24-26"
+        say: >
+          And the body has to be a list of records.
+      - lines: "29-35"
+        note: "`transport=` lets tests swap the network for a fake one."
+        say: >
+          Fetch all opens one client, gathers every download at the same time, and flattens the batches into one list, keeping the order of the URLs.
+          The optional transport parameter is for testing. It lets tests replace the real network with a fake one.
+
+  - type: code
+    chapter: The command line
+    heading: "cli.py: argparse defines the commands"
+    title: toolkit/cli.py
+    file: project/python-ai-toolkit/toolkit/cli.py
+    lines: "15-35"
+    steps:
+      - lines: "16-19"
+        note: "`argparse` builds `--help` and error messages for you."
+        say: >
+          The standard library's argparse turns command line text into Python values. It also generates help text and error messages for free.
+      - lines: "20-23"
+        note: "Sub-commands: `validate`, `report`, `fetch`."
+        say: >
+          Sub parsers give us separate commands, like git commit and git push. Validate takes one file, and type equals Path converts it to a Path object.
+      - lines: "25-30"
+        say: >
+          Report adds options: a format restricted to two choices, an optional output file, and a strict flag that is True when present.
+      - lines: "32-34"
+        note: "`nargs=\"+\"`: one or more URLs."
+        say: >
+          Fetch accepts one or more URLs, and requires an output file.
+
+  - type: code
+    heading: "cli.py: one function per command"
+    title: toolkit/cli.py
+    file: project/python-ai-toolkit/toolkit/cli.py
+    lines: "38-83"
+    steps:
+      - lines: "38-43"
+        note: "Exit code **0** = success, **1** = problems found."
+        say: >
+          Each command is a function that returns an exit code. Validate prints every problem and returns one if anything was wrong, so scripts and CI pipelines can detect failure.
+      - lines: "46-56"
+        note: "Warnings go to `sys.stderr`, so they never corrupt the report."
+        say: >
+          Report loads settings and records. Warnings go to standard error, so they never mix into a report that's being saved or piped.
+          With strict, any invalid record is a failure. Then we summarise and choose a renderer, Markdown or JSON.
+      - lines: "57-63"
+        say: >
+          The text is written to a file if out was given, or printed.
+      - lines: "66-71"
+        note: "`asyncio.run()` bridges normal code and async code."
+        say: >
+          Fetch uses asyncio dot run to call our async function from normal code.
+      - lines: "74-83"
+        note: "A dict maps command names to functions. Errors are caught in **one** place."
+        say: >
+          A dictionary maps each command name to its function, so there's no long chain of ifs. And main is the single place that catches toolkit errors,
+          printing one clean line and returning one, instead of a traceback.
+
+  - type: code
+    title: toolkit/__main__.py
+    file: project/python-ai-toolkit/toolkit/__main__.py
+    steps:
+      - lines: "1-3"
+        note: "`python -m toolkit` runs this file. `SystemExit` passes the exit code to the shell."
+        say: >
+          And dunder main is what runs when you type python dash m toolkit. It calls main, and raises system exit with the return value, which becomes the program's exit code.
+
+  - type: terminal
+    chapter: Demo
+    heading: "Demo: validate and report"
+    title: terminal — python-ai-toolkit
+    cwd: project/python-ai-toolkit
+    steps:
+      - cmd: python -m toolkit --help
+        keep: "1-6"
+        say: >
+          Let's run the finished tool. Help is generated by argparse, listing the three commands.
+      - cmd: python -m toolkit validate data/usage_sample.json
+        say: >
+          The sample file is fully valid.
+      - cmd: python -m toolkit validate data/usage_broken.json
+        exit: 1
+        say: >
+          The broken file reports four precise problems.
+      - cmd: echo $?
+        run: python -m toolkit validate data/usage_broken.json > /dev/null; echo $?
+        say: >
+          And the exit code is one, which is how other programs know validation failed.
+
+  - type: terminal
+    title: terminal — python-ai-toolkit
+    cwd: project/python-ai-toolkit
+    steps:
+      - cmd: python -m toolkit report data/usage_sample.json
+        say: >
+          The Markdown report. Ten requests with an eighty percent success rate. And notice the average latency, over four seconds.
+          That's because one failed request took thirty seconds. An average hides outliers like that, which is why one of this module's challenges asks you to add a percentile.
+
+  - type: terminal
+    title: terminal — python-ai-toolkit
+    cwd: project/python-ai-toolkit
+    steps:
+      - cmd: python -m toolkit report data/usage_sample.json --format json --out reports/usage.json
+        run: python -m toolkit report data/usage_sample.json --format json --out reports/usage.json && rm -rf reports
+        say: >
+          With format json and out, the report is saved to a file instead, and the folder is created automatically.
+      - cmd: head -12 reports/usage.json
+        run: python -m toolkit report data/usage_sample.json --format json --out reports/usage.json > /dev/null && head -12 reports/usage.json && rm -rf reports
+        say: >
+          Here's the start of that JSON file, ready for a dashboard or another program.
+      - cmd: python -m toolkit report data/usage_broken.json --strict
+        exit: 1
+        say: >
+          In strict mode, the broken file fails, with the warning on standard error.
+      - cmd: TOOLKIT_PRICES_FILE=config/missing.json python -m toolkit report data/usage_sample.json
+        exit: 1
+        say: >
+          And settings come from the environment. Point the prices file at something that doesn't exist, and you get one clear error line, no traceback.
+
+  - type: terminal
+    heading: "Demo: concurrent downloads"
+    title: terminal — python-ai-toolkit
+    cwd: project/python-ai-toolkit
+    font: 25
+    say: >
+      Finally, fetch. A local web server is serving the data folder on port eighty-seven sixty-five, just like in lesson five.
+    steps:
+      - cmd: URL=http://127.0.0.1:8765
+        run: "true"
+        say: >
+          To keep the command short, we store the base address in a shell variable.
+      - cmd: python -m toolkit fetch $URL/usage_sample.json $URL/usage_broken.json --out data/merged.json
+        run: >
+          URL=http://127.0.0.1:8765;
+          python -m http.server 8765 --bind 127.0.0.1 --directory data > /dev/null 2>&1 &
+          sleep 1; python -m toolkit fetch $URL/usage_sample.json $URL/usage_broken.json --out data/merged.json;
+          status=$?; kill %1; exit $status
+        say: >
+          Both files download concurrently, and fifteen records are merged into one file.
+      - cmd: python -m toolkit validate data/merged.json
+        run: >
+          URL=http://127.0.0.1:8765;
+          python -m http.server 8765 --bind 127.0.0.1 --directory data > /dev/null 2>&1 &
+          sleep 1; python -m toolkit fetch $URL/usage_sample.json $URL/usage_broken.json --out data/merged.json > /dev/null;
+          kill %1; python -m toolkit validate data/merged.json; status=$?; rm -f data/merged.json; exit $status
+        exit: 1
+        keep: "-1"
+        say: >
+          Validating the merged file finds the eleven good records and the same four problems.
+      - cmd: python -m toolkit fetch http://127.0.0.1:9/logs.json --out data/x.json
+        exit: 1
+        say: >
+          And if a server can't be reached, again, one clear line explains what happened.
+
+  - type: code
+    chapter: Testing
+    heading: "Tests: prove it works, keep it working"
+    title: tests/test_models.py
+    file: project/python-ai-toolkit/tests/test_models.py
+    lines: "1-40"
+    say: >
+      A demo shows that the tool works today. Tests make sure it keeps working when you change it. We use pytest.
+    steps:
+      - lines: "7-11"
+        note: "A test is a function named `test_...` that uses `assert`."
+        say: >
+          A pytest test is just a function whose name starts with test, using plain assert statements.
+          Good row is a fixture. Pytest sees the parameter name and passes in a fresh valid dictionary, defined once in conftest dot py.
+      - lines: "14-22"
+        note: "`parametrize`: the same test, run once per value."
+        say: >
+          Parametrize runs the same test once per value. Here, five tests, each deleting a different required field, and checking that the error names that field.
+      - lines: "25-40"
+        note: "Nine kinds of bad data, including `True` posing as an int."
+        say: >
+          This one feeds in nine kinds of bad data, including the sneaky True posing as a number, and checks each is rejected for the right field.
+
+  - type: code
+    heading: "Testing HTTP without the network"
+    title: tests/test_fetch.py
+    file: project/python-ai-toolkit/tests/test_fetch.py
+    lines: "10-37"
+    steps:
+      - lines: "10-19"
+        note: "`httpx.MockTransport`: a fake server, inside the test."
+        say: >
+          Tests must not depend on a real network, which could be slow or down. httpx's mock transport replaces the network with a function that returns fake responses.
+      - lines: "22-25"
+        say: >
+          So we can check that two downloads are merged in the right order.
+      - lines: "28-37"
+        say: >
+          And that a four oh four, or a response that isn't a list, becomes a toolkit error. These run in milliseconds, with no server at all.
+
+  - type: terminal
+    title: terminal — python-ai-toolkit
+    cwd: project/python-ai-toolkit
+    steps:
+      - cmd: python -m pytest -q
+        say: >
+          Run the whole suite. Forty-two tests, all passing, in a fraction of a second.
+      - cmd: python -m pytest tests/test_fetch.py -v | grep PASSED
+        run: python -m pytest tests/test_fetch.py -v -p no:cacheprovider | grep PASSED
+        say: >
+          With dash v, pytest lists each test by name.
+      - cmd: mypy toolkit
+        say: >
+          And mypy confirms that all our type hints are consistent.
+
+  - type: terminal
+    chapter: Troubleshooting
+    heading: Two errors you will definitely see
+    title: terminal — python-ai-toolkit
+    cwd: project/python-ai-toolkit
+    alias: .
+    steps:
+      - cmd: cd toolkit && python cli.py
+        exit: 1
+        keep: "-1"
+        say: >
+          First, running a file inside the package directly. Python can't find the toolkit package, because it searches from the toolkit folder itself.
+          The fix: stay in the project root and run python dash m toolkit.
+      - cmd: deactivate
+        run: "true"
+        say: >
+          Second, forgetting the virtual environment.
+      - cmd: python3 -m toolkit validate data/usage_sample.json
+        run: /usr/bin/python3 -m toolkit validate data/usage_sample.json
+        exit: 1
+        keep: "-1"
+        say: >
+          With the environment deactivated, the system Python doesn't have httpx installed. The fix is to activate dot venv again.
+
+  - type: cards
+    heading: More common problems, and fixes
+    cards:
+      - {tag: "JSON", title: "is not valid JSON", body: "Trailing commas, single quotes or comments. Check the line and column in the message.", tone: coral, say: "Is not valid JSON usually means a trailing comma, single quotes, or a comment. The message gives you the line and column."}
+      - {tag: "paths", title: "file not found", body: "Relative paths start from where you **run** the command. Run from the project root.", tone: amber, say: "File not found usually means you ran the command from another folder. Relative paths start from where you run it."}
+      - {tag: "Windows", title: "Activate is blocked", body: "In PowerShell, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once.", tone: blue, say: "On Windows, if PowerShell refuses to run the activate script, run Set Execution Policy for the current user with Remote Signed, once."}
+      - {tag: "text", title: "Strange characters", body: "Always read and write with `encoding=\"utf-8\"`.", tone: violet, say: "And if text comes out garbled, make sure every read and write uses utf eight."}
+
+  - type: recap
+    chapter: Module recap
+    heading: Module 1 recap
+    items:
+      - {text: "Lists, dicts and sets, with conversations as lists of message dicts", say: "You used lists, dictionaries, and sets, and built conversations as lists of message dictionaries."}
+      - {text: "Functions, dataclasses and custom exceptions", say: "You wrote functions, dataclasses, and your own exceptions."}
+      - {text: "Packages, `pathlib`, JSON and environment variables", say: "You organised a package, and worked with files, JSON, and environment variables."}
+      - {text: "Type hints, `httpx` and `asyncio.gather`", say: "You added type hints, made HTTP requests, and ran downloads concurrently."}
+      - {text: "A tested CLI tool with clear errors and exit codes", say: "And you built a tested command line tool with clear errors and proper exit codes."}
+
+  - type: quiz
+    chapter: Module quiz
+    number: 1
+    of: 5
+    question: "An agent may only use the tools `search` and `calculator`. Which structure gives the fastest \"is this tool allowed?\" check?"
+    options: ["A list", "A set", "A string", "A tuple"]
+    answer: 1
+    explain: "Membership checks on a **set** are fast however many items it holds, and duplicates are impossible."
+    say_question: >
+      Module quiz, question one. An agent may only use two tools. Which structure gives the fastest check for whether a tool is allowed?
+    say_answer: >
+      A set. Membership checks on a set stay fast however large it grows.
+
+  - type: quiz
+    number: 2
+    of: 5
+    question: "What does `@dataclass(frozen=True)` add to `UsageRecord`?"
+    options: ["Faster JSON parsing", "Automatic validation of types", "Fields can't be changed after creation", "It can't be printed"]
+    answer: 2
+    explain: "Frozen dataclasses raise an error if you assign to a field after creation. Note: a dataclass does **not** validate types; that's why `from_dict` checks them."
+    say_question: >
+      Question two. What does frozen equals True add to our usage record?
+    say_answer: >
+      Fields can't be changed after the record is created. And note, a dataclass does not validate types by itself. That's why from dict checks every field.
+
+  - type: quiz
+    number: 3
+    of: 5
+    question: "In `try / except / else / finally`, which block runs every time?"
+    options: ["`try`", "`except`", "`else`", "`finally`"]
+    answer: 3
+    explain: "`finally` always runs, success or failure, which makes it the place for cleanup."
+    say_question: >
+      Question three. Which block runs every time, whether or not an error happens?
+    say_answer: >
+      Finally. That's why it's used for cleanup.
+
+  - type: quiz
+    number: 4
+    of: 5
+    question: "Why does `fetch_all` use `asyncio.gather`?"
+    options:
+      - "To retry failed downloads"
+      - "To download all URLs concurrently, so total time ≈ the slowest one"
+      - "To use more CPU cores"
+      - "Because `httpx` requires it"
+    answer: 1
+    explain: "`gather` waits for all downloads at once. It saves waiting time; it doesn't add CPU power."
+    say_question: >
+      Question four. Why does fetch all use asyncio dot gather?
+    say_answer: >
+      To download everything concurrently, so the total time is roughly the slowest download, not the sum of all of them.
+
+  - type: quiz
+    number: 5
+    of: 5
+    question: "Where should the real API key for your project live?"
+    options: ["In `config.py`", "In `.env.example`", "In an environment variable or a git-ignored `.env`", "In the README"]
+    answer: 2
+    explain: "Secrets live in environment variables (or a `.env` that is in `.gitignore`). `.env.example` holds only fake placeholder values."
+    say_question: >
+      And question five. Where should the real API key for your project live?
+    say_answer: >
+      In an environment variable, or a dot env file that git ignores. The example file only ever holds fake placeholders.
+
+  - type: callout
+    chapter: Extension challenge
+    kind: challenge
+    title: "Extend the toolkit"
+    body: "Pick one or more. Each needs code **and** a test."
+    say: >
+      If you want to go further, here's your extension challenge. Pick one or more, and for each one, write the code and a test.
+    items:
+      - {text: "Add a `--top N` option to `report` for the number of tags", say: "Add a top N option to the report command."}
+      - {text: "Add p95 latency: sort the latencies and pick the 95th-percentile value", say: "Add ninety-fifth percentile latency, which, unlike the average, isn't distorted by one slow request."}
+      - {text: "Add a per-day breakdown using `record.created_at.date()`", say: "Add a breakdown per day, using the created at timestamp."}
+      - {text: "Add `--format csv` with the standard `csv` module", say: "Or add a CSV output format, with the standard csv module."}
+
+  - type: links
+    chapter: Documentation
+    heading: Official documentation
+    items:
+      - {title: Python tutorial, url: docs.python.org/3/tutorial/}
+      - {title: "venv: virtual environments", url: docs.python.org/3/library/venv.html}
+      - {title: dataclasses, url: docs.python.org/3/library/dataclasses.html}
+      - {title: "json and pathlib", url: docs.python.org/3/library/json.html}
+      - {title: asyncio, url: docs.python.org/3/library/asyncio.html}
+      - {title: argparse, url: docs.python.org/3/library/argparse.html}
+      - {title: HTTPX, url: www.python-httpx.org}
+      - {title: pytest, url: docs.pytest.org}
+    say: >
+      These are the official documentation pages for everything we used. Links are in the description, and the full source code is in the course repository.
+
+  - type: title
+    chapter: Next up
+    kicker: Coming next · Module 2
+    title: LLM Fundamentals and API Integration
+    subtitle: "Tokens, context windows, message history, structured output, retries and costs. Project: an AI Study Assistant."
+    say: >
+      That's Module 1 complete. You now have the Python foundation that the rest of this course is built on.
+      In Module 2, you'll finally talk to a language model: tokens, context windows, message history, structured output, rate limits, and costs,
+      and you'll build an AI Study Assistant that explains concepts and generates quizzes. See you there.

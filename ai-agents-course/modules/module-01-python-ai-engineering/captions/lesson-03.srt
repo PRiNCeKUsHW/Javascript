@@ -1,0 +1,604 @@
+1
+00:00:00,700 --> 00:00:03,699
+In the last lesson you
+learned how to hold data.
+
+2
+00:00:03,919 --> 00:00:07,444
+Now you will learn how to
+organise the code that works on it.
+
+3
+00:00:07,664 --> 00:00:13,282
+Functions give logic a name, classes
+bundle data with behaviour, and exceptions let
+
+4
+00:00:13,282 --> 00:00:16,328
+your program fail
+clearly and recover safely.
+
+5
+00:00:16,548 --> 00:00:21,550
+Agents call tools that fail all the
+time, so this last part matters a lot.
+
+6
+00:00:22,850 --> 00:00:27,694
+You will write functions with
+parameters, default values, and return values.
+
+7
+00:00:28,044 --> 00:00:31,724
+Avoid a classic bug that
+can leak data between users.
+
+8
+00:00:32,074 --> 00:00:35,403
+Create your own classes,
+and the shorter dataclasses.
+
+9
+00:00:35,753 --> 00:00:40,685
+And handle, raise, and define your own
+exceptions, and read a traceback calmly.
+
+10
+00:00:41,985 --> 00:00:45,306
+A function is a named,
+reusable block of code.
+
+11
+00:00:45,526 --> 00:00:48,787
+You define it once, and
+call it as often as you like.
+
+12
+00:00:49,137 --> 00:00:51,060
+The def keyword starts a function.
+
+13
+00:00:51,280 --> 00:00:54,745
+Inside the parentheses are
+its parameters, the inputs.
+
+14
+00:00:54,965 --> 00:00:59,035
+The text in triple quotes is a
+docstring, describing what it does.
+
+15
+00:00:59,255 --> 00:01:02,293
+And return sends the
+result back to whoever called it.
+
+16
+00:01:02,643 --> 00:01:07,432
+You can pass arguments by
+position, or by name, as keyword arguments.
+
+17
+00:01:07,652 --> 00:01:11,269
+Keywords make calls with
+several numbers much easier to read.
+
+18
+00:01:11,489 --> 00:01:13,644
+Notice the underscores in two million.
+
+19
+00:01:13,864 --> 00:01:15,162
+Python ignores them.
+
+20
+00:01:15,382 --> 00:01:17,194
+They are just there for readability.
+
+21
+00:01:17,544 --> 00:01:20,290
+This second function has a default value.
+
+22
+00:01:20,510 --> 00:01:23,920
+If the caller does not
+pass max words, it uses eight.
+
+23
+00:01:24,140 --> 00:01:27,169
+It returns early when the
+text is already short enough.
+
+24
+00:01:27,389 --> 00:01:30,832
+Otherwise it keeps the
+first words and adds an ellipsis.
+
+25
+00:01:31,182 --> 00:01:36,680
+Here we call it three times: once with a
+long sentence, once with a short one, and
+
+26
+00:01:36,680 --> 00:01:38,557
+once overriding the default.
+
+27
+00:01:39,857 --> 00:01:45,254
+The costs come back as plain numbers,
+the long sentence is shortened, and the last
+
+28
+00:01:45,254 --> 00:01:46,966
+call keeps only two words.
+
+29
+00:01:48,266 --> 00:01:53,514
+Give each function one job, and name
+it with a verb, like estimate cost or load
+
+30
+00:01:53,514 --> 00:01:54,045
+records.
+
+31
+00:01:54,395 --> 00:01:56,791
+Return results instead of printing them.
+
+32
+00:01:57,011 --> 00:02:01,495
+Then the caller decides what to do,
+and you can test the function easily.
+
+33
+00:02:01,845 --> 00:02:07,259
+Use keyword arguments whenever a call
+would otherwise be a mystery list of numbers.
+
+34
+00:02:07,609 --> 00:02:11,060
+And never use a mutable
+default, like an empty list.
+
+35
+00:02:11,280 --> 00:02:12,503
+Let me show you why.
+
+36
+00:02:13,803 --> 00:02:15,695
+This function stores chat history.
+
+37
+00:02:15,915 --> 00:02:21,307
+The default empty list looks harmless,
+but Python creates it only once, when the
+
+38
+00:02:21,307 --> 00:02:22,656
+function is defined.
+
+39
+00:02:22,876 --> 00:02:26,321
+Every call that uses the
+default shares that same list.
+
+40
+00:02:26,671 --> 00:02:32,352
+So Alice sends a message, then Bob
+sends one, and Bob's history contains Alice's
+
+41
+00:02:32,352 --> 00:02:32,920
+message.
+
+42
+00:02:33,140 --> 00:02:39,104
+In an AI app, that is a privacy bug: one
+user's conversation leaking into another's.
+
+43
+00:02:39,454 --> 00:02:41,926
+The fix is the standard Python pattern.
+
+44
+00:02:42,146 --> 00:02:45,888
+Default to None, and create a
+fresh list inside the function.
+
+45
+00:02:47,188 --> 00:02:48,439
+The output proves it.
+
+46
+00:02:48,659 --> 00:02:51,818
+With the buggy version,
+Bob sees Alice's message.
+
+47
+00:02:52,038 --> 00:02:54,852
+With the fixed
+version, each call starts clean.
+
+48
+00:02:56,152 --> 00:02:57,240
+Now, classes.
+
+49
+00:02:57,460 --> 00:02:59,456
+Functions organise behaviour.
+
+50
+00:02:59,676 --> 00:03:04,040
+Classes organise data together
+with the behaviour that belongs to it.
+
+51
+00:03:04,390 --> 00:03:05,896
+A class is a blueprint.
+
+52
+00:03:06,116 --> 00:03:10,453
+It describes what every object of
+that kind has, and what it can do.
+
+53
+00:03:10,803 --> 00:03:16,197
+An object, also called an instance, is
+one real thing built from that blueprint.
+
+54
+00:03:16,417 --> 00:03:18,546
+You can create as many as you like.
+
+55
+00:03:18,896 --> 00:03:21,861
+Attributes are the
+data stored on each object.
+
+56
+00:03:22,211 --> 00:03:27,296
+And methods are functions that belong to
+the class and work on that object's data.
+
+57
+00:03:28,596 --> 00:03:30,556
+Here is a Conversation class.
+
+58
+00:03:30,776 --> 00:03:35,345
+The special dunder init method
+runs whenever a new object is created.
+
+59
+00:03:35,565 --> 00:03:41,431
+Its first parameter, self, is the object
+being built, so self dot messages stores a
+
+60
+00:03:41,431 --> 00:03:43,621
+list on that particular object.
+
+61
+00:03:43,971 --> 00:03:45,580
+Add and last are methods.
+
+62
+00:03:45,800 --> 00:03:50,971
+They also take self first, so they can
+read and change this object's messages.
+
+63
+00:03:51,321 --> 00:03:55,558
+Methods with double underscores
+plug your class into Python itself.
+
+64
+00:03:55,778 --> 00:04:00,626
+Defining dunder len makes the
+built-in len function work on a conversation.
+
+65
+00:04:00,976 --> 00:04:03,764
+Creating an object
+looks like calling a function.
+
+66
+00:04:03,984 --> 00:04:07,803
+We add two messages, then print
+the length and the last message.
+
+67
+00:04:08,153 --> 00:04:12,629
+A second conversation is a
+completely separate object, with its own list.
+
+68
+00:04:13,929 --> 00:04:18,932
+Three messages in the first
+conversation, and just the system message in the other.
+
+69
+00:04:20,232 --> 00:04:26,998
+Many classes in AI code mostly hold
+data: a model configuration, a usage record, a
+
+70
+00:04:26,998 --> 00:04:27,988
+tool result.
+
+71
+00:04:28,208 --> 00:04:33,090
+For those, Python's dataclass
+decorator writes the boring parts for you.
+
+72
+00:04:33,440 --> 00:04:37,228
+You just list the fields, with
+their types and optional defaults.
+
+73
+00:04:37,448 --> 00:04:42,510
+The decorator generates the init
+method, a readable print form, and equality
+
+74
+00:04:42,510 --> 00:04:43,243
+comparison.
+
+75
+00:04:43,593 --> 00:04:45,118
+Notice the stop field.
+
+76
+00:04:45,338 --> 00:04:47,554
+Remember the mutable default bug?
+
+77
+00:04:47,774 --> 00:04:52,991
+Dataclasses protect you from it: for a
+list default, you must use field with a
+
+78
+00:04:52,991 --> 00:04:54,061
+default factory.
+
+79
+00:04:54,411 --> 00:04:59,815
+Creating objects, printing one, and
+comparing two with the same values, which counts
+
+80
+00:04:59,815 --> 00:05:00,394
+as equal.
+
+81
+00:05:01,694 --> 00:05:06,534
+The generated print form shows every
+field, and the equality check is True.
+
+82
+00:05:06,754 --> 00:05:10,099
+In the project, our
+usage record is a dataclass.
+
+83
+00:05:11,399 --> 00:05:12,499
+Now, exceptions.
+
+84
+00:05:12,719 --> 00:05:15,993
+When something goes wrong,
+Python raises an exception.
+
+85
+00:05:16,213 --> 00:05:18,704
+If nothing handles it, the program stops.
+
+86
+00:05:19,054 --> 00:05:21,790
+Put code that might
+fail inside a try block.
+
+87
+00:05:22,010 --> 00:05:25,660
+Converting text to a number
+fails if the text isn't a number.
+
+88
+00:05:26,010 --> 00:05:29,609
+The except block runs only
+if that specific error happens.
+
+89
+00:05:29,829 --> 00:05:33,959
+Here we handle a value error by
+reporting it and returning zero.
+
+90
+00:05:34,309 --> 00:05:37,635
+The else block runs only
+when the try block succeeded.
+
+91
+00:05:37,985 --> 00:05:41,705
+And finally always runs,
+whether things went well or not.
+
+92
+00:05:41,925 --> 00:05:45,660
+That makes it the right place for
+cleanup, like closing a connection.
+
+93
+00:05:46,960 --> 00:05:48,066
+Look at the order.
+
+94
+00:05:48,286 --> 00:05:53,656
+For one twenty, the finally message
+prints before the value, because finally runs on
+
+95
+00:05:53,656 --> 00:05:55,446
+the way out of the function.
+
+96
+00:05:55,666 --> 00:06:00,456
+For a b c, the error is handled,
+finally still runs, and we get zero.
+
+97
+00:06:01,756 --> 00:06:05,625
+You can define your own
+exceptions by inheriting from Exception.
+
+98
+00:06:05,845 --> 00:06:11,010
+A base class for your project, with more
+specific ones below it, is a great pattern.
+
+99
+00:06:11,360 --> 00:06:16,088
+The raise statement stops the function
+immediately and hands the problem to the
+
+100
+00:06:16,088 --> 00:06:16,507
+caller.
+
+101
+00:06:16,727 --> 00:06:20,715
+A negative cost is a
+programming error, so that's a value error.
+
+102
+00:06:20,935 --> 00:06:26,001
+Going over budget is a business rule,
+so it gets our own budget exceeded error.
+
+103
+00:06:26,351 --> 00:06:30,247
+The caller catches only
+budget exceeded, and stops charging.
+
+104
+00:06:30,467 --> 00:06:35,996
+Agents need exactly this kind of guard,
+a hard spending limit, which we'll build
+
+105
+00:06:35,996 --> 00:06:37,447
+properly in Module 7.
+
+106
+00:06:38,747 --> 00:06:43,637
+The first two charges succeed, and
+the third is refused with a clear message.
+
+107
+00:06:44,937 --> 00:06:47,266
+On the left is a pattern you must avoid.
+
+108
+00:06:47,486 --> 00:06:52,328
+A bare except with pass hides every
+error, including bugs in your own code.
+
+109
+00:06:52,548 --> 00:06:56,855
+The program carries on with no
+result, and you have no idea why.
+
+110
+00:06:57,205 --> 00:07:01,414
+On the right, you catch only the
+error you expect and know how to handle.
+
+111
+00:07:01,634 --> 00:07:05,840
+Anything unexpected still
+surfaces, so you can see it and fix it.
+
+112
+00:07:07,140 --> 00:07:10,654
+When an exception isn't
+handled, Python prints a traceback.
+
+113
+00:07:10,874 --> 00:07:13,407
+It looks scary, but
+read it from the bottom up.
+
+114
+00:07:13,627 --> 00:07:17,298
+The last line is the error:
+a key error for the key model.
+
+115
+00:07:17,648 --> 00:07:22,785
+The lines above it show the path the
+program took, with the most recent call last.
+
+116
+00:07:23,005 --> 00:07:28,609
+Here, the failing line is config, model,
+inside get model, called from start agent.
+
+117
+00:07:28,829 --> 00:07:34,060
+So the fix is to make sure the
+configuration contains a model, or to read it with
+
+118
+00:07:34,060 --> 00:07:35,223
+get and a default.
+
+119
+00:07:36,523 --> 00:07:37,331
+Quick check.
+
+120
+00:07:37,551 --> 00:07:42,683
+Why is a function with history
+equals an empty list as a default dangerous?
+
+121
+00:07:48,383 --> 00:07:53,247
+Because the default list is created
+once and shared by every call that uses it.
+
+122
+00:07:53,467 --> 00:07:57,177
+Default to None and create a
+fresh list inside the function.
+
+123
+00:07:58,477 --> 00:08:02,724
+Functions do one job, have a
+clear name, and return their result.
+
+124
+00:08:03,074 --> 00:08:05,142
+Default mutable arguments to None.
+
+125
+00:08:05,492 --> 00:08:10,873
+Classes bundle data and behaviour, and
+dataclasses make data-heavy classes short.
+
+126
+00:08:11,223 --> 00:08:16,115
+Catch specific exceptions, raise
+meaningful ones, and read tracebacks from the
+
+127
+00:08:16,115 --> 00:08:16,742
+bottom up.
+
+128
+00:08:17,092 --> 00:08:22,895
+Next, you will split code across files
+and packages, and work with files, JSON, and
+
+129
+00:08:22,895 --> 00:08:24,434
+environment variables.

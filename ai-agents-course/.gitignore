@@ -1,0 +1,13 @@
+# large or regenerated media (rebuild with tools/build_lesson.py and tools/module.py)
+modules/*/renders/
+modules/*/audio/
+studio/public/m??/
+shared/tts_cache/
+logs/
+studio/node_modules/
+studio/out/
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.env

@@ -1,0 +1,295 @@
+module_title: Python for AI Engineering
+title: "Modules, Packages, Files, JSON and Environment Variables"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 1 · Lesson 4
+    title: Modules, files, JSON and secrets
+    subtitle: Split code across files, read and write data, and keep API keys out of your code.
+    say: >
+      Real AI projects are never a single file. They read prompts and documents from disk, exchange JSON with APIs, and need secret API keys that must never end up in your code.
+      This lesson covers all of that.
+
+  - type: objectives
+    items:
+      - {text: "Split code into modules and packages, and import them", say: "You will split code into modules and packages, and import between them."}
+      - {text: "Read and write files safely with `pathlib`", say: "Read and write files safely with pathlib."}
+      - {text: "Convert between JSON and Python, and handle bad JSON", say: "Convert between JSON and Python objects, and handle invalid JSON."}
+      - {text: "Keep configuration and secrets in environment variables", say: "And keep configuration and secrets in environment variables."}
+
+  - type: diagram
+    chapter: Modules and packages
+    heading: Modules and packages
+    nodes:
+      - {id: main, label: main.py, sub: your program, x: 260, y: 300, w: 300, tone: amber, mono: true}
+      - {id: pkg, label: "textkit/", sub: a package (folder), x: 900, y: 300, w: 360, h: 440, tone: teal, mono: true, align: top}
+      - {id: init, label: __init__.py, sub: runs on import, x: 900, y: 255, w: 280, h: 110, tone: blue, mono: true}
+      - {id: clean, label: cleaning.py, sub: a module (file), x: 900, y: 405, w: 280, h: 110, tone: blue, mono: true}
+      - {id: std, label: "json, pathlib, os", sub: standard library, x: 1450, y: 180, w: 340, tone: violet, mono: true}
+      - {id: third, label: httpx, sub: "installed with pip", x: 1450, y: 450, w: 340, tone: violet, mono: true}
+    edges:
+      - {from: main, to: pkg, label: import textkit}
+      - {from: pkg, to: std, dashed: true}
+      - {from: pkg, to: third, dashed: true}
+    say: >
+      First, how Python code is organised.
+    steps:
+      - show: [clean]
+        focus: [clean]
+        say: >
+          A module is simply a Python file. Anything defined in cleaning dot py, functions, classes, variables, can be imported elsewhere.
+      - show: [pkg, init]
+        focus: [pkg, init]
+        say: >
+          A package is a folder of modules with a file called dunder init dot py. That file runs when the package is imported, and it often re-exports the most useful names.
+      - show: [main, "main->pkg"]
+        focus: [main, pkg]
+        flow: ["main->pkg"]
+        say: >
+          Your program imports the package by name, exactly like it imports anything else.
+      - show: [std, third, "pkg->std", "pkg->third"]
+        focus: [std, third]
+        say: >
+          And there are two other sources of modules: the standard library, which ships with Python, like json, pathlib, and os, and third-party packages you install with pip, like httpx.
+
+  - type: code
+    title: textkit/cleaning.py
+    file: source/lesson-04/textkit/cleaning.py
+    steps:
+      - lines: "1-3"
+        say: >
+          Here is the module. Normalize collapses runs of whitespace by splitting the text into words and joining them back with single spaces.
+      - lines: "6-7"
+        say: >
+          And word count reuses normalize. Small functions that build on each other.
+
+  - type: code
+    title: textkit/__init__.py
+    file: source/lesson-04/textkit/__init__.py
+    steps:
+      - lines: "2"
+        note: "Re-export, so users can write `textkit.normalize(...)`."
+        say: >
+          The package's init file imports the two functions, so users can call them directly on textkit.
+      - lines: "4"
+        note: "`__all__` lists the package's public names."
+        say: >
+          And dunder all documents which names are public.
+
+  - type: code
+    title: main.py
+    file: source/lesson-04/main.py
+    steps:
+      - lines: "1-2"
+        note: "`import x` keeps the prefix. `from x import y` brings in one name."
+        say: >
+          Two import styles. Import textkit gives you the whole package, used with a prefix. From textkit dot cleaning import word count brings in a single name.
+      - lines: "5-8"
+        say: >
+          The main function does the work.
+      - lines: "11-12"
+        note: "True only when this file is **run**, not when it is **imported**."
+        say: >
+          This final check is a Python idiom. Dunder name equals dunder main is true only when the file is run directly. If another file imports it, main does not run automatically.
+
+  - type: terminal
+    title: terminal — lesson-04
+    cwd: source/lesson-04
+    steps:
+      - cmd: python main.py
+        say: >
+          Running main gives the cleaned text and the word count.
+      - cmd: "python -c 'import textkit; print(textkit.word_count(\"one two  three\"))'"
+        say: >
+          And because textkit is a proper package, any other code in this folder can import it too.
+
+  - type: callout
+    kind: error
+    title: "ModuleNotFoundError: No module named 'textkit'"
+    body: "Python searches for imports starting from the folder of the script you run (and installed packages). Run your program from the project root, or use `python -m package` for packages."
+    say: >
+      If you see module not found error for your own package, you are almost always running Python from the wrong folder.
+      Python looks for imports starting in the folder of the script you run. Run from the project root, and for packages, use python dash m.
+
+  - type: code
+    chapter: Files with pathlib
+    heading: Reading and writing files
+    title: files.py
+    file: source/lesson-04/files.py
+    say: >
+      Next, files. Prompts, documents, logs, and reports all live in files. The modern way to work with them is pathlib.
+    steps:
+      - lines: "2-5"
+        note: "Always pass `encoding=\"utf-8\"`. The default differs between operating systems."
+        say: >
+          A Path object represents a file path. Write text creates or overwrites the file.
+          Always pass encoding equals utf eight. The default encoding is different on Windows, and AI text is full of characters outside basic English.
+      - lines: "7-8"
+        say: >
+          Read text returns the whole file as one string, and splitlines turns it into a list of lines.
+      - lines: "10-11"
+        note: "`with` closes the file automatically, even if an error happens."
+        say: >
+          For more control, open the file inside a with block. The mode a means append, so we add to the end.
+          The with statement guarantees the file is closed, even if something fails.
+      - lines: "13-15"
+        say: >
+          Finally, number the lines, and ask the path a few questions: does it exist, what is its suffix, and how many bytes is it.
+
+  - type: terminal
+    title: terminal — lesson-04
+    cwd: source/lesson-04
+    steps:
+      - cmd: python files.py
+        run: python files.py && rm notes.txt
+        say: >
+          Two lines written, a third appended, and the file is thirty-four bytes.
+
+  - type: compare
+    chapter: JSON
+    heading: JSON is how AI systems exchange data
+    left:
+      title: JSON text
+      tone: blue
+      lang: json
+      code: |
+        {
+          "id": "req-001",
+          "tokens": 600,
+          "ok": true,
+          "error": null,
+          "tags": ["summarize"]
+        }
+    right:
+      title: Python objects
+      tone: teal
+      code: |
+        {
+            "id": "req-001",       # str
+            "tokens": 600,         # int
+            "ok": True,            # bool
+            "error": None,         # None
+            "tags": ["summarize"], # list
+        }
+    say: >
+      JSON is a text format for data, and it is everywhere in AI engineering. Model APIs send and receive JSON, tool calls are described in JSON, and logs are often JSON.
+    steps:
+      - show: left
+        say: >
+          JSON looks very similar to Python. Objects in curly braces, arrays in square brackets, strings, numbers, true, false, and null.
+      - show: right
+        hl_left: [4, 5]
+        hl_right: [4, 5]
+        say: >
+          Python's json module maps them directly. Objects become dictionaries, arrays become lists, and true, false, and null become True, False, and None.
+          But JSON is stricter than Python. Strings need double quotes, and trailing commas are not allowed.
+
+  - type: code
+    title: json_demo.py
+    file: source/lesson-04/json_demo.py
+    steps:
+      - lines: "5"
+        say: >
+          We start from an ordinary Python dictionary.
+      - lines: "7-9"
+        note: "`json.dumps`: Python → JSON **string**. `indent=2` makes it readable."
+        say: >
+          json dot dumps, with an s for string, converts Python into JSON text. Indent two makes it readable. Then we save it to a file.
+      - lines: "11-12"
+        note: "`json.loads`: JSON **string** → Python."
+        say: >
+          json dot loads does the reverse, turning JSON text back into Python objects, so the tokens are a real number again.
+      - lines: "14-17"
+        note: "Bad JSON raises `json.JSONDecodeError`, with the line and column."
+        say: >
+          And invalid JSON raises a JSON decode error. Here, a trailing comma. Language models sometimes produce slightly broken JSON, so you will handle this error a lot.
+
+  - type: terminal
+    title: terminal — lesson-04
+    cwd: source/lesson-04
+    steps:
+      - cmd: python json_demo.py
+        run: python json_demo.py && rm record.json
+        say: >
+          Notice true and null in the JSON text, the token count plus one, and the precise error message, which even tells you the column.
+
+  - type: bullets
+    chapter: Environment variables
+    heading: Why environment variables?
+    items:
+      - {text: "Secrets stay out of your code", sub: "API keys in code end up in git history, screenshots and logs", say: "Environment variables keep secrets out of your code. An API key written in a source file ends up in git history, in screenshots, and in logs."}
+      - {text: "Settings change without editing code", sub: "a different model or price file per machine", say: "They also let settings change without editing code, such as a different model on your laptop and in production."}
+      - {text: "Every platform supports them", sub: "your terminal, Docker, cloud hosts and CI", say: "And every platform supports them: your terminal, Docker, cloud hosts, and CI pipelines. You'll use them all the way to Module 17."}
+
+  - type: code
+    title: env_demo.py
+    file: source/lesson-04/env_demo.py
+    steps:
+      - lines: "2-4"
+        note: "`os.environ.get(name, default)`: `None` (or the default) if not set."
+        say: >
+          The os module exposes environment variables as a dictionary-like object called environ. Get returns None if the variable isn't set, or a default you choose.
+      - lines: "6-9"
+        note: "Fail clearly if a secret is missing. Never print the secret itself."
+        say: >
+          If the key is missing, say so clearly instead of failing later in a confusing way. And never print the secret itself. Printing its length is enough to confirm it loaded.
+
+  - type: terminal
+    title: terminal — lesson-04
+    cwd: source/lesson-04
+    steps:
+      - cmd: python env_demo.py
+        say: >
+          With nothing set, the script refuses to continue and uses the default model.
+      - cmd: DEMO_API_KEY=sk-test-123 DEMO_MODEL=model-large python env_demo.py
+        say: >
+          On macOS or Linux, you can set variables for a single command like this. This is a fake key, just for the demo.
+          On Windows PowerShell, you'd first run dollar env, colon, DEMO API KEY, equals, and the value in quotes.
+
+  - type: code
+    heading: ".env files: convenient, but never committed"
+    title: .env.example + .gitignore
+    lang: text
+    code: |
+      # .env.example  (committed: documents which variables exist)
+      TOOLKIT_PRICES_FILE=config/prices.json
+      TOOLKIT_CURRENCY=USD
+      LLM_API_KEY=your-key-here
+
+      # .gitignore  (keeps real secrets out of git)
+      .env
+      .venv/
+      __pycache__/
+    steps:
+      - lines: "1-4"
+        note: "`.env.example` is a template with **fake** values. Safe to commit."
+        say: >
+          Typing variables every time gets tedious, so projects keep them in a file called dot env. You commit a template called dot env dot example, with fake values, so others know what to set.
+      - lines: "6-9"
+        note: "The real `.env` is listed in `.gitignore`, so it never reaches git."
+        say: >
+          The real dot env file holds your actual keys, and it is listed in dot gitignore, so git never records it.
+          In the project, we'll write a tiny loader that reads dot env into the environment. Real variables always win over the file.
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "Which call turns the JSON text `'{\"ok\": true}'` into a Python dictionary?"
+    options: ["`json.dumps(text)`", "`json.loads(text)`", "`dict(text)`", "`json.load(text)`"]
+    answer: 1
+    explain: "`loads` = load from a **string**. `dumps` goes the other way. `json.load` (no s) reads from an open **file** object, not a string."
+    say_question: >
+      Quick check. Which call turns this JSON text into a Python dictionary?
+    say_answer: >
+      json dot loads. The s stands for string. Dumps goes the other way, and load without an s reads from an open file object.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 4 recap
+    items:
+      - {text: "A module is a file; a package is a folder with `__init__.py`", say: "A module is a file, and a package is a folder with a dunder init file."}
+      - {text: "`pathlib` + `encoding=\"utf-8\"` for every file", say: "Use pathlib, and always set the encoding to utf eight."}
+      - {text: "`json.loads` / `json.dumps`; catch `JSONDecodeError`", say: "Convert with json loads and dumps, and catch JSON decode errors."}
+      - {text: "Secrets live in environment variables; commit only `.env.example`", say: "Secrets live in environment variables, and only the example file is committed."}
+    outro: >
+      In the next lesson, you'll add type hints, talk to web APIs over HTTP, and see why async makes AI apps faster.

@@ -1,0 +1,558 @@
+1
+00:00:00,700 --> 00:00:06,791
+Every AI application, from a simple
+chatbot to a team of agents, moves the same few
+
+2
+00:00:06,791 --> 00:00:08,332
+kinds of data around.
+
+3
+00:00:08,552 --> 00:00:12,577
+Text, numbers, lists of
+messages, and dictionaries of settings.
+
+4
+00:00:12,797 --> 00:00:18,408
+In this lesson you will learn those
+building blocks properly, using the exact shapes
+
+5
+00:00:18,408 --> 00:00:20,345
+that language model APIs use.
+
+6
+00:00:21,645 --> 00:00:25,734
+You will create variables and
+recognise Python's basic types.
+
+7
+00:00:26,084 --> 00:00:28,298
+Format text cleanly with f-strings.
+
+8
+00:00:28,648 --> 00:00:32,505
+Use lists, dictionaries, and
+sets, and know when to pick each one.
+
+9
+00:00:32,855 --> 00:00:38,298
+And build a chat conversation as a list
+of dictionaries, which is exactly the format
+
+10
+00:00:38,298 --> 00:00:40,695
+you will send to a model in Module 2.
+
+11
+00:00:41,995 --> 00:00:44,659
+A variable is a name
+that points at a value.
+
+12
+00:00:44,879 --> 00:00:48,944
+Every value has a type, and the
+type decides what you can do with it.
+
+13
+00:00:49,294 --> 00:00:51,537
+A string, s t r, holds text.
+
+14
+00:00:51,757 --> 00:00:54,878
+Prompts, model names,
+and replies are all strings.
+
+15
+00:00:55,228 --> 00:00:58,234
+An int is a whole
+number, like a token count.
+
+16
+00:00:58,584 --> 00:01:02,871
+A float is a decimal number,
+like a temperature setting or a price.
+
+17
+00:01:03,221 --> 00:01:07,079
+A bool is either True or
+False, with a capital T and F.
+
+18
+00:01:07,429 --> 00:01:09,314
+And None means no value at all.
+
+19
+00:01:09,534 --> 00:01:13,772
+It's often used for something
+that is optional, or not loaded yet.
+
+20
+00:01:15,072 --> 00:01:16,816
+Here they are in a small script.
+
+21
+00:01:17,166 --> 00:01:20,267
+Each line creates a
+variable with the equals sign.
+
+22
+00:01:20,487 --> 00:01:22,589
+You do not declare the type yourself.
+
+23
+00:01:22,809 --> 00:01:24,760
+Python works it out from the value.
+
+24
+00:01:25,110 --> 00:01:28,779
+The built-in type function
+tells you what kind of value you have.
+
+25
+00:01:28,999 --> 00:01:32,593
+That is very handy when
+something behaves unexpectedly.
+
+26
+00:01:32,943 --> 00:01:34,288
+This is an f-string.
+
+27
+00:01:34,508 --> 00:01:40,142
+Put the letter f before the quotes, and
+anything inside curly braces is evaluated
+
+28
+00:01:40,142 --> 00:01:42,020
+and inserted into the text.
+
+29
+00:01:42,240 --> 00:01:44,718
+You will build
+prompts this way all the time.
+
+30
+00:01:45,068 --> 00:01:48,173
+A name can be pointed
+at a new value at any time.
+
+31
+00:01:48,393 --> 00:01:50,653
+And f-strings can format values too.
+
+32
+00:01:50,873 --> 00:01:53,463
+Colon comma adds thousands separators.
+
+33
+00:01:54,763 --> 00:01:59,767
+Run it, and you see the three types,
+the formatted sentence, and the new limit of
+
+34
+00:01:59,767 --> 00:02:01,003
+two thousand tokens.
+
+35
+00:02:01,353 --> 00:02:02,811
+Now a classic mistake.
+
+36
+00:02:03,031 --> 00:02:08,231
+Joining a string and a number with plus
+fails with a type error, because Python will
+
+37
+00:02:08,231 --> 00:02:10,955
+not guess how to
+combine text with a number.
+
+38
+00:02:11,305 --> 00:02:15,705
+The fix is an f-string, or
+converting the number with s t r first.
+
+39
+00:02:15,925 --> 00:02:18,212
+Read the last line of any error first.
+
+40
+00:02:18,432 --> 00:02:20,284
+It names the problem precisely.
+
+41
+00:02:21,584 --> 00:02:22,580
+Next, lists.
+
+42
+00:02:22,800 --> 00:02:26,991
+A list keeps items in order, and
+you can change it after creating it.
+
+43
+00:02:27,341 --> 00:02:29,058
+Square brackets create a list.
+
+44
+00:02:29,278 --> 00:02:31,088
+Here, three user messages.
+
+45
+00:02:31,438 --> 00:02:34,651
+You read an item by its
+position, called its index.
+
+46
+00:02:34,871 --> 00:02:40,446
+Indexes start at zero, so zero is the
+first item, and minus one is the last.
+
+47
+00:02:40,666 --> 00:02:43,653
+The len function gives
+you the number of items.
+
+48
+00:02:44,003 --> 00:02:45,510
+Append adds to the end.
+
+49
+00:02:45,730 --> 00:02:47,263
+A slice takes a range.
+
+50
+00:02:47,483 --> 00:02:52,296
+One colon three means start at
+index one and stop before index three.
+
+51
+00:02:52,646 --> 00:02:54,479
+A for loop visits every item.
+
+52
+00:02:54,699 --> 00:02:59,860
+Wrapping the list in enumerate gives you
+a running number as well, starting wherever
+
+53
+00:02:59,860 --> 00:03:00,536
+you choose.
+
+54
+00:03:01,836 --> 00:03:06,967
+The output shows the first and last
+message, the count of three, the slice, and then
+
+55
+00:03:06,967 --> 00:03:09,471
+the numbered list after Bye was appended.
+
+56
+00:03:10,771 --> 00:03:14,493
+Dictionaries are the most
+important structure in this whole course.
+
+57
+00:03:14,713 --> 00:03:19,677
+A dictionary maps keys to values, so
+you look things up by name instead of by
+
+58
+00:03:19,677 --> 00:03:20,257
+position.
+
+59
+00:03:20,607 --> 00:03:22,746
+This dictionary is a chat message.
+
+60
+00:03:22,966 --> 00:03:27,228
+It has a role, saying who is
+speaking, and the content, which is the text.
+
+61
+00:03:27,448 --> 00:03:30,176
+This is the same shape real chat APIs use.
+
+62
+00:03:30,526 --> 00:03:35,131
+Square brackets with a key read a
+value, and assigning to a new key adds it.
+
+63
+00:03:35,481 --> 00:03:37,895
+The get method is the safe way to read.
+
+64
+00:03:38,115 --> 00:03:41,824
+If the key is missing, you get
+the default instead of an error.
+
+65
+00:03:42,174 --> 00:03:43,510
+Now combine the two.
+
+66
+00:03:43,730 --> 00:03:49,051
+A list of message dictionaries is a
+whole conversation: a system instruction, the
+
+67
+00:03:49,051 --> 00:03:51,941
+user's question, and
+the assistant's answer.
+
+68
+00:03:52,161 --> 00:03:56,849
+When you call a model in Module 2,
+this is precisely what you will send.
+
+69
+00:03:57,199 --> 00:04:02,766
+Looping over it, the f-string pads each
+role to nine characters, so the output lines
+
+70
+00:04:02,766 --> 00:04:03,429
+up neatly.
+
+71
+00:04:04,729 --> 00:04:08,990
+Here is the result, including
+the aligned conversation at the end.
+
+72
+00:04:09,340 --> 00:04:12,904
+And here is the error you
+will meet most often: a key error.
+
+73
+00:04:13,124 --> 00:04:16,210
+The key content does not
+exist in this dictionary.
+
+74
+00:04:16,560 --> 00:04:20,251
+When a key might be missing,
+use get with a sensible default.
+
+75
+00:04:20,471 --> 00:04:24,326
+When it must exist, check it
+explicitly and give a clear message.
+
+76
+00:04:24,546 --> 00:04:27,471
+You will do exactly that
+in this module's project.
+
+77
+00:04:28,771 --> 00:04:30,492
+The third collection is the set.
+
+78
+00:04:30,712 --> 00:04:35,455
+A set holds unique items, with no
+duplicates and no particular order.
+
+79
+00:04:35,805 --> 00:04:39,547
+Turning a list of tags into
+a set removes the duplicates.
+
+80
+00:04:39,767 --> 00:04:44,819
+Because sets have no order, we sort the
+set before printing it, so the output is
+
+81
+00:04:44,819 --> 00:04:45,577
+predictable.
+
+82
+00:04:45,927 --> 00:04:51,329
+The in operator checks membership, and
+on a set it stays fast however large the set
+
+83
+00:04:51,329 --> 00:04:51,720
+grows.
+
+84
+00:04:52,070 --> 00:04:54,931
+Sets also support maths-like operations.
+
+85
+00:04:55,151 --> 00:05:00,697
+Here, the tools an agent requested,
+minus the tools it is allowed to use, gives
+
+86
+00:05:00,697 --> 00:05:02,804
+exactly the forbidden request.
+
+87
+00:05:03,024 --> 00:05:04,681
+Keep this idea in mind.
+
+88
+00:05:04,901 --> 00:05:07,848
+Tool allowlists come
+back in the security module.
+
+89
+00:05:09,148 --> 00:05:14,532
+Three unique tags, membership is True,
+and delete files is flagged as not allowed.
+
+90
+00:05:15,832 --> 00:05:18,914
+One last tool for this
+lesson: comprehensions.
+
+91
+00:05:19,134 --> 00:05:23,958
+They build a new list or dictionary
+from an existing collection, in a single
+
+92
+00:05:23,958 --> 00:05:24,846
+readable line.
+
+93
+00:05:25,196 --> 00:05:30,397
+Here are three request records, a list
+of dictionaries, just like a usage log.
+
+94
+00:05:30,747 --> 00:05:33,833
+This list comprehension
+reads almost like English.
+
+95
+00:05:34,053 --> 00:05:38,647
+Take r's id, for each r in
+records, if r's status is ok.
+
+96
+00:05:38,997 --> 00:05:45,213
+Curly braces with a key, colon, value
+build a dictionary instead, here mapping each
+
+97
+00:05:45,213 --> 00:05:46,486
+id to its tokens.
+
+98
+00:05:46,836 --> 00:05:51,630
+And without any brackets, the same
+pattern can feed straight into a function like
+
+99
+00:05:51,630 --> 00:05:51,866
+sum.
+
+100
+00:05:53,166 --> 00:05:58,903
+Two successful ids, a dictionary of
+tokens, and eight hundred and fifty tokens in
+
+101
+00:05:58,903 --> 00:05:59,328
+total.
+
+102
+00:06:00,628 --> 00:06:06,235
+Use a list when order matters, like the
+messages in a conversation, or the steps of
+
+103
+00:06:06,235 --> 00:06:06,707
+a plan.
+
+104
+00:06:07,057 --> 00:06:12,810
+Use a dictionary when you look things up
+by name, like a message, a configuration,
+
+105
+00:06:12,810 --> 00:06:14,844
+or a record from a JSON file.
+
+106
+00:06:15,194 --> 00:06:20,476
+Use a set for uniqueness and fast
+membership checks, like allowed tools or IDs
+
+107
+00:06:20,476 --> 00:06:22,169
+you've already processed.
+
+108
+00:06:22,519 --> 00:06:27,605
+And a tuple, written with parentheses,
+is a fixed group of values that will not
+
+109
+00:06:27,605 --> 00:06:29,923
+change, such as a tag and its count.
+
+110
+00:06:31,223 --> 00:06:32,031
+Quick check.
+
+111
+00:06:32,251 --> 00:06:33,684
+What does this code print?
+
+112
+00:06:33,904 --> 00:06:35,962
+Pause the video if you need a moment.
+
+113
+00:06:41,662 --> 00:06:43,132
+The answer is unknown.
+
+114
+00:06:43,352 --> 00:06:46,602
+The get method returns the
+default when the key is missing.
+
+115
+00:06:46,822 --> 00:06:49,768
+Only square-bracket
+access would raise a key error.
+
+116
+00:06:51,068 --> 00:06:56,322
+Variables are names pointing at values,
+and the type function tells you what a value
+
+117
+00:06:56,322 --> 00:06:56,509
+is.
+
+118
+00:06:56,859 --> 00:07:01,482
+F-strings are the clean way to build
+text, and they can format numbers too.
+
+119
+00:07:01,832 --> 00:07:06,453
+Lists keep order, dictionaries look
+up by key, and sets keep things unique.
+
+120
+00:07:06,803 --> 00:07:11,659
+And a conversation is a list of
+dictionaries, each with a role and some content.
+
+121
+00:07:12,009 --> 00:07:18,051
+Next lesson: functions, classes, and
+exceptions, so you can organise this data into
+
+122
+00:07:18,051 --> 00:07:19,798
+reusable, reliable code.
