@@ -17,7 +17,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 STUDIO = ROOT / "studio"
-VENV_PY = ROOT / ".venv/bin/python"
+VENV_BIN = ".venv/Scripts" if sys.platform == "win32" else ".venv/bin"  # relative to each project folder
+VENV_PY = ROOT / VENV_BIN / ("python.exe" if sys.platform == "win32" else "python")
 
 
 def module_dir(m):
@@ -128,6 +129,9 @@ def assemble(m):
 
 # ---------------------------------------------------------------- validate
 def run(cmd, cwd, **kw):
+    if isinstance(cmd, str) and sys.platform == "win32":
+        # the shell steps need POSIX sh (Git Bash), not cmd.exe; python3 there is the Microsoft Store stub
+        cmd = ["bash", "-c", cmd.replace("python3 ", "python ")]
     return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, shell=isinstance(cmd, str), **kw)
 
 
@@ -197,13 +201,15 @@ def validate(m):
                                                                      ".mypy_cache"))
             steps = [
                 ("venv + pip install -r requirements.txt",
-                 "python3 -m venv .venv && .venv/bin/pip install -q --disable-pip-version-check -r requirements.txt"),
-                ("pytest", ".venv/bin/python -m pytest -q -p no:cacheprovider"),
-                ("mypy", ".venv/bin/mypy --no-incremental toolkit"),
-                ("validate sample (exit 0)", ".venv/bin/python -m toolkit validate data/usage_sample.json"),
-                ("validate broken (exit 1)", ".venv/bin/python -m toolkit validate data/usage_broken.json; test $? -eq 1"),
-                ("report md", ".venv/bin/python -m toolkit report data/usage_sample.json | grep -q 'Requests: 10'"),
-                ("report json --out", ".venv/bin/python -m toolkit report data/usage_sample.json --format json "
+                 f"python3 -m venv .venv && {VENV_BIN}/pip install -q --disable-pip-version-check -r requirements.txt"),
+                ("pytest", f"{VENV_BIN}/python -m pytest -q -p no:cacheprovider"),
+                ("mypy", f"{VENV_BIN}/mypy --no-incremental toolkit"),
+                ("validate sample (exit 0)", f"{VENV_BIN}/python -m toolkit validate data/usage_sample.json"),
+                ("validate broken (exit 1)",
+                 f"{VENV_BIN}/python -m toolkit validate data/usage_broken.json; test $? -eq 1"),
+                ("report md",
+                 f"{VENV_BIN}/python -m toolkit report data/usage_sample.json | grep -q 'Requests: 10'"),
+                ("report json --out", f"{VENV_BIN}/python -m toolkit report data/usage_sample.json --format json "
                                       "--out reports/u.json && python3 -m json.tool reports/u.json > /dev/null"),
             ]
             for name, cmd in steps:

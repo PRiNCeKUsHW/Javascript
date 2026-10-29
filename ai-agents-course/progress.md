@@ -10,6 +10,21 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
 - Lessons 4 and 5 were re-rendered after a fix: compare scenes now show dimmed panels during intro narration
 - Videos and audio are not in git (too large); they were delivered from the cloud session
 
+## Local Windows machine (set up 2026-10-29)
+
+- Git Bash runs the demo commands (no WSL). `tools/build_lesson.py` and `tools/module.py` pick
+  `.venv/Scripts` on Windows, add a `python3` shim (the Windows `python3` is the Microsoft Store stub),
+  and map `.venv/bin/` to `.venv/Scripts/` in `run:` commands. On Linux, nothing changes.
+- Two environments. `.venv` (Python 3.14.3) runs every demo shown on screen. `.venv-tools`
+  (Python 3.12, kokoro-onnx 0.6.1) runs the build tools, because kokoro-onnx ≥ 0.4.8 needs
+  Python < 3.14. Run `.venv-tools/Scripts/python tools/build_lesson.py …` (and module.py the same way).
+- Kokoro model: the default `~/.cache/hyperframes/tts` already has it; `KOKORO_DIR` isn't needed.
+- Remotion downloads its own Chrome Headless Shell on the first render or still.
+- Windows-built captures show Windows details (Python 3.14.3, `.venv/Scripts/python`). Module 1 was
+  not rebuilt here. Module 2 lessons avoid OS-specific output where possible.
+- Known: Module 1 `test_friendly_error_for_missing_file` fails on Windows only (the message prints
+  `data\missing.json`), so 41/42 tests pass here. The project code was not changed.
+
 ## Next: Module 2: LLM Fundamentals and API Integration (project: AI Study Assistant)
 
 Notes for the next modules, learned in Module 1:
