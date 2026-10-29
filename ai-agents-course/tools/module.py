@@ -148,10 +148,22 @@ PROJECT_CHECKS = {
         ("retry then succeed", "STUDY_FAKE_FAIL=429,500 {bin}/python -m study explain x 2>&1 | grep -q end_turn"),
         ("clean error (exit 1)", "STUDY_FAKE_FAIL=401 {bin}/python -m study explain x; test $? -eq 1"),
     ],
+    "ai-resume-analyzer": [
+        ("mypy", "{bin}/mypy --no-incremental resume"),
+        ("analyze md", "{bin}/python -m resume analyze data/resume_sam.md data/job_backend.md "
+                       "| grep -q 'Must-have match: 5/6 (83%)'"),
+        ("analyze json --out", "{bin}/python -m resume analyze data/resume_sam.md data/job_backend.md "
+                               "--format json --out reports/s.json && python3 -m json.tool reports/s.json > /dev/null"),
+        ("eval v1,v2", "{bin}/python -m resume eval --versions v1,v2 | grep -c 'total 21/22' | grep -q 2"),
+        ("grounding drops invented", "RESUME_FAKE_FAIL=invented {bin}/python -m resume extract data/resume_sam.md "
+                                     "2>&1 | grep -q 'ignored (not in the resume): COBOL'"),
+        ("clean error (exit 1)", "RESUME_FAKE_FAIL=invalid {bin}/python -m resume extract data/resume_sam.md; "
+                                 "test $? -eq 1"),
+    ],
 }
 # project checks run offline and reproducibly: no real key, proxy or scripted failures
 CHECK_ENV = {k: v for k, v in os.environ.items()
-             if not k.startswith(("ANTHROPIC_", "STUDY_", "TOOLKIT_"))}
+             if not k.startswith(("ANTHROPIC_", "STUDY_", "TOOLKIT_", "RESUME_"))}
 
 def run(cmd, cwd, **kw):
     if isinstance(cmd, str) and sys.platform == "win32":

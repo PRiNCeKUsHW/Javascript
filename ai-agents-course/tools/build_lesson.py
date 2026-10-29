@@ -57,7 +57,8 @@ SAY_AS = {
     "NameError": "name error", "ToolkitError": "toolkit error", "ValidationError": "validation error",
     "UsageRecord": "usage record", "mypy": "my-pie", "Pydantic": "pie-dantic", "LangGraph": "lang graph",
     "FastAPI": "fast A P I", "isinstance": "is instance", "enumerate": "ee-numerate", "init": "init",
-    "OOP": "O O P", "PATH": "path", "env": "env", "CPU": "C P U", "I/O": "I O", "GPU": "G P U",
+    "OOP": "O O P", "resume": "résumé", "resumes": "résumés", "XML": "X M L",
+    "eval": "ee-val", "evals": "ee-vals", "k8s": "K eights", "COBOL": "co-ball", "PATH": "path", "env": "env", "CPU": "C P U", "I/O": "I O", "GPU": "G P U",
 }
 
 # pygments token -> CSS class used by the CodePanel component
@@ -396,7 +397,8 @@ def build(module, lesson, allow_new=True):
     # recordings must be reproducible and never use a real key or proxy
     for name in ("TOOLKIT_CURRENCY", "TOOLKIT_PRICES_FILE", "ANTHROPIC_API_KEY",
                  "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "STUDY_MODEL",
-                 "STUDY_BUDGET_USD", "STUDY_MAX_RETRIES", "STUDY_FAKE_FAIL"):
+                 "STUDY_BUDGET_USD", "STUDY_MAX_RETRIES", "STUDY_FAKE_FAIL",
+                 "RESUME_MODEL", "RESUME_BUDGET_USD", "RESUME_MAX_RETRIES", "RESUME_FAKE_FAIL"):
         env.pop(name, None)
 
     pieces, events, captions, scenes, chapters = [], [], [], [], []

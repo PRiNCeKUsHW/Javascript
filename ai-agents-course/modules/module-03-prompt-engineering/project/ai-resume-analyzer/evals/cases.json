@@ -1,0 +1,29 @@
+[
+  {
+    "id": "sam-backend",
+    "resume": "../data/resume_sam.md",
+    "job": "../data/job_backend.md",
+    "expected": {"Python": true, "FastAPI": true, "PostgreSQL": true,
+                 "Docker": true, "Kubernetes": false, "CI/CD": true}
+  },
+  {
+    "id": "priya-data",
+    "resume": "cases/resume_priya.md",
+    "job": "cases/job_data.md",
+    "expected": {"Python": true, "SQL": true, "Kafka": false, "AWS": true}
+  },
+  {
+    "id": "leo-backend",
+    "resume": "cases/resume_leo.md",
+    "job": "../data/job_backend.md",
+    "expected": {"Python": false, "FastAPI": false, "PostgreSQL": false,
+                 "Docker": true, "Kubernetes": false, "CI/CD": false}
+  },
+  {
+    "id": "mia-backend",
+    "resume": "cases/resume_mia.md",
+    "job": "../data/job_backend.md",
+    "expected": {"Python": true, "FastAPI": false, "PostgreSQL": true,
+                 "Docker": false, "Kubernetes": true, "CI/CD": true}
+  }
+]

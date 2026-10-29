@@ -26,6 +26,14 @@ export const THUMBS: ThumbProps[] = [
     tagline: "Tokens · streaming · JSON · costs",
     code: ["client.messages.create(", '  model="claude-opus-5-5",', "  max_tokens=1000,", "  messages=history)"],
   },
+  {
+    id: "thumb-m03",
+    module: 3,
+    lines: ["PROMPTS THAT", "WORK EVERY", "TIME"],
+    accentLine: 1,
+    tagline: "Pydantic · JSON · prompt evals",
+    code: ["$ python -m resume eval", "extract_profile@v2", "  sam-backend   6/6", "  total 21/22 (95%)"],
+  },
 ];
 
 export const Thumbnail: React.FC<ThumbProps> = ({ module, lines, accentLine, tagline, code }) => (

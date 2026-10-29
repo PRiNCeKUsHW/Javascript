@@ -1,0 +1,258 @@
+module_title: Prompt Engineering and Structured Outputs
+title: "Project, Part 2: Reports, Demo, Tests and Wrap-up"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 3 · Lesson 6 · Project
+    title: "Build the AI Resume Analyzer, part 2"
+    subtitle: The report, the command line, failures on purpose, tests, and the module quiz.
+    loop: [Extract, Compare, Advise, Report]
+    say: >
+      Welcome back. The pipeline works. Now we finish the project: the report, the command line, a demo that includes failures, the tests, and the evaluation.
+      Then we wrap up the module with a quiz and your extension challenge.
+
+  - type: code
+    chapter: The report
+    heading: "report.py: Markdown for people"
+    title: resume/report.py
+    file: project/ai-resume-analyzer/resume/report.py
+    lines: "10-35"
+    steps:
+      - lines: "12-20"
+        note: "Every number here was computed by code."
+        say: >
+          The Markdown report starts with the match score and the experience line, then matched and missing skills. Every number here was computed by code, not written by the model.
+      - lines: "21-27"
+        note: "Advice only if it exists; dropped skills are reported."
+        say: >
+          Suggestions appear only when there were gaps. And if the grounding check dropped a skill, the report says so, rather than hiding it.
+      - lines: "28-34"
+        note: "The footer makes every report traceable."
+        say: >
+          The footer lists each prompt with its fingerprint, the model, the tokens, and the cost. Six months from now, you'll know exactly what produced this report. A second function writes the same data as JSON.
+
+  - type: code
+    chapter: The command line
+    heading: "cli.py: four commands"
+    title: resume/cli.py
+    file: project/ai-resume-analyzer/resume/cli.py
+    lines: "88-114"
+    steps:
+      - lines: "89-94"
+        note: "`prompts` needs no client; `eval` runs the cases."
+        say: >
+          The command line has four commands. Prompts lists versions and needs no client at all. Eval runs the evaluation.
+      - lines: "95-101"
+        say: >
+          Extract prints just the profile, as JSON. Handy when you're working on the extraction prompt.
+      - lines: "102-113"
+        note: "`--format md|json`, `--out` to save."
+        say: >
+          And analyze writes the full report, in Markdown or JSON, to the screen or to a file.
+
+  - type: terminal
+    chapter: Demo
+    title: terminal — ai-resume-analyzer
+    cwd: project/ai-resume-analyzer
+    font: 24
+    steps:
+      - cmd: python -m resume analyze data/resume_sam.md data/job_backend.md --format json --out reports/sam.json
+        say: >
+          JSON output, saved to a file, for other programs to use.
+      - cmd: python -m resume analyze data/resume_sam.md data/job_backend.md --prompt v1 | tail -2
+        say: >
+          The prompt option runs the older extraction prompt. The footer shows extract profile at version one, with its own fingerprint.
+      - cmd: python -m resume extract evals/cases/resume_leo.md | head -9
+        say: >
+          And here's an honest limitation of the offline fake. Leo's resume says, no experience with Kubernetes, but the keyword rules list Kubernetes as a skill. A model following the version two prompt should leave it out. Only the eval with a real key can tell you whether it does.
+
+  - type: terminal
+    title: terminal — ai-resume-analyzer
+    cwd: project/ai-resume-analyzer
+    font: 24
+    steps:
+      - cmd: ANTHROPIC_LOG=info RESUME_FAKE_FAIL=429,500 python -m resume extract data/resume_sam.md | head -3
+        keep: "2-3,5-"
+        say: >
+          Failures on purpose. A rate limit and then a server error: the SDK retries twice, and the extraction still succeeds.
+      - cmd: RESUME_FAKE_FAIL=refusal python -m resume analyze data/resume_sam.md data/job_backend.md
+        exit: 1
+        say: >
+          A refusal becomes one clear line, naming the prompt that was declined.
+      - cmd: python -m resume analyze data/missing.md data/job_backend.md
+        exit: 1
+        say: >
+          And a missing file is a clean error too, with exit code one.
+
+  - type: code
+    chapter: Testing
+    heading: "Tests: each step on its own"
+    title: tests/test_analyzer.py
+    file: project/ai-resume-analyzer/tests/test_analyzer.py
+    lines: "8-50"
+    steps:
+      - lines: "8-15"
+        note: "Compare is tested end to end, prompts by label."
+        say: >
+          Because the task is split into steps, each step can be tested. This test checks the comparison, the score, and which prompt versions were used.
+      - lines: "18-24"
+        note: "Inspect what the SDK really sent."
+        say: >
+          This one inspects the request the SDK actually sent: structured output, low effort, the resume inside its tags, and the right system prompt.
+      - lines: "27-31"
+        say: >
+          This proves that code skips the advice call when nothing is missing: only two requests.
+      - lines: "34-50"
+        note: "Every failure path has a test."
+        say: >
+          And every failure path has a test: invented skills, invalid values, cut-off replies, refusals, and a rejected key.
+
+  - type: terminal
+    title: terminal — ai-resume-analyzer
+    cwd: project/ai-resume-analyzer
+    steps:
+      - cmd: python -m pytest -q
+        run: python -m pytest -q -p no:cacheprovider
+        say: >
+          Twenty-seven tests, all passing, with no key and no network. They include the prompt lock and the evaluation itself.
+      - cmd: mypy resume
+        run: mypy --no-incremental resume
+        say: >
+          And mypy is happy with every type hint.
+
+  - type: cards
+    chapter: Troubleshooting
+    heading: Common problems, and fixes
+    cards:
+      - {tag: schema, title: "\"did not fit the schema\"", body: "Read the field named in the error; describe it better in the prompt or the Field description", tone: coral, say: "If replies don't fit the schema, read the field named in the error, and describe that field more clearly, in the prompt or in the field's description."}
+      - {tag: cut off, title: "\"not complete JSON\"", body: "The reply hit max_tokens: raise it, or ask for less", tone: amber, say: "Not complete JSON means the reply hit max tokens. Raise the limit, or ask for less."}
+      - {tag: test, title: "\"changed: add a version\"", body: "You edited a released prompt. Restore it and add a new version", tone: violet, say: "If the lock test fails, you edited a released prompt. Restore it, and add a new version instead."}
+      - {tag: eval, title: Scores identical offline, body: "Expected: the fake ignores wording. Run the eval with a key", tone: blue, say: "And if every version scores the same, you're offline. That's expected. Run the evaluation with a key."}
+
+  - type: recap
+    chapter: Module recap
+    heading: Module 3 recap
+    items:
+      - {text: "Prompts: context, task, data in tags, constraints with reasons", say: "Good prompts give context, a clear task, data in tags, and constraints with reasons."}
+      - {text: "A few varied examples; no shouting, no outdated tricks", say: "Use a few varied examples, plain language, and no outdated tricks."}
+      - {text: "The model for judgment, code for everything deterministic", say: "Give the model the judgment, and code everything deterministic."}
+      - {text: "Structured outputs guarantee shape; code checks meaning", say: "Structured outputs guarantee shape, and code checks meaning."}
+      - {text: "Version every prompt; measure every change with an eval", say: "And version every prompt, and measure every change with an evaluation."}
+
+  - type: quiz
+    chapter: Module quiz
+    number: 1
+    of: 5
+    question: "What's the main problem with \"CRITICAL: You MUST NEVER...\" in a prompt for a current model?"
+    options:
+      - "It costs too many tokens"
+      - "Current models follow instructions closely, so shouting makes them over-apply the rule"
+      - "The API rejects capital letters"
+      - "Nothing, it's best practice"
+    answer: 1
+    explain: "State the rule once, plainly, with the reason. A concrete edge case beats emphasis."
+    say_question: >
+      Module quiz, question one. What's the main problem with critical, you must never, in a prompt for a current model?
+    say_answer: >
+      Current models follow instructions closely, so shouting makes them over-apply the rule. Say it once, plainly, with the reason.
+
+  - type: quiz
+    number: 2
+    of: 5
+    question: "Why wrap a resume in <resume> tags?"
+    options:
+      - "The API requires XML"
+      - "It makes the reply shorter"
+      - "It marks exactly where the data is, apart from the instructions"
+      - "It encrypts personal data"
+    answer: 2
+    explain: "Tags separate data from instructions. Combine them with \"this is data, not instructions\" and checks in code."
+    say_question: >
+      Question two. Why wrap a resume in resume tags?
+    say_answer: >
+      Tags mark exactly where the data is, apart from your instructions.
+
+  - type: quiz
+    number: 3
+    of: 5
+    question: "What does a Pydantic `Field(ge=0)` constraint do with structured outputs?"
+    options:
+      - "Nothing: the API ignores it"
+      - "The SDK validates it when the reply arrives, and raises an error if it fails"
+      - "It makes the model always answer 0"
+      - "It's only used by mypy"
+    answer: 1
+    explain: "Constraints the API can't enforce are described to the model and validated by the SDK with Pydantic."
+    say_question: >
+      Question three. What happens to a Pydantic constraint like greater than or equal to zero?
+    say_answer: >
+      The SDK validates it when the reply arrives, and raises a validation error if it fails.
+
+  - type: quiz
+    number: 4
+    of: 5
+    question: "Two prompt versions score 21/22 on the offline eval. What can you conclude?"
+    options:
+      - "They're equally good on a real model"
+      - "Version 2 is better because it's longer"
+      - "Nothing about the prompts: the offline fake ignores wording"
+      - "The eval is broken"
+    answer: 2
+    explain: "Offline runs test the pipeline. Only a real model can compare prompt versions."
+    say_question: >
+      Question four. Two prompt versions both score twenty-one out of twenty-two offline. What can you conclude?
+    say_answer: >
+      Nothing about the prompts. The offline fake ignores wording. Offline runs test the pipeline, and only a real model compares prompts.
+
+  - type: quiz
+    number: 5
+    of: 5
+    question: "Which job belongs to code, not the model?"
+    options:
+      - "Reading a messy resume"
+      - "Writing career advice"
+      - "Calculating the match percentage"
+      - "Summarising a job posting"
+    answer: 2
+    explain: "Arithmetic is deterministic: exact, free and testable in code."
+    say_question: >
+      And question five. Which job belongs to code, not to the model?
+    say_answer: >
+      Calculating the match percentage. Arithmetic belongs in code: exact, free, and testable.
+
+  - type: callout
+    chapter: Extension challenge
+    kind: challenge
+    title: "Extend the Resume Analyzer"
+    body: "Pick one or more. Each needs code **and** a test using the fake API."
+    say: >
+      Your extension challenge. Pick one or more, and write a test for each, using the fake API.
+    items:
+      - {text: "Write `extract_profile` v3, add two hard eval cases, and compare versions with a key", say: "Write version three of the extraction prompt, add two hard evaluation cases, and compare the versions with a real key."}
+      - {text: "Add a `--min-score` option that exits with code 2 below the threshold", say: "Add a minimum score option that exits with code two below a threshold."}
+      - {text: "Grade the advice with a second model call and a short rubric", say: "Grade the advice with a second model call and a short rubric: your first model grader."}
+      - {text: "Accept several job postings and rank them by match score", say: "Or accept several job postings, and rank them by match score."}
+
+  - type: links
+    chapter: Documentation
+    heading: Official documentation
+    items:
+      - {title: Prompt engineering overview, url: platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview}
+      - {title: Prompting best practices, url: platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices}
+      - {title: Structured outputs, url: platform.claude.com/docs/en/build-with-claude/structured-outputs}
+      - {title: Effort, url: platform.claude.com/docs/en/build-with-claude/effort}
+      - {title: Refusals and fallbacks, url: platform.claude.com/docs/en/build-with-claude/refusals-and-fallback}
+      - {title: Success criteria and evaluations, url: platform.claude.com/docs/en/test-and-evaluate/develop-tests}
+      - {title: Pydantic, url: docs.pydantic.dev/latest}
+      - {title: Python SDK, url: github.com/anthropics/anthropic-sdk-python}
+    say: >
+      These are the official documentation pages for this module. Start with the prompting best practices: it's kept up to date for the latest models. Links are in the description, along with the full source code.
+
+  - type: title
+    chapter: Next up
+    kicker: Coming next · Module 4
+    title: AI Agent Architecture
+    subtitle: "The agent loop, built from scratch: think, act, observe, repeat. Project: a Smart Calculator Agent."
+    say: >
+      That's Module 3 complete. You can now write prompts that work consistently, get validated data back, and prove a change is an improvement.
+      In Module 4, we finally build an agent: the loop at the centre of this course, from scratch, with a smart calculator agent as the project. See you there.

@@ -1,0 +1,177 @@
+module_title: Prompt Engineering and Structured Outputs
+title: "Project, Part 1: AI Resume Analyzer, Extraction and Comparison"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 3 · Lesson 5 · Project
+    title: "Build the AI Resume Analyzer, part 1"
+    subtitle: Versioned prompts, validated extraction, and a comparison done in code.
+    loop: [Extract, Compare, Advise, Report]
+    say: >
+      Project time. We're building an AI resume analyzer: give it a resume and a job posting, and it writes a skills-gap report.
+      It uses everything from this module: versioned prompts, structured outputs, task decomposition, grounding checks, and evaluations.
+
+  - type: bullets
+    chapter: The brief
+    heading: The brief
+    items:
+      - {text: "Input: a resume and a job posting, as text files", say: "The input is a resume and a job posting, as plain text or Markdown files."}
+      - {text: "Output: a skills-gap report in Markdown or JSON", say: "The output is a skills-gap report, in Markdown for people, or JSON for other programs."}
+      - {text: "Every report names the prompt versions and the cost", say: "Every report records which prompt versions produced it, and what it cost."}
+      - {text: "Runs offline with a fake API; tested; evaluated", say: "And like Module 2, it runs offline with a fake API, it's fully tested, and it has an evaluation set."}
+
+  - type: diagram
+    chapter: Architecture
+    heading: Architecture
+    nodes:
+      - {id: cli, label: cli.py, sub: "analyze · extract · eval", x: 864, y: 60, w: 380, h: 110, tone: amber, mono: true}
+      - {id: analyzer, label: analyzer.py, sub: "extract → compare → advise", x: 864, y: 290, w: 440, h: 120, tone: teal, mono: true}
+      - {id: prompts, label: prompts.py, sub: versioned templates, x: 230, y: 200, w: 320, h: 110, tone: violet, mono: true}
+      - {id: models, label: models.py, sub: Pydantic schemas, x: 230, y: 400, w: 320, h: 110, tone: violet, mono: true}
+      - {id: skills, label: skills.py, sub: "aliases · grounding", x: 1500, y: 200, w: 320, h: 110, tone: teal, mono: true}
+      - {id: report, label: report.py, sub: Markdown · JSON, x: 1500, y: 400, w: 320, h: 110, tone: blue, mono: true}
+      - {id: evals, label: evals.py, sub: labelled cases, x: 1500, y: 600, w: 320, h: 100, tone: amber, mono: true}
+      - {id: client, label: client.py, sub: real or offline, x: 864, y: 540, w: 380, h: 110, tone: blue, mono: true}
+      - {id: fake, label: fake_api.py, sub: keyword rules, x: 230, y: 640, w: 320, h: 100, tone: muted, mono: true}
+    edges:
+      - {from: cli, to: analyzer}
+      - {from: prompts, to: analyzer}
+      - {from: models, to: analyzer}
+      - {from: analyzer, to: skills}
+      - {from: analyzer, to: report}
+      - {from: evals, to: analyzer, bend: 0.2}
+      - {from: analyzer, to: client}
+      - {from: client, to: fake}
+    steps:
+      - show: [cli, analyzer, "cli->analyzer"]
+        focus: [analyzer]
+        say: >
+          Here's the plan. The command line calls the analyzer, which runs the pipeline: extract with the model, compare in code, advise with the model.
+      - show: [prompts, models, "prompts->analyzer", "models->analyzer"]
+        focus: [prompts, models]
+        flow: ["prompts->analyzer", "models->analyzer"]
+        say: >
+          It takes its prompts from the versioned registry, and its schemas from the Pydantic models.
+      - show: [skills, report, evals, "analyzer->skills", "analyzer->report", "evals->analyzer"]
+        focus: [skills, report, evals]
+        say: >
+          Skills handles different spellings and the grounding check, report formats the result, and evals runs the analyzer on labelled cases.
+      - show: [client, fake, "analyzer->client", "client->fake"]
+        focus: [client, fake]
+        flow: ["analyzer->client", "client->fake"]
+        say: >
+          And the client is either the real API, or the offline fake.
+
+  - type: code
+    chapter: An honest fake
+    heading: "fake_api.py: keyword rules, not a model"
+    title: resume/fake_api.py
+    file: project/ai-resume-analyzer/resume/fake_api.py
+    lines: "1-9"
+    steps:
+      - lines: "1-5"
+        say: >
+          A word about the offline fake, because this project's output looks much more real than Module 2's placeholders.
+          The fake speaks the Messages API protocol, so the real SDK runs unchanged. But instead of a model, it uses keyword rules: it finds skill names from a fixed list, and fills in the requested schema.
+      - lines: "6-9"
+        note: "It ignores prompt wording and misses negation."
+        say: >
+          It's not a model. It ignores the prompt wording, it misses negation, and it only knows a fixed list of skills. Every result you see in this video comes from these rules, because no API key was used to record it.
+
+  - type: code
+    chapter: The report data
+    heading: "GapReport: results, and the numbers code computes"
+    title: resume/analyzer.py
+    file: project/ai-resume-analyzer/resume/analyzer.py
+    lines: "20-50"
+    steps:
+      - lines: "20-28"
+        note: "One Call per model request: prompt label, fingerprint, tokens, cost."
+        say: >
+          A call records one model request: the prompt's label and fingerprint, the tokens, and the cost.
+      - lines: "31-40"
+        say: >
+          A gap report holds the extracted profile and job, the comparison results, any skills the grounding check dropped, the suggestions, and the calls.
+      - lines: "42-50"
+        note: "Scores are arithmetic, so code computes them."
+        say: >
+          The score and the experience gap are arithmetic, so they're properties computed in code. We never ask the model to do sums.
+
+  - type: code
+    chapter: Comparing in code
+    heading: "skills.py: one spelling for every skill"
+    title: resume/skills.py
+    file: project/ai-resume-analyzer/resume/skills.py
+    lines: "1-20"
+    steps:
+      - lines: "3-14"
+        note: "Postgres and PostgreSQL are the same skill."
+        say: >
+          Resumes and job postings spell skills differently: Postgres or PostgreSQL, k8s or Kubernetes. The aliases table maps each spelling to one name.
+      - lines: "17-20"
+        say: >
+          Normalize collapses spaces, lowercases, and applies the aliases. Now Postgres and PostgreSQL compare as equal.
+
+  - type: code
+    heading: "compare(): set logic, no model"
+    title: resume/analyzer.py
+    file: project/ai-resume-analyzer/resume/analyzer.py
+    lines: "72-79"
+    steps:
+      - lines: "75"
+        say: >
+          Compare normalises the candidate's skills into a set.
+      - lines: "76-79"
+        note: "Results keep the job posting's own wording."
+        say: >
+          Then each must-have is matched or missing, and each nice-to-have that's missing is listed. The results keep the job posting's own wording, so the report reads naturally.
+
+  - type: code
+    chapter: The pipeline
+    heading: "analyze(): extract, compare, then advise"
+    title: resume/analyzer.py
+    file: project/ai-resume-analyzer/resume/analyzer.py
+    lines: "130-158"
+    steps:
+      - lines: "130-136"
+        note: "Low effort: extraction is a simple task."
+        say: >
+          Extract profile calls the structured method with the profile schema and low effort, because extraction is simple. Then the grounding check keeps only skills the resume really names.
+      - lines: "138-140"
+        say: >
+          Extract job does the same for the posting.
+      - lines: "142-147"
+        note: "Medium effort: advice needs more judgment."
+        say: >
+          Suggest fills the advice template with the comparison results, and uses medium effort, because writing good advice takes more judgment.
+      - lines: "149-158"
+        note: "No gaps, no advice call: code decides."
+        say: >
+          And analyze runs the pipeline. Note the condition: if nothing is missing, code skips the advice call entirely. That's one less model call, for free.
+
+  - type: terminal
+    chapter: First run
+    title: terminal — ai-resume-analyzer
+    cwd: project/ai-resume-analyzer
+    font: 24
+    steps:
+      - cmd: python -m resume analyze data/resume_sam.md data/job_backend.md --out reports/sam.md
+        run: rm -rf reports && python -m resume analyze data/resume_sam.md data/job_backend.md --out reports/sam.md
+        say: >
+          Let's run it on Sam, a fictional backend developer, and a fictional backend job posting.
+      - cmd: head -14 reports/sam.md
+        say: >
+          Five of six must-have skills: eighty-three percent. Postgres in the resume matched PostgreSQL in the posting, thanks to normalisation, and GitHub Actions counted as CI slash CD. Kubernetes is missing.
+      - cmd: tail -3 reports/sam.md
+        say: >
+          And the footer records the three prompt versions with their fingerprints, the model, the tokens, and the cost. Offline, the tokens are estimates.
+
+  - type: recap
+    chapter: Recap
+    heading: Part 1 recap
+    items:
+      - {text: "Model extracts; code compares, scores and decides", say: "The model extracts, and code compares, scores, and decides."}
+      - {text: "Aliases make different spellings match", say: "Aliases make different spellings match."}
+      - {text: "Every report records prompts, tokens and cost", say: "And every report records its prompts, tokens, and cost."}
+    outro: >
+      In part two: the suggestions and the report, the command line, the full demo with failures, the tests, and the evaluation. Then we wrap up the module.

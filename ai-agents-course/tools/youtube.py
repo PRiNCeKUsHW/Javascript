@@ -25,6 +25,7 @@ MODULES = {
                   "python dataclasses", "python json", "httpx", "python async await", "pytest tutorial",
                   "python cli project"],
         "tags": "#Python #AIAgents #AIEngineering #PythonTutorial #LLM",
+        "docs": "docs.python.org/3/tutorial · www.python-httpx.org · docs.pytest.org",
     },
     2: {
         "title": "LLM Fundamentals and API Integration",
@@ -39,6 +40,26 @@ MODULES = {
                   "llm streaming python", "structured output json", "api rate limits retries",
                   "llm api cost", "ai study assistant project"],
         "tags": "#Python #LLM #ClaudeAPI #AIAgents #AIEngineering",
+        "docs": "platform.claude.com/docs/en/build-with-claude/structured-outputs · "
+                "platform.claude.com/docs/en/api/errors · platform.claude.com/docs/en/about-claude/pricing",
+    },
+    3: {
+        "title": "Prompt Engineering and Structured Outputs",
+        "project": "AI Resume Analyzer",
+        "project_dir": "ai-resume-analyzer",
+        "project_blurb": "a command-line tool that compares a resume with a job posting and writes a "
+                         "skills-gap report, with versioned prompts, structured outputs validated by "
+                         "Pydantic, a grounding check, an evaluation set and 27 tests.",
+        "prereq": "Module 2 (LLM Fundamentals and API Integration) or equivalent. An Anthropic API key "
+                  "is optional: every demo also runs offline with a built-in fake API (keyword rules, "
+                  "not a model).",
+        "terms": ["prompt engineering", "prompt engineering python", "structured output llm",
+                  "pydantic llm", "llm json output", "prompt versioning", "llm evaluation",
+                  "prompt injection", "ai resume analyzer", "claude api python"],
+        "tags": "#PromptEngineering #Python #LLM #Pydantic #AIAgents",
+        "docs": "platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices · "
+                "platform.claude.com/docs/en/build-with-claude/structured-outputs · "
+                "platform.claude.com/docs/en/test-and-evaluate/develop-tests",
     },
 }
 
@@ -73,7 +94,7 @@ def main(m):
         if t - last >= 10:
             yt.append(f"{stamp(t)} {title}")
             last = t
-    out += ["## Full module video (`renders/module-01-full.mp4`)", "",
+    out += [f"## Full module video (`renders/module-{m:02d}-full.mp4`)", "",
             "**Title**", "", f"AI Agents with Python 2026 · Module {m}: {info['title']} (Full Module + Project)", "",
             "**Description**", "", "```text",
             f"Module {m} of \"AI Agents with Python: Beginner to Production (2026)\": {info['title']}.",
@@ -88,7 +109,7 @@ def main(m):
             f"Source code + README: {src}",
             "",
             "Chapters", *yt, "",
-            "Official docs: docs.python.org/3/tutorial · www.python-httpx.org · docs.pytest.org",
+            f"Official docs: {info['docs']}",
             "", info["tags"], "```", "",
             "**Search terms**: " + ", ".join(info["terms"]), ""]
 

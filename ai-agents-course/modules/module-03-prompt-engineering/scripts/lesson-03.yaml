@@ -1,0 +1,151 @@
+module_title: Prompt Engineering and Structured Outputs
+title: "Structured Outputs: Pydantic Schemas and Parsing Failures"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 3 · Lesson 3
+    title: JSON you can trust, and what to check anyway
+    subtitle: Schemas with Pydantic, structured outputs, and every way a reply can still fail.
+    say: >
+      Programs need data, not prose. In Module 2 you asked for a quiz as structured output. Now we go deeper:
+      how to design a schema, what structured outputs guarantee, what they don't, and how to handle every kind of parsing failure with one clear error.
+
+  - type: objectives
+    items:
+      - {text: "Design Pydantic schemas with useful constraints", say: "You'll design Pydantic schemas with useful constraints."}
+      - {text: "Know what structured outputs guarantee, and what they don't", say: "Know what structured outputs guarantee, and what they don't."}
+      - {text: "Handle cut-off, invalid, refused and invented replies", say: "Handle replies that are cut off, invalid, refused, or invented."}
+      - {text: "Check meaning in code, not just shape", say: "And check meaning in code, not just shape."}
+
+  - type: code
+    chapter: Schemas with Pydantic
+    heading: "models.py: the shapes we ask for"
+    title: resume/models.py
+    file: project/ai-resume-analyzer/resume/models.py
+    steps:
+      - lines: "4-11"
+        note: "Each field is something code will use."
+        say: >
+          A schema is a contract between the model and your code. The candidate profile has a name, years of experience, a list of skills, and recent roles. Every field is something code will actually use.
+      - lines: "8"
+        note: "`ge` and `le`: limits on the value."
+        say: >
+          Field adds constraints. Years of experience must be between zero and sixty. A negative number is a bug, and we want to catch it.
+      - lines: "9-10"
+        note: "A description tells the model what belongs in the field."
+        say: >
+          A description tells the model what belongs in a field. Here: technical skills the resume names, as written.
+      - lines: "14-20"
+        say: >
+          Job requirements split skills into must have and nice to have. That split is what makes the comparison meaningful.
+      - lines: "23-32"
+        note: "No `reasoning` field: ask for what you'll use."
+        say: >
+          And suggestions are a summary plus one piece of advice per skill. Notice there's no reasoning field. Ask only for what you'll use. Current models reason before they answer anyway.
+
+  - type: cards
+    chapter: What is guaranteed
+    heading: "What structured outputs guarantee"
+    cards:
+      - {tag: guaranteed, title: Shape, body: "Valid JSON with your fields and types: the API constrains the reply to the schema", code: "output_format=CandidateProfile", tone: teal, say: "With structured outputs, the API constrains the reply to your schema. You get valid JSON, with your fields and your types."}
+      - {tag: checked by the SDK, title: Limits, body: "Some constraints (like ge/le) can't be enforced by the API; the SDK validates them with Pydantic", code: "pydantic.ValidationError", tone: amber, say: "Some constraints, like minimum and maximum values, can't be enforced during generation. The SDK moves them into the field description, and validates them with Pydantic when the reply arrives. If one fails, you get a validation error."}
+      - {tag: not guaranteed, title: Truth, body: "A perfectly valid reply can still contain a wrong or invented value", tone: coral, say: "And what's never guaranteed is truth. A perfectly valid reply can still contain a wrong value, or a skill the resume never mentions."}
+
+  - type: terminal
+    chapter: Validation errors
+    title: terminal — lesson-03
+    cwd: source/lesson-03
+    steps:
+      - cmd: python validate.py
+        say: >
+          Let's see what Pydantic reports for four replies. This needs no model at all: it's the same validation the SDK runs.
+          A good reply becomes an object. A negative number of years fails greater than or equal. A missing field is reported as missing. And a reply cut off in the middle isn't JSON at all: json invalid.
+
+  - type: code
+    chapter: Handling parse failures
+    heading: "One call, one validated object, or one clear error"
+    title: resume/analyzer.py
+    file: project/ai-resume-analyzer/resume/analyzer.py
+    lines: "95-128"
+    steps:
+      - lines: "100-108"
+        note: "`beta.messages.parse` with the schema as `output_format`."
+        say: >
+          Every model call in the project goes through this one method. It calls parse with the schema as output format, the system prompt, the rendered template, and an effort level.
+      - lines: "109-113"
+        note: "`json_invalid` almost always means the reply was cut off."
+        say: >
+          If validation fails, we look at the first error. Invalid JSON almost always means the reply was cut off by max tokens, so we say that.
+      - lines: "114-117"
+        say: >
+          Any other validation error names the field and the problem, in one line.
+      - lines: "118-122"
+        note: "Every call is recorded: prompt, fingerprint, tokens, cost."
+        say: >
+          Then we record the call: which prompt, its fingerprint, tokens, and cost.
+      - lines: "123-128"
+        say: >
+          And we check the stop reason: a refusal, or a reply that was cut off, never gets returned as if it were complete.
+
+  - type: code
+    chapter: Check meaning, not just shape
+    heading: "Grounding: is the skill really in the resume?"
+    title: resume/skills.py
+    file: project/ai-resume-analyzer/resume/skills.py
+    lines: "23-38"
+    steps:
+      - lines: "23-29"
+        note: "Matches the skill or any alias, on word boundaries."
+        say: >
+          Structured output checks the shape. Code can check meaning too. Mentions asks: does the resume text actually name this skill, or one of its aliases?
+      - lines: "32-38"
+        note: "Skills the resume doesn't name are dropped, and reported."
+        say: >
+          Grounded splits the extracted skills into those the resume names, and those it doesn't. The analyzer keeps the first list, drops the second, and tells you what it dropped.
+
+  - type: terminal
+    title: terminal — ai-resume-analyzer
+    cwd: project/ai-resume-analyzer
+    font: 24
+    say: >
+      The project's fake API can misbehave on purpose, so we can watch each failure path.
+    steps:
+      - cmd: RESUME_FAKE_FAIL=invalid python -m resume extract data/resume_sam.md
+        exit: 1
+        say: >
+          A reply with negative years becomes one clear error that names the field.
+      - cmd: RESUME_FAKE_FAIL=cutoff python -m resume extract data/resume_sam.md
+        exit: 1
+        say: >
+          A reply cut off mid-JSON: not complete JSON, cut off.
+      - cmd: RESUME_FAKE_FAIL=invented python -m resume extract data/resume_sam.md
+        keep: "-1"
+        say: >
+          And when the reply invents a skill, here COBOL, the grounding check drops it and tells us.
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "A structured-output reply passed schema validation. What do you know?"
+    options:
+      - "Every value in it is true"
+      - "It has the right fields and types"
+      - "It used fewer tokens"
+      - "The model didn't reason"
+    answer: 1
+    explain: "Validation guarantees shape, not truth. Check meaning in code where you can, like the grounding check."
+    say_question: >
+      Quick check. A structured output reply passed validation. What do you actually know?
+    say_answer: >
+      That it has the right fields and types. Shape, not truth. Where you can, check meaning in code.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 3 recap
+    items:
+      - {text: "Schemas: only fields you use, with constraints and descriptions", say: "A schema holds only the fields you use, with constraints and descriptions."}
+      - {text: "The API guarantees shape; the SDK validates limits", say: "The API guarantees the shape, and the SDK validates the limits."}
+      - {text: "Cut off, invalid, refused: one clear error each", say: "Cut-off, invalid, and refused replies each become one clear error."}
+      - {text: "Check meaning in code: grounding", say: "And code checks meaning, like grounding every skill in the resume."}
+    outro: >
+      Next lesson: how do you know a prompt change is an improvement? Prompt versions and evaluations.
