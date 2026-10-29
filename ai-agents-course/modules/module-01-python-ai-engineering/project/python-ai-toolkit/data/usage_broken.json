@@ -1,0 +1,57 @@
+[
+  {
+    "id": "req-101",
+    "model": "model-small",
+    "prompt_tokens": 300,
+    "completion_tokens": 120,
+    "latency_ms": 700,
+    "status": "ok",
+    "tags": [
+      "summarize"
+    ],
+    "created_at": "2026-03-03T09:00:00+00:00"
+  },
+  {
+    "id": "req-102",
+    "model": "model-small",
+    "prompt_tokens": -5,
+    "completion_tokens": 80,
+    "latency_ms": 500,
+    "status": "ok",
+    "tags": [],
+    "created_at": "2026-03-03T09:05:00+00:00"
+  },
+  {
+    "id": "req-103",
+    "model": "model-large",
+    "prompt_tokens": 900,
+    "completion_tokens": 400,
+    "latency_ms": 1500,
+    "status": "done",
+    "tags": [
+      "research"
+    ],
+    "created_at": "2026-03-03T09:10:00+00:00"
+  },
+  {
+    "model": "model-small",
+    "prompt_tokens": 100,
+    "completion_tokens": 50,
+    "latency_ms": 300,
+    "status": "ok",
+    "tags": [
+      "classify"
+    ],
+    "created_at": "2026-03-03T09:15:00+00:00"
+  },
+  {
+    "id": "req-105",
+    "model": "model-small",
+    "prompt_tokens": 210,
+    "completion_tokens": 90,
+    "latency_ms": 650,
+    "status": "ok",
+    "tags": "support",
+    "created_at": "yesterday"
+  }
+]

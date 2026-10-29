@@ -1,0 +1,203 @@
+module_title: LLM Fundamentals and API Integration
+title: "Project, Part 1: AI Study Assistant, Client, Costs and Explanations"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 2 · Lesson 6 · Project
+    title: "Build the AI Study Assistant, part 1"
+    subtitle: Plan the tool, build an offline-capable client, track costs, and stream explanations.
+    loop: [Ask, Stream, Measure, Budget]
+    say: >
+      Project time. Over two lessons you'll build the AI Study Assistant: a command line tool that explains programming concepts, writes quizzes as validated JSON, and chats with memory, while tracking every cent it spends.
+      Everything from this module appears in it.
+
+  - type: bullets
+    chapter: What we are building
+    heading: "The brief"
+    items:
+      - {text: "`explain`: stream an explanation at a chosen level", say: "The explain command streams an explanation of any topic, at a beginner, intermediate, or advanced level."}
+      - {text: "`quiz`: multiple-choice questions as validated JSON; save and grade them", say: "The quiz command generates multiple-choice questions as validated JSON, which you can save and grade."}
+      - {text: "`chat`: a conversation with history, trimmed to a token budget", say: "The chat command holds a conversation with history, trimmed to a token budget."}
+      - {text: "Every call reports tokens and cost; a budget stops runaway spending", say: "Every call reports its tokens and cost, and a budget stops runaway spending."}
+      - {text: "Clear errors, automatic retries, and an offline mode for tests", say: "And it has clear errors, automatic retries, and an offline mode, so the tests never need a key or the network."}
+
+  - type: diagram
+    chapter: Architecture
+    heading: Architecture
+    nodes:
+      - {id: cli, label: cli.py, sub: commands & output, x: 864, y: 60, w: 340, h: 110, tone: amber, mono: true}
+      - {id: assistant, label: assistant.py, sub: "explain · quiz · chat", x: 864, y: 280, w: 400, h: 120, tone: teal, mono: true}
+      - {id: prompts, label: prompts.py, sub: system prompts, x: 240, y: 280, w: 300, h: 110, tone: violet, mono: true}
+      - {id: models, label: models.py, sub: Quiz schema, x: 240, y: 470, w: 300, h: 110, tone: violet, mono: true}
+      - {id: pricing, label: pricing.py, sub: costs & budget, x: 1490, y: 280, w: 300, h: 110, tone: blue, mono: true}
+      - {id: client, label: client.py, sub: real or offline client, x: 864, y: 500, w: 400, h: 110, tone: blue, mono: true}
+      - {id: api, label: Claude API, sub: needs a key, x: 1490, y: 600, w: 300, h: 100, tone: violet}
+      - {id: fake, label: fake_api.py, sub: offline stand-in, x: 240, y: 640, w: 300, h: 100, tone: muted, mono: true}
+    edges:
+      - {from: cli, to: assistant}
+      - {from: assistant, to: prompts}
+      - {from: assistant, to: models}
+      - {from: assistant, to: pricing}
+      - {from: assistant, to: client}
+      - {from: client, to: api, label: key set}
+      - {from: client, to: fake, label: offline}
+    steps:
+      - show: [cli, assistant, "cli->assistant"]
+        focus: [cli, assistant]
+        say: >
+          The command line handles arguments and printing, and calls the assistant, which holds the logic for explaining, quizzing, and chatting.
+      - show: [prompts, models, "assistant->prompts", "assistant->models"]
+        focus: [prompts, models]
+        say: >
+          Prompts live in their own module, so you can improve them without touching the code. And models holds the quiz schema.
+      - show: [pricing, "assistant->pricing"]
+        focus: [pricing]
+        say: >
+          Pricing calculates costs and enforces the budget.
+      - show: [client, api, fake, "assistant->client", "client->api", "client->fake"]
+        focus: [client, api, fake]
+        flow: ["client->api", "client->fake"]
+        say: >
+          And client builds the SDK client: a real one when your key is set, or the same SDK pointed at the offline fake API when it isn't. Nothing else in the program knows the difference.
+
+  - type: code
+    chapter: The offline fake API
+    heading: "fake_api.py: a fake server the real SDK talks to"
+    title: study/fake_api.py
+    file: project/ai-study-assistant/study/fake_api.py
+    lines: "33-63"
+    say: >
+      Let's start with the piece that makes testing possible: the fake API.
+    steps:
+      - lines: "33-41"
+        note: "A callable handler. `STUDY_FAKE_FAIL` scripts failures."
+        say: >
+          It's a class whose objects can be called like a function, once per HTTP request. A list of planned failures lets tests and demos make it return a four twenty-nine or a five hundred on purpose.
+      - lines: "43-50"
+        note: "It reads the real JSON request the SDK sent."
+        say: >
+          Each call receives the real HTTP request the SDK built, and parses its JSON body. It records the body, so tests can check exactly what was sent, and it answers token counting requests with a rough estimate.
+      - lines: "52-63"
+        note: "Same shapes as the real API: errors, refusals, `max_tokens`, streaming."
+        say: >
+          Then it prepares a placeholder reply, applies any planned failure or refusal, cuts the reply at max tokens just like the real API, and returns either a normal JSON message or a stream of server-sent events.
+          Because the responses have the same shape as the real API's, the SDK can't tell the difference. That means our tests exercise the real SDK code.
+
+  - type: code
+    chapter: Client and settings
+    heading: "client.py: real client or offline client"
+    title: study/client.py
+    file: project/ai-study-assistant/study/client.py
+    steps:
+      - lines: "16-19"
+        note: "Real mode: the SDK reads `ANTHROPIC_API_KEY` itself."
+        say: >
+          With a key, we create a normal client. The SDK reads the key from the environment, so it never appears in our code. We pass the retry count and a sixty-second timeout.
+      - lines: "20-25"
+        note: "Offline: a `MockTransport` replaces the network."
+        say: >
+          Without a key, we print a clear offline notice, and give the same SDK an HTTP client whose transport is our fake API instead of the network.
+
+  - type: code
+    title: study/config.py
+    file: project/ai-study-assistant/study/config.py
+    steps:
+      - lines: "15-23"
+        note: "No key → offline. Everything else has a safe default."
+        say: >
+          Settings come from environment variables, as in Module 1. If there's no key, we switch to offline mode automatically. The model defaults to Claude Opus 5.5, and the budget to fifty cents.
+
+  - type: code
+    chapter: Costs and budget
+    heading: "pricing.py: every call is costed"
+    title: study/pricing.py
+    file: project/ai-study-assistant/study/pricing.py
+    steps:
+      - lines: "5-12"
+        note: "List prices per million tokens. Check the pricing page; they change."
+        say: >
+          The price table holds dollars per million input and output tokens, for each model.
+      - lines: "15-19"
+        say: >
+          Cost u s d is the formula from lesson five. An unknown model raises an error rather than silently costing zero.
+      - lines: "22-34"
+        note: "`check()` runs **before** each call."
+        say: >
+          The cost tracker adds up spending. Its check method runs before every call, and raises budget exceeded once the budget is used up. That's your protection against a runaway loop.
+      - lines: "36-40"
+        say: >
+          And add records the cost of each finished call.
+
+  - type: code
+    chapter: The assistant
+    heading: "assistant.py: errors, answers and fallbacks"
+    title: study/assistant.py
+    file: project/ai-study-assistant/study/assistant.py
+    lines: "16-75"
+    steps:
+      - lines: "20-30"
+        note: "An `Answer` carries the text, stop reason, tokens and cost."
+        say: >
+          An Answer bundles everything we learn from a call: the text, the stop reason, the tokens, and the cost. Truncated is true when the reply hit max tokens.
+      - lines: "33-53"
+        note: "One place maps SDK errors to clear messages, most specific first."
+        say: >
+          Friendly errors is a context manager that catches SDK exceptions, most specific first, and turns each into one clear message. It's lesson five's error table, written once and reused by every call.
+      - lines: "16-17"
+        note: "Opt in to server-side fallbacks for refusals."
+        say: >
+          Next, fallbacks. If the model declines a request, the API can re-run it on another model automatically. We opt in with this beta flag.
+      - lines: "63-65"
+        note: "Every request shares the model, the beta flag and `fallbacks`."
+        say: >
+          And base builds the arguments every request shares: the model, the beta flag, and fallbacks set to default, so the API chooses a suitable fallback model for us.
+      - lines: "67-75"
+        note: "Record the cost first, then check for a refusal, then read the text."
+        say: >
+          Answer turns a response into an Answer. It records the cost first, because even a declined request is billed, then checks for a refusal, and only then joins the text blocks.
+
+  - type: code
+    heading: "explain(): streaming an answer"
+    title: study/assistant.py
+    file: project/ai-study-assistant/study/assistant.py
+    lines: "77-91"
+    steps:
+      - lines: "81-82"
+        say: >
+          Explain checks the budget first, then fills in the request template from prompts dot py.
+      - lines: "83-86"
+        note: "`beta.messages.stream` + our shared arguments + low effort."
+        say: >
+          It opens a stream, inside friendly errors, using the shared arguments, the tutor system prompt, and low effort, which is plenty for explanations.
+      - lines: "87-91"
+        note: "Each piece goes to `on_text`; the final message is costed."
+        say: >
+          Each piece of text is passed to an on text callback as it arrives, so the assistant doesn't know or care whether it's printed, shown in a web page, or collected by a test. Then the final message becomes an Answer.
+
+  - type: terminal
+    chapter: First run
+    heading: "First run: explain"
+    title: terminal — ai-study-assistant
+    cwd: project/ai-study-assistant
+    steps:
+      - cmd: python -m study explain "Python decorators"
+        say: >
+          Let's run it. The offline notice comes first, then the streamed placeholder, then a footer with the model, tokens, cost, and stop reason, and finally the session total against the budget.
+      - cmd: python -m study explain "recursion" --max-tokens 20
+        say: >
+          With a tiny max tokens, the reply is cut off, and the tool warns you instead of pretending everything is fine.
+      - cmd: STUDY_BUDGET_USD=0 python -m study explain "anything"
+        exit: 1
+        say: >
+          And with a budget of zero, it refuses before sending anything, with a one-line explanation.
+
+  - type: recap
+    chapter: Recap
+    heading: Part 1 recap
+    items:
+      - {text: "A fake API with the real protocol makes tests free and repeatable", say: "A fake API that speaks the real protocol makes tests free and repeatable."}
+      - {text: "One function decides: real client or offline client", say: "One function decides between the real and the offline client."}
+      - {text: "Every call is costed; a budget check runs before each call", say: "Every call is costed, and a budget check runs before each one."}
+      - {text: "Errors are mapped once; fallbacks handle refusals", say: "Errors are mapped once, in one place, and fallbacks handle refusals."}
+    outro: >
+      In part two: quizzes as structured output, chat with history, the full demo, the tests, and the module quiz.

@@ -1,0 +1,301 @@
+module_title: Python for AI Engineering
+title: "Functions, Classes and Exceptions"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 1 · Lesson 3
+    title: Functions, classes and exceptions
+    subtitle: Organise logic, model your data, and fail on purpose instead of by accident.
+    say: >
+      In the last lesson you learned how to hold data. Now you will learn how to organise the code that works on it.
+      Functions give logic a name, classes bundle data with behaviour, and exceptions let your program fail clearly and recover safely.
+      Agents call tools that fail all the time, so this last part matters a lot.
+
+  - type: objectives
+    items:
+      - {text: "Write functions with parameters, defaults and return values", say: "You will write functions with parameters, default values, and return values."}
+      - {text: "Avoid the mutable default argument bug", say: "Avoid a classic bug that can leak data between users."}
+      - {text: "Create classes and dataclasses", say: "Create your own classes, and the shorter dataclasses."}
+      - {text: "Handle, raise and define exceptions, and read tracebacks", say: "And handle, raise, and define your own exceptions, and read a traceback calmly."}
+
+  - type: code
+    chapter: Functions
+    heading: "Functions: name a piece of logic"
+    title: functions.py
+    file: source/lesson-03/functions.py
+    say: >
+      A function is a named, reusable block of code. You define it once, and call it as often as you like.
+    steps:
+      - lines: "2-4"
+        note: "`def name(parameters):` then an indented body. `return` sends a value back."
+        say: >
+          The def keyword starts a function. Inside the parentheses are its parameters, the inputs.
+          The text in triple quotes is a docstring, describing what it does. And return sends the result back to whoever called it.
+      - lines: "7-8"
+        note: "Call by position, or by **keyword** for clarity."
+        say: >
+          You can pass arguments by position, or by name, as keyword arguments. Keywords make calls with several numbers much easier to read.
+          Notice the underscores in two million. Python ignores them. They are just there for readability.
+      - lines: "11-15"
+        note: "`max_words=8` is a **default**: used when the caller doesn't pass a value."
+        say: >
+          This second function has a default value. If the caller does not pass max words, it uses eight.
+          It returns early when the text is already short enough. Otherwise it keeps the first words and adds an ellipsis.
+      - lines: "18-20"
+        say: >
+          Here we call it three times: once with a long sentence, once with a short one, and once overriding the default.
+
+  - type: terminal
+    title: terminal — lesson-03
+    cwd: source/lesson-03
+    steps:
+      - cmd: python functions.py
+        say: >
+          The costs come back as plain numbers, the long sentence is shortened, and the last call keeps only two words.
+
+  - type: bullets
+    heading: Habits for good functions
+    items:
+      - {text: "One job per function, named with a verb", sub: "`estimate_cost`, `load_records`, `render_report`", say: "Give each function one job, and name it with a verb, like estimate cost or load records."}
+      - {text: "Return values; don't print inside", sub: "the caller decides what to do with the result", say: "Return results instead of printing them. Then the caller decides what to do, and you can test the function easily."}
+      - {text: "Use keyword arguments for anything unclear", say: "Use keyword arguments whenever a call would otherwise be a mystery list of numbers."}
+      - {text: "Never use a mutable default like `[]` or `{}`", sub: "it is shared between calls. See next.", tone: coral, say: "And never use a mutable default, like an empty list. Let me show you why."}
+
+  - type: code
+    chapter: The mutable default bug
+    heading: A bug that leaks memory between users
+    title: mutable_default.py
+    file: source/lesson-03/mutable_default.py
+    steps:
+      - lines: "2-4"
+        tone: coral
+        note: "The default `[]` is created **once**, when the function is defined, and then reused."
+        say: >
+          This function stores chat history. The default empty list looks harmless, but Python creates it only once, when the function is defined.
+          Every call that uses the default shares that same list.
+      - lines: "7-8"
+        tone: coral
+        note: "Bob's conversation now contains Alice's message."
+        say: >
+          So Alice sends a message, then Bob sends one, and Bob's history contains Alice's message.
+          In an AI app, that is a privacy bug: one user's conversation leaking into another's.
+      - lines: "11-15"
+        tone: teal
+        note: "Default to `None`, then create a fresh list inside."
+        say: >
+          The fix is the standard Python pattern. Default to None, and create a fresh list inside the function.
+
+  - type: terminal
+    title: terminal — lesson-03
+    cwd: source/lesson-03
+    steps:
+      - cmd: python mutable_default.py
+        say: >
+          The output proves it. With the buggy version, Bob sees Alice's message. With the fixed version, each call starts clean.
+
+  - type: cards
+    chapter: Classes
+    heading: Classes and objects
+    say: >
+      Now, classes. Functions organise behaviour. Classes organise data together with the behaviour that belongs to it.
+    cards:
+      - {tag: class, title: The blueprint, body: "describes what every conversation has and can do", code: "class Conversation:", tone: teal, say: "A class is a blueprint. It describes what every object of that kind has, and what it can do."}
+      - {tag: object, title: One instance, body: "a real conversation built from the blueprint", code: 'chat = Conversation(...)', tone: blue, say: "An object, also called an instance, is one real thing built from that blueprint. You can create as many as you like."}
+      - {tag: attribute, title: Its data, body: "values stored on the object", code: "self.messages", tone: violet, say: "Attributes are the data stored on each object."}
+      - {tag: method, title: Its behaviour, body: "functions that belong to the class", code: "chat.add(...)", tone: amber, say: "And methods are functions that belong to the class and work on that object's data."}
+
+  - type: code
+    title: classes.py
+    file: source/lesson-03/classes.py
+    steps:
+      - lines: "2-4"
+        note: "`__init__` runs when an object is created. `self` is the object itself."
+        say: >
+          Here is a Conversation class. The special dunder init method runs whenever a new object is created.
+          Its first parameter, self, is the object being built, so self dot messages stores a list on that particular object.
+      - lines: "6-10"
+        note: "Methods always take `self` first."
+        say: >
+          Add and last are methods. They also take self first, so they can read and change this object's messages.
+      - lines: "12-13"
+        note: "`__len__` makes `len(chat)` work."
+        say: >
+          Methods with double underscores plug your class into Python itself. Defining dunder len makes the built-in len function work on a conversation.
+      - lines: "16-20"
+        say: >
+          Creating an object looks like calling a function. We add two messages, then print the length and the last message.
+      - lines: "22-23"
+        say: >
+          A second conversation is a completely separate object, with its own list.
+
+  - type: terminal
+    title: terminal — lesson-03
+    cwd: source/lesson-03
+    steps:
+      - cmd: python classes.py
+        say: >
+          Three messages in the first conversation, and just the system message in the other.
+
+  - type: code
+    chapter: Dataclasses
+    heading: "Dataclasses: less boilerplate for data"
+    title: dataclass_demo.py
+    file: source/lesson-03/dataclass_demo.py
+    say: >
+      Many classes in AI code mostly hold data: a model configuration, a usage record, a tool result.
+      For those, Python's dataclass decorator writes the boring parts for you.
+    steps:
+      - lines: "5-10"
+        note: "List the fields with types. `@dataclass` writes `__init__`, `__repr__` and `__eq__` for you."
+        say: >
+          You just list the fields, with their types and optional defaults. The decorator generates the init method, a readable print form, and equality comparison.
+      - lines: "10"
+        note: "Mutable defaults need `field(default_factory=list)`. The same rule as before!"
+        say: >
+          Notice the stop field. Remember the mutable default bug? Dataclasses protect you from it: for a list default, you must use field with a default factory.
+      - lines: "13-17"
+        say: >
+          Creating objects, printing one, and comparing two with the same values, which counts as equal.
+
+  - type: terminal
+    title: terminal — lesson-03
+    cwd: source/lesson-03
+    steps:
+      - cmd: python dataclass_demo.py
+        say: >
+          The generated print form shows every field, and the equality check is True. In the project, our usage record is a dataclass.
+
+  - type: code
+    chapter: Exceptions
+    heading: "Exceptions: try, except, else, finally"
+    title: exceptions.py
+    file: source/lesson-03/exceptions.py
+    say: >
+      Now, exceptions. When something goes wrong, Python raises an exception. If nothing handles it, the program stops.
+    steps:
+      - lines: "3-4"
+        note: "`try`: code that might fail."
+        say: >
+          Put code that might fail inside a try block. Converting text to a number fails if the text isn't a number.
+      - lines: "5-7"
+        note: "`except ValueError`: runs **only** for that error type."
+        say: >
+          The except block runs only if that specific error happens. Here we handle a value error by reporting it and returning zero.
+      - lines: "8-9"
+        note: "`else`: runs only if **no** exception happened."
+        say: >
+          The else block runs only when the try block succeeded.
+      - lines: "10-11"
+        note: "`finally`: **always** runs, success or failure. Perfect for cleanup."
+        say: >
+          And finally always runs, whether things went well or not. That makes it the right place for cleanup, like closing a connection.
+
+  - type: terminal
+    title: terminal — lesson-03
+    cwd: source/lesson-03
+    steps:
+      - cmd: python exceptions.py
+        say: >
+          Look at the order. For one twenty, the finally message prints before the value, because finally runs on the way out of the function.
+          For a b c, the error is handled, finally still runs, and we get zero.
+
+  - type: code
+    chapter: Raising your own errors
+    heading: Raise specific, meaningful errors
+    title: custom_errors.py
+    file: source/lesson-03/custom_errors.py
+    steps:
+      - lines: "2-7"
+        note: "Your own exception classes inherit from `Exception`."
+        say: >
+          You can define your own exceptions by inheriting from Exception. A base class for your project, with more specific ones below it, is a great pattern.
+      - lines: "10-14"
+        note: "`raise` stops the function and reports the problem to the caller."
+        say: >
+          The raise statement stops the function immediately and hands the problem to the caller.
+          A negative cost is a programming error, so that's a value error. Going over budget is a business rule, so it gets our own budget exceeded error.
+      - lines: "17-23"
+        note: "Agents need exactly this: a hard spending limit that stops the loop."
+        say: >
+          The caller catches only budget exceeded, and stops charging. Agents need exactly this kind of guard, a hard spending limit, which we'll build properly in Module 7.
+
+  - type: terminal
+    title: terminal — lesson-03
+    cwd: source/lesson-03
+    steps:
+      - cmd: python custom_errors.py
+        say: >
+          The first two charges succeed, and the third is refused with a clear message.
+
+  - type: compare
+    heading: Catch specific errors, never everything
+    left:
+      title: swallows every error
+      tone: coral
+      label: Avoid
+      code: |
+        try:
+            result = call_tool(args)
+        except:
+            pass  # silently ignore
+    right:
+      title: handles what you expect
+      tone: teal
+      label: Prefer
+      code: |
+        try:
+            result = call_tool(args)
+        except TimeoutError:
+            result = "Tool timed out, try again."
+        # other errors still surface
+    steps:
+      - show: left
+        say: >
+          On the left is a pattern you must avoid. A bare except with pass hides every error, including bugs in your own code.
+          The program carries on with no result, and you have no idea why.
+      - show: right
+        say: >
+          On the right, you catch only the error you expect and know how to handle. Anything unexpected still surfaces, so you can see it and fix it.
+
+  - type: terminal
+    chapter: Reading a traceback
+    heading: Read a traceback from the bottom up
+    title: terminal — lesson-03
+    cwd: source/lesson-03
+    alias: .
+    steps:
+      - cmd: python traceback_demo.py
+        exit: 1
+        say: >
+          When an exception isn't handled, Python prints a traceback. It looks scary, but read it from the bottom up.
+          The last line is the error: a key error for the key model.
+    outro: >
+      The lines above it show the path the program took, with the most recent call last. Here, the failing line is config, model, inside get model, called from start agent.
+      So the fix is to make sure the configuration contains a model, or to read it with get and a default.
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "Why is `def add(msg, history=[])` dangerous?"
+    options:
+      - "Lists can't be parameters"
+      - "The same list is shared by every call that uses the default"
+      - "It makes the function slow"
+      - "`history` becomes read-only"
+    answer: 1
+    explain: "Default values are created **once**, when the function is defined. Use `history=None` and create a new list inside."
+    say_question: >
+      Quick check. Why is a function with history equals an empty list as a default dangerous?
+    say_answer: >
+      Because the default list is created once and shared by every call that uses it. Default to None and create a fresh list inside the function.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 3 recap
+    items:
+      - {text: "Functions: one job, clear name, return the result", say: "Functions do one job, have a clear name, and return their result."}
+      - {text: "Default mutable arguments to `None`", say: "Default mutable arguments to None."}
+      - {text: "Classes bundle data and behaviour; `@dataclass` for data-heavy classes", say: "Classes bundle data and behaviour, and dataclasses make data-heavy classes short."}
+      - {text: "Catch specific exceptions, raise meaningful ones, read tracebacks bottom-up", say: "Catch specific exceptions, raise meaningful ones, and read tracebacks from the bottom up."}
+    outro: >
+      Next, you will split code across files and packages, and work with files, JSON, and environment variables.

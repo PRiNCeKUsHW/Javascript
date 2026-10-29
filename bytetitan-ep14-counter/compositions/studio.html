@@ -1,0 +1,231 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      font-family: "Oswald", sans-serif;
+    }
+    /* back wall: white to cool grey, glossy vertical panels */
+    #st-backwall {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, #ffffff 0%, #f1f4f8 38%, #dfe5ec 72%, #cfd7e1 100%);
+    }
+    #st-panels {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 230px;
+      height: 1330px;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0 118px,
+        rgba(160, 172, 188, 0.28) 118px 120px
+      );
+    }
+    #st-sheen {
+      position: absolute;
+      top: 200px;
+      left: -600px;
+      width: 420px;
+      height: 1400px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
+      transform: skewX(-18deg);
+    }
+    /* lighting truss across the top (decoration, inside the Instagram top bar) */
+    #st-truss {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 70px;
+      height: 26px;
+      background: repeating-linear-gradient(135deg, #2a3756 0 10px, #3a4a70 10px 20px);
+      border-top: 4px solid #1b2745;
+      border-bottom: 4px solid #1b2745;
+    }
+    .st-lamp {
+      position: absolute;
+      top: 100px;
+      width: 64px;
+      height: 54px;
+      border-radius: 10px 10px 30px 30px;
+      background: linear-gradient(180deg, #2a3756, #111a33);
+    }
+    .st-lamp::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 6px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff6e0;
+    }
+    .st-beam {
+      position: absolute;
+      top: 150px;
+      width: 260px;
+      height: 520px;
+      background: linear-gradient(180deg, rgba(255, 246, 224, 0.5), rgba(255, 246, 224, 0));
+      clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%);
+    }
+    /* the curved results wall */
+    #st-wall-shadow {
+      position: absolute;
+      left: 44px;
+      top: 418px;
+      width: 992px;
+      height: 800px;
+      background: rgba(14, 27, 61, 0.22);
+      clip-path: path("M0 0 Q496 70 992 0 L992 800 Q496 730 0 800 Z");
+      filter: blur(0);
+      transform: translateY(14px);
+    }
+    #st-wall-bezel {
+      position: absolute;
+      left: 40px;
+      top: 400px;
+      width: 1000px;
+      height: 810px;
+      background: linear-gradient(180deg, #3b4a6e, #141f3d 55%, #0b1430);
+      clip-path: path("M0 0 Q500 72 1000 0 L1000 810 Q500 738 0 810 Z");
+    }
+    #st-wall {
+      position: absolute;
+      left: 50px;
+      top: 410px;
+      width: 980px;
+      height: 790px;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 45%, #1b3170 0%, #10214f 55%, #0a1638 100%);
+      clip-path: path("M0 0 Q490 70 980 0 L980 790 Q490 720 0 790 Z");
+      overflow: hidden;
+    }
+    /* LED panel seams, curved shading at the sides, glossy band */
+    #st-wall-seams {
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0) 0 162px, rgba(140, 170, 230, 0.12) 162px 164px),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0) 0 130px, rgba(140, 170, 230, 0.1) 130px 132px);
+    }
+    #st-wall-curve {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(4, 10, 28, 0.55) 0%, rgba(4, 10, 28, 0) 22%, rgba(4, 10, 28, 0) 78%, rgba(4, 10, 28, 0.55) 100%);
+    }
+    #st-wall-gloss {
+      position: absolute;
+      left: -10%;
+      top: -30px;
+      width: 120%;
+      height: 300px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
+      border-radius: 0 0 50% 50%;
+    }
+    #st-wall-led {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+    }
+    /* floor, desk and ballot box (below the ticker: decoration only) */
+    #st-floor {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 1560px;
+      bottom: 0;
+      background: linear-gradient(180deg, #c9d2dd 0%, #dfe5ec 30%, #eef2f6 100%);
+    }
+    #st-floor-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 1556px;
+      height: 6px;
+      background: #aeb9c7;
+    }
+    #st-desk {
+      position: absolute;
+      left: -20px;
+      right: -20px;
+      top: 1640px;
+      height: 300px;
+      background: linear-gradient(180deg, #ffffff 0%, #e6ebf1 60%, #cdd5df 100%);
+      border-top: 10px solid #0e1b3d;
+    }
+    #st-desk-stripes {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 1660px;
+      height: 12px;
+      display: flex;
+    }
+    #st-desk-stripes span {
+      flex: 1;
+    }
+    #st-box {
+      position: absolute;
+      left: 390px;
+      top: 1580px;
+      width: 300px;
+      height: 200px;
+    }
+  </style>
+  <div data-hf-id="hf-qblp" id="root" data-composition-id="studio" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-4enw" id="st-backwall"></div>
+    <div data-hf-id="hf-psy4" id="st-panels"></div>
+    <div data-hf-id="hf-7y1d" id="st-sheen" data-layout-ignore></div>
+
+    <div data-hf-id="hf-zlrq" id="st-truss"></div>
+    <div data-hf-id="hf-5bww" class="st-beam" style="left: 40px"></div>
+    <div data-hf-id="hf-g6p7" class="st-beam" style="left: 410px"></div>
+    <div data-hf-id="hf-kqej" class="st-beam" style="left: 780px"></div>
+    <div data-hf-id="hf-2p4z" class="st-lamp" style="left: 138px"></div>
+    <div data-hf-id="hf-cfn6" class="st-lamp" style="left: 508px"></div>
+    <div data-hf-id="hf-5846" class="st-lamp" style="left: 878px"></div>
+
+    <div data-hf-id="hf-7gly" id="st-wall-shadow"></div>
+    <div data-hf-id="hf-ofze" id="st-wall-bezel"></div>
+    <div data-hf-id="hf-q8oh" id="st-wall">
+      <div data-hf-id="hf-rlrr" id="st-wall-seams"></div>
+      <div data-hf-id="hf-hxyf" id="st-wall-curve"></div>
+      <div data-hf-id="hf-s5qo" id="st-wall-gloss"></div>
+    </div>
+    <svg data-hf-id="hf-q507" id="st-wall-led" viewBox="0 0 1080 1920" aria-hidden="true">
+      <defs data-hf-id="hf-mh0t">
+        <linearGradient data-hf-id="hf-8npy" id="st-led-grad" x1="0" x2="1" y1="0" y2="0">
+          <stop data-hf-id="hf-pup0" offset="0" stop-color="#ff8a1f" /><stop data-hf-id="hf-ka3l" offset="0.333" stop-color="#ff8a1f" />
+          <stop data-hf-id="hf-4rj3" offset="0.333" stop-color="#13b5a6" /><stop data-hf-id="hf-sn7y" offset="0.666" stop-color="#13b5a6" />
+          <stop data-hf-id="hf-xtql" offset="0.666" stop-color="#e0218a" /><stop data-hf-id="hf-wawi" offset="1" stop-color="#e0218a" />
+        </linearGradient>
+      </defs>
+      <path data-hf-id="hf-l3u1" d="M44 1206 Q540 1134 1036 1206" fill="none" stroke="url(#st-led-grad)" stroke-width="12" stroke-linecap="round" />
+    </svg>
+
+    <div data-hf-id="hf-ogyh" id="st-floor"></div>
+    <div data-hf-id="hf-1wow" id="st-floor-line"></div>
+    <div data-hf-id="hf-ajpp" id="st-desk" data-layout-ignore></div>
+    <div data-hf-id="hf-v3g7" id="st-desk-stripes">
+      <span data-hf-id="hf-zhmt" style="background: #ff8a1f"></span><span data-hf-id="hf-aqtn" style="background: #13b5a6"></span><span data-hf-id="hf-0t8c" style="background: #e0218a"></span>
+    </div>
+    <svg data-hf-id="hf-r0mm" id="st-box" viewBox="0 0 300 200" aria-hidden="true">
+      <path data-hf-id="hf-dhef" d="M20 40 L280 40 L262 196 L38 196 Z" fill="#f7f9fc" stroke="#0e1b3d" stroke-width="8" stroke-linejoin="round" />
+      <rect data-hf-id="hf-oqa1" x="10" y="20" width="280" height="34" rx="8" fill="#0e1b3d" />
+      <rect data-hf-id="hf-k6mn" x="95" y="30" width="110" height="12" rx="6" fill="#4d5d82" />
+      <rect data-hf-id="hf-9r6v" x="70" y="92" width="160" height="56" rx="10" fill="#13265c" />
+      <text data-hf-id="hf-obbx" x="150" y="132" text-anchor="middle" font-family="Archivo Black" font-size="30" fill="#ffffff">BALLOT</text>
+    </svg>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // a slow studio light sweep across the glossy back wall, twice
+    tl.fromTo("#st-sheen", { x: 0 }, { x: 2300, duration: 9, ease: "sine.inOut" }, 4);
+    tl.fromTo("#st-sheen", { x: 0 }, { x: 2300, duration: 9, ease: "sine.inOut", immediateRender: false }, 36);
+    window.__timelines["studio"] = tl;
+  </script>
+</template>

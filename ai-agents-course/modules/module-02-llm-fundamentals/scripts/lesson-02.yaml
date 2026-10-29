@@ -1,0 +1,173 @@
+module_title: LLM Fundamentals and API Integration
+title: "Your First API Call: Keys, Requests and Responses"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 2 · Lesson 2
+    title: Your first API call
+    subtitle: Set up a key safely, send a message with the Anthropic SDK, and read every part of the response.
+    say: >
+      Time to talk to a model from Python. In this lesson you'll set up an API key safely, install the official Anthropic SDK, send your first message,
+      and then take the response apart, because every field in it matters when you build agents.
+
+  - type: objectives
+    items:
+      - {text: "Create and store an API key safely", say: "You'll create and store an API key safely."}
+      - {text: "Install the Anthropic Python SDK", say: "Install the official Anthropic Python SDK."}
+      - {text: "Send a request with `messages.create`", say: "Send a request with messages dot create."}
+      - {text: "Read the response: content blocks, stop reason and usage", say: "And read the response: its content blocks, its stop reason, and its token usage."}
+
+  - type: steps
+    chapter: API keys
+    heading: Get an API key, and keep it secret
+    items:
+      - {text: "Create a key in the Claude Console (platform.claude.com)", sub: "API access is billed separately from a Claude chat subscription", say: "First, create an API key in the Claude Console. Note that API usage is billed separately from a Claude chat subscription."}
+      - {text: "Put it in an environment variable called `ANTHROPIC_API_KEY`", sub: "the SDK reads it automatically", say: "Store it in an environment variable called ANTHROPIC API KEY. The SDK reads that variable automatically, so the key never appears in your code."}
+      - {text: "Never paste a key into code, chat, screenshots or git", sub: "if one leaks, delete it in the Console and create a new one", say: "Never paste a key into code, a chat, a screenshot, or a git commit. If a key ever leaks, delete it in the Console straight away and create a new one."}
+      - {text: "No key yet? Follow along in offline mode", sub: "this course's fake API: real SDK, placeholder replies", tone: amber, say: "No key yet? No problem. Everything in this module also runs in offline mode, which I'll explain in a moment."}
+
+  - type: terminal
+    chapter: Installing the SDK
+    heading: Install the official SDK
+    title: terminal — llm-basics
+    cwd: tmp
+    alias: ~/llm-basics
+    steps:
+      - cmd: python3 -m venv .venv && source .venv/bin/activate
+        run: python3 -m venv .venv
+        say: >
+          As always, start with a fresh virtual environment.
+      - cmd: pip install anthropic==2.3.0
+        run: . .venv/bin/activate && pip install --disable-pip-version-check anthropic==2.3.0
+        keep: "1,-1"
+        say: >
+          Then install the anthropic package. I'm pinning version 2 point 3 point 0, the version this course was recorded with. It brings its own HTTP library and pydantic, which we'll use for structured output.
+      - cmd: export ANTHROPIC_API_KEY="sk-ant-..."
+        run: "true"
+        say: >
+          And set your key. On Windows PowerShell, use dollar env colon ANTHROPIC API KEY instead. Or keep it in a dot env file, as you learned in Module 1.
+
+  - type: callout
+    kind: info
+    label: About the demos in this module
+    title: "Offline mode: the real SDK, talking to a fake API"
+    body: "So every demo is free and repeatable, the replies you see come from a small fake API built into this module's project. It speaks the same protocol, so the **real SDK code runs unchanged**: requests, streaming, errors and retries. Replies start with `(offline demo reply)` and are placeholders, **not** model output. Set your key and the same code talks to Claude."
+    say: >
+      An honest note about the demos. So that every demo is free and repeatable, and so you can follow along without a key, the replies you'll see come from a small fake API built into this module's project.
+      It speaks the same protocol as the real API, so the real SDK code runs unchanged, including streaming, errors, and retries. But the replies are placeholders, clearly marked offline demo reply. They are not model output.
+      With your key set, exactly the same code talks to Claude.
+
+  - type: code
+    chapter: The first request
+    heading: Your first request
+    title: first_call.py
+    file: source/lesson-02/first_call.py
+    steps:
+      - lines: "2-6"
+        note: "`lesson_client()` = real client with a key, offline fake without. Your code: `anthropic.Anthropic()`."
+        say: >
+          In your own projects, you create a client with anthropic dot Anthropic, which reads the key from the environment. Our lesson helper does the same when a key is set, and uses the offline fake when it isn't.
+      - lines: "8-12"
+        note: "`model`, `max_tokens` and `messages` are required."
+        say: >
+          Messages dot create sends a request. Three arguments are required: the model ID, max tokens, the longest reply you'll accept, and the list of messages.
+          Each message is a dictionary with a role and content, exactly the shape you built in Module 1.
+      - lines: "14"
+        note: "`content` is a **list of blocks**. Here, one text block."
+        say: >
+          The reply's content is a list of blocks. Here there's a single text block, so we print its text.
+      - lines: "15-16"
+        say: >
+          And we print two more fields: why the model stopped, and how many tokens went in and out.
+
+  - type: terminal
+    title: terminal — lesson-02
+    cwd: source/lesson-02
+    steps:
+      - cmd: python first_call.py
+        say: >
+          Here's the run, in offline mode. A placeholder reply, a stop reason of end turn, which means the model finished naturally, and the token counts. With a real key you'd see a real one-sentence answer here.
+
+  - type: terminal
+    chapter: Anatomy of a response
+    repl: true
+    heading: Take the response apart
+    title: python — lesson-02
+    cwd: source/lesson-02
+    steps:
+      - cmd: |
+          from offline import lesson_client
+          client = lesson_client()
+          msg = [{"role": "user", "content": "Hi!"}]
+          r = client.messages.create(model="claude-opus-5-5", max_tokens=500, messages=msg)
+        say: >
+          Let's explore the response object in the interactive prompt.
+      - cmd: |
+          r.id, r.model, r.role
+          [block.type for block in r.content]
+        say: >
+          Every response has an ID, which you include when reporting problems, the model that answered, and the role, assistant. Content is a list of typed blocks.
+      - cmd: |
+          r.stop_reason
+          r.usage.input_tokens, r.usage.output_tokens
+        say: >
+          The stop reason and the usage. Usage is what you are billed for, so production code always records it. We'll do exactly that in the project.
+
+  - type: cards
+    heading: Content is a list of blocks
+    cards:
+      - {tag: text, title: Text, body: "The written answer", code: "block.text", tone: teal, say: "Why is content a list? Because a reply can contain different kinds of block. Text blocks hold the written answer."}
+      - {tag: thinking, title: Thinking, body: "Reasoning the model did (often hidden by default)", code: "block.type == \"thinking\"", tone: violet, say: "Thinking blocks can hold the model's reasoning. On current models it's hidden by default, but the block may still be there."}
+      - {tag: tool_use, title: Tool use, body: "A request to run one of your tools (Module 5)", code: "block.name, block.input", tone: amber, say: "And tool use blocks are requests to run one of your tools, which is how agents act. You'll handle those in Module 5."}
+    outro: >
+      So robust code never assumes the first block is text. It checks each block's type, as the next example does.
+
+  - type: code
+    chapter: System prompts
+    heading: System prompts set the role and the rules
+    title: system_prompt.py
+    file: source/lesson-02/system_prompt.py
+    steps:
+      - lines: "9"
+        note: "`system=` applies to the whole conversation, outside `messages`."
+        say: >
+          The system parameter gives the model its role and rules for the whole conversation. It sits outside the messages list. Here: be a patient tutor, and answer in at most two sentences.
+      - lines: "13-15"
+        note: "Check `block.type` before reading `.text`."
+        say: >
+          And here's the robust way to read the answer: loop over the blocks and only print text blocks.
+
+  - type: terminal
+    title: terminal — lesson-02
+    cwd: source/lesson-02
+    steps:
+      - cmd: python system_prompt.py
+        say: >
+          In offline mode the placeholder can't follow the instructions, of course. A real model would answer in two sentences. Prompt design gets a whole module of its own, Module 3.
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "Which three arguments does `client.messages.create` require?"
+    options:
+      - "`api_key`, `model`, `prompt`"
+      - "`model`, `max_tokens`, `messages`"
+      - "`model`, `system`, `temperature`"
+      - "`messages`, `stream`, `usage`"
+    answer: 1
+    explain: "`model`, `max_tokens` and `messages` are required. The key comes from `ANTHROPIC_API_KEY`; `system` is optional."
+    say_question: >
+      Quick check. Which three arguments does messages dot create require?
+    say_answer: >
+      Model, max tokens, and messages. The key comes from the environment, and the system prompt is optional.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 2 recap
+    items:
+      - {text: "Keys live in `ANTHROPIC_API_KEY`, never in code", say: "API keys live in an environment variable, never in your code."}
+      - {text: "`client.messages.create(model=..., max_tokens=..., messages=[...])`", say: "Messages dot create needs a model, max tokens, and messages."}
+      - {text: "The reply: content blocks, `stop_reason`, `usage`", say: "The response gives you content blocks, a stop reason, and token usage."}
+      - {text: "`system=` sets the role and rules", say: "And the system prompt sets the role and the rules."}
+    outro: >
+      Next lesson: conversations. You'll see exactly why the model forgets, and how to manage message history properly.

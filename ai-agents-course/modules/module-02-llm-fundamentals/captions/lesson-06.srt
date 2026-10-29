@@ -1,0 +1,408 @@
+1
+00:00:00,700 --> 00:00:01,775
+Project time.
+
+2
+00:00:01,995 --> 00:00:07,439
+Over two lessons you'll build the AI
+Study Assistant: a command line tool that
+
+3
+00:00:07,439 --> 00:00:12,953
+explains programming concepts, writes
+quizzes as validated JSON, and chats with
+
+4
+00:00:12,953 --> 00:00:16,024
+memory, while
+tracking every cent it spends.
+
+5
+00:00:16,244 --> 00:00:18,621
+Everything from this module appears in it.
+
+6
+00:00:19,921 --> 00:00:24,717
+The explain command streams an
+explanation of any topic, at a beginner,
+
+7
+00:00:24,717 --> 00:00:26,879
+intermediate, or advanced level.
+
+8
+00:00:27,229 --> 00:00:32,934
+The quiz command generates
+multiple-choice questions as validated JSON, which you
+
+9
+00:00:32,934 --> 00:00:34,272
+can save and grade.
+
+10
+00:00:34,622 --> 00:00:39,336
+The chat command holds a conversation
+with history, trimmed to a token budget.
+
+11
+00:00:39,686 --> 00:00:44,917
+Every call reports its tokens and
+cost, and a budget stops runaway spending.
+
+12
+00:00:45,267 --> 00:00:50,880
+And it has clear errors, automatic
+retries, and an offline mode, so the tests never
+
+13
+00:00:50,880 --> 00:00:52,638
+need a key or the network.
+
+14
+00:00:53,938 --> 00:00:58,999
+The command line handles arguments and
+printing, and calls the assistant, which
+
+15
+00:00:58,999 --> 00:01:02,523
+holds the logic for
+explaining, quizzing, and chatting.
+
+16
+00:01:02,873 --> 00:01:07,696
+Prompts live in their own module, so you
+can improve them without touching the code.
+
+17
+00:01:07,916 --> 00:01:09,742
+And models holds the quiz schema.
+
+18
+00:01:10,092 --> 00:01:13,399
+Pricing calculates
+costs and enforces the budget.
+
+19
+00:01:13,749 --> 00:01:20,107
+And client builds the SDK client: a real
+one when your key is set, or the same SDK
+
+20
+00:01:20,107 --> 00:01:23,674
+pointed at the offline
+fake API when it isn't.
+
+21
+00:01:23,894 --> 00:01:26,843
+Nothing else in the
+program knows the difference.
+
+22
+00:01:28,143 --> 00:01:32,572
+Let's start with the piece that
+makes testing possible: the fake API.
+
+23
+00:01:32,922 --> 00:01:38,590
+It's a class whose objects can be
+called like a function, once per HTTP request.
+
+24
+00:01:38,810 --> 00:01:44,344
+A list of planned failures lets tests and
+demos make it return a four twenty-nine or
+
+25
+00:01:44,344 --> 00:01:46,057
+a five hundred on purpose.
+
+26
+00:01:46,407 --> 00:01:53,574
+Each call receives the real HTTP
+request the SDK built, and parses its JSON body.
+
+27
+00:01:53,794 --> 00:01:59,145
+It records the body, so tests can check
+exactly what was sent, and it answers token
+
+28
+00:01:59,145 --> 00:02:01,725
+counting requests with a rough estimate.
+
+29
+00:02:02,075 --> 00:02:08,249
+Then it prepares a placeholder reply,
+applies any planned failure or refusal, cuts
+
+30
+00:02:08,249 --> 00:02:14,273
+the reply at max tokens just like the
+real API, and returns either a normal JSON
+
+31
+00:02:14,273 --> 00:02:17,435
+message or a stream of server-sent events.
+
+32
+00:02:17,655 --> 00:02:23,340
+Because the responses have the same
+shape as the real API's, the SDK can't tell the
+
+33
+00:02:23,340 --> 00:02:24,093
+difference.
+
+34
+00:02:24,313 --> 00:02:27,952
+That means our tests
+exercise the real SDK code.
+
+35
+00:02:29,252 --> 00:02:31,788
+With a key, we create a normal client.
+
+36
+00:02:32,008 --> 00:02:37,048
+The SDK reads the key from the
+environment, so it never appears in our code.
+
+37
+00:02:37,268 --> 00:02:40,603
+We pass the retry count
+and a sixty-second timeout.
+
+38
+00:02:40,953 --> 00:02:47,297
+Without a key, we print a clear offline
+notice, and give the same SDK an HTTP client
+
+39
+00:02:47,297 --> 00:02:51,451
+whose transport is our
+fake API instead of the network.
+
+40
+00:02:52,751 --> 00:02:56,603
+Settings come from
+environment variables, as in Module 1.
+
+41
+00:02:56,823 --> 00:03:00,583
+If there's no key, we switch
+to offline mode automatically.
+
+42
+00:03:00,803 --> 00:03:06,274
+The model defaults to Claude Opus
+5.5, and the budget to fifty cents.
+
+43
+00:03:07,574 --> 00:03:13,083
+The price table holds dollars per
+million input and output tokens, for each model.
+
+44
+00:03:13,433 --> 00:03:16,738
+Cost u s d is the
+formula from lesson five.
+
+45
+00:03:16,958 --> 00:03:21,707
+An unknown model raises an error
+rather than silently costing zero.
+
+46
+00:03:22,057 --> 00:03:23,955
+The cost tracker adds up spending.
+
+47
+00:03:24,175 --> 00:03:29,783
+Its check method runs before every call,
+and raises budget exceeded once the budget
+
+48
+00:03:29,783 --> 00:03:30,527
+is used up.
+
+49
+00:03:30,747 --> 00:03:33,434
+That's your protection
+against a runaway loop.
+
+50
+00:03:33,784 --> 00:03:36,460
+And add records the
+cost of each finished call.
+
+51
+00:03:37,760 --> 00:03:43,126
+An Answer bundles everything we learn
+from a call: the text, the stop reason, the
+
+52
+00:03:43,126 --> 00:03:44,517
+tokens, and the cost.
+
+53
+00:03:44,737 --> 00:03:48,147
+Truncated is true when
+the reply hit max tokens.
+
+54
+00:03:48,497 --> 00:03:54,365
+Friendly errors is a context manager
+that catches SDK exceptions, most specific
+
+55
+00:03:54,365 --> 00:03:57,707
+first, and turns each
+into one clear message.
+
+56
+00:03:57,927 --> 00:04:02,503
+It's lesson five's error table,
+written once and reused by every call.
+
+57
+00:04:02,853 --> 00:04:04,003
+Next, fallbacks.
+
+58
+00:04:04,223 --> 00:04:09,124
+If the model declines a request,
+the API can re-run it on another model
+
+59
+00:04:09,124 --> 00:04:10,090
+automatically.
+
+60
+00:04:10,310 --> 00:04:12,200
+We opt in with this beta flag.
+
+61
+00:04:12,550 --> 00:04:18,298
+And base builds the arguments every
+request shares: the model, the beta flag, and
+
+62
+00:04:18,298 --> 00:04:23,833
+fallbacks set to default, so the API
+chooses a suitable fallback model for us.
+
+63
+00:04:24,183 --> 00:04:26,426
+Answer turns a response into an Answer.
+
+64
+00:04:26,646 --> 00:04:32,297
+It records the cost first, because even
+a declined request is billed, then checks
+
+65
+00:04:32,297 --> 00:04:35,856
+for a refusal, and only
+then joins the text blocks.
+
+66
+00:04:37,156 --> 00:04:42,581
+Explain checks the budget first, then
+fills in the request template from prompts dot
+
+67
+00:04:42,581 --> 00:04:42,775
+py.
+
+68
+00:04:43,125 --> 00:04:48,738
+It opens a stream, inside friendly
+errors, using the shared arguments, the tutor
+
+69
+00:04:48,738 --> 00:04:53,228
+system prompt, and low effort,
+which is plenty for explanations.
+
+70
+00:04:53,578 --> 00:04:59,209
+Each piece of text is passed to an on
+text callback as it arrives, so the assistant
+
+71
+00:04:59,209 --> 00:05:04,704
+doesn't know or care whether it's
+printed, shown in a web page, or collected by a
+
+72
+00:05:04,704 --> 00:05:05,044
+test.
+
+73
+00:05:05,264 --> 00:05:07,779
+Then the final message becomes an Answer.
+
+74
+00:05:09,079 --> 00:05:09,995
+Let's run it.
+
+75
+00:05:10,215 --> 00:05:15,516
+The offline notice comes first, then
+the streamed placeholder, then a footer with
+
+76
+00:05:15,516 --> 00:05:20,948
+the model, tokens, cost, and stop
+reason, and finally the session total against the
+
+77
+00:05:20,948 --> 00:05:21,406
+budget.
+
+78
+00:05:21,756 --> 00:05:27,081
+With a tiny max tokens, the reply is
+cut off, and the tool warns you instead of
+
+79
+00:05:27,081 --> 00:05:29,103
+pretending everything is fine.
+
+80
+00:05:29,453 --> 00:05:34,867
+And with a budget of zero, it refuses
+before sending anything, with a one-line
+
+81
+00:05:34,867 --> 00:05:35,700
+explanation.
+
+82
+00:05:37,000 --> 00:05:41,838
+A fake API that speaks the real
+protocol makes tests free and repeatable.
+
+83
+00:05:42,188 --> 00:05:46,288
+One function decides between
+the real and the offline client.
+
+84
+00:05:46,638 --> 00:05:50,747
+Every call is costed, and a
+budget check runs before each one.
+
+85
+00:05:51,097 --> 00:05:55,444
+Errors are mapped once, in one
+place, and fallbacks handle refusals.
+
+86
+00:05:55,794 --> 00:06:01,094
+In part two: quizzes as structured
+output, chat with history, the full demo, the
+
+87
+00:06:01,094 --> 00:06:02,882
+tests, and the module quiz.

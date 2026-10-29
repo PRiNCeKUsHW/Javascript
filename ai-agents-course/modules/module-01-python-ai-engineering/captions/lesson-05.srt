@@ -1,0 +1,520 @@
+1
+00:00:00,700 --> 00:00:05,844
+Every language model you will use
+in this course lives behind a web API.
+
+2
+00:00:06,064 --> 00:00:10,015
+You send an HTTP request,
+and you wait for the answer.
+
+3
+00:00:10,235 --> 00:00:16,645
+This lesson gives you the three tools
+that make that work well: type hints, HTTP
+
+4
+00:00:16,645 --> 00:00:19,929
+requests with httpx, and async and await.
+
+5
+00:00:21,229 --> 00:00:25,730
+You will annotate functions with type
+hints, and check them with a type checker.
+
+6
+00:00:26,080 --> 00:00:30,653
+Understand HTTP requests,
+responses, and status codes.
+
+7
+00:00:31,003 --> 00:00:36,202
+Call web APIs with httpx,
+including timeouts and error handling.
+
+8
+00:00:36,552 --> 00:00:40,345
+And run slow operations at the
+same time with async and await.
+
+9
+00:00:41,645 --> 00:00:45,098
+A type hint is a label
+saying what type a value should be.
+
+10
+00:00:45,318 --> 00:00:50,497
+After each parameter you write a colon
+and a type, and after the parentheses an
+
+11
+00:00:50,497 --> 00:00:52,201
+arrow and the return type.
+
+12
+00:00:52,421 --> 00:00:55,797
+This function takes a list
+of floats and returns a float.
+
+13
+00:00:56,147 --> 00:01:00,699
+Here, the dictionary maps strings to
+floats, and the vertical bar means or.
+
+14
+00:01:00,919 --> 00:01:04,889
+The function returns a float,
+or None when the model isn't found.
+
+15
+00:01:05,239 --> 00:01:08,233
+Called correctly,
+everything works as you'd expect.
+
+16
+00:01:08,583 --> 00:01:10,263
+But here's the important part.
+
+17
+00:01:10,483 --> 00:01:13,265
+Python does not enforce
+hints when the code runs.
+
+18
+00:01:13,485 --> 00:01:18,024
+Passing a string is allowed, and it
+only crashes deep inside the function.
+
+19
+00:01:19,324 --> 00:01:24,910
+Running it: two good results, and then a
+confusing type error from inside sum, far
+
+20
+00:01:24,910 --> 00:01:26,749
+away from the real mistake.
+
+21
+00:01:27,099 --> 00:01:32,134
+A type checker like mypy reads your
+hints without running the code, and points at
+
+22
+00:01:32,134 --> 00:01:36,050
+the exact line with the wrong
+argument, before you ever run it.
+
+23
+00:01:36,270 --> 00:01:39,511
+Your editor uses the
+same hints for autocompletion.
+
+24
+00:01:40,811 --> 00:01:44,118
+The simple types:
+str, int, float, and bool.
+
+25
+00:01:44,468 --> 00:01:49,768
+Collections say what's inside: a list
+of strings, or a dictionary from strings to
+
+26
+00:01:49,768 --> 00:01:50,095
+ints.
+
+27
+00:01:50,445 --> 00:01:53,964
+A vertical bar with None
+means the value might be missing.
+
+28
+00:01:54,314 --> 00:01:58,099
+A tuple hint lists each
+position, like a string and an int.
+
+29
+00:01:58,449 --> 00:02:04,699
+In Module 3, a library called Pydantic
+will use exactly these hints to validate real
+
+30
+00:02:04,699 --> 00:02:05,890
+data at runtime.
+
+31
+00:02:06,110 --> 00:02:08,276
+That's where hints become really powerful.
+
+32
+00:02:09,576 --> 00:02:14,991
+HTTP is the language of web
+APIs, and it is simpler than it sounds.
+
+33
+00:02:15,341 --> 00:02:21,062
+There are two sides: a client, which is
+your Python code, and a server, such as a
+
+34
+00:02:21,062 --> 00:02:22,545
+model provider's API.
+
+35
+00:02:22,895 --> 00:02:24,512
+The client sends a request.
+
+36
+00:02:24,732 --> 00:02:31,020
+It has a method, such as GET to read or
+POST to send data, a URL, headers with extra
+
+37
+00:02:31,020 --> 00:02:34,913
+information like your API
+key, and sometimes a body.
+
+38
+00:02:35,263 --> 00:02:41,512
+The server sends back a response: a
+status code saying how it went, headers, and a
+
+39
+00:02:41,512 --> 00:02:45,018
+body, which for AI
+APIs is almost always JSON.
+
+40
+00:02:46,318 --> 00:02:48,631
+Codes in the two hundreds mean success.
+
+41
+00:02:48,851 --> 00:02:52,034
+Two hundred is OK, two oh one is created.
+
+42
+00:02:52,384 --> 00:02:55,352
+Four hundreds mean the
+problem is on your side.
+
+43
+00:02:55,572 --> 00:03:01,230
+Bad input, a missing or wrong
+API key, or a URL that doesn't exist.
+
+44
+00:03:01,450 --> 00:03:02,770
+Retrying won't help.
+
+45
+00:03:02,990 --> 00:03:04,169
+Fix the request.
+
+46
+00:03:04,519 --> 00:03:07,057
+Four twenty-nine deserves its own card.
+
+47
+00:03:07,277 --> 00:03:09,007
+It means you hit a rate limit.
+
+48
+00:03:09,227 --> 00:03:14,717
+Every model API has them, and Module
+2 shows how to wait and retry properly.
+
+49
+00:03:15,067 --> 00:03:17,834
+And five hundreds mean
+the server had a problem.
+
+50
+00:03:18,054 --> 00:03:21,925
+Those are often temporary,
+so a careful retry can succeed.
+
+51
+00:03:23,225 --> 00:03:25,080
+Now let's make real requests.
+
+52
+00:03:25,300 --> 00:03:31,371
+So that this works offline, I'm serving
+the project's sample data from a small local
+
+53
+00:03:31,371 --> 00:03:35,130
+web server, using
+Python's built-in http dot server.
+
+54
+00:03:35,480 --> 00:03:41,226
+httpx dot get sends a GET
+request and returns a response object.
+
+55
+00:03:41,446 --> 00:03:42,886
+Always pass a timeout.
+
+56
+00:03:43,106 --> 00:03:46,689
+A network call that hangs
+forever will freeze your agent.
+
+57
+00:03:46,909 --> 00:03:50,706
+The response tells us the status
+code and the content type header.
+
+58
+00:03:51,056 --> 00:03:56,569
+Raise for status turns any error status
+into an exception, so failures can't slip by
+
+59
+00:03:56,569 --> 00:03:57,225
+unnoticed.
+
+60
+00:03:57,445 --> 00:04:01,448
+Then dot json parses the
+body into Python objects.
+
+61
+00:04:01,798 --> 00:04:07,549
+And here we request a file that doesn't
+exist, and catch the HTTP status error to
+
+62
+00:04:07,549 --> 00:04:09,039
+read its status code.
+
+63
+00:04:10,339 --> 00:04:13,012
+First, start the local
+server in the background.
+
+64
+00:04:13,232 --> 00:04:15,592
+It serves the files in the data folder.
+
+65
+00:04:15,942 --> 00:04:17,228
+Then run the script.
+
+66
+00:04:17,448 --> 00:04:22,976
+Status two hundred with a JSON content
+type, ten records loaded, and a clean four oh
+
+67
+00:04:22,976 --> 00:04:24,687
+four for the missing file.
+
+68
+00:04:25,987 --> 00:04:31,189
+A language model call can take several
+seconds, and during that time your program is
+
+69
+00:04:31,189 --> 00:04:32,986
+just waiting for the network.
+
+70
+00:04:33,336 --> 00:04:38,743
+If an agent needs three independent
+answers and asks for them one by one, the waits
+
+71
+00:04:38,743 --> 00:04:39,199
+add up.
+
+72
+00:04:39,419 --> 00:04:42,599
+Three calls of one
+second each take three seconds.
+
+73
+00:04:42,949 --> 00:04:47,902
+With async, you start all three, wait
+for them together, and finish in about one
+
+74
+00:04:47,902 --> 00:04:48,335
+second.
+
+75
+00:04:48,555 --> 00:04:50,396
+That's not more computing power.
+
+76
+00:04:50,616 --> 00:04:52,770
+It's simply not wasting time waiting.
+
+77
+00:04:54,070 --> 00:04:58,145
+Async def defines a
+coroutine, a function that can pause.
+
+78
+00:04:58,365 --> 00:05:04,025
+Await means: pause here until this
+finishes, and let other work run meanwhile.
+
+79
+00:05:04,025 --> 00:05:08,306
+asyncio dot sleep stands in
+for waiting on a network reply.
+
+80
+00:05:08,656 --> 00:05:13,418
+This version awaits each call in a
+loop, so they still run one after another.
+
+81
+00:05:13,768 --> 00:05:19,381
+This version passes all three to
+asyncio dot gather, which runs them concurrently
+
+82
+00:05:19,381 --> 00:05:23,400
+and returns the results in
+the same order you passed them.
+
+83
+00:05:23,750 --> 00:05:29,116
+Finally, asyncio dot run starts
+the event loop that drives coroutines.
+
+84
+00:05:29,336 --> 00:05:30,948
+We time both versions.
+
+85
+00:05:32,248 --> 00:05:33,501
+A real measurement.
+
+86
+00:05:33,721 --> 00:05:37,162
+Three seconds one by
+one, one second concurrently.
+
+87
+00:05:38,462 --> 00:05:41,233
+httpx has an async client too.
+
+88
+00:05:41,453 --> 00:05:46,634
+The fetch coroutine awaits the request
+and returns how many records came back.
+
+89
+00:05:46,984 --> 00:05:51,636
+Async with opens one shared
+client, and closes it properly afterwards.
+
+90
+00:05:51,856 --> 00:05:55,039
+Gather fetches every URL at the same time.
+
+91
+00:05:55,259 --> 00:05:58,347
+This is exactly how the
+project's fetch command works.
+
+92
+00:05:59,647 --> 00:06:04,134
+Both files downloaded
+concurrently: ten records and five records.
+
+93
+00:06:05,434 --> 00:06:08,169
+Await only works inside an async function.
+
+94
+00:06:08,519 --> 00:06:13,462
+Start the event loop once, at the top
+of your program, with asyncio dot run.
+
+95
+00:06:13,812 --> 00:06:17,051
+Async speeds up waiting,
+for the network or the disk.
+
+96
+00:06:17,271 --> 00:06:19,680
+It doesn't make heavy calculations faster.
+
+97
+00:06:20,030 --> 00:06:24,702
+And never call blocking code, like
+time dot sleep, inside a coroutine.
+
+98
+00:06:24,922 --> 00:06:26,707
+It freezes every other task.
+
+99
+00:06:26,927 --> 00:06:29,005
+Use the async version instead.
+
+100
+00:06:30,305 --> 00:06:31,112
+Quick check.
+
+101
+00:06:31,332 --> 00:06:34,255
+An API replies with
+status four twenty-nine.
+
+102
+00:06:34,475 --> 00:06:36,832
+What does it mean, and
+what should your code do?
+
+103
+00:06:42,532 --> 00:06:43,664
+Too many requests.
+
+104
+00:06:43,884 --> 00:06:46,574
+You hit a rate limit, so wait, then retry.
+
+105
+00:06:46,794 --> 00:06:50,235
+You'll implement this
+properly, with backoff, in Module 2.
+
+106
+00:06:51,535 --> 00:06:56,807
+Type hints document your intent, and a
+type checker verifies them before the code
+
+107
+00:06:56,807 --> 00:06:57,132
+runs.
+
+108
+00:06:57,482 --> 00:07:03,382
+HTTP is a request and a response, and
+the status code tells you how it went.
+
+109
+00:07:03,732 --> 00:07:07,801
+Use httpx with a
+timeout, and raise for status.
+
+110
+00:07:08,151 --> 00:07:12,623
+And use async, await, and
+gather to wait for many calls at once.
+
+111
+00:07:12,973 --> 00:07:16,013
+You now have every
+Python skill the project needs.
+
+112
+00:07:16,233 --> 00:07:20,075
+In the next lesson, we start
+building the Python AI Toolkit.

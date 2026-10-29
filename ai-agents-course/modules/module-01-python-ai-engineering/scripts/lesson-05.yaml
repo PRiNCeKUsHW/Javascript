@@ -1,0 +1,261 @@
+module_title: Python for AI Engineering
+title: "Type Hints, HTTP Requests and Async"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 1 · Lesson 5
+    title: Type hints, HTTP and async
+    subtitle: Describe your data, talk to web APIs, and wait for many things at once.
+    say: >
+      Every language model you will use in this course lives behind a web API. You send an HTTP request, and you wait for the answer.
+      This lesson gives you the three tools that make that work well: type hints, HTTP requests with httpx, and async and await.
+
+  - type: objectives
+    items:
+      - {text: "Annotate functions with type hints and check them with mypy", say: "You will annotate functions with type hints, and check them with a type checker."}
+      - {text: "Understand requests, responses and status codes", say: "Understand HTTP requests, responses, and status codes."}
+      - {text: "Call web APIs with `httpx`, with timeouts and error handling", say: "Call web APIs with httpx, including timeouts and error handling."}
+      - {text: "Run slow operations concurrently with `async` and `await`", say: "And run slow operations at the same time with async and await."}
+
+  - type: code
+    chapter: Type hints
+    heading: Type hints describe what goes in and out
+    title: type_hints.py
+    file: source/lesson-05/type_hints.py
+    steps:
+      - lines: "2-3"
+        note: "`name: type` for parameters, `-> type` for the return value."
+        say: >
+          A type hint is a label saying what type a value should be. After each parameter you write a colon and a type, and after the parentheses an arrow and the return type.
+          This function takes a list of floats and returns a float.
+      - lines: "6-7"
+        note: "`float | None` means: a float, **or** `None`."
+        say: >
+          Here, the dictionary maps strings to floats, and the vertical bar means or. The function returns a float, or None when the model isn't found.
+      - lines: "10-11"
+        say: >
+          Called correctly, everything works as you'd expect.
+      - lines: "12"
+        tone: coral
+        note: "Python does **not** check hints at runtime. This line still runs, and crashes."
+        say: >
+          But here's the important part. Python does not enforce hints when the code runs. Passing a string is allowed, and it only crashes deep inside the function.
+
+  - type: terminal
+    title: terminal — lesson-05
+    cwd: source/lesson-05
+    alias: .
+    steps:
+      - cmd: python type_hints.py
+        exit: 1
+        say: >
+          Running it: two good results, and then a confusing type error from inside sum, far away from the real mistake.
+      - cmd: mypy type_hints.py
+        exit: 1
+        say: >
+          A type checker like mypy reads your hints without running the code, and points at the exact line with the wrong argument, before you ever run it.
+          Your editor uses the same hints for autocompletion.
+
+  - type: cards
+    heading: Hints you will use constantly
+    cards:
+      - {tag: basics, title: "Simple types", code: "str  int  float  bool", tone: teal, say: "The simple types: str, int, float, and bool."}
+      - {tag: collections, title: "What's inside", code: "list[str]\ndict[str, int]", tone: blue, say: "Collections say what's inside: a list of strings, or a dictionary from strings to ints."}
+      - {tag: optional, title: "Maybe missing", code: "str | None", tone: violet, say: "A vertical bar with None means the value might be missing."}
+      - {tag: fixed, title: "Fixed groups", code: "tuple[str, int]", tone: amber, say: "A tuple hint lists each position, like a string and an int."}
+    outro: >
+      In Module 3, a library called Pydantic will use exactly these hints to validate real data at runtime. That's where hints become really powerful.
+
+  - type: diagram
+    chapter: HTTP in one picture
+    heading: HTTP in one picture
+    nodes:
+      - {id: client, label: Your Python code, sub: the client, x: 260, y: 300, w: 340, h: 140, tone: teal}
+      - {id: server, label: Web API, sub: "a model, a search service...", x: 1460, y: 300, w: 380, h: 140, tone: violet}
+      - {id: req, label: "GET /usage_sample.json", sub: "method · URL · headers · optional body", x: 860, y: 60, w: 560, h: 110, tone: blue, mono: true}
+      - {id: res, label: "200 OK · application/json", sub: "status code · headers · body", x: 860, y: 545, w: 560, h: 110, tone: amber, mono: true}
+    edges:
+      - {from: client, to: server, label: request, bend: -0.18}
+      - {from: server, to: client, label: response, bend: -0.18}
+    say: >
+      HTTP is the language of web APIs, and it is simpler than it sounds.
+    steps:
+      - show: [client, server]
+        say: >
+          There are two sides: a client, which is your Python code, and a server, such as a model provider's API.
+      - show: [req, "client->server"]
+        focus: [client, req, server]
+        flow: ["client->server"]
+        say: >
+          The client sends a request. It has a method, such as GET to read or POST to send data, a URL, headers with extra information like your API key, and sometimes a body.
+      - show: [res, "server->client"]
+        focus: [server, res, client]
+        flow: ["server->client"]
+        say: >
+          The server sends back a response: a status code saying how it went, headers, and a body, which for AI APIs is almost always JSON.
+
+  - type: cards
+    heading: Status codes you will meet
+    cards:
+      - {tag: 2xx, title: Success, body: "200 OK · 201 Created", tone: teal, say: "Codes in the two hundreds mean success. Two hundred is OK, two oh one is created."}
+      - {tag: 4xx, title: Your request was wrong, body: "400 bad input · 401 bad key · 404 not found", tone: amber, say: "Four hundreds mean the problem is on your side. Bad input, a missing or wrong API key, or a URL that doesn't exist. Retrying won't help. Fix the request."}
+      - {tag: "429", title: Too many requests, body: "slow down: you hit a rate limit", tone: violet, say: "Four twenty-nine deserves its own card. It means you hit a rate limit. Every model API has them, and Module 2 shows how to wait and retry properly."}
+      - {tag: 5xx, title: The server failed, body: "500 error · 503 unavailable", tone: coral, say: "And five hundreds mean the server had a problem. Those are often temporary, so a careful retry can succeed."}
+
+  - type: code
+    chapter: Requests with httpx
+    heading: Calling an API with httpx
+    title: http_demo.py
+    file: source/lesson-05/http_demo.py
+    say: >
+      Now let's make real requests. So that this works offline, I'm serving the project's sample data from a small local web server, using Python's built-in http dot server.
+    steps:
+      - lines: "6-7"
+        note: "Always set a `timeout`, so a stuck server can't freeze your program."
+        say: >
+          httpx dot get sends a GET request and returns a response object. Always pass a timeout. A network call that hangs forever will freeze your agent.
+          The response tells us the status code and the content type header.
+      - lines: "8-10"
+        note: "`raise_for_status()` turns 4xx/5xx into an exception. `.json()` parses the body."
+        say: >
+          Raise for status turns any error status into an exception, so failures can't slip by unnoticed. Then dot json parses the body into Python objects.
+      - lines: "12-15"
+        say: >
+          And here we request a file that doesn't exist, and catch the HTTP status error to read its status code.
+
+  - type: terminal
+    title: terminal — lesson-05
+    cwd: source/lesson-05
+    steps:
+      - cmd: python -m http.server 8765 --directory data &
+        run: >
+          python -m http.server 8765 --bind 127.0.0.1 --directory ../../project/python-ai-toolkit/data > /dev/null 2>&1 &
+          sleep 1; echo "Serving HTTP on 127.0.0.1 port 8765 (http://127.0.0.1:8765/) ..."; kill %1
+        say: >
+          First, start the local server in the background. It serves the files in the data folder.
+      - cmd: python http_demo.py
+        run: >
+          python -m http.server 8765 --bind 127.0.0.1 --directory ../../project/python-ai-toolkit/data > /dev/null 2>&1 &
+          sleep 1; python http_demo.py; status=$?; kill %1; exit $status
+        say: >
+          Then run the script. Status two hundred with a JSON content type, ten records loaded, and a clean four oh four for the missing file.
+
+  - type: compare
+    chapter: Why async?
+    heading: "Why async? Most AI time is spent waiting"
+    left:
+      title: "One by one: 3 × 1 s = 3 s"
+      tone: coral
+      items:
+        - "Send request 1, **wait**…"
+        - "Send request 2, **wait**…"
+        - "Send request 3, **wait**…"
+        - "The CPU sits idle almost the whole time"
+    right:
+      title: "Concurrently: about 1 s"
+      tone: teal
+      items:
+        - "Send requests 1, 2 and 3"
+        - "**Wait for all of them together**"
+        - "Collect the three results"
+        - "Same work, a third of the time"
+    say: >
+      A language model call can take several seconds, and during that time your program is just waiting for the network.
+    steps:
+      - show: left
+        say: >
+          If an agent needs three independent answers and asks for them one by one, the waits add up. Three calls of one second each take three seconds.
+      - show: right
+        say: >
+          With async, you start all three, wait for them together, and finish in about one second. That's not more computing power. It's simply not wasting time waiting.
+
+  - type: code
+    title: async_demo.py
+    file: source/lesson-05/async_demo.py
+    steps:
+      - lines: "6-8"
+        note: "`async def` defines a **coroutine**. `await` pauses it while it waits."
+        say: >
+          Async def defines a coroutine, a function that can pause. Await means: pause here until this finishes, and let other work run meanwhile.
+          asyncio dot sleep stands in for waiting on a network reply.
+      - lines: "11-13"
+        note: "Awaiting in a loop: each call waits for the previous one."
+        say: >
+          This version awaits each call in a loop, so they still run one after another.
+      - lines: "16-20"
+        note: "`asyncio.gather` runs them **concurrently** and returns results in order."
+        say: >
+          This version passes all three to asyncio dot gather, which runs them concurrently and returns the results in the same order you passed them.
+      - lines: "23-26"
+        note: "`asyncio.run()` starts the event loop from normal code."
+        say: >
+          Finally, asyncio dot run starts the event loop that drives coroutines. We time both versions.
+
+  - type: terminal
+    title: terminal — lesson-05
+    cwd: source/lesson-05
+    steps:
+      - cmd: python async_demo.py
+        say: >
+          A real measurement. Three seconds one by one, one second concurrently.
+
+  - type: code
+    heading: Async HTTP with httpx
+    title: async_http.py
+    file: source/lesson-05/async_http.py
+    steps:
+      - lines: "9-12"
+        note: "`await client.get(...)`: the async version of `httpx.get`."
+        say: >
+          httpx has an async client too. The fetch coroutine awaits the request and returns how many records came back.
+      - lines: "15-17"
+        note: "`async with` opens the client and always closes it."
+        say: >
+          Async with opens one shared client, and closes it properly afterwards. Gather fetches every URL at the same time.
+          This is exactly how the project's fetch command works.
+
+  - type: terminal
+    title: terminal — lesson-05
+    cwd: source/lesson-05
+    steps:
+      - cmd: python async_http.py
+        run: >
+          python -m http.server 8765 --bind 127.0.0.1 --directory ../../project/python-ai-toolkit/data > /dev/null 2>&1 &
+          sleep 1; python async_http.py; status=$?; kill %1; exit $status
+        say: >
+          Both files downloaded concurrently: ten records and five records.
+
+  - type: bullets
+    heading: Async rules of thumb
+    items:
+      - {text: "`await` only works inside `async def`", say: "Await only works inside an async function."}
+      - {text: "Start the event loop once, with `asyncio.run(main())`", say: "Start the event loop once, at the top of your program, with asyncio dot run."}
+      - {text: "Async helps with waiting (network, disk), not heavy computation", say: "Async speeds up waiting, for the network or the disk. It doesn't make heavy calculations faster."}
+      - {text: "Never call blocking code like `time.sleep()` inside a coroutine", sub: "it freezes every other task. Use `await asyncio.sleep()`.", tone: coral, say: "And never call blocking code, like time dot sleep, inside a coroutine. It freezes every other task. Use the async version instead."}
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "An API replies with status `429`. What does it mean, and what should your code do?"
+    options:
+      - "The URL is wrong: fix it"
+      - "Too many requests: wait, then retry"
+      - "Success: read the body"
+      - "The server crashed: give up"
+    answer: 1
+    explain: "429 means you hit a **rate limit**. Wait (often the response says how long), then retry. Module 2 implements this with backoff."
+    say_question: >
+      Quick check. An API replies with status four twenty-nine. What does it mean, and what should your code do?
+    say_answer: >
+      Too many requests. You hit a rate limit, so wait, then retry. You'll implement this properly, with backoff, in Module 2.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 5 recap
+    items:
+      - {text: "Type hints document intent; `mypy` checks them before running", say: "Type hints document your intent, and a type checker verifies them before the code runs."}
+      - {text: "HTTP = request (method, URL, headers, body) + response (status, body)", say: "HTTP is a request and a response, and the status code tells you how it went."}
+      - {text: "`httpx` with a timeout and `raise_for_status()`", say: "Use httpx with a timeout, and raise for status."}
+      - {text: "`async`/`await` + `asyncio.gather` to wait for many calls at once", say: "And use async, await, and gather to wait for many calls at once."}
+    outro: >
+      You now have every Python skill the project needs. In the next lesson, we start building the Python AI Toolkit.

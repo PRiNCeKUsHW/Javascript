@@ -1,0 +1,205 @@
+module_title: Python for AI Engineering
+title: Welcome, the Agent Loop, and Your Python Setup
+scenes:
+  - type: title
+    chapter: Welcome
+    kicker: Module 1 · Lesson 1
+    title: AI Agents with Python
+    subtitle: Beginner to Production, 2026. Start here.
+    tags: [Python, LLMs, Tools, RAG, LangGraph, FastAPI, Docker]
+    say: >
+      Welcome to AI Agents with Python, Beginner to Production.
+      Over this course you will go from writing your first Python data structures
+      to deploying a full AI agent application with authentication, retrieval, tools, tests, and monitoring.
+      This first lesson explains what an agent actually is, how the course works, and then gets your Python environment ready.
+
+  - type: diagram
+    chapter: What is an AI agent?
+    heading: What is an AI agent?
+    nodes:
+      - {id: user, label: You, sub: a goal, x: 170, y: 330, w: 240, tone: amber, shape: pill}
+      - {id: agent, label: Agent, sub: your Python program, x: 640, y: 330, w: 320, h: 150, tone: teal}
+      - {id: llm, label: Language model, sub: decides the next step, x: 1240, y: 120, w: 380, tone: violet}
+      - {id: tools, label: Tools, sub: "search, files, APIs, code", x: 1240, y: 540, w: 380, tone: blue}
+    edges:
+      - {from: user, to: agent, label: task}
+      - {from: agent, to: llm, label: "what next?"}
+      - {from: llm, to: agent, label: decision, bend: 0.25}
+      - {from: agent, to: tools, label: call}
+      - {from: tools, to: agent, label: result, bend: -0.25}
+    say: >
+      Let's start with a precise definition, because the word agent is used loosely.
+    steps:
+      - show: [user, agent, "user->agent"]
+        focus: [user, agent]
+        say: >
+          An AI agent is a program that is given a goal, not a fixed script.
+          You describe what you want, for example, research this topic and write me a brief.
+      - show: [llm, "agent->llm", "llm->agent"]
+        focus: [agent, llm]
+        flow: ["agent->llm", "llm->agent"]
+        say: >
+          The program asks a language model to decide what to do next.
+          The model does not run anything by itself. It only returns a decision, as text or as a structured tool request.
+      - show: [tools, "agent->tools", "tools->agent"]
+        focus: [agent, tools]
+        flow: ["agent->tools", "tools->agent"]
+        say: >
+          Your Python code then performs that action with a tool, such as a web search, a database query, or a calculator,
+          and feeds the result back to the model.
+      - focus: [agent]
+        caption: "Decide, act, observe, repeat, until done or a limit is reached"
+        say: >
+          This repeats in a loop. Decide, act, observe, and continue, until the goal is reached or a safety limit stops it.
+          That loop is the heart of every agent in this course, and you will build it from scratch in Module 4.
+
+  - type: cards
+    chapter: The course roadmap
+    heading: The roadmap, in six parts
+    say: >
+      Here is how the eighteen modules fit together.
+    cards:
+      - {tag: Part 1, title: Foundations, body: "Python, LLM APIs, prompts and structured output", tone: teal, say: "Part one builds your foundations: Python for AI work, calling language model APIs, and prompt engineering with validated, structured output."}
+      - {tag: Part 2, title: Agents from scratch, body: "The agent loop, tools, memory, reliability", tone: blue, say: "Part two builds agents from scratch, with no framework hiding the details: the loop, tool calling, memory, and making agents reliable."}
+      - {tag: Part 3, title: Knowledge and tools, body: "MCP, embeddings, retrieval-augmented generation", tone: violet, say: "Part three connects agents to knowledge and tools, with the Model Context Protocol, embeddings, and retrieval-augmented generation."}
+      - {tag: Part 4, title: Orchestration, body: "LangGraph, multi-agent systems, web research", tone: amber, say: "Part four covers orchestration: LangGraph workflows, multi-agent systems, and web research agents."}
+      - {tag: Part 5, title: Quality and security, body: "Evaluation suites, prompt injection defence", tone: coral, say: "Part five is about quality and security: testing and evaluating agents, and defending them against prompt injection and data leaks."}
+      - {tag: Part 6, title: Production, body: "FastAPI, Docker, deployment, full-stack app", tone: teal, say: "And part six takes everything to production, with FastAPI, Docker, monitoring, and a full-stack AI workspace as the final project."}
+
+  - type: steps
+    chapter: How every module works
+    heading: How every module works
+    say: >
+      Every module follows the same rhythm, so you always know where you are.
+    items:
+      - {text: "Concepts, explained from zero", sub: "what it is, why it matters, how it works", say: "First, the concepts, explained from zero, with small examples you can run."}
+      - {text: "A real project, built step by step", sub: "complete source code, tests and a README", say: "Then a real project, built step by step. Not a teaser. Complete code, tests, and a README you can run yourself."}
+      - {text: "Common errors and how to fix them", say: "Next, the errors people actually hit, and how to fix them."}
+      - {text: "Recap, quiz and an extension challenge", say: "And finally, a recap, a short quiz with explained answers, and an extension challenge if you want to go further."}
+
+  - type: objectives
+    chapter: Module 1 goals
+    heading: "Module 1: Python for AI Engineering"
+    say: >
+      Now, Module 1. Agents are software, so before we touch a language model, you need the Python that AI engineering actually uses.
+    items:
+      - {text: "Core data: lists, dictionaries and sets", say: "You will work with the core data types, lists, dictionaries, and sets, in the shapes AI applications use every day."}
+      - {text: "Functions, classes and exceptions", say: "You will write functions and classes, and handle errors with exceptions."}
+      - {text: "Modules, packages, files, JSON and environment variables", say: "You will organise code into modules and packages, read and write files and JSON, and keep settings in environment variables."}
+      - {text: "Type hints, HTTP requests and async", say: "And you will add type hints, make HTTP requests, and get a first, practical look at async and await."}
+
+  - type: terminal
+    chapter: Project preview
+    heading: "The project: Python AI Toolkit"
+    title: terminal — python-ai-toolkit
+    cwd: project/python-ai-toolkit
+    say: >
+      Everything comes together in this module's project, the Python AI Toolkit.
+      It is a command line tool that reads a log of language model API calls, validates every record, and produces a report.
+    steps:
+      - cmd: python -m toolkit validate data/usage_broken.json
+        exit: 1
+        say: >
+          Here is the finished tool. The validate command checks every record and explains exactly what is wrong,
+          like a negative token count, or a missing id.
+      - cmd: python -m toolkit report data/usage_sample.json
+        keep: "1-9"
+        say: >
+          And the report command summarises a clean log: requests, success rate, tokens, estimated cost, and latency.
+          By the end of this module, you will have written every line of it.
+
+  - type: bullets
+    chapter: Prerequisites
+    heading: What you need
+    items:
+      - {text: "A computer running Windows, macOS or Linux", say: "To follow along you need a computer running Windows, macOS, or Linux."}
+      - {text: "Python 3.11 or newer", sub: "this course is recorded with Python 3.13", say: "You need Python 3.11 or newer. I am recording with Python 3.13."}
+      - {text: "A code editor, such as VS Code with the Python extension", say: "A code editor. VS Code with the official Python extension is a good free choice."}
+      - {text: "No AI experience required", sub: "basic programming helps, but every concept is explained", say: "And no AI experience at all. If you have written a little code in any language, that helps, but every concept is explained as we go."}
+
+  - type: terminal
+    chapter: Setup with a virtual environment
+    heading: Check Python, then create a virtual environment
+    title: terminal — ai-toolkit
+    cwd: tmp
+    alias: ~/ai-toolkit
+    say: >
+      Let's set up a clean workspace. Open a terminal in an empty folder.
+    steps:
+      - cmd: python3 --version
+        say: >
+          First, check your Python version. On Windows the command is usually just python, or py.
+          Anything from 3.11 up is fine.
+      - cmd: python3 -m venv .venv
+        say: >
+          Next, create a virtual environment. This makes a private folder, called dot venv, with its own copy of Python and its own installed packages.
+          Every project gets one, so the libraries of one project can never break another.
+      - cmd: source .venv/bin/activate && which python
+        run: . .venv/bin/activate && which python
+        say: >
+          Activate it. On macOS and Linux, use source, dot venv, slash bin, slash activate.
+          On Windows, run dot venv, backslash Scripts, backslash activate.
+          Now, the python command points inside your project folder.
+      - cmd: pip install httpx==0.28.1
+        run: . .venv/bin/activate && pip install --disable-pip-version-check httpx==0.28.1
+        keep: "1,-1"
+        say: >
+          With the environment active, pip installs packages into it. We install httpx, the HTTP library we will use later in this module,
+          and we pin the exact version, so that your results match mine.
+      - cmd: pip freeze > requirements.txt && head -3 requirements.txt
+        run: . .venv/bin/activate && pip freeze > requirements.txt && head -3 requirements.txt
+        say: >
+          Finally, pip freeze records the exact versions you installed into a requirements file.
+          Anyone can rebuild the same environment with pip install, dash r, requirements dot text.
+
+  - type: callout
+    kind: warn
+    title: "Seeing \"externally-managed-environment\" or packages installing in the wrong place?"
+    body: "That means pip is not running inside your virtual environment. Activate `.venv` first, then check with `which python` (macOS/Linux) or `where python` (Windows)."
+    say: >
+      One warning. If pip complains about an externally managed environment, or packages seem to vanish,
+      you are almost certainly outside your virtual environment.
+      Activate it again, and check that which python, or where python on Windows, points into your project folder.
+
+  - type: code
+    chapter: Project layout
+    heading: The layout we will grow into
+    title: python-ai-toolkit/
+    lang: text
+    code: |
+      python-ai-toolkit/
+      ├── .venv/              # virtual environment (never committed)
+      ├── .env.example        # settings template, no secrets
+      ├── requirements.txt    # pinned dependencies
+      ├── config/prices.json  # example model prices
+      ├── data/               # sample usage logs
+      ├── toolkit/            # our package: the actual code
+      │   ├── __init__.py
+      │   ├── __main__.py     # lets us run: python -m toolkit
+      │   ├── models.py  loader.py  stats.py  report.py ...
+      └── tests/              # automated tests with pytest
+    say: >
+      This is the project layout we will grow into by the end of the module.
+    steps:
+      - lines: "2-4"
+        say: >
+          At the top: the virtual environment, which is never committed to git, a settings template, and the pinned requirements.
+      - lines: "5-6"
+        say: >
+          Configuration and sample data live in their own folders.
+      - lines: "7-10"
+        say: >
+          The real code lives in a package called toolkit. The special file dunder main lets us run the whole package with python dash m toolkit.
+      - lines: "11"
+        say: >
+          And tests live in their own folder. Keeping code, data, configuration, and tests separate is a habit that pays off in every AI project you build.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 1 recap
+    items:
+      - {text: "An agent decides, acts, observes and repeats, towards a goal", say: "An agent is a program that decides, acts, observes, and repeats, working towards a goal."}
+      - {text: "The model decides; your Python code acts", say: "The model only decides. Your Python code performs the actions."}
+      - {text: "One virtual environment per project, versions pinned", say: "Every project gets its own virtual environment, with pinned versions."}
+    outro: >
+      In the next lesson, we write real Python: the data types that every AI application is built from. See you there.

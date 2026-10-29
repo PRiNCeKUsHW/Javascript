@@ -1,0 +1,295 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Noto Color Emoji";
+      src: local("Noto Color Emoji"), local("Apple Color Emoji"), local("Segoe UI Emoji");
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .emoji {
+      font-family: "Noto Color Emoji", sans-serif;
+      font-weight: 400;
+    }
+    .tag {
+      position: absolute;
+      height: 60px;
+      padding: 0 24px;
+      border-radius: 10px;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 34px;
+      letter-spacing: 0.06em;
+      line-height: 60px;
+      color: #0e1b3d;
+      white-space: nowrap;
+    }
+    .title {
+      position: absolute;
+      left: 70px;
+      right: 70px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 70px;
+      line-height: 1.05;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+    .code {
+      position: absolute;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      font-size: 48px;
+      line-height: 64px;
+      color: #eaf0ff;
+      white-space: nowrap;
+    }
+    .ln {
+      display: block;
+      height: 64px;
+      white-space: pre;
+      clip-path: inset(0 100% 0 0);
+    }
+    .kw { color: #ff6ec7; }
+    .str { color: #ffb35c; }
+    .num { color: #3de0cf; }
+    .fn { color: #7cc4ff; }
+    .res { color: #3de0cf; }
+    .char {
+      position: absolute;
+    }
+    .slip {
+      position: absolute;
+      width: 110px;
+      height: 70px;
+    }
+
+    .cf {
+      position: absolute;
+      border-radius: 3px;
+      opacity: 0;
+    }
+
+    #c-tag { left: 86px; top: 462px; background: #13b5a6; color: #0e1b3d; }
+    #c-code { left: 84px; top: 548px; }
+    #c-out {
+      position: absolute;
+      left: 84px;
+      top: 778px;
+      width: 900px;
+      height: 226px;
+      border: 5px solid #13b5a6;
+      border-radius: 18px;
+      background: rgba(19, 181, 166, 0.14);
+    }
+    #c-out-label {
+      position: absolute;
+      left: 22px;
+      top: -22px;
+      padding: 0 14px;
+      height: 40px;
+      line-height: 40px;
+      border-radius: 8px;
+      background: #13b5a6;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 30px;
+      letter-spacing: 0.08em;
+      color: #0e1b3d;
+    }
+    #c-out .code { left: 24px; top: 18px; color: #3de0cf; }
+    #c-robot-wrap { left: 40px; top: 1012px; width: 250px; height: 317px; }
+    #c-name {
+      left: 300px;
+      top: 1196px;
+      background: #0e1b3d;
+      color: #ffffff;
+      height: 56px;
+      line-height: 56px;
+      font-size: 30px;
+    }
+    #c-axis {
+      position: absolute;
+      left: 360px;
+      top: 1098px;
+      width: 610px;
+      height: 6px;
+      background: #8fa3c7;
+      transform-origin: 0 50%;
+    }
+    .c-bar {
+      position: absolute;
+      width: 150px;
+      bottom: 822px;
+      border-radius: 12px 12px 0 0;
+      transform-origin: 50% 100%;
+    }
+    .c-val {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 10px;
+      text-align: center;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 60px;
+      color: #ffffff;
+    }
+    .c-lab {
+      position: absolute;
+      width: 190px;
+      top: 1108px;
+      text-align: center;
+      font-family: "Oswald", sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      letter-spacing: 0.06em;
+      color: #ffffff;
+    }
+    .c-head { position: absolute; width: 112px; height: 124px; }
+    #c-stamp {
+      position: absolute;
+      left: 96px;
+      right: 96px;
+      top: 470px;
+      height: 96px;
+      border-radius: 14px;
+      background: #ff8a1f;
+      box-shadow: 0 8px 0 #c25d00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 50px;
+      color: #0e1b3d;
+      white-space: nowrap;
+    }
+  </style>
+  <div data-hf-id="hf-yhil" id="root" data-composition-id="counter" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-ull5" id="c-tag" class="tag">NEW: collections.Counter</div>
+    <div data-hf-id="hf-9brx" id="c-codeblock">
+      <div data-hf-id="hf-7uu2" id="c-code" class="code">
+        <span data-hf-id="hf-j976" id="c-l0" class="ln"><span data-hf-id="hf-n65j" class="kw">from</span> collections <span data-hf-id="hf-iusy" class="kw">import</span> Counter</span>
+        <span data-hf-id="hf-olxw" id="c-l1" class="ln">count = <span data-hf-id="hf-tyg3" class="fn">Counter</span>(votes)</span>
+        <span data-hf-id="hf-cqrn" id="c-l2" class="ln"><span data-hf-id="hf-0tk8" class="fn">print</span>(count)</span>
+      </div>
+      <div data-hf-id="hf-xv3j" id="c-out">
+        <div data-hf-id="hf-jgcz" id="c-out-label">OUTPUT</div>
+        <div data-hf-id="hf-qevj" class="code">
+          <span data-hf-id="hf-zyiw" id="c-o0" class="ln">Counter({<span data-hf-id="hf-nwug" class="str">'mango'</span>: 3,</span>
+          <span data-hf-id="hf-vpw5" id="c-o1" class="ln">         <span data-hf-id="hf-lqa3" class="str">'banana'</span>: 2,</span>
+          <span data-hf-id="hf-hiuh" id="c-o2" class="ln">         <span data-hf-id="hf-vou3" class="str">'grape'</span>: 1})</span>
+        </div>
+      </div>
+    </div>
+    <div data-hf-id="hf-0a1m" id="c-axis"></div>
+    <div data-hf-id="hf-tqn8" id="c-bar0" class="c-bar" style="left:380px;height:390px;background:#ff8a1f"><div data-hf-id="hf-9o66" class="c-val">3</div></div>
+    <div data-hf-id="hf-kcwb" id="c-head0" class="c-head" style="left:399px;top:582px"><svg data-hf-id="hf-ffj9" id="c-head0-svg" viewBox="0 0 200 220" aria-hidden="true" width="112" height="124">
+  <path data-hf-id="hf-1nka" d="M104 34 C156 32 186 86 180 136 C174 190 132 214 96 208 C54 202 22 166 26 118 C30 68 58 36 104 34Z" fill="#ffb020" stroke="#c96a00" stroke-width="5"/>
+  <path data-hf-id="hf-iedt" d="M150 60 C176 90 182 140 166 176 C150 200 120 210 100 208 C140 190 168 140 150 60Z" fill="#ff7a1a" opacity=".55"/>
+  <ellipse data-hf-id="hf-9915" cx="68" cy="88" rx="14" ry="26" fill="#ffe08a" opacity=".9" transform="rotate(-20 68 88)"/>
+  <path data-hf-id="hf-mx90" d="M104 36 C112 14 140 6 160 12 C146 30 124 38 104 36Z" fill="#2e9e5b"/>
+  <path data-hf-id="hf-2f7n" d="M104 36 L100 22" stroke="#6b4b2a" stroke-width="6" stroke-linecap="round"/>
+  <circle data-hf-id="hf-ey95" cx="82" cy="118" r="10" fill="#0e1b3d"/><circle data-hf-id="hf-y8qq" cx="124" cy="118" r="10" fill="#0e1b3d"/>
+  <circle data-hf-id="hf-6be8" cx="85" cy="114" r="3.5" fill="#fff"/><circle data-hf-id="hf-yox7" cx="127" cy="114" r="3.5" fill="#fff"/>
+  <circle data-hf-id="hf-2ns1" cx="64" cy="140" r="9" fill="#ff5f7a" opacity=".45"/><circle data-hf-id="hf-gl5c" cx="142" cy="140" r="9" fill="#ff5f7a" opacity=".45"/>
+  <path data-hf-id="hf-ksat" d="M86 144 Q103 162 120 144" fill="none" stroke="#0e1b3d" stroke-width="6" stroke-linecap="round"/>
+  <g data-hf-id="hf-ubhq" transform="translate(150 182)"><path data-hf-id="hf-ayo1" d="M-10 6 L-16 34 L-4 28 L2 38 L6 8Z" fill="#ff8a1f"/><circle data-hf-id="hf-4fhz" r="18" fill="#ff8a1f" stroke="#fff" stroke-width="4"/><circle data-hf-id="hf-puwr" r="7" fill="#fff"/></g>
+</svg></div>
+    <div data-hf-id="hf-2sym" id="c-lab0" class="c-lab" style="left:360px">MANGO</div>
+    <div data-hf-id="hf-n0yb" id="c-bar1" class="c-bar" style="left:580px;height:260px;background:#13b5a6"><div data-hf-id="hf-99v5" class="c-val">2</div></div>
+    <div data-hf-id="hf-btwb" id="c-head1" class="c-head" style="left:599px;top:712px"><svg data-hf-id="hf-ie30" id="c-head1-svg" viewBox="0 0 200 220" aria-hidden="true" width="112" height="124">
+  <path data-hf-id="hf-5t50" d="M40 34 C22 110 60 192 152 200 C176 202 188 192 184 180 C178 168 160 168 146 164 C118 156 104 104 112 50 C114 30 50 18 40 34Z" fill="#ffd93b" stroke="#d9a400" stroke-width="5"/>
+  <path data-hf-id="hf-0rcq" d="M42 34 L46 14 L60 18 L58 34Z" fill="#6b4b2a"/><circle data-hf-id="hf-jjti" cx="184" cy="184" r="6" fill="#6b4b2a"/>
+  <path data-hf-id="hf-dkcw" d="M56 64 C50 112 66 150 96 172" stroke="#fff3a6" stroke-width="8" fill="none" stroke-linecap="round" opacity=".9"/>
+  <circle data-hf-id="hf-7s07" cx="64" cy="110" r="9" fill="#0e1b3d"/><circle data-hf-id="hf-jxwa" cx="92" cy="112" r="9" fill="#0e1b3d"/>
+  <circle data-hf-id="hf-kjo2" cx="67" cy="106" r="3" fill="#fff"/><circle data-hf-id="hf-07yh" cx="95" cy="108" r="3" fill="#fff"/>
+  <path data-hf-id="hf-ku3f" d="M64 132 Q78 146 94 133" fill="none" stroke="#0e1b3d" stroke-width="6" stroke-linecap="round"/>
+  <g data-hf-id="hf-8ma1" transform="translate(128 186)"><path data-hf-id="hf-0f5l" d="M-10 6 L-16 32 L-4 26 L2 36 L6 8Z" fill="#13b5a6"/><circle data-hf-id="hf-krdg" r="17" fill="#13b5a6" stroke="#fff" stroke-width="4"/><circle data-hf-id="hf-9cor" r="7" fill="#fff"/></g>
+</svg></div>
+    <div data-hf-id="hf-hz58" id="c-lab1" class="c-lab" style="left:560px">BANANA</div>
+    <div data-hf-id="hf-5jsb" id="c-bar2" class="c-bar" style="left:780px;height:130px;background:#e0218a"><div data-hf-id="hf-ags8" class="c-val">1</div></div>
+    <div data-hf-id="hf-mmg0" id="c-head2" class="c-head" style="left:799px;top:842px"><svg data-hf-id="hf-ohpw" id="c-head2-svg" viewBox="0 0 200 230" aria-hidden="true" width="112" height="124">
+  <path data-hf-id="hf-na16" d="M100 18 L104 44" stroke="#6b4b2a" stroke-width="7" stroke-linecap="round"/>
+  <path data-hf-id="hf-ud6o" d="M104 32 C120 12 150 14 160 26 C140 40 120 42 104 32Z" fill="#2e9e5b"/>
+  <circle data-hf-id="hf-yhum" cx="68" cy="74" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-6ovq" cx="132" cy="74" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-0n8g" cx="100" cy="66" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-3gt1" cx="54" cy="120" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-638l" cx="146" cy="120" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-qnjp" cx="76" cy="164" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-dmjt" cx="124" cy="164" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/><circle data-hf-id="hf-7804" cx="100" cy="196" r="30" fill="#8a3ffc" stroke="#5b1fb8" stroke-width="4"/>
+  <circle data-hf-id="hf-un4a" cx="100" cy="122" r="46" fill="#9b55ff" stroke="#5b1fb8" stroke-width="4"/>
+  <circle data-hf-id="hf-ogsg" cx="84" cy="114" r="8" fill="#0e1b3d"/><circle data-hf-id="hf-h59g" cx="116" cy="114" r="8" fill="#0e1b3d"/>
+  <circle data-hf-id="hf-p05r" cx="86" cy="111" r="3" fill="#fff"/><circle data-hf-id="hf-67xb" cx="118" cy="111" r="3" fill="#fff"/>
+  <path data-hf-id="hf-akl0" d="M86 138 Q100 150 114 138" fill="none" stroke="#0e1b3d" stroke-width="6" stroke-linecap="round"/>
+  <g data-hf-id="hf-5do7" transform="translate(156 176)"><path data-hf-id="hf-aaci" d="M-10 6 L-16 32 L-4 26 L2 36 L6 8Z" fill="#e0218a"/><circle data-hf-id="hf-z73b" r="17" fill="#e0218a" stroke="#fff" stroke-width="4"/><circle data-hf-id="hf-8ydq" r="7" fill="#fff"/></g>
+</svg></div>
+    <div data-hf-id="hf-8435" id="c-lab2" class="c-lab" style="left:760px">GRAPE</div>
+    <div data-hf-id="hf-e377" id="c-stamp">COUNTER: INSTANT TALLY <span data-hf-id="hf-36qs" class="emoji">✅</span></div>
+    <div data-hf-id="hf-40lz" id="c-robot-wrap" class="char"><svg data-hf-id="hf-twzt" id="c-robot" viewBox="0 0 300 380" aria-hidden="true" width="250" height="317">
+  <line data-hf-id="hf-44s8" x1="150" y1="74" x2="150" y2="44" stroke="#0e1b3d" stroke-width="8" stroke-linecap="round"/>
+  <circle data-hf-id="hf-rqv3" id="c-robot-bulb" cx="150" cy="34" r="13" fill="#e0218a" stroke="#0e1b3d" stroke-width="5"/>
+  <g data-hf-id="hf-gvuc" id="c-robot-arml"><rect data-hf-id="hf-bp0a" x="8" y="196" width="40" height="86" rx="20" fill="#dfe5ec" stroke="#0e1b3d" stroke-width="7"/></g>
+  <g data-hf-id="hf-aq0i" id="c-robot-armr"><rect data-hf-id="hf-m8u9" x="252" y="196" width="40" height="86" rx="20" fill="#dfe5ec" stroke="#0e1b3d" stroke-width="7"/></g>
+  <rect data-hf-id="hf-yjh1" x="104" y="316" width="92" height="30" rx="15" fill="#13265c"/>
+  <circle data-hf-id="hf-xnmn" cx="122" cy="352" r="17" fill="#0e1b3d"/><circle data-hf-id="hf-4omo" cx="178" cy="352" r="17" fill="#0e1b3d"/>
+  <circle data-hf-id="hf-vbli" cx="122" cy="352" r="6" fill="#8fa3c7"/><circle data-hf-id="hf-ixur" cx="178" cy="352" r="6" fill="#8fa3c7"/>
+  <circle data-hf-id="hf-qplz" cx="150" cy="196" r="128" fill="#e9eef4" stroke="#0e1b3d" stroke-width="8"/>
+  <path data-hf-id="hf-7j2w" d="M62 150 A96 96 0 0 1 120 90" stroke="#ffffff" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <rect data-hf-id="hf-k7y5" x="78" y="98" width="144" height="64" rx="32" fill="#0e1b3d"/>
+  <rect data-hf-id="hf-p6cj" id="c-robot-eyel" x="104" y="114" width="24" height="32" rx="12" fill="#2ee6d6"/>
+  <rect data-hf-id="hf-pui2" id="c-robot-eyer" x="172" y="114" width="24" height="32" rx="12" fill="#2ee6d6"/>
+  <rect data-hf-id="hf-2ein" x="80" y="176" width="140" height="92" rx="16" fill="#0e1b3d" stroke="#13b5a6" stroke-width="5"/>
+  <g data-hf-id="hf-qc3b" id="c-robot-tally" stroke="#ff8a1f" stroke-width="7" stroke-linecap="round">
+    <line data-hf-id="hf-s2tu" x1="100" y1="194" x2="100" y2="248"/><line data-hf-id="hf-4f0s" x1="116" y1="194" x2="116" y2="248"/>
+    <line data-hf-id="hf-timw" x1="132" y1="194" x2="132" y2="248"/><line data-hf-id="hf-4e7u" x1="148" y1="194" x2="148" y2="248"/>
+    <line data-hf-id="hf-zzyf" x1="92" y1="240" x2="158" y2="202"/>
+  </g>
+  <text data-hf-id="hf-geeo" id="c-robot-num" x="190" y="238" text-anchor="middle" font-family="JetBrains Mono" font-weight="700" font-size="40" fill="#2ee6d6">6</text>
+  <path data-hf-id="hf-c3f5" d="M120 290 Q150 306 180 290" fill="none" stroke="#0e1b3d" stroke-width="7" stroke-linecap="round"/>
+</svg></div>
+    <div data-hf-id="hf-mfrk" id="c-name" class="tag">◀ MEET COUNTER</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // reveal a code line like typing: clip opens one character at a time
+    function typeLine(sel, at, chars) {
+      tl.fromTo(sel, { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: Math.min(0.5, chars * 0.022), ease: `steps(${chars})` }, at);
+    }
+    function pop(sel, at, from = 0.4) {
+      tl.fromTo(sel, { scale: from, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2.2)" }, at);
+    }
+
+    pop("#c-tag", 0.3, 0.6);
+    // Counter rolls in from the right
+    tl.fromTo("#c-robot-wrap", { x: 900, rotation: 0 }, { x: 0, duration: 0.6, ease: "power3.out" }, 0.3);
+    tl.to("#c-robot-wrap", { keyframes: { rotation: [0, -8, 0] }, duration: 0.5, ease: "power1.out" }, 0.85);
+    tl.fromTo("#c-robot-bulb", { opacity: 1 }, { opacity: 0.25, duration: 0.2, ease: "steps(1)", yoyo: true, repeat: 41 }, 0.9);
+    tl.fromTo("#c-name", { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.3, ease: "power3.out" }, 0.75);
+    typeLine("#c-l0", 1.40, 31);
+    typeLine("#c-l1", 2.95, 22);
+    typeLine("#c-l2", 3.55, 12);
+    tl.fromTo("#c-out", { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)" }, 3.90);
+    ["#c-o0", "#c-o1", "#c-o2"].forEach((id, i) => typeLine(id, 3.98 + i * 0.1, 16));
+    // the robot tallies instantly
+    tl.fromTo("#c-robot-tally", { opacity: 0 }, { opacity: 1, duration: 0.06, ease: "steps(1)", yoyo: true, repeat: 5 }, 3.90);
+    tl.fromTo("#c-robot-eyel, #c-robot-eyer", { scaleY: 1 }, { scaleY: 0.15, transformOrigin: "50% 50%", duration: 0.08, yoyo: true, repeat: 1 }, 2.20);
+    // code clears, results chart takes the wall
+    tl.to("#c-codeblock, #c-tag", { y: -60, opacity: 0, duration: 0.3, ease: "power2.in" }, 5.05);
+    tl.to("#c-name", { opacity: 0, duration: 0.2 }, 5.05);
+    tl.fromTo("#c-axis", { scaleX: 0 }, { scaleX: 1, duration: 0.3, ease: "power2.out" }, 5.20);
+    [0, 1, 2].forEach((i) => {
+      const t = 5.50 + i * 0.5;
+      const h = [390, 260, 130][i];
+      tl.fromTo("#c-bar" + i, { scaleY: 0 }, { scaleY: 1, duration: 0.22, ease: "back.out(1.4)" }, t);
+      tl.fromTo("#c-head" + i, { y: h, opacity: 0 }, { y: 0, opacity: 1, duration: 0.22, ease: "back.out(1.4)" }, t);
+      tl.fromTo("#c-lab" + i, { opacity: 0 }, { opacity: 1, duration: 0.15 }, t);
+    });
+    tl.fromTo("#c-stamp", { scale: 1.6, rotation: -6, opacity: 0 }, { scale: 1, rotation: -2, opacity: 1, duration: 0.3, ease: "power4.in" }, 7.60);
+    // victory wiggles while the results hold
+    tl.to("#c-robot-wrap", { y: -34, duration: 0.18, ease: "power2.out", yoyo: true, repeat: 3 }, 8.30);
+    tl.to("#c-robot-armr", { rotation: -50, transformOrigin: "50% 10%", duration: 0.2, ease: "power2.out", yoyo: true, repeat: 3 }, 9.20);
+    tl.to("#c-head0", { rotation: 10, duration: 0.15, yoyo: true, repeat: 3, ease: "sine.inOut" }, 9.40);
+    tl.to("#c-robot-eyel, #c-robot-eyer", { scaleY: 0.15, transformOrigin: "50% 50%", duration: 0.08, yoyo: true, repeat: 1 }, 10.00);
+
+    window.__timelines["counter"] = tl;
+  </script>
+</template>

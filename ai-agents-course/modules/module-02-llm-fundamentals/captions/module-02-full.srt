@@ -1,0 +1,2921 @@
+1
+00:00:00,700 --> 00:00:02,300
+Welcome to Module 2.
+
+2
+00:00:02,520 --> 00:00:05,870
+In Module 1 you built a
+solid Python foundation.
+
+3
+00:00:06,090 --> 00:00:11,552
+Now we meet the engine behind every
+agent in this course: the large language model.
+
+4
+00:00:11,772 --> 00:00:17,092
+Before writing a single API call, you
+need a clear mental model of what these
+
+5
+00:00:17,092 --> 00:00:20,961
+systems do, and just as
+importantly, what they don't do.
+
+6
+00:00:22,261 --> 00:00:25,994
+You will be able to explain
+next-token prediction in plain words.
+
+7
+00:00:26,344 --> 00:00:30,961
+Understand tokens, and why they decide
+your cost, your limits, and your speed.
+
+8
+00:00:31,311 --> 00:00:34,611
+Reason about the context
+window, and what fills it up.
+
+9
+00:00:34,961 --> 00:00:39,865
+And know which controls you actually
+have over generation, on current models.
+
+10
+00:00:41,165 --> 00:00:44,351
+Here is the core idea,
+simplified but accurate.
+
+11
+00:00:44,701 --> 00:00:47,752
+A language model takes
+the text so far as input.
+
+12
+00:00:47,972 --> 00:00:53,567
+During training it saw an enormous
+amount of text, and its weights encode patterns
+
+13
+00:00:53,567 --> 00:00:55,069
+of how text continues.
+
+14
+00:00:55,419 --> 00:00:57,502
+Its output is not a whole answer.
+
+15
+00:00:57,722 --> 00:01:00,800
+It is a probability for
+every possible next token.
+
+16
+00:01:01,020 --> 00:01:04,012
+These percentages
+are just an illustration.
+
+17
+00:01:04,362 --> 00:01:09,386
+One token is chosen and appended to the
+text, and the whole thing goes back in to
+
+18
+00:01:09,386 --> 00:01:10,688
+predict the next one.
+
+19
+00:01:10,908 --> 00:01:15,393
+A long answer is just this loop,
+run hundreds or thousands of times.
+
+20
+00:01:15,743 --> 00:01:17,830
+This explains a lot of behaviour.
+
+21
+00:01:18,050 --> 00:01:21,713
+The model produces
+plausible text, not looked-up facts.
+
+22
+00:01:21,933 --> 00:01:27,298
+It can be confidently wrong, which is
+often called hallucination, and its knowledge
+
+23
+00:01:27,298 --> 00:01:29,237
+stops at its training cut-off.
+
+24
+00:01:29,457 --> 00:01:34,649
+That's why agents give models tools and
+documents to check facts, which is exactly
+
+25
+00:01:34,649 --> 00:01:36,169
+what this course builds.
+
+26
+00:01:37,469 --> 00:01:38,812
+So what is a token?
+
+27
+00:01:39,032 --> 00:01:44,626
+It's a chunk of text, often a whole
+short word, a piece of a longer word, a space,
+
+28
+00:01:44,626 --> 00:01:46,127
+or a punctuation mark.
+
+29
+00:01:46,477 --> 00:01:51,740
+For example, agents call tools, full
+stop, might be split into four tokens.
+
+30
+00:01:51,960 --> 00:01:53,532
+This is an illustration.
+
+31
+00:01:53,752 --> 00:01:57,211
+The exact split depends
+on each model's tokenizer.
+
+32
+00:01:57,561 --> 00:02:01,930
+A rough rule of thumb for English
+is about four characters per token.
+
+33
+00:02:02,150 --> 00:02:07,734
+Code, unusual words, and many other
+languages use more tokens for the same text.
+
+34
+00:02:08,084 --> 00:02:12,793
+When you need an exact number, don't
+guess, and don't use another company's
+
+35
+00:02:12,793 --> 00:02:13,421
+tokenizer.
+
+36
+00:02:13,641 --> 00:02:19,233
+Ask the API: it has a token counting
+endpoint for the exact model you're using.
+
+37
+00:02:19,453 --> 00:02:21,233
+You'll use it in lesson five.
+
+38
+00:02:22,533 --> 00:02:24,591
+Tokens matter for three reasons.
+
+39
+00:02:24,811 --> 00:02:25,772
+First, cost.
+
+40
+00:02:25,992 --> 00:02:31,862
+You pay per input token and per output
+token, and output tokens usually cost several
+
+41
+00:02:31,862 --> 00:02:32,631
+times more.
+
+42
+00:02:32,981 --> 00:02:34,037
+Second, limits.
+
+43
+00:02:34,257 --> 00:02:38,105
+Every request has a
+maximum size, measured in tokens.
+
+44
+00:02:38,455 --> 00:02:39,606
+And third, speed.
+
+45
+00:02:39,826 --> 00:02:45,118
+Replies are generated one token at
+a time, so long answers take longer.
+
+46
+00:02:45,338 --> 00:02:48,912
+Streaming, in lesson four,
+makes that wait feel much shorter.
+
+47
+00:02:50,212 --> 00:02:55,739
+The context window is the maximum
+number of tokens the model can consider in one
+
+48
+00:02:55,739 --> 00:02:58,158
+request, input and output together.
+
+49
+00:02:58,508 --> 00:03:04,038
+Everything you send goes in: the system
+prompt with your instructions, the whole
+
+50
+00:03:04,038 --> 00:03:09,016
+conversation so far, any documents
+or tool results, and the new message.
+
+51
+00:03:09,366 --> 00:03:12,153
+Current models have very large windows.
+
+52
+00:03:12,373 --> 00:03:19,092
+Claude Opus 5.5, the model we use in
+this course, accepts up to one million tokens.
+
+53
+00:03:19,442 --> 00:03:24,865
+The reply must fit too, and it has its
+own cap: up to one hundred and twenty-eight
+
+54
+00:03:24,865 --> 00:03:27,313
+thousand output tokens on this model.
+
+55
+00:03:27,663 --> 00:03:30,337
+A huge window does not
+mean you should fill it.
+
+56
+00:03:30,557 --> 00:03:36,281
+Every token you send is billed on every
+request, and focused context usually gives
+
+57
+00:03:36,281 --> 00:03:37,328
+better answers.
+
+58
+00:03:37,548 --> 00:03:42,194
+Managing what goes into the
+window is a core agent engineering skill.
+
+59
+00:03:43,494 --> 00:03:44,986
+One more crucial fact.
+
+60
+00:03:45,206 --> 00:03:49,395
+When you chat with an assistant, it
+seems to remember what you said earlier.
+
+61
+00:03:49,745 --> 00:03:53,160
+But the model itself has
+no memory between requests.
+
+62
+00:03:53,380 --> 00:03:57,110
+Your application sends the
+whole conversation every time.
+
+63
+00:03:57,330 --> 00:03:59,674
+The model's weights
+don't change while you chat.
+
+64
+00:03:59,894 --> 00:04:03,973
+If your code forgets to send the
+history, the conversation is gone.
+
+65
+00:04:04,193 --> 00:04:06,193
+You'll see this happen in lesson three.
+
+66
+00:04:07,493 --> 00:04:10,086
+You control generation with a few levers.
+
+67
+00:04:10,306 --> 00:04:13,447
+The system prompt sets
+the role, rules, and style.
+
+68
+00:04:13,797 --> 00:04:16,223
+Max tokens caps the length of the reply.
+
+69
+00:04:16,573 --> 00:04:20,963
+Effort controls how much
+reasoning the model does, from low to max.
+
+70
+00:04:21,183 --> 00:04:25,905
+Higher effort means better
+answers on hard problems, but more tokens.
+
+71
+00:04:26,255 --> 00:04:32,185
+And you choose the model itself: Opus,
+Sonnet, or Haiku, trading capability against
+
+72
+00:04:32,185 --> 00:04:33,257
+cost and speed.
+
+73
+00:04:33,607 --> 00:04:37,770
+You may have read about
+temperature and top p in older tutorials.
+
+74
+00:04:37,990 --> 00:04:42,496
+On current Claude models those
+sampling settings are no longer accepted.
+
+75
+00:04:42,716 --> 00:04:46,688
+You steer the model with
+instructions, effort, and the model you pick.
+
+76
+00:04:47,988 --> 00:04:48,795
+Quick check.
+
+77
+00:04:49,015 --> 00:04:52,493
+Your app sends a new request
+without the earlier messages.
+
+78
+00:04:52,713 --> 00:04:53,657
+What happens?
+
+79
+00:04:59,357 --> 00:05:01,049
+The model simply doesn't know.
+
+80
+00:05:01,269 --> 00:05:03,418
+It has no memory between requests.
+
+81
+00:05:03,638 --> 00:05:06,193
+It only sees what
+you send in that request.
+
+82
+00:05:07,493 --> 00:05:11,070
+A language model predicts
+the next token, over and over.
+
+83
+00:05:11,420 --> 00:05:16,913
+It produces plausible text, not
+looked-up facts, so important claims need checking.
+
+84
+00:05:17,263 --> 00:05:22,564
+Tokens drive cost, limits, and
+speed, and the API can count them exactly.
+
+85
+00:05:22,914 --> 00:05:28,090
+Everything must fit in the context
+window, and your app resends the history every
+
+86
+00:05:28,090 --> 00:05:28,410
+time.
+
+87
+00:05:28,760 --> 00:05:34,569
+Next lesson, you make your first real API
+call, and take the response apart piece by
+
+88
+00:05:34,569 --> 00:05:34,984
+piece.
+
+89
+00:05:36,295 --> 00:05:38,483
+Time to talk to a model from Python.
+
+90
+00:05:38,704 --> 00:05:44,510
+In this lesson you'll set up an API key
+safely, install the official Anthropic SDK,
+
+91
+00:05:44,510 --> 00:05:50,387
+send your first message, and then take
+the response apart, because every field in it
+
+92
+00:05:50,387 --> 00:05:52,486
+matters when you build agents.
+
+93
+00:05:53,786 --> 00:05:56,525
+You'll create and store an API key safely.
+
+94
+00:05:56,875 --> 00:05:59,905
+Install the official Anthropic Python SDK.
+
+95
+00:06:00,255 --> 00:06:02,786
+Send a request with messages dot create.
+
+96
+00:06:03,136 --> 00:06:08,413
+And read the response: its content
+blocks, its stop reason, and its token usage.
+
+97
+00:06:09,713 --> 00:06:12,778
+First, create an API
+key in the Claude Console.
+
+98
+00:06:12,998 --> 00:06:17,606
+Note that API usage is billed
+separately from a Claude chat subscription.
+
+99
+00:06:17,956 --> 00:06:22,807
+Store it in an environment
+variable called ANTHROPIC API KEY.
+
+100
+00:06:23,027 --> 00:06:28,518
+The SDK reads that variable
+automatically, so the key never appears in your code.
+
+101
+00:06:28,868 --> 00:06:33,330
+Never paste a key into code, a
+chat, a screenshot, or a git commit.
+
+102
+00:06:33,550 --> 00:06:38,485
+If a key ever leaks, delete it in the
+Console straight away and create a new one.
+
+103
+00:06:38,835 --> 00:06:39,823
+No key yet?
+
+104
+00:06:40,043 --> 00:06:41,036
+No problem.
+
+105
+00:06:41,256 --> 00:06:46,953
+Everything in this module also runs in
+offline mode, which I'll explain in a moment.
+
+106
+00:06:48,253 --> 00:06:51,435
+As always, start with a
+fresh virtual environment.
+
+107
+00:06:51,785 --> 00:06:54,092
+Then install the anthropic package.
+
+108
+00:06:54,312 --> 00:06:59,893
+I'm pinning version 2 point 3 point 0,
+the version this course was recorded with.
+
+109
+00:07:00,113 --> 00:07:06,266
+It brings its own HTTP library and
+pydantic, which we'll use for structured output.
+
+110
+00:07:06,616 --> 00:07:07,734
+And set your key.
+
+111
+00:07:07,954 --> 00:07:13,775
+On Windows PowerShell, use dollar
+env colon ANTHROPIC API KEY instead.
+
+112
+00:07:13,995 --> 00:07:17,925
+Or keep it in a dot env
+file, as you learned in Module 1.
+
+113
+00:07:19,225 --> 00:07:21,083
+An honest note about the demos.
+
+114
+00:07:21,303 --> 00:07:26,585
+So that every demo is free and
+repeatable, and so you can follow along without a
+
+115
+00:07:26,585 --> 00:07:31,802
+key, the replies you'll see come from
+a small fake API built into this module's
+
+116
+00:07:31,802 --> 00:07:32,330
+project.
+
+117
+00:07:32,550 --> 00:07:39,147
+It speaks the same protocol as the real
+API, so the real SDK code runs unchanged,
+
+118
+00:07:39,147 --> 00:07:42,486
+including streaming, errors, and retries.
+
+119
+00:07:42,706 --> 00:07:47,301
+But the replies are placeholders,
+clearly marked offline demo reply.
+
+120
+00:07:47,521 --> 00:07:49,072
+They are not model output.
+
+121
+00:07:49,292 --> 00:07:52,994
+With your key set, exactly
+the same code talks to Claude.
+
+122
+00:07:54,294 --> 00:07:59,737
+In your own projects, you create a
+client with anthropic dot Anthropic, which reads
+
+123
+00:07:59,737 --> 00:08:01,639
+the key from the environment.
+
+124
+00:08:01,859 --> 00:08:06,872
+Our lesson helper does the same when a
+key is set, and uses the offline fake when it
+
+125
+00:08:06,872 --> 00:08:07,230
+isn't.
+
+126
+00:08:07,580 --> 00:08:10,029
+Messages dot create sends a request.
+
+127
+00:08:10,249 --> 00:08:16,204
+Three arguments are required: the model
+ID, max tokens, the longest reply you'll
+
+128
+00:08:16,204 --> 00:08:18,661
+accept, and the list of messages.
+
+129
+00:08:18,881 --> 00:08:24,457
+Each message is a dictionary with a role
+and content, exactly the shape you built in
+
+130
+00:08:24,457 --> 00:08:25,055
+Module 1.
+
+131
+00:08:25,405 --> 00:08:27,865
+The reply's content is a list of blocks.
+
+132
+00:08:28,085 --> 00:08:31,337
+Here there's a single text
+block, so we print its text.
+
+133
+00:08:31,687 --> 00:08:36,778
+And we print two more fields: why the
+model stopped, and how many tokens went in and
+
+134
+00:08:36,778 --> 00:08:37,021
+out.
+
+135
+00:08:38,321 --> 00:08:40,404
+Here's the run, in offline mode.
+
+136
+00:08:40,624 --> 00:08:46,054
+A placeholder reply, a stop reason of
+end turn, which means the model finished
+
+137
+00:08:46,054 --> 00:08:48,281
+naturally, and the token counts.
+
+138
+00:08:48,501 --> 00:08:52,135
+With a real key you'd see a
+real one-sentence answer here.
+
+139
+00:08:53,435 --> 00:08:57,001
+Let's explore the response
+object in the interactive prompt.
+
+140
+00:08:57,351 --> 00:09:02,752
+Every response has an ID, which you
+include when reporting problems, the model that
+
+141
+00:09:02,752 --> 00:09:04,964
+answered, and the role, assistant.
+
+142
+00:09:05,184 --> 00:09:07,380
+Content is a list of typed blocks.
+
+143
+00:09:07,730 --> 00:09:09,786
+The stop reason and the usage.
+
+144
+00:09:10,006 --> 00:09:14,326
+Usage is what you are billed for,
+so production code always records it.
+
+145
+00:09:14,546 --> 00:09:16,525
+We'll do exactly that in the project.
+
+146
+00:09:17,825 --> 00:09:19,248
+Why is content a list?
+
+147
+00:09:19,468 --> 00:09:22,463
+Because a reply can
+contain different kinds of block.
+
+148
+00:09:22,683 --> 00:09:24,682
+Text blocks hold the written answer.
+
+149
+00:09:25,032 --> 00:09:27,485
+Thinking blocks can
+hold the model's reasoning.
+
+150
+00:09:27,705 --> 00:09:32,252
+On current models it's hidden by
+default, but the block may still be there.
+
+151
+00:09:32,602 --> 00:09:38,008
+And tool use blocks are requests to run
+one of your tools, which is how agents act.
+
+152
+00:09:38,228 --> 00:09:40,406
+You'll handle those in Module 5.
+
+153
+00:09:40,756 --> 00:09:44,398
+So robust code never
+assumes the first block is text.
+
+154
+00:09:44,618 --> 00:09:48,121
+It checks each block's
+type, as the next example does.
+
+155
+00:09:49,421 --> 00:09:54,673
+The system parameter gives the model its
+role and rules for the whole conversation.
+
+156
+00:09:54,893 --> 00:09:56,997
+It sits outside the messages list.
+
+157
+00:09:57,217 --> 00:10:01,216
+Here: be a patient tutor, and
+answer in at most two sentences.
+
+158
+00:10:01,566 --> 00:10:06,556
+And here's the robust way to read the
+answer: loop over the blocks and only print
+
+159
+00:10:06,556 --> 00:10:07,295
+text blocks.
+
+160
+00:10:08,595 --> 00:10:13,196
+In offline mode the placeholder
+can't follow the instructions, of course.
+
+161
+00:10:13,416 --> 00:10:16,039
+A real model would
+answer in two sentences.
+
+162
+00:10:16,259 --> 00:10:20,238
+Prompt design gets a whole
+module of its own, Module 3.
+
+163
+00:10:21,538 --> 00:10:22,346
+Quick check.
+
+164
+00:10:22,566 --> 00:10:26,404
+Which three arguments does
+messages dot create require?
+
+165
+00:10:32,104 --> 00:10:34,437
+Model, max tokens, and messages.
+
+166
+00:10:34,657 --> 00:10:38,731
+The key comes from the
+environment, and the system prompt is optional.
+
+167
+00:10:40,031 --> 00:10:44,328
+API keys live in an
+environment variable, never in your code.
+
+168
+00:10:44,678 --> 00:10:49,225
+Messages dot create needs a
+model, max tokens, and messages.
+
+169
+00:10:49,575 --> 00:10:54,252
+The response gives you content
+blocks, a stop reason, and token usage.
+
+170
+00:10:54,602 --> 00:10:57,267
+And the system prompt
+sets the role and the rules.
+
+171
+00:10:57,617 --> 00:10:59,596
+Next lesson: conversations.
+
+172
+00:10:59,816 --> 00:11:04,631
+You'll see exactly why the model
+forgets, and how to manage message history
+
+173
+00:11:04,631 --> 00:11:05,209
+properly.
+
+174
+00:11:06,514 --> 00:11:12,479
+Every chat app and every agent is a
+conversation: a list of messages that grows over
+
+175
+00:11:12,479 --> 00:11:12,834
+time.
+
+176
+00:11:13,054 --> 00:11:18,123
+In this lesson you'll see that the API
+remembers nothing, that your code owns the
+
+177
+00:11:18,123 --> 00:11:21,690
+history, and that a growing
+history means a growing bill.
+
+178
+00:11:22,990 --> 00:11:25,929
+You'll build a
+multi-turn conversation correctly.
+
+179
+00:11:26,279 --> 00:11:29,080
+Spot and fix the
+classic forgotten reply bug.
+
+180
+00:11:29,430 --> 00:11:32,281
+Measure how input
+tokens grow with every turn.
+
+181
+00:11:32,631 --> 00:11:36,712
+And choose a strategy for
+keeping long conversations under control.
+
+182
+00:11:38,012 --> 00:11:40,291
+Here's how a conversation really works.
+
+183
+00:11:40,641 --> 00:11:43,461
+The first request
+contains one user message.
+
+184
+00:11:43,811 --> 00:11:46,873
+The API replies, and
+then forgets everything.
+
+185
+00:11:47,093 --> 00:11:50,726
+Your app stores the user
+message and the reply in a list.
+
+186
+00:11:51,076 --> 00:11:56,087
+The second request sends the whole
+list: the first question, the first reply, and
+
+187
+00:11:56,087 --> 00:11:57,138
+the new question.
+
+188
+00:11:57,488 --> 00:11:59,992
+And the third request sends five messages.
+
+189
+00:12:00,212 --> 00:12:05,644
+Roles alternate between user and
+assistant, and the first message is always from the
+
+190
+00:12:05,644 --> 00:12:05,967
+user.
+
+191
+00:12:07,267 --> 00:12:11,096
+The history is just a Python
+list of message dictionaries.
+
+192
+00:12:11,446 --> 00:12:16,446
+For each question, we append it to the
+history, and send the whole list as messages.
+
+193
+00:12:16,796 --> 00:12:18,928
+Then we append the assistant's reply.
+
+194
+00:12:19,148 --> 00:12:21,295
+This line is the one people forget.
+
+195
+00:12:21,645 --> 00:12:27,008
+Finally we print how many messages we
+sent, and how many input tokens that cost.
+
+196
+00:12:28,308 --> 00:12:29,451
+Look at the numbers.
+
+197
+00:12:29,671 --> 00:12:31,876
+One message, then three, then five.
+
+198
+00:12:32,096 --> 00:12:37,212
+And the input tokens grow every turn,
+because every request re-sends everything
+
+199
+00:12:37,212 --> 00:12:37,860
+before it.
+
+200
+00:12:38,080 --> 00:12:43,733
+The offline fake even reports how many
+earlier messages it received, so you can see
+
+201
+00:12:43,733 --> 00:12:45,163
+the history arriving.
+
+202
+00:12:46,463 --> 00:12:47,789
+Here's the classic bug.
+
+203
+00:12:48,009 --> 00:12:51,258
+The loop appends each
+question, but never the reply.
+
+204
+00:12:51,608 --> 00:12:54,756
+So the history contains
+two user messages in a row.
+
+205
+00:12:54,976 --> 00:12:59,336
+The API accepts that, and
+merges them into a single user turn.
+
+206
+00:12:59,556 --> 00:13:04,777
+But the model never sees what it said
+before, so it can't refer to its own earlier
+
+207
+00:13:04,777 --> 00:13:05,287
+answers.
+
+208
+00:13:06,587 --> 00:13:07,652
+User, user.
+
+209
+00:13:07,872 --> 00:13:09,147
+No assistant turn.
+
+210
+00:13:09,367 --> 00:13:13,724
+In a chat app, that shows up as an
+assistant that seems to have amnesia.
+
+211
+00:13:13,944 --> 00:13:16,952
+Always store the reply
+right after you receive it.
+
+212
+00:13:18,252 --> 00:13:23,772
+Since every turn re-sends the whole
+history, long conversations get slower and more
+
+213
+00:13:23,772 --> 00:13:27,032
+expensive, and
+eventually hit the context window.
+
+214
+00:13:27,252 --> 00:13:29,189
+There are a few standard strategies.
+
+215
+00:13:29,539 --> 00:13:34,907
+The simplest is a sliding window: keep
+the most recent turns, and drop the oldest
+
+216
+00:13:34,907 --> 00:13:38,220
+user and assistant pair
+once you're over a budget.
+
+217
+00:13:38,440 --> 00:13:39,886
+Our project does this.
+
+218
+00:13:40,236 --> 00:13:45,341
+A smarter option replaces old turns
+with a short summary written by the model.
+
+219
+00:13:45,561 --> 00:13:47,698
+That's part of Module 6 on memory.
+
+220
+00:13:48,048 --> 00:13:53,432
+And agents often store key facts in a
+database, and add back only what's relevant to
+
+221
+00:13:53,432 --> 00:13:54,778
+the current question.
+
+222
+00:13:55,128 --> 00:14:00,546
+Finally, prompt caching lets an
+unchanged prefix of the conversation be billed at a
+
+223
+00:14:00,546 --> 00:14:02,830
+large discount when you re-send it.
+
+224
+00:14:03,050 --> 00:14:04,881
+You'll use it later in the course.
+
+225
+00:14:06,181 --> 00:14:08,063
+One practical rule when trimming.
+
+226
+00:14:08,283 --> 00:14:13,699
+Drop messages in pairs, a user message
+and its reply together, so the roles keep
+
+227
+00:14:13,699 --> 00:14:17,626
+alternating and the history
+still starts with a user turn.
+
+228
+00:14:18,926 --> 00:14:19,733
+Quick check.
+
+229
+00:14:19,953 --> 00:14:22,740
+A conversation already has ten messages.
+
+230
+00:14:22,960 --> 00:14:25,746
+How many messages does
+your next request send?
+
+231
+00:14:31,446 --> 00:14:36,927
+Eleven: all ten earlier messages plus
+the new one, unless you deliberately trim the
+
+232
+00:14:36,927 --> 00:14:37,456
+history.
+
+233
+00:14:38,756 --> 00:14:42,227
+The API is stateless, and
+your code keeps the history.
+
+234
+00:14:42,577 --> 00:14:45,706
+Append both the question
+and the reply, every turn.
+
+235
+00:14:46,056 --> 00:14:49,168
+Input tokens, and
+cost, grow with every turn.
+
+236
+00:14:49,518 --> 00:14:54,223
+So trim in pairs, or summarise,
+to keep conversations under control.
+
+237
+00:14:54,573 --> 00:14:59,683
+Next, you'll control the output itself:
+length limits, streaming, and structured
+
+238
+00:14:59,683 --> 00:15:00,003
+JSON.
+
+239
+00:15:01,330 --> 00:15:02,924
+Getting a reply is easy.
+
+240
+00:15:03,144 --> 00:15:06,775
+Getting a reply your
+program can rely on takes more care.
+
+241
+00:15:06,995 --> 00:15:12,418
+In this lesson you'll control how long
+replies are, show them as they're generated,
+
+242
+00:15:12,418 --> 00:15:17,906
+get structured JSON instead of free text,
+and handle the cases where the model stops
+
+243
+00:15:17,906 --> 00:15:18,298
+early.
+
+244
+00:15:19,598 --> 00:15:23,460
+You'll use max tokens, and
+check the stop reason every time.
+
+245
+00:15:23,810 --> 00:15:26,443
+Stream replies for a responsive interface.
+
+246
+00:15:26,793 --> 00:15:29,676
+Get validated JSON
+with structured outputs.
+
+247
+00:15:30,026 --> 00:15:31,771
+And handle refusals safely.
+
+248
+00:15:33,071 --> 00:15:35,383
+Every response tells you why it ended.
+
+249
+00:15:35,603 --> 00:15:38,937
+End turn means the model
+finished its answer naturally.
+
+250
+00:15:39,287 --> 00:15:44,010
+Max tokens means it hit your limit
+and was cut off, possibly mid-sentence.
+
+251
+00:15:44,360 --> 00:15:48,385
+Refusal means the model
+declined the request for safety reasons.
+
+252
+00:15:48,735 --> 00:15:53,426
+Stop sequence means it produced one
+of the custom stop strings you supplied.
+
+253
+00:15:53,776 --> 00:15:56,785
+Tool use means it wants
+to run one of your tools.
+
+254
+00:15:57,005 --> 00:15:59,815
+That's the heart of agents, in Module 5.
+
+255
+00:16:00,165 --> 00:16:05,041
+And pause turn means a long agentic
+turn paused, and you can continue it.
+
+256
+00:16:06,341 --> 00:16:11,700
+We ask the same question twice, once
+with a generous limit and once with only
+
+257
+00:16:11,700 --> 00:16:12,744
+fifteen tokens.
+
+258
+00:16:13,094 --> 00:16:14,711
+And we check the stop reason.
+
+259
+00:16:14,931 --> 00:16:20,545
+A cut-off reply looks like a normal
+string, so if you don't check, you'll silently
+
+260
+00:16:20,545 --> 00:16:24,927
+show users half an answer, or
+try to parse half a JSON document.
+
+261
+00:16:26,227 --> 00:16:28,511
+With a thousand tokens, end turn.
+
+262
+00:16:28,731 --> 00:16:34,670
+With fifteen, the stop reason is max
+tokens, and exactly fifteen output tokens were
+
+263
+00:16:34,670 --> 00:16:35,028
+used.
+
+264
+00:16:35,248 --> 00:16:37,251
+The model doesn't plan to fit the limit.
+
+265
+00:16:37,471 --> 00:16:38,640
+It's simply stopped.
+
+266
+00:16:38,990 --> 00:16:44,443
+So set max tokens high enough for the
+job, and treat max tokens as the stop reason
+
+267
+00:16:44,443 --> 00:16:45,773
+that needs handling.
+
+268
+00:16:45,993 --> 00:16:47,827
+Don't lowball it to save money.
+
+269
+00:16:48,047 --> 00:16:51,190
+A truncated answer
+usually costs you a retry.
+
+270
+00:16:52,490 --> 00:16:55,772
+Remember that models
+generate one token at a time.
+
+271
+00:16:55,992 --> 00:17:01,329
+Without streaming, your program waits
+for the entire reply, with nothing on screen.
+
+272
+00:17:01,679 --> 00:17:07,398
+With streaming, the API sends pieces as
+they're generated, so text appears almost
+
+273
+00:17:07,398 --> 00:17:08,246
+immediately.
+
+274
+00:17:08,466 --> 00:17:11,972
+The total time is the
+same, but it feels far faster.
+
+275
+00:17:12,192 --> 00:17:16,566
+Streaming also avoids request
+timeouts on very long replies.
+
+276
+00:17:17,866 --> 00:17:23,402
+Messages dot stream takes exactly the
+same arguments as create, and is used as a
+
+277
+00:17:23,402 --> 00:17:25,202
+context manager with with.
+
+278
+00:17:25,552 --> 00:17:28,866
+Text stream yields small
+pieces of text as they arrive.
+
+279
+00:17:29,086 --> 00:17:33,975
+We print each one immediately, with
+flush equals True so it isn't held in a buffer.
+
+280
+00:17:34,325 --> 00:17:39,691
+And when the stream ends, get final
+message gives you the complete message object,
+
+281
+00:17:39,691 --> 00:17:42,898
+with its stop reason
+and usage, just like create.
+
+282
+00:17:44,198 --> 00:17:50,024
+In the video the pieces arrive
+instantly, because the fake API is local, but the
+
+283
+00:17:50,024 --> 00:17:55,559
+code path is the real streaming code:
+server-sent events, parsed by the SDK.
+
+284
+00:17:56,859 --> 00:18:02,495
+Agents constantly need machine-readable
+output: a quiz, a plan, a tool decision.
+
+285
+00:18:02,715 --> 00:18:05,939
+Just asking for JSON
+in the prompt is fragile.
+
+286
+00:18:06,159 --> 00:18:10,204
+Extra words, wrong keys, or
+broken JSON can slip through.
+
+287
+00:18:10,554 --> 00:18:12,321
+Structured outputs fix this.
+
+288
+00:18:12,541 --> 00:18:18,621
+You pass a JSON schema, and the API
+constrains the reply to valid JSON for that
+
+289
+00:18:18,621 --> 00:18:19,160
+schema.
+
+290
+00:18:19,380 --> 00:18:25,605
+With a Pydantic class, the SDK builds
+the schema and parses the reply into a Python
+
+291
+00:18:25,605 --> 00:18:26,730
+object for you.
+
+292
+00:18:28,030 --> 00:18:33,664
+First, describe the shape with Pydantic
+classes: a question has text, four options,
+
+293
+00:18:33,664 --> 00:18:37,058
+the index of the right
+answer, and an explanation.
+
+294
+00:18:37,278 --> 00:18:40,093
+A quiz has a topic
+and a list of questions.
+
+295
+00:18:40,313 --> 00:18:43,296
+Pydantic gets a full lesson in Module 3.
+
+296
+00:18:43,516 --> 00:18:46,283
+For now, read these as typed dataclasses.
+
+297
+00:18:46,633 --> 00:18:52,060
+These Field constraints say exactly
+four options and an index from zero to three.
+
+298
+00:18:52,280 --> 00:18:57,756
+The API's schema support is limited, so
+the SDK moves those limits into the field
+
+299
+00:18:57,756 --> 00:19:02,150
+descriptions, and then checks
+them itself when the reply arrives.
+
+300
+00:19:02,500 --> 00:19:07,922
+Then call messages dot parse instead of
+create, with output format set to the class.
+
+301
+00:19:08,272 --> 00:19:13,763
+Parsed output is a real, validated Quiz
+object, so you use attributes instead of
+
+302
+00:19:13,763 --> 00:19:15,753
+digging through dictionaries.
+
+303
+00:19:17,053 --> 00:19:23,170
+The offline fake returns schema-valid
+placeholder questions, and they come back as a
+
+304
+00:19:23,170 --> 00:19:24,408
+real Quiz object.
+
+305
+00:19:24,628 --> 00:19:30,458
+If a reply doesn't fit the schema, the
+SDK raises a validation error instead of
+
+306
+00:19:30,458 --> 00:19:32,008
+handing you bad data.
+
+307
+00:19:33,308 --> 00:19:34,885
+Last case: refusals.
+
+308
+00:19:35,105 --> 00:19:40,711
+If the stop reason is refusal, the
+model declined the request for safety reasons,
+
+309
+00:19:40,711 --> 00:19:42,718
+and the content may be empty.
+
+310
+00:19:42,938 --> 00:19:45,824
+So check the stop reason
+before you read the text.
+
+311
+00:19:46,044 --> 00:19:51,671
+On current models, the API can also
+automatically re-run a declined request on
+
+312
+00:19:51,671 --> 00:19:54,700
+another model, a feature called fallbacks.
+
+313
+00:19:54,920 --> 00:19:58,729
+Our project turns it on, and
+you'll see the code in lesson six.
+
+314
+00:20:00,029 --> 00:20:00,837
+Quick check.
+
+315
+00:20:01,057 --> 00:20:05,924
+Your code parses the reply as
+JSON, and it fails on a long reply.
+
+316
+00:20:06,144 --> 00:20:07,503
+What should you check first?
+
+317
+00:20:13,203 --> 00:20:15,669
+Whether the stop reason is max tokens.
+
+318
+00:20:15,889 --> 00:20:18,927
+A cut-off reply ends
+in the middle of the JSON.
+
+319
+00:20:20,227 --> 00:20:23,595
+The stop reason tells you
+whether the reply is complete.
+
+320
+00:20:23,815 --> 00:20:24,791
+Always check it.
+
+321
+00:20:25,141 --> 00:20:26,969
+Stream for responsive output.
+
+322
+00:20:27,319 --> 00:20:31,944
+Use structured outputs, with
+messages dot parse, for validated JSON.
+
+323
+00:20:32,294 --> 00:20:35,217
+And handle refusals
+before reading the content.
+
+324
+00:20:35,567 --> 00:20:37,709
+Next lesson: production basics.
+
+325
+00:20:37,929 --> 00:20:42,102
+API keys, errors, rate limits,
+retries, and what it all costs.
+
+326
+00:20:43,410 --> 00:20:45,379
+A demo that works once is easy.
+
+327
+00:20:45,599 --> 00:20:50,925
+A program that keeps working when the
+network drops, when you hit a rate limit, or
+
+328
+00:20:50,925 --> 00:20:54,238
+when costs start to
+climb, takes deliberate design.
+
+329
+00:20:54,458 --> 00:20:59,233
+This lesson covers the production
+basics every AI application needs.
+
+330
+00:21:00,533 --> 00:21:05,160
+You'll recognise the API's error
+types, and know what to do about each one.
+
+331
+00:21:05,510 --> 00:21:07,244
+Catch errors in the right order.
+
+332
+00:21:07,594 --> 00:21:11,775
+Understand rate limits, and
+the SDK's automatic retries.
+
+333
+00:21:12,125 --> 00:21:15,201
+And calculate and
+control what each call costs.
+
+334
+00:21:16,501 --> 00:21:18,014
+Errors fall into groups.
+
+335
+00:21:18,234 --> 00:21:24,132
+A four hundred or four oh four means
+your request is wrong: a bad parameter, or a
+
+336
+00:21:24,132 --> 00:21:26,316
+model name that doesn't exist.
+
+337
+00:21:26,536 --> 00:21:27,856
+Retrying won't help.
+
+338
+00:21:28,076 --> 00:21:29,255
+Fix the request.
+
+339
+00:21:29,605 --> 00:21:34,498
+Four oh one and four oh three are
+about your key: missing, wrong, or without
+
+340
+00:21:34,498 --> 00:21:35,206
+permission.
+
+341
+00:21:35,426 --> 00:21:36,737
+Again, don't retry.
+
+342
+00:21:36,957 --> 00:21:37,969
+Fix the key.
+
+343
+00:21:38,319 --> 00:21:41,043
+Four twenty-nine means
+you've hit a rate limit.
+
+344
+00:21:41,263 --> 00:21:43,823
+Waiting and retrying is exactly right.
+
+345
+00:21:44,173 --> 00:21:49,734
+Five hundreds, including five
+twenty-nine for overloaded, are server-side problems
+
+346
+00:21:49,734 --> 00:21:51,429
+that are often temporary.
+
+347
+00:21:51,649 --> 00:21:53,480
+Retry after a short wait.
+
+348
+00:21:53,830 --> 00:21:58,736
+And connection errors and timeouts
+mean no proper response came back at all.
+
+349
+00:21:58,956 --> 00:22:00,796
+Those are also worth a retry.
+
+350
+00:22:01,146 --> 00:22:06,034
+The rule is simple: retry rate
+limits, server errors, and network problems.
+
+351
+00:22:06,254 --> 00:22:09,245
+Never blindly retry
+the other four hundreds.
+
+352
+00:22:10,545 --> 00:22:16,492
+For this demo only, we turn off
+automatic retries, so every error reaches our code.
+
+353
+00:22:16,842 --> 00:22:19,019
+The call goes inside a try block.
+
+354
+00:22:19,369 --> 00:22:24,445
+Then we catch specific exception
+classes, most specific first: an authentication
+
+355
+00:22:24,445 --> 00:22:26,413
+error, then a rate limit error.
+
+356
+00:22:26,763 --> 00:22:33,002
+API status error is the parent class of
+every HTTP error, so it catches anything we
+
+357
+00:22:33,002 --> 00:22:36,460
+haven't handled, and
+gives us the status code.
+
+358
+00:22:36,680 --> 00:22:41,819
+Connection errors aren't HTTP errors
+at all, so they have their own class.
+
+359
+00:22:42,039 --> 00:22:45,770
+If you catch the parent first,
+the specific handlers never run.
+
+360
+00:22:47,070 --> 00:22:52,563
+To demonstrate errors without breaking
+anything, the fake API reads an environment
+
+361
+00:22:52,563 --> 00:22:54,707
+variable telling it how to fail.
+
+362
+00:22:55,057 --> 00:22:58,200
+With no failure, a
+normal placeholder reply.
+
+363
+00:22:58,550 --> 00:23:01,437
+A four oh one becomes, check your API key.
+
+364
+00:23:01,787 --> 00:23:04,558
+A four twenty-nine becomes, rate limited.
+
+365
+00:23:04,908 --> 00:23:10,213
+And a five twenty-nine, an overloaded
+server, falls through to the general status
+
+366
+00:23:10,213 --> 00:23:10,737
+handler.
+
+367
+00:23:12,037 --> 00:23:17,240
+Every API account has rate limits: how
+many requests and tokens you may use per
+
+368
+00:23:17,240 --> 00:23:17,701
+minute.
+
+369
+00:23:17,921 --> 00:23:20,640
+When you exceed them,
+you get a four twenty-nine.
+
+370
+00:23:20,990 --> 00:23:24,909
+The standard response is to
+retry with exponential backoff.
+
+371
+00:23:25,259 --> 00:23:30,667
+Wait a short time, plus a little
+randomness so that many clients don't all retry at
+
+372
+00:23:30,667 --> 00:23:32,686
+the same moment, and try again.
+
+373
+00:23:33,036 --> 00:23:36,001
+If it fails again,
+wait roughly twice as long.
+
+374
+00:23:36,221 --> 00:23:40,578
+Good news: the Anthropic SDK
+already does all of this for you.
+
+375
+00:23:40,798 --> 00:23:46,597
+It retries rate limits, server errors,
+and connection errors twice by default, with
+
+376
+00:23:46,597 --> 00:23:50,928
+backoff, and it respects the
+retry after header the API sends.
+
+377
+00:23:52,228 --> 00:23:56,439
+You control this with max
+retries, on the client or per request.
+
+378
+00:23:56,659 --> 00:23:59,418
+Two is the default, and zero turns it off.
+
+379
+00:24:00,718 --> 00:24:05,411
+Here the fake API fails with a four
+twenty-nine and then a five hundred.
+
+380
+00:24:05,631 --> 00:24:12,103
+Setting ANTHROPIC LOG to info shows what
+the SDK does: it waits about half a second,
+
+381
+00:24:12,103 --> 00:24:16,650
+retries, waits about a
+second, retries again, and succeeds.
+
+382
+00:24:16,870 --> 00:24:19,208
+Our code didn't need a single extra line.
+
+383
+00:24:20,508 --> 00:24:22,479
+Set a timeout you're comfortable with.
+
+384
+00:24:22,699 --> 00:24:24,973
+The SDK default is ten minutes.
+
+385
+00:24:25,193 --> 00:24:27,757
+For long replies,
+stream instead of waiting.
+
+386
+00:24:28,107 --> 00:24:30,966
+When something fails, log the request ID.
+
+387
+00:24:31,186 --> 00:24:34,270
+It identifies exactly
+which request went wrong.
+
+388
+00:24:34,620 --> 00:24:39,741
+Use separate keys for separate apps and
+environments, so you can revoke one without
+
+389
+00:24:39,741 --> 00:24:40,974
+breaking the others.
+
+390
+00:24:41,324 --> 00:24:44,881
+And never send keys to the
+model, or print them in logs.
+
+391
+00:24:45,101 --> 00:24:47,911
+Logs are often far less
+protected than you think.
+
+392
+00:24:49,211 --> 00:24:50,062
+Now, money.
+
+393
+00:24:50,282 --> 00:24:55,727
+You pay per token, with separate prices
+for input and output, quoted per million
+
+394
+00:24:55,727 --> 00:24:56,204
+tokens.
+
+395
+00:24:56,554 --> 00:25:02,665
+Claude Opus 5.5, the most capable of the
+three and our default, costs four dollars
+
+396
+00:25:02,665 --> 00:25:07,361
+per million input tokens, and
+twenty per million output tokens.
+
+397
+00:25:07,711 --> 00:25:10,095
+Sonnet 5.5 costs half that.
+
+398
+00:25:10,445 --> 00:25:15,271
+And Haiku 5.5 is far
+cheaper, for simple, high-volume work.
+
+399
+00:25:15,621 --> 00:25:19,168
+These are list prices in October 2026.
+
+400
+00:25:19,388 --> 00:25:23,209
+Prices change, so always
+check the official pricing page.
+
+401
+00:25:23,429 --> 00:25:27,942
+And notice that output tokens
+cost five times more than input tokens.
+
+402
+00:25:29,242 --> 00:25:30,991
+Here's the cost calculation.
+
+403
+00:25:31,211 --> 00:25:33,177
+Prices are per million tokens.
+
+404
+00:25:33,527 --> 00:25:39,033
+Count tokens measures a request before
+you send it, so you can warn about, or block,
+
+405
+00:25:39,033 --> 00:25:42,245
+a request that would be
+too big or too expensive.
+
+406
+00:25:42,595 --> 00:25:45,880
+After the call, usage
+gives the actual tokens.
+
+407
+00:25:46,100 --> 00:25:49,729
+Multiply each by its
+price, and divide by a million.
+
+408
+00:25:50,079 --> 00:25:54,300
+And then the important habit:
+multiply by your expected traffic.
+
+409
+00:25:55,600 --> 00:25:57,419
+A fraction of a cent per call.
+
+410
+00:25:57,639 --> 00:26:02,308
+But the same call ten thousand
+times a day costs real money every day.
+
+411
+00:26:02,528 --> 00:26:06,239
+In offline mode these
+token counts are rough estimates.
+
+412
+00:26:06,459 --> 00:26:08,290
+With a real key, they're exact.
+
+413
+00:26:09,590 --> 00:26:11,475
+Five ways to control cost.
+
+414
+00:26:11,695 --> 00:26:16,500
+First, send less: trim history,
+and include only relevant documents.
+
+415
+00:26:16,850 --> 00:26:20,937
+Second, ask for concise
+answers, with a sensible max tokens.
+
+416
+00:26:21,287 --> 00:26:23,846
+Third, use lower effort for simple tasks.
+
+417
+00:26:24,196 --> 00:26:29,584
+Fourth, pick the smallest model that
+does the job well, measured on real examples,
+
+418
+00:26:29,584 --> 00:26:30,372
+not guessed.
+
+419
+00:26:30,722 --> 00:26:35,429
+And fifth, track spending in code,
+with a budget that stops runaway loops.
+
+420
+00:26:35,649 --> 00:26:37,602
+Our project does exactly this.
+
+421
+00:26:38,902 --> 00:26:39,710
+Quick check.
+
+422
+00:26:39,930 --> 00:26:42,159
+Which of these errors
+should your code retry?
+
+423
+00:26:47,859 --> 00:26:49,258
+The four twenty-nine.
+
+424
+00:26:49,478 --> 00:26:51,645
+A rate limit recovers after waiting.
+
+425
+00:26:51,865 --> 00:26:56,667
+The others fail the same way every
+time, until you fix the request or the key.
+
+426
+00:26:57,967 --> 00:27:02,099
+Four hundreds, except four
+twenty-nine, need a fix, not a retry.
+
+427
+00:27:02,449 --> 00:27:08,145
+Rate limits, server errors, and network
+errors are retried with backoff, and the SDK
+
+428
+00:27:08,145 --> 00:27:09,365
+does that for you.
+
+429
+00:27:09,715 --> 00:27:13,002
+Catch specific exception
+classes before the general one.
+
+430
+00:27:13,352 --> 00:27:17,473
+And cost is tokens times
+price, so count, track, and budget.
+
+431
+00:27:17,823 --> 00:27:20,358
+You now know everything the project needs.
+
+432
+00:27:20,578 --> 00:27:24,140
+Next lesson, we start
+building the AI Study Assistant.
+
+433
+00:27:25,437 --> 00:27:26,512
+Project time.
+
+434
+00:27:26,732 --> 00:27:32,176
+Over two lessons you'll build the AI
+Study Assistant: a command line tool that
+
+435
+00:27:32,176 --> 00:27:37,690
+explains programming concepts, writes
+quizzes as validated JSON, and chats with
+
+436
+00:27:37,690 --> 00:27:40,761
+memory, while
+tracking every cent it spends.
+
+437
+00:27:40,981 --> 00:27:43,358
+Everything from this module appears in it.
+
+438
+00:27:44,658 --> 00:27:49,454
+The explain command streams an
+explanation of any topic, at a beginner,
+
+439
+00:27:49,454 --> 00:27:51,616
+intermediate, or advanced level.
+
+440
+00:27:51,966 --> 00:27:57,671
+The quiz command generates
+multiple-choice questions as validated JSON, which you
+
+441
+00:27:57,671 --> 00:27:59,009
+can save and grade.
+
+442
+00:27:59,359 --> 00:28:04,073
+The chat command holds a conversation
+with history, trimmed to a token budget.
+
+443
+00:28:04,423 --> 00:28:09,654
+Every call reports its tokens and
+cost, and a budget stops runaway spending.
+
+444
+00:28:10,004 --> 00:28:15,617
+And it has clear errors, automatic
+retries, and an offline mode, so the tests never
+
+445
+00:28:15,617 --> 00:28:17,375
+need a key or the network.
+
+446
+00:28:18,675 --> 00:28:23,736
+The command line handles arguments and
+printing, and calls the assistant, which
+
+447
+00:28:23,736 --> 00:28:27,260
+holds the logic for
+explaining, quizzing, and chatting.
+
+448
+00:28:27,610 --> 00:28:32,433
+Prompts live in their own module, so you
+can improve them without touching the code.
+
+449
+00:28:32,653 --> 00:28:34,479
+And models holds the quiz schema.
+
+450
+00:28:34,829 --> 00:28:38,136
+Pricing calculates
+costs and enforces the budget.
+
+451
+00:28:38,486 --> 00:28:44,844
+And client builds the SDK client: a real
+one when your key is set, or the same SDK
+
+452
+00:28:44,844 --> 00:28:48,411
+pointed at the offline
+fake API when it isn't.
+
+453
+00:28:48,631 --> 00:28:51,580
+Nothing else in the
+program knows the difference.
+
+454
+00:28:52,880 --> 00:28:57,309
+Let's start with the piece that
+makes testing possible: the fake API.
+
+455
+00:28:57,659 --> 00:29:03,327
+It's a class whose objects can be
+called like a function, once per HTTP request.
+
+456
+00:29:03,547 --> 00:29:09,081
+A list of planned failures lets tests and
+demos make it return a four twenty-nine or
+
+457
+00:29:09,081 --> 00:29:10,794
+a five hundred on purpose.
+
+458
+00:29:11,144 --> 00:29:18,311
+Each call receives the real HTTP
+request the SDK built, and parses its JSON body.
+
+459
+00:29:18,531 --> 00:29:23,882
+It records the body, so tests can check
+exactly what was sent, and it answers token
+
+460
+00:29:23,882 --> 00:29:26,462
+counting requests with a rough estimate.
+
+461
+00:29:26,812 --> 00:29:32,986
+Then it prepares a placeholder reply,
+applies any planned failure or refusal, cuts
+
+462
+00:29:32,986 --> 00:29:39,010
+the reply at max tokens just like the
+real API, and returns either a normal JSON
+
+463
+00:29:39,010 --> 00:29:42,172
+message or a stream of server-sent events.
+
+464
+00:29:42,392 --> 00:29:48,077
+Because the responses have the same
+shape as the real API's, the SDK can't tell the
+
+465
+00:29:48,077 --> 00:29:48,830
+difference.
+
+466
+00:29:49,050 --> 00:29:52,689
+That means our tests
+exercise the real SDK code.
+
+467
+00:29:53,989 --> 00:29:56,525
+With a key, we create a normal client.
+
+468
+00:29:56,745 --> 00:30:01,785
+The SDK reads the key from the
+environment, so it never appears in our code.
+
+469
+00:30:02,005 --> 00:30:05,340
+We pass the retry count
+and a sixty-second timeout.
+
+470
+00:30:05,690 --> 00:30:12,034
+Without a key, we print a clear offline
+notice, and give the same SDK an HTTP client
+
+471
+00:30:12,034 --> 00:30:16,188
+whose transport is our
+fake API instead of the network.
+
+472
+00:30:17,488 --> 00:30:21,340
+Settings come from
+environment variables, as in Module 1.
+
+473
+00:30:21,560 --> 00:30:25,320
+If there's no key, we switch
+to offline mode automatically.
+
+474
+00:30:25,540 --> 00:30:31,011
+The model defaults to Claude Opus
+5.5, and the budget to fifty cents.
+
+475
+00:30:32,311 --> 00:30:37,820
+The price table holds dollars per
+million input and output tokens, for each model.
+
+476
+00:30:38,170 --> 00:30:41,475
+Cost u s d is the
+formula from lesson five.
+
+477
+00:30:41,695 --> 00:30:46,444
+An unknown model raises an error
+rather than silently costing zero.
+
+478
+00:30:46,794 --> 00:30:48,692
+The cost tracker adds up spending.
+
+479
+00:30:48,912 --> 00:30:54,520
+Its check method runs before every call,
+and raises budget exceeded once the budget
+
+480
+00:30:54,520 --> 00:30:55,264
+is used up.
+
+481
+00:30:55,484 --> 00:30:58,171
+That's your protection
+against a runaway loop.
+
+482
+00:30:58,521 --> 00:31:01,197
+And add records the
+cost of each finished call.
+
+483
+00:31:02,497 --> 00:31:07,863
+An Answer bundles everything we learn
+from a call: the text, the stop reason, the
+
+484
+00:31:07,863 --> 00:31:09,254
+tokens, and the cost.
+
+485
+00:31:09,474 --> 00:31:12,884
+Truncated is true when
+the reply hit max tokens.
+
+486
+00:31:13,234 --> 00:31:19,102
+Friendly errors is a context manager
+that catches SDK exceptions, most specific
+
+487
+00:31:19,102 --> 00:31:22,444
+first, and turns each
+into one clear message.
+
+488
+00:31:22,664 --> 00:31:27,240
+It's lesson five's error table,
+written once and reused by every call.
+
+489
+00:31:27,590 --> 00:31:28,740
+Next, fallbacks.
+
+490
+00:31:28,960 --> 00:31:33,861
+If the model declines a request,
+the API can re-run it on another model
+
+491
+00:31:33,861 --> 00:31:34,827
+automatically.
+
+492
+00:31:35,047 --> 00:31:36,937
+We opt in with this beta flag.
+
+493
+00:31:37,287 --> 00:31:43,035
+And base builds the arguments every
+request shares: the model, the beta flag, and
+
+494
+00:31:43,035 --> 00:31:48,570
+fallbacks set to default, so the API
+chooses a suitable fallback model for us.
+
+495
+00:31:48,920 --> 00:31:51,163
+Answer turns a response into an Answer.
+
+496
+00:31:51,383 --> 00:31:57,034
+It records the cost first, because even
+a declined request is billed, then checks
+
+497
+00:31:57,034 --> 00:32:00,593
+for a refusal, and only
+then joins the text blocks.
+
+498
+00:32:01,893 --> 00:32:07,318
+Explain checks the budget first, then
+fills in the request template from prompts dot
+
+499
+00:32:07,318 --> 00:32:07,512
+py.
+
+500
+00:32:07,862 --> 00:32:13,475
+It opens a stream, inside friendly
+errors, using the shared arguments, the tutor
+
+501
+00:32:13,475 --> 00:32:17,965
+system prompt, and low effort,
+which is plenty for explanations.
+
+502
+00:32:18,315 --> 00:32:23,946
+Each piece of text is passed to an on
+text callback as it arrives, so the assistant
+
+503
+00:32:23,946 --> 00:32:29,441
+doesn't know or care whether it's
+printed, shown in a web page, or collected by a
+
+504
+00:32:29,441 --> 00:32:29,781
+test.
+
+505
+00:32:30,001 --> 00:32:32,516
+Then the final message becomes an Answer.
+
+506
+00:32:33,816 --> 00:32:34,732
+Let's run it.
+
+507
+00:32:34,952 --> 00:32:40,253
+The offline notice comes first, then
+the streamed placeholder, then a footer with
+
+508
+00:32:40,253 --> 00:32:45,685
+the model, tokens, cost, and stop
+reason, and finally the session total against the
+
+509
+00:32:45,685 --> 00:32:46,143
+budget.
+
+510
+00:32:46,493 --> 00:32:51,818
+With a tiny max tokens, the reply is
+cut off, and the tool warns you instead of
+
+511
+00:32:51,818 --> 00:32:53,840
+pretending everything is fine.
+
+512
+00:32:54,190 --> 00:32:59,604
+And with a budget of zero, it refuses
+before sending anything, with a one-line
+
+513
+00:32:59,604 --> 00:33:00,437
+explanation.
+
+514
+00:33:01,737 --> 00:33:06,575
+A fake API that speaks the real
+protocol makes tests free and repeatable.
+
+515
+00:33:06,925 --> 00:33:11,025
+One function decides between
+the real and the offline client.
+
+516
+00:33:11,375 --> 00:33:15,484
+Every call is costed, and a
+budget check runs before each one.
+
+517
+00:33:15,834 --> 00:33:20,181
+Errors are mapped once, in one
+place, and fallbacks handle refusals.
+
+518
+00:33:20,531 --> 00:33:25,831
+In part two: quizzes as structured
+output, chat with history, the full demo, the
+
+519
+00:33:25,831 --> 00:33:27,619
+tests, and the module quiz.
+
+520
+00:33:28,936 --> 00:33:29,961
+Welcome back.
+
+521
+00:33:30,181 --> 00:33:31,540
+Explanations work.
+
+522
+00:33:31,760 --> 00:33:37,109
+Now we add quizzes as structured output,
+a chat mode with trimmed history, and the
+
+523
+00:33:37,109 --> 00:33:39,392
+command line that ties it together.
+
+524
+00:33:39,612 --> 00:33:43,806
+Then we'll run the full demo, look
+at the tests, and finish the module.
+
+525
+00:33:45,106 --> 00:33:50,804
+A question has its text, exactly four
+options, the index of the correct option, and
+
+526
+00:33:50,804 --> 00:33:53,070
+an explanation of why it's right.
+
+527
+00:33:53,420 --> 00:33:56,256
+A quiz is a topic
+plus a list of questions.
+
+528
+00:33:56,476 --> 00:34:00,612
+This one class becomes the
+JSON schema the model must follow.
+
+529
+00:34:01,912 --> 00:34:07,164
+Make quiz fills in the request: write N
+multiple-choice questions about a topic.
+
+530
+00:34:07,514 --> 00:34:12,783
+It calls parse with output format set
+to Quiz, so the reply is constrained to the
+
+531
+00:34:12,783 --> 00:34:13,239
+schema.
+
+532
+00:34:13,459 --> 00:34:19,158
+Quizzes need more care than
+explanations, so we use medium effort, and a generous
+
+533
+00:34:19,158 --> 00:34:19,932
+max tokens.
+
+534
+00:34:20,282 --> 00:34:26,065
+If the reply somehow doesn't fit the
+schema, for example three options instead of
+
+535
+00:34:26,065 --> 00:34:31,919
+four, the SDK's validation raises a
+pydantic validation error, and we turn it into
+
+536
+00:34:31,919 --> 00:34:33,204
+one clear message.
+
+537
+00:34:33,554 --> 00:34:39,431
+Finally, if the quiz was cut off by max
+tokens, we refuse to return a half-finished
+
+538
+00:34:39,431 --> 00:34:42,618
+quiz, and suggest
+asking for fewer questions.
+
+539
+00:34:43,918 --> 00:34:48,726
+For trimming, a quick local estimate
+is good enough: about four characters per
+
+540
+00:34:48,726 --> 00:34:49,095
+token.
+
+541
+00:34:49,315 --> 00:34:53,660
+When you need an exact number, use
+the token counting endpoint instead.
+
+542
+00:34:54,010 --> 00:34:57,958
+A chat session holds the
+history list and a token budget for it.
+
+543
+00:34:58,308 --> 00:35:03,570
+Trim drops the oldest user and
+assistant pair while the history is over budget,
+
+544
+00:35:03,570 --> 00:35:05,901
+exactly the rule from lesson three.
+
+545
+00:35:06,121 --> 00:35:08,817
+It always keeps at
+least the latest exchange.
+
+546
+00:35:09,167 --> 00:35:14,071
+Send appends the question, trims, and
+calls the model with the whole history.
+
+547
+00:35:14,291 --> 00:35:19,888
+If the call fails, it removes the
+unanswered question, so the history never ends up
+
+548
+00:35:19,888 --> 00:35:21,844
+with two user turns in a row.
+
+549
+00:35:22,064 --> 00:35:23,524
+Then the reply is stored.
+
+550
+00:35:24,824 --> 00:35:28,477
+For explain, the on text
+callback prints each piece immediately.
+
+551
+00:35:28,697 --> 00:35:33,812
+The footer with tokens and cost goes
+to standard error, so it never mixes into
+
+552
+00:35:33,812 --> 00:35:35,386
+output you save or pipe.
+
+553
+00:35:35,736 --> 00:35:40,911
+Quiz prints the questions with letters,
+optionally saves the JSON, and grades your
+
+554
+00:35:40,911 --> 00:35:42,489
+answers if you pass them.
+
+555
+00:35:42,839 --> 00:35:48,409
+Chat reads one message per line from
+standard input, so it works interactively, and
+
+556
+00:35:48,409 --> 00:35:50,556
+from a file for demos and tests.
+
+557
+00:35:50,906 --> 00:35:56,386
+And main builds the settings, the
+client, and the assistant, and turns any study
+
+558
+00:35:56,386 --> 00:36:01,455
+error into one clean line and exit
+code one, just like Module 1's toolkit.
+
+559
+00:36:02,755 --> 00:36:04,570
+A two-question quiz, graded.
+
+560
+00:36:04,790 --> 00:36:10,276
+These are the fake API's placeholder
+questions, but they went through exactly the
+
+561
+00:36:10,276 --> 00:36:14,407
+same structured output path:
+schema, parsing, and validation.
+
+562
+00:36:14,757 --> 00:36:16,976
+And a chat with two messages piped in.
+
+563
+00:36:17,196 --> 00:36:21,415
+Look at the second reply: the
+request carried two earlier messages.
+
+564
+00:36:21,635 --> 00:36:23,162
+That's our history at work.
+
+565
+00:36:23,512 --> 00:36:26,756
+The tokens command
+uses the counting endpoint.
+
+566
+00:36:26,976 --> 00:36:29,084
+Offline, it's labelled as an estimate.
+
+567
+00:36:30,384 --> 00:36:31,792
+Now the failure paths.
+
+568
+00:36:32,012 --> 00:36:37,608
+A single rate limit: the SDK retries
+automatically and the explanation still
+
+569
+00:36:37,608 --> 00:36:38,197
+arrives.
+
+570
+00:36:38,547 --> 00:36:43,838
+Three rate limits in a row exhausts
+the two retries, and we get one clear error
+
+571
+00:36:43,838 --> 00:36:45,312
+line, not a traceback.
+
+572
+00:36:45,662 --> 00:36:48,317
+And a refusal is reported plainly too.
+
+573
+00:36:49,617 --> 00:36:52,501
+The tests use the
+fake API as a test double.
+
+574
+00:36:52,721 --> 00:36:57,856
+This one checks that the explanation
+arrived in pieces, that the pieces add up to
+
+575
+00:36:57,856 --> 00:37:03,055
+the final text, and, by inspecting what
+the fake received, that the request really
+
+576
+00:37:03,055 --> 00:37:06,605
+was streamed, with
+fallbacks, and with the right prompt.
+
+577
+00:37:06,955 --> 00:37:10,313
+This test proves max
+tokens truncation is detected.
+
+578
+00:37:10,663 --> 00:37:16,317
+And these two test the SDK's real retry
+behaviour: two failures then success makes
+
+579
+00:37:16,317 --> 00:37:21,213
+three requests, and three rate
+limits in a row becomes our clean error.
+
+580
+00:37:22,513 --> 00:37:26,172
+Twenty-three tests, all
+passing, with no key and no network.
+
+581
+00:37:26,392 --> 00:37:31,815
+A conftest fixture also removes any real
+key from the environment during tests, so
+
+582
+00:37:31,815 --> 00:37:33,799
+they can never cost you money.
+
+583
+00:37:34,149 --> 00:37:39,254
+And mypy is happy with every type
+hint, including the SDK's own types.
+
+584
+00:37:40,554 --> 00:37:46,153
+If your key is rejected, check the
+environment variable: no stray quotes or spaces,
+
+585
+00:37:46,153 --> 00:37:48,986
+not revoked, and from the right workspace.
+
+586
+00:37:49,336 --> 00:37:54,464
+If you expected real answers but see
+offline mode, Python can't see the key.
+
+587
+00:37:54,684 --> 00:37:56,765
+Set it in the same terminal session.
+
+588
+00:37:57,115 --> 00:38:01,436
+Repeated rate limits mean you're
+sending too fast for your account's limits.
+
+589
+00:38:01,656 --> 00:38:03,883
+Slow down, or allow more retries.
+
+590
+00:38:04,233 --> 00:38:08,162
+And for cut-off answers,
+raise max tokens, or ask for less.
+
+591
+00:38:09,462 --> 00:38:14,441
+Language models predict tokens, and
+tokens drive cost, limits, and speed.
+
+592
+00:38:14,791 --> 00:38:19,555
+You called the API and read
+content blocks, stop reasons, and usage.
+
+593
+00:38:19,905 --> 00:38:23,464
+You managed stateless
+conversations, with trimmed history.
+
+594
+00:38:23,814 --> 00:38:27,561
+You streamed replies, and
+got validated structured output.
+
+595
+00:38:27,911 --> 00:38:33,487
+And you handled errors, retries,
+refusals, costs, and budgets, in a fully tested
+
+596
+00:38:33,487 --> 00:38:34,044
+project.
+
+597
+00:38:35,344 --> 00:38:37,173
+Module quiz, question one.
+
+598
+00:38:37,393 --> 00:38:40,292
+Why do output tokens
+matter so much for cost?
+
+599
+00:38:45,992 --> 00:38:49,507
+They usually cost several
+times more than input tokens.
+
+600
+00:38:49,727 --> 00:38:52,848
+Five times more, on Claude Opus 5.5.
+
+601
+00:38:54,148 --> 00:38:55,184
+Question two.
+
+602
+00:38:55,404 --> 00:38:58,146
+What does a stop
+reason of max tokens tell you?
+
+603
+00:39:03,846 --> 00:39:07,470
+The reply was cut off at
+your limit, and may be incomplete.
+
+604
+00:39:08,770 --> 00:39:09,832
+Question three.
+
+605
+00:39:10,052 --> 00:39:12,664
+A chat bot forgets
+everything said earlier.
+
+606
+00:39:12,884 --> 00:39:14,424
+What's the most likely bug?
+
+607
+00:39:20,124 --> 00:39:23,748
+The app isn't sending the
+earlier messages with each request.
+
+608
+00:39:23,968 --> 00:39:25,519
+The API is stateless.
+
+609
+00:39:26,819 --> 00:39:27,882
+Question four.
+
+610
+00:39:28,102 --> 00:39:30,680
+Which errors are worth
+retrying automatically?
+
+611
+00:39:36,380 --> 00:39:39,413
+Rate limits, server
+errors, and connection errors.
+
+612
+00:39:39,633 --> 00:39:42,489
+And the SDK already retries them for you.
+
+613
+00:39:43,789 --> 00:39:45,051
+And question five.
+
+614
+00:39:45,271 --> 00:39:48,737
+What does parse with output
+format equals Quiz give you?
+
+615
+00:39:54,437 --> 00:39:56,284
+A validated Quiz object.
+
+616
+00:39:56,504 --> 00:39:59,577
+The structure is
+guaranteed, but the facts are not.
+
+617
+00:39:59,797 --> 00:40:02,510
+A valid quiz can still
+contain a wrong answer.
+
+618
+00:40:03,810 --> 00:40:05,316
+Your extension challenge.
+
+619
+00:40:05,536 --> 00:40:09,769
+Pick one or more, and write a
+test for each, using the fake API.
+
+620
+00:40:10,119 --> 00:40:14,761
+Add a model option, and compare
+costs between Opus, Sonnet, and Haiku.
+
+621
+00:40:15,111 --> 00:40:18,141
+Show the exact token
+count before each chat turn.
+
+622
+00:40:18,491 --> 00:40:22,787
+Add an interactive quiz mode that
+shows the explanations at the end.
+
+623
+00:40:23,137 --> 00:40:29,021
+Or save chat history to a file and
+reload it next time, a first step towards Module
+
+624
+00:40:29,021 --> 00:40:29,163
+6.
+
+625
+00:40:30,463 --> 00:40:35,336
+These are the official
+documentation pages for everything in this module.
+
+626
+00:40:35,556 --> 00:40:38,945
+Links are in the description,
+along with the full source code.
+
+627
+00:40:43,045 --> 00:40:44,784
+That's Module 2 complete.
+
+628
+00:40:45,004 --> 00:40:50,700
+You can now call a language model from
+Python reliably, affordably, and testably.
+
+629
+00:40:50,920 --> 00:40:56,698
+In Module 3, you'll learn to write
+prompts that work consistently, validate every
+
+630
+00:40:56,698 --> 00:41:02,619
+output with Pydantic, version your
+prompts, and evaluate them, while building an AI
+
+631
+00:41:02,619 --> 00:41:03,760
+Resume Analyzer.
+
+632
+00:41:03,980 --> 00:41:04,843
+See you there.

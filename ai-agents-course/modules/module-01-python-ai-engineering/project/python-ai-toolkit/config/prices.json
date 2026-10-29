@@ -1,0 +1,5 @@
+{
+  "_note": "Example prices for fictional models, per 1 million tokens, in the currency named by TOOLKIT_CURRENCY. Not real provider prices.",
+  "model-small": {"input": 0.50, "output": 1.50},
+  "model-large": {"input": 3.00, "output": 15.00}
+}

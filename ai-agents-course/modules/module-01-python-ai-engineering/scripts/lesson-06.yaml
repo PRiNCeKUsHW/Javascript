@@ -1,0 +1,313 @@
+module_title: Python for AI Engineering
+title: "Project, Part 1: Plan, Data Model and Validation"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 1 · Lesson 6 · Project
+    title: "Build the Python AI Toolkit, part 1"
+    subtitle: Plan the tool, model the data, and validate every record.
+    loop: [Plan, Model, Validate, Report]
+    say: >
+      Time to build. Over the next two lessons, you'll write the Python AI Toolkit from an empty folder to a tested command line tool.
+      Every concept from this module appears somewhere in it. In this lesson we plan it, model the data, and validate it.
+
+  - type: bullets
+    chapter: What we are building
+    heading: "The brief: what the tool must do"
+    say: >
+      Every AI team needs to answer simple questions about their language model usage. How many requests failed? How many tokens did we use? Roughly what did it cost?
+      Here is what our tool must do.
+    items:
+      - {text: "Read a JSON log of model API calls", sub: "one record per request: model, tokens, latency, status, tags", say: "Read a JSON log of model API calls, with one record per request."}
+      - {text: "Validate every record and explain each problem", sub: "never crash on bad data", say: "Validate every record, and explain each problem precisely, without crashing on bad data."}
+      - {text: "Summarise: success rate, tokens, cost, latency, top tags", say: "Summarise the good records: success rate, tokens, estimated cost, latency, and the most common tags."}
+      - {text: "Write the report as Markdown or JSON", sub: "to the screen or to a file", say: "Write that report as Markdown for people, or JSON for other programs."}
+      - {text: "Download logs from URLs, concurrently", say: "Download logs from several URLs at the same time."}
+      - {text: "Configure with environment variables; test everything", say: "And take its settings from environment variables, with automated tests for all of it."}
+
+  - type: diagram
+    chapter: Architecture
+    heading: "Architecture: small modules, one job each"
+    nodes:
+      - {id: cli, label: cli.py, sub: commands & arguments, x: 864, y: 60, w: 340, h: 110, tone: amber, mono: true}
+      - {id: loader, label: loader.py, sub: read + validate, x: 160, y: 320, w: 280, h: 110, tone: blue, mono: true}
+      - {id: stats, label: stats.py, sub: summarize(), x: 512, y: 320, w: 280, h: 110, tone: teal, mono: true}
+      - {id: report, label: report.py, sub: Markdown / JSON, x: 864, y: 320, w: 280, h: 110, tone: teal, mono: true}
+      - {id: config, label: config.py, sub: env vars + prices, x: 1216, y: 320, w: 280, h: 110, tone: violet, mono: true}
+      - {id: fetch, label: fetch.py, sub: async downloads, x: 1568, y: 320, w: 280, h: 110, tone: violet, mono: true}
+      - {id: models, label: models.py, sub: UsageRecord, x: 160, y: 540, w: 280, h: 110, tone: blue, mono: true}
+      - {id: errors, label: errors.py, sub: "ToolkitError, raised anywhere", x: 864, y: 540, w: 420, h: 110, tone: coral, mono: true}
+    edges:
+      - {from: cli, to: loader}
+      - {from: loader, to: models}
+      - {from: cli, to: stats}
+      - {from: cli, to: report}
+      - {from: cli, to: config}
+      - {from: cli, to: fetch}
+    say: >
+      Before writing code, decide how to split it. Each file gets one job.
+    steps:
+      - show: [cli]
+        focus: [cli]
+        say: >
+          At the top, cli dot py reads the command line and calls everything else. It's the only part that knows about arguments and printing.
+      - show: [loader, models, "cli->loader", "loader->models"]
+        focus: [loader, models]
+        flow: ["cli->loader", "loader->models"]
+        say: >
+          The loader reads a file, and models turns each raw dictionary into a validated usage record.
+      - show: [stats, report, "cli->stats", "cli->report"]
+        focus: [stats, report]
+        flow: ["cli->stats", "cli->report"]
+        say: >
+          Stats calculates the summary, and report formats it. Calculating and formatting are separate, so each is easy to test.
+      - show: [config, fetch, "cli->config", "cli->fetch"]
+        focus: [config, fetch]
+        say: >
+          Config reads settings and prices, and fetch downloads logs over HTTP.
+      - show: [errors]
+        focus: [errors]
+        caption: "Every module raises ToolkitError, the CLI catches it once"
+        say: >
+          And errors defines our exception classes. Any module can raise a toolkit error, and the command line catches it in exactly one place.
+
+  - type: code
+    chapter: The data
+    heading: "The input: a JSON usage log"
+    title: data/usage_sample.json
+    lang: json
+    file: project/python-ai-toolkit/data/usage_sample.json
+    lines: "1-14"
+    say: >
+      Here's the input. A JSON list, with one object per model call.
+    steps:
+      - lines: "3-6"
+        say: >
+          Each record has an id, the model used, and the prompt and completion tokens.
+          Prompt tokens are what you sent, and completion tokens are what the model generated. Providers usually price them differently.
+      - lines: "7-13"
+        say: >
+          It also has the latency in milliseconds, a status of ok or error, a list of tags describing the task, and a timestamp in ISO 8601 format.
+          Elsewhere in this file, request four failed after thirty seconds, which looks like a timeout. Real logs contain exactly this kind of mess.
+
+  - type: code
+    chapter: Errors first
+    heading: Start with the errors
+    title: toolkit/errors.py
+    file: project/python-ai-toolkit/toolkit/errors.py
+    steps:
+      - lines: "1-2"
+        note: "One base class for every error we raise **on purpose**."
+        say: >
+          We start with the errors, because every other module uses them. Toolkit error is the base class for anything we raise on purpose.
+      - lines: "5-10"
+        note: "`ValidationError` remembers **which field** failed."
+        say: >
+          Validation error is a more specific kind. It calls the parent's init with a readable message, and also stores which field failed, so tests can check it.
+
+  - type: code
+    chapter: The data model
+    heading: "models.py: one record, validated"
+    title: toolkit/models.py
+    file: project/python-ai-toolkit/toolkit/models.py
+    lines: "1-41"
+    steps:
+      - lines: "7"
+        note: "A **set** of allowed values: fast membership checks."
+        say: >
+          Now the data model. Allowed status is a set, because we only ever ask, is this status in the set?
+      - lines: "10-13"
+        note: "Missing field → a clear `ValidationError`, never a `KeyError`."
+        say: >
+          Require is a small helper. It returns a field's value, or raises a validation error saying the field is required, instead of a confusing key error.
+      - lines: "16-22"
+        note: "`True` is an `int` in Python, so reject `bool` explicitly."
+        say: >
+          This helper checks for a non-negative integer. There's one subtle trap here. In Python, True and False are a kind of int, so we reject bools explicitly.
+      - lines: "25-36"
+        note: "`frozen=True`: a record can't be changed after it's created."
+        say: >
+          The record itself is a dataclass, with a type hint for every field. Frozen equals True makes it read-only, so nothing can quietly modify a record after validation.
+      - lines: "38-40"
+        note: "`@property`: computed, but used like an attribute: `record.total_tokens`."
+        say: >
+          Total tokens is a property. It's calculated from the other fields, but you use it like a normal attribute, without parentheses.
+
+  - type: code
+    heading: "from_dict: raw dictionary in, valid record out"
+    title: toolkit/models.py
+    file: project/python-ai-toolkit/toolkit/models.py
+    lines: "42-86"
+    steps:
+      - lines: "42-45"
+        note: "`@classmethod`: an alternative way to **create** the object."
+        say: >
+          From dict is a class method, an alternative constructor. It receives the class itself as cls, and builds a record from a raw dictionary.
+          First, it checks that the item is a dictionary at all.
+      - lines: "47-53"
+        say: >
+          Then each field gets checked. The id and the model must be non-empty strings.
+      - lines: "55-59"
+        say: >
+          Latency must be a non-negative number, either an int or a float, but again, not a bool.
+      - lines: "61-65"
+        say: >
+          The status must be in the allowed set. The message lists the valid options, which makes the error easy to fix.
+      - lines: "67-69"
+        note: "Tags are optional: `.get()` with a default."
+        say: >
+          Tags are optional, so we use get with an empty list as the default, and then check that it's a list of strings.
+      - lines: "71-75"
+        note: "`from None` hides the internal error, keeping only our clear message."
+        say: >
+          For the timestamp, datetime dot fromisoformat does the parsing. If it fails, we raise our own error, from None, so the user sees one clear message instead of two chained tracebacks.
+      - lines: "77-86"
+        say: >
+          Finally, we call cls with every validated value. If we get here, the record is guaranteed to be valid.
+
+  - type: terminal
+    repl: true
+    title: python — python-ai-toolkit
+    cwd: project/python-ai-toolkit
+    alias: .
+    say: >
+      Let's try the model in the interactive Python prompt, before any other code exists. Start it by typing python in the project folder.
+    steps:
+      - cmd: |
+          from toolkit.models import UsageRecord
+          row = {"id": "r1", "model": "model-small", "status": "ok"}
+          row.update(prompt_tokens=10, completion_tokens=5, latency_ms=90)
+          row["created_at"] = "2026-03-02T09:00:00"
+          UsageRecord.from_dict(row).total_tokens
+        say: >
+          We build a valid dictionary step by step. From dict gives us a record, and total tokens is fifteen.
+      - cmd: |
+          UsageRecord.from_dict({**row, "prompt_tokens": -1})
+        keep: "1,-1"
+        say: >
+          Now change one field to minus one. Our validation error names the field and the bad value.
+          Double star row copies the dictionary, and the new key overrides the old value.
+
+  - type: code
+    chapter: Loading files
+    heading: "loader.py: read the file, collect the problems"
+    title: toolkit/loader.py
+    file: project/python-ai-toolkit/toolkit/loader.py
+    steps:
+      - lines: "9-19"
+        note: "Two things can go wrong: no file, or invalid JSON. Both become a `ToolkitError`."
+        say: >
+          Read JSON handles the two ways reading can fail. The file might not exist, or it might not be valid JSON.
+          Both become a toolkit error with a clear message, including the line and column for bad JSON.
+      - lines: "22-26"
+        note: "Returns a **tuple**: the good records **and** the problems."
+        say: >
+          Load records returns a tuple of two lists: the valid records, and a message for every invalid one. The top level of the file must be a list.
+      - lines: "28-36"
+        note: "One bad record must not stop the others from loading."
+        say: >
+          Then we loop with enumerate, so we can report record numbers starting at one. Each record that fails validation is recorded as a problem, and the loop carries on.
+          One bad record never stops the good ones from loading.
+
+  - type: code
+    chapter: Configuration
+    heading: "config.py: settings from the environment"
+    title: toolkit/config.py
+    file: project/python-ai-toolkit/toolkit/config.py
+    steps:
+      - lines: "9-12"
+        say: >
+          Settings is a small frozen dataclass with the two things we can configure: the prices file, and the currency label.
+      - lines: "15-24"
+        note: "`setdefault`: a real environment variable always wins over `.env`."
+        say: >
+          Load dot env is our tiny dot env reader. It skips blank lines and comments, splits each line at the first equals sign, and uses set default,
+          so a variable that's already set in the real environment always wins over the file.
+      - lines: "27-33"
+        say: >
+          Load settings reads both variables, with sensible defaults.
+      - lines: "36-41"
+        note: "Keys starting with `_` (like `_note`) are comments, not models."
+        say: >
+          And load prices reads the prices file, skipping keys that start with an underscore, which we use for comments.
+          These are example prices for fictional models, per million tokens. They are not real provider prices.
+
+  - type: code
+    chapter: Statistics
+    heading: "stats.py: the summary"
+    title: toolkit/stats.py
+    file: project/python-ai-toolkit/toolkit/stats.py
+    lines: "1-45"
+    steps:
+      - lines: "6-7"
+        note: "A **type alias** gives a long type a short name."
+        say: >
+          Prices is a type alias, a short name for a long type hint.
+      - lines: "10-14"
+        say: >
+          Model stats holds running totals for one model, all starting at zero.
+      - lines: "17-36"
+        note: "`field(default_factory=...)`: fresh containers for every summary."
+        say: >
+          Summary holds every number in the report. Notice the default factories again, and two properties that calculate the total tokens and the success rate,
+          guarding against dividing by zero.
+      - lines: "39-45"
+        note: "Unknown model → `None`, not a crash."
+        say: >
+          Estimate cost multiplies prompt and completion tokens by their prices, and divides by a million. An unknown model returns None instead of crashing.
+
+  - type: code
+    heading: "summarize(): one pass over the records"
+    title: toolkit/stats.py
+    file: project/python-ai-toolkit/toolkit/stats.py
+    lines: "48-80"
+    steps:
+      - lines: "50-53"
+        note: "`Counter` counts things: perfect for tags."
+        say: >
+          Summarize prepares a dictionary of per-model stats, a counter for tags, a set of models with no price, and a running cost.
+      - lines: "55-65"
+        note: "`setdefault` creates the entry the first time a model appears."
+        say: >
+          One loop does all the counting. Set default creates a model's stats the first time we see it. Unpriced models are collected, not fatal, and the counter tallies every tag.
+      - lines: "67-80"
+        note: "Comprehensions and `sum()`, straight from lesson 2."
+        say: >
+          Finally, comprehensions and sum compute the totals, and most common gives the top three tags. Everything from lesson two, working together.
+
+  - type: terminal
+    chapter: First results
+    repl: true
+    title: python — python-ai-toolkit
+    cwd: project/python-ai-toolkit
+    say: >
+      The command line doesn't exist yet, but the pieces already work. Let's call them from the Python prompt.
+    steps:
+      - cmd: |
+          from pathlib import Path
+          from toolkit.loader import load_records
+          records, problems = load_records(Path("data/usage_broken.json"))
+          len(records), len(problems)
+          problems[0]
+        say: >
+          Loading the broken file gives one valid record and four problems, each with a precise message.
+      - cmd: |
+          from toolkit.config import load_prices
+          from toolkit.stats import summarize
+          prices = load_prices(Path("config/prices.json"))
+          s = summarize(load_records(Path("data/usage_sample.json"))[0], prices)
+          s.requests, s.ok, s.total_tokens, round(s.cost, 4)
+          s.top_tags
+        say: >
+          And summarising the clean sample gives ten requests, eight successful, eleven thousand and ninety-five tokens, the estimated cost, and the top three tags.
+
+  - type: recap
+    chapter: Recap
+    heading: Part 1 recap
+    items:
+      - {text: "Plan modules with one job each before writing code", say: "We planned small modules with one job each."}
+      - {text: "Validate at the edge: raw dict → `UsageRecord` or a clear error", say: "We validate data at the edge, turning raw dictionaries into trusted records or clear errors."}
+      - {text: "Collect problems instead of crashing on the first one", say: "We collect problems instead of crashing on the first one."}
+      - {text: "Keep calculation (`stats`) separate from formatting (`report`)", say: "And we keep calculating separate from formatting."}
+    outro: >
+      In part two, we write the report, the downloader, and the command line, then run the finished tool, test it, and wrap up the module.

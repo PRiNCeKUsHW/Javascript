@@ -1,0 +1,537 @@
+1
+00:00:00,700 --> 00:00:03,748
+Real AI projects are never a single file.
+
+2
+00:00:03,968 --> 00:00:09,989
+They read prompts and documents from
+disk, exchange JSON with APIs, and need secret
+
+3
+00:00:09,989 --> 00:00:13,252
+API keys that must
+never end up in your code.
+
+4
+00:00:13,472 --> 00:00:15,271
+This lesson covers all of that.
+
+5
+00:00:16,571 --> 00:00:21,097
+You will split code into modules
+and packages, and import between them.
+
+6
+00:00:21,447 --> 00:00:23,945
+Read and write files safely with pathlib.
+
+7
+00:00:24,295 --> 00:00:29,013
+Convert between JSON and Python
+objects, and handle invalid JSON.
+
+8
+00:00:29,363 --> 00:00:33,489
+And keep configuration and
+secrets in environment variables.
+
+9
+00:00:34,789 --> 00:00:37,195
+First, how Python code is organised.
+
+10
+00:00:37,545 --> 00:00:39,783
+A module is simply a Python file.
+
+11
+00:00:40,003 --> 00:00:45,708
+Anything defined in cleaning dot py,
+functions, classes, variables, can be imported
+
+12
+00:00:45,708 --> 00:00:46,396
+elsewhere.
+
+13
+00:00:46,746 --> 00:00:51,864
+A package is a folder of modules
+with a file called dunder init dot py.
+
+14
+00:00:52,084 --> 00:00:57,692
+That file runs when the package is
+imported, and it often re-exports the most useful
+
+15
+00:00:57,692 --> 00:00:58,093
+names.
+
+16
+00:00:58,443 --> 00:01:03,843
+Your program imports the package by
+name, exactly like it imports anything else.
+
+17
+00:01:04,193 --> 00:01:10,518
+And there are two other sources of
+modules: the standard library, which ships with
+
+18
+00:01:10,518 --> 00:01:16,842
+Python, like json, pathlib, and os, and
+third-party packages you install with pip,
+
+19
+00:01:16,842 --> 00:01:17,690
+like httpx.
+
+20
+00:01:18,990 --> 00:01:20,305
+Here is the module.
+
+21
+00:01:20,525 --> 00:01:26,167
+Normalize collapses runs of whitespace
+by splitting the text into words and joining
+
+22
+00:01:26,167 --> 00:01:28,139
+them back with single spaces.
+
+23
+00:01:28,489 --> 00:01:30,795
+And word count reuses normalize.
+
+24
+00:01:31,015 --> 00:01:33,308
+Small functions that build on each other.
+
+25
+00:01:34,608 --> 00:01:40,060
+The package's init file imports the two
+functions, so users can call them directly
+
+26
+00:01:40,060 --> 00:01:40,792
+on textkit.
+
+27
+00:01:41,142 --> 00:01:44,004
+And dunder all
+documents which names are public.
+
+28
+00:01:45,304 --> 00:01:46,635
+Two import styles.
+
+29
+00:01:46,855 --> 00:01:50,837
+Import textkit gives you the
+whole package, used with a prefix.
+
+30
+00:01:51,057 --> 00:01:55,446
+From textkit dot cleaning import
+word count brings in a single name.
+
+31
+00:01:55,796 --> 00:01:57,640
+The main function does the work.
+
+32
+00:01:57,990 --> 00:02:00,382
+This final check is a Python idiom.
+
+33
+00:02:00,602 --> 00:02:05,653
+Dunder name equals dunder main is
+true only when the file is run directly.
+
+34
+00:02:05,873 --> 00:02:09,867
+If another file imports it,
+main does not run automatically.
+
+35
+00:02:11,167 --> 00:02:14,464
+Running main gives the
+cleaned text and the word count.
+
+36
+00:02:14,814 --> 00:02:19,903
+And because textkit is a proper package,
+any other code in this folder can import it
+
+37
+00:02:19,903 --> 00:02:20,145
+too.
+
+38
+00:02:21,445 --> 00:02:26,285
+If you see module not found error for
+your own package, you are almost always
+
+39
+00:02:26,285 --> 00:02:28,611
+running Python from the wrong folder.
+
+40
+00:02:28,831 --> 00:02:32,697
+Python looks for imports starting
+in the folder of the script you run.
+
+41
+00:02:32,917 --> 00:02:37,052
+Run from the project root, and
+for packages, use python dash m.
+
+42
+00:02:38,352 --> 00:02:39,424
+Next, files.
+
+43
+00:02:39,644 --> 00:02:43,489
+Prompts, documents, logs,
+and reports all live in files.
+
+44
+00:02:43,709 --> 00:02:46,270
+The modern way to
+work with them is pathlib.
+
+45
+00:02:46,620 --> 00:02:49,194
+A Path object represents a file path.
+
+46
+00:02:49,414 --> 00:02:51,970
+Write text creates or overwrites the file.
+
+47
+00:02:52,190 --> 00:02:54,998
+Always pass encoding equals utf eight.
+
+48
+00:02:55,218 --> 00:03:00,545
+The default encoding is different on
+Windows, and AI text is full of characters
+
+49
+00:03:00,545 --> 00:03:02,028
+outside basic English.
+
+50
+00:03:02,378 --> 00:03:07,931
+Read text returns the whole file as one
+string, and splitlines turns it into a list
+
+51
+00:03:07,931 --> 00:03:08,533
+of lines.
+
+52
+00:03:08,883 --> 00:03:12,262
+For more control, open
+the file inside a with block.
+
+53
+00:03:12,482 --> 00:03:15,307
+The mode a means
+append, so we add to the end.
+
+54
+00:03:15,527 --> 00:03:20,183
+The with statement guarantees the
+file is closed, even if something fails.
+
+55
+00:03:20,533 --> 00:03:25,679
+Finally, number the lines, and ask the
+path a few questions: does it exist, what is
+
+56
+00:03:25,679 --> 00:03:27,973
+its suffix, and how many bytes is it.
+
+57
+00:03:29,273 --> 00:03:33,788
+Two lines written, a third
+appended, and the file is thirty-four bytes.
+
+58
+00:03:35,088 --> 00:03:40,090
+JSON is a text format for data,
+and it is everywhere in AI engineering.
+
+59
+00:03:40,310 --> 00:03:46,871
+Model APIs send and receive JSON, tool
+calls are described in JSON, and logs are
+
+60
+00:03:46,871 --> 00:03:47,773
+often JSON.
+
+61
+00:03:48,123 --> 00:03:50,429
+JSON looks very similar to Python.
+
+62
+00:03:50,649 --> 00:03:56,092
+Objects in curly braces, arrays in
+square brackets, strings, numbers, true, false,
+
+63
+00:03:56,092 --> 00:03:56,689
+and null.
+
+64
+00:03:57,039 --> 00:04:00,150
+Python's json module maps them directly.
+
+65
+00:04:00,370 --> 00:04:05,588
+Objects become dictionaries, arrays
+become lists, and true, false, and null become
+
+66
+00:04:05,588 --> 00:04:06,988
+True, False, and None.
+
+67
+00:04:07,208 --> 00:04:09,184
+But JSON is stricter than Python.
+
+68
+00:04:09,404 --> 00:04:13,333
+Strings need double quotes, and
+trailing commas are not allowed.
+
+69
+00:04:14,633 --> 00:04:17,503
+We start from an
+ordinary Python dictionary.
+
+70
+00:04:17,853 --> 00:04:23,057
+json dot dumps, with an s for
+string, converts Python into JSON text.
+
+71
+00:04:23,277 --> 00:04:25,033
+Indent two makes it readable.
+
+72
+00:04:25,253 --> 00:04:26,722
+Then we save it to a file.
+
+73
+00:04:27,072 --> 00:04:33,362
+json dot loads does the reverse, turning
+JSON text back into Python objects, so the
+
+74
+00:04:33,362 --> 00:04:35,711
+tokens are a real number again.
+
+75
+00:04:36,061 --> 00:04:39,619
+And invalid JSON
+raises a JSON decode error.
+
+76
+00:04:39,839 --> 00:04:41,313
+Here, a trailing comma.
+
+77
+00:04:41,533 --> 00:04:46,903
+Language models sometimes produce
+slightly broken JSON, so you will handle this
+
+78
+00:04:46,903 --> 00:04:47,719
+error a lot.
+
+79
+00:04:49,019 --> 00:04:54,450
+Notice true and null in the JSON text,
+the token count plus one, and the precise
+
+80
+00:04:54,450 --> 00:04:57,640
+error message, which
+even tells you the column.
+
+81
+00:04:58,940 --> 00:05:02,074
+Environment variables
+keep secrets out of your code.
+
+82
+00:05:02,294 --> 00:05:08,096
+An API key written in a source file ends
+up in git history, in screenshots, and in
+
+83
+00:05:08,096 --> 00:05:08,450
+logs.
+
+84
+00:05:08,800 --> 00:05:13,768
+They also let settings change without
+editing code, such as a different model on
+
+85
+00:05:13,768 --> 00:05:15,631
+your laptop and in production.
+
+86
+00:05:15,981 --> 00:05:21,357
+And every platform supports them:
+your terminal, Docker, cloud hosts, and CI
+
+87
+00:05:21,357 --> 00:05:22,064
+pipelines.
+
+88
+00:05:22,284 --> 00:05:25,235
+You'll use them all the way to Module 17.
+
+89
+00:05:26,535 --> 00:05:32,688
+The os module exposes environment
+variables as a dictionary-like object called
+
+90
+00:05:32,688 --> 00:05:33,319
+environ.
+
+91
+00:05:33,539 --> 00:05:37,930
+Get returns None if the variable
+isn't set, or a default you choose.
+
+92
+00:05:38,280 --> 00:05:43,434
+If the key is missing, say so clearly
+instead of failing later in a confusing way.
+
+93
+00:05:43,654 --> 00:05:45,529
+And never print the secret itself.
+
+94
+00:05:45,749 --> 00:05:48,647
+Printing its length is
+enough to confirm it loaded.
+
+95
+00:05:49,947 --> 00:05:55,026
+With nothing set, the script refuses
+to continue and uses the default model.
+
+96
+00:05:55,376 --> 00:06:00,844
+On macOS or Linux, you can set
+variables for a single command like this.
+
+97
+00:06:01,064 --> 00:06:03,341
+This is a fake key, just for the demo.
+
+98
+00:06:03,561 --> 00:06:09,385
+On Windows PowerShell, you'd first run
+dollar env, colon, DEMO API KEY, equals, and
+
+99
+00:06:09,385 --> 00:06:10,789
+the value in quotes.
+
+100
+00:06:12,089 --> 00:06:17,718
+Typing variables every time gets tedious,
+so projects keep them in a file called dot
+
+101
+00:06:17,718 --> 00:06:17,986
+env.
+
+102
+00:06:18,206 --> 00:06:23,597
+You commit a template called dot env dot
+example, with fake values, so others know
+
+103
+00:06:23,597 --> 00:06:24,386
+what to set.
+
+104
+00:06:24,736 --> 00:06:30,763
+The real dot env file holds your actual
+keys, and it is listed in dot gitignore, so
+
+105
+00:06:30,763 --> 00:06:32,288
+git never records it.
+
+106
+00:06:32,508 --> 00:06:37,637
+In the project, we'll write a tiny
+loader that reads dot env into the environment.
+
+107
+00:06:37,857 --> 00:06:40,603
+Real variables always win over the file.
+
+108
+00:06:41,903 --> 00:06:42,711
+Quick check.
+
+109
+00:06:42,931 --> 00:06:46,647
+Which call turns this JSON
+text into a Python dictionary?
+
+110
+00:06:52,347 --> 00:06:53,872
+json dot loads.
+
+111
+00:06:54,092 --> 00:06:55,564
+The s stands for string.
+
+112
+00:06:55,784 --> 00:07:01,174
+Dumps goes the other way, and load
+without an s reads from an open file object.
+
+113
+00:07:02,474 --> 00:07:07,232
+A module is a file, and a package
+is a folder with a dunder init file.
+
+114
+00:07:07,582 --> 00:07:11,133
+Use pathlib, and always
+set the encoding to utf eight.
+
+115
+00:07:11,483 --> 00:07:16,122
+Convert with json loads and
+dumps, and catch JSON decode errors.
+
+116
+00:07:16,472 --> 00:07:21,676
+Secrets live in environment variables,
+and only the example file is committed.
+
+117
+00:07:22,026 --> 00:07:28,826
+In the next lesson, you'll add type
+hints, talk to web APIs over HTTP, and see why
+
+118
+00:07:28,826 --> 00:07:31,065
+async makes AI apps faster.

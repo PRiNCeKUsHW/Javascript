@@ -1,0 +1,135 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .fx-layer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+    }
+    /* 3.3 s: ticker slide */
+    #fx-slide {
+      left: 0;
+      top: 380px;
+      width: 1080px;
+      height: 960px;
+      background: #13265c;
+      border-top: 18px solid #ff8a1f;
+      border-bottom: 18px solid #ff8a1f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Archivo Black", sans-serif;
+      font-size: 112px;
+      line-height: 1.02;
+      text-align: center;
+      color: #ffffff;
+    }
+    /* 13 s / 46 s: news swoosh bands */
+    .fx-band {
+      top: -100px;
+      width: 1700px;
+      height: 2120px;
+    }
+    /* 24 s: bar-chart grow */
+    .fx-bar {
+      top: 0;
+      width: 362px;
+      height: 1920px;
+    }
+    /* 36 s: ballot drop */
+    #fx-ballot {
+      left: -20px;
+      width: 1120px;
+      height: 1980px;
+    }
+    /* flashes */
+    .fx-flash {
+      width: 1080px;
+      height: 1920px;
+      background: #ffffff;
+    }
+  </style>
+  <div data-hf-id="hf-rk0t" id="root" data-composition-id="fx" data-width="1080" data-height="1920">
+    <div data-hf-id="hf-g3th" id="fx-slide" class="fx-layer">THE<br data-hf-id="hf-x5px" />OLD WAY</div>
+
+    <div data-hf-id="hf-7w7l" id="fx-sw1" class="fx-layer fx-band" style="background: #ff8a1f"></div>
+    <div data-hf-id="hf-5dnk" id="fx-sw2" class="fx-layer fx-band" style="background: #13b5a6"></div>
+    <div data-hf-id="hf-keri" id="fx-sw3" class="fx-layer fx-band" style="background: #e0218a"></div>
+
+    <div data-hf-id="hf-x4ow" id="fx-bar1" class="fx-layer fx-bar" style="left: 0; background: #ff8a1f"></div>
+    <div data-hf-id="hf-a91c" id="fx-bar2" class="fx-layer fx-bar" style="left: 359px; background: #13b5a6"></div>
+    <div data-hf-id="hf-qfw3" id="fx-bar3" class="fx-layer fx-bar" style="left: 718px; background: #e0218a"></div>
+
+    <svg data-hf-id="hf-oqgo" id="fx-ballot" class="fx-layer" viewBox="0 0 1120 1980" aria-hidden="true">
+      <rect data-hf-id="hf-rgyk" x="20" y="10" width="1080" height="1960" rx="40" fill="#ffffff" stroke="#b8c2ce" stroke-width="16" />
+      <rect data-hf-id="hf-ka54" x="20" y="10" width="1080" height="190" rx="40" fill="#13265c" />
+      <text data-hf-id="hf-bm13" x="560" y="140" text-anchor="middle" font-family="Archivo Black" font-size="96" fill="#ffffff">BALLOT</text>
+      <rect data-hf-id="hf-jcvv" x="170" y="700" width="260" height="260" rx="24" fill="none" stroke="#0e1b3d" stroke-width="22" />
+      <path data-hf-id="hf-cwcb" d="M200 830 L285 915 L460 700" fill="none" stroke="#ff8a1f" stroke-width="44" stroke-linecap="round" stroke-linejoin="round" />
+      <rect data-hf-id="hf-vzql" x="500" y="760" width="450" height="46" rx="23" fill="#b8c2ce" />
+      <rect data-hf-id="hf-hz54" x="500" y="860" width="320" height="46" rx="23" fill="#b8c2ce" />
+      <rect data-hf-id="hf-ij30" x="170" y="1160" width="260" height="260" rx="24" fill="none" stroke="#0e1b3d" stroke-width="22" />
+      <rect data-hf-id="hf-psm4" x="500" y="1220" width="450" height="46" rx="23" fill="#dfe5ec" />
+      <rect data-hf-id="hf-28hn" x="500" y="1320" width="320" height="46" rx="23" fill="#dfe5ec" />
+    </svg>
+
+    <div data-hf-id="hf-f2qp" id="fx-flash1" class="fx-layer fx-flash"></div>
+    <div data-hf-id="hf-j0uq" id="fx-flash2" class="fx-layer fx-flash"></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+
+    // 3.3 s ticker slide: a navy results panel crosses right to left over the cut
+    tl.set("#fx-slide", { opacity: 1 }, 2.9);
+    tl.fromTo("#fx-slide", { x: 1100 }, { x: 0, duration: 0.32, ease: "power3.out" }, 2.9);
+    tl.fromTo("#fx-slide", { x: 0 }, { x: -1100, duration: 0.3, ease: "power3.in", immediateRender: false }, 3.45);
+    tl.set("#fx-slide", { opacity: 0 }, 3.76);
+
+    // 13 s and 46 s: news swoosh, three team-colour bands
+    function swoosh(at, dir) {
+      ["#fx-sw1", "#fx-sw2", "#fx-sw3"].forEach((id, i) => {
+        const t0 = at - 0.36 + i * 0.07;
+        tl.set(id, { opacity: 1 }, t0);
+        tl.fromTo(
+          id,
+          { x: dir > 0 ? -1850 : 1230, skewX: -22 * dir },
+          { x: dir > 0 ? 1230 : -1850, skewX: -22 * dir, duration: 0.62, ease: "power2.inOut", immediateRender: false },
+          t0,
+        );
+        tl.set(id, { opacity: 0 }, t0 + 0.63);
+      });
+    }
+    swoosh(13, 1);
+    swoosh(46, -1);
+
+    // 24 s: bar-chart grow wipe
+    ["#fx-bar1", "#fx-bar2", "#fx-bar3"].forEach((id, i) => {
+      tl.set(id, { opacity: 1 }, 23.62 + i * 0.06);
+      tl.fromTo(id, { scaleY: 0, transformOrigin: "50% 100%" },
+        { scaleY: 1, transformOrigin: "50% 100%", duration: 0.26, ease: "power3.out", immediateRender: false }, 23.62 + i * 0.06);
+      tl.fromTo(id, { scaleY: 1, transformOrigin: "50% 0%" },
+        { scaleY: 0, transformOrigin: "50% 0%", duration: 0.28, ease: "power3.in", immediateRender: false }, 24.02 + i * 0.05);
+      tl.set(id, { opacity: 0 }, 24.36 + i * 0.05);
+    });
+
+    // 36 s: a giant ballot drops through the frame
+    tl.set("#fx-ballot", { opacity: 1 }, 35.6);
+    tl.fromTo("#fx-ballot", { y: -2000 }, { y: -30, duration: 0.36, ease: "power2.in" }, 35.6);
+    tl.fromTo("#fx-ballot", { y: -30 }, { y: 2000, duration: 0.4, ease: "power2.in", immediateRender: false }, 36.04);
+    tl.set("#fx-ballot", { opacity: 0 }, 36.45);
+
+    // camera flashes: the winner (27 s) and the outro cut (54.4 s)
+    tl.fromTo("#fx-flash1", { opacity: 0 }, { opacity: 0.92, duration: 0.05, ease: "none" }, 26.97);
+    tl.to("#fx-flash1", { opacity: 0, duration: 0.4, ease: "power2.out" }, 27.02);
+    tl.fromTo("#fx-flash2", { opacity: 0 }, { opacity: 1, duration: 0.06, ease: "none" }, 54.34);
+    tl.to("#fx-flash2", { opacity: 0, duration: 0.5, ease: "power2.out" }, 54.42);
+
+    window.__timelines["fx"] = tl;
+  </script>
+</template>
