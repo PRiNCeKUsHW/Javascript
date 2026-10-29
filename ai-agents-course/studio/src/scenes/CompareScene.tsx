@@ -58,8 +58,10 @@ export const CompareScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
   const st = current >= 0 ? steps[current] : undefined;
   const width = (CONTENT_W - 48) / 2;
   const height = SAFE.bottom - SAFE.top - (s.heading ? 120 : 0);
-  const la = frame >= firstShow("left") ? appear(frame, firstShow("left"), 22) : 0;
-  const ra = frame >= firstShow("right") ? appear(frame, firstShow("right"), 22) : 0;
+  // both panels are visible (dimmed) from the start, so the intro narration never plays over an empty screen
+  const preview = 0.3 * appear(frame, 8, 22);
+  const la = Math.max(preview, frame >= firstShow("left") ? appear(frame, firstShow("left"), 22) : 0);
+  const ra = Math.max(preview, frame >= firstShow("right") ? appear(frame, firstShow("right"), 22) : 0);
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column" }}>
       <Heading text={s.heading} eyebrow={s.eyebrow} size={52} />
