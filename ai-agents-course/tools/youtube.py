@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-REPO = "https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course"
+REPO = "https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course"
 
 MODULES = {
     1: {

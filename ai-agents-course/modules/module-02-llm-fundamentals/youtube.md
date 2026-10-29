@@ -2,7 +2,7 @@
 
 Thumbnail: `assets/thumbnail-module-02.png` (1280×720). Captions: `captions/lesson-NN.srt`, `captions/module-02-full.srt`.
 
-Source-code links point at `https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course`; adjust the branch if the course is not merged into `main`.
+Source-code links point at `https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course`; adjust the branch if the course is not merged into `main`.
 
 ## Full module video (`renders/module-01-full.mp4`)
 
@@ -21,7 +21,7 @@ Prerequisites: Module 1 (Python for AI Engineering) or equivalent Python. An Ant
 
 Every lesson explains the concept, shows real code with real output, covers common errors, and ends with a quick check. The module closes with a recap, a 5-question quiz and an extension challenge.
 
-Source code + README: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code + README: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 
 Chapters
 00:00 L1 How LLMs Work: Tokens, Context Windows and Generation
@@ -100,7 +100,7 @@ Official docs: docs.python.org/3/tutorial · www.python-httpx.org · docs.pytest
 ```text
 Lesson 1 of Module 2 (LLM Fundamentals and API Integration) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 
 00:00 Introduction
 00:40 Next-token prediction
@@ -121,7 +121,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 2 of Module 2 (LLM Fundamentals and API Integration) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 
 00:00 Introduction
 00:33 API keys
@@ -142,7 +142,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 3 of Module 2 (LLM Fundamentals and API Integration) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 
 00:00 Introduction
 00:31 A stateless API
@@ -162,7 +162,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 4 of Module 2 (LLM Fundamentals and API Integration) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 
 00:00 Introduction
 00:31 Stop reasons
@@ -183,7 +183,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 5 of Module 2 (LLM Fundamentals and API Integration) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 
 00:00 Introduction
 00:33 Error types
@@ -203,7 +203,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 6 of Module 2 (LLM Fundamentals and API Integration) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 
 00:00 Introduction
 00:19 What we are building
@@ -225,7 +225,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 7 of Module 2 (LLM Fundamentals and API Integration) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
 
 00:00 Introduction
 00:16 Quizzes as structured output

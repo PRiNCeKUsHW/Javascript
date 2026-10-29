@@ -2,7 +2,7 @@
 
 Thumbnail: `assets/thumbnail-module-01.png` (1280×720). Captions: `captions/lesson-NN.srt`, `captions/module-01-full.srt`.
 
-Source-code links point at `https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course`; adjust the branch if the course is not merged into `main`.
+Source-code links point at `https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course`; adjust the branch if the course is not merged into `main`.
 
 ## Full module video (`renders/module-01-full.mp4`)
 
@@ -21,7 +21,7 @@ Prerequisites: No AI experience needed. Any programming experience helps, but ev
 
 Every lesson explains the concept, shows real code with real output, covers common errors, and ends with a quick check. The module closes with a recap, a 5-question quiz and an extension challenge.
 
-Source code + README: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code + README: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 
 Chapters
 00:00 L1 Welcome, the Agent Loop, and Your Python Setup
@@ -107,7 +107,7 @@ Official docs: docs.python.org/3/tutorial · www.python-httpx.org · docs.pytest
 ```text
 Lesson 1 of Module 1 (Python for AI Engineering) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 
 00:00 Welcome
 00:25 What is an AI agent?
@@ -130,7 +130,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 2 of Module 1 (Python for AI Engineering) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 
 00:00 Introduction
 00:41 Variables and types
@@ -152,7 +152,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 3 of Module 1 (Python for AI Engineering) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 
 00:00 Introduction
 00:41 Functions
@@ -175,7 +175,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 4 of Module 1 (Python for AI Engineering) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 
 00:00 Introduction
 00:34 Modules and packages
@@ -195,7 +195,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 5 of Module 1 (Python for AI Engineering) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 
 00:00 Introduction
 00:40 Type hints
@@ -215,7 +215,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 6 of Module 1 (Python for AI Engineering) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 
 00:00 Introduction
 00:17 What we are building
@@ -239,7 +239,7 @@ Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-cours
 ```text
 Lesson 7 of Module 1 (Python for AI Engineering) in "AI Agents with Python: Beginner to Production (2026)".
 
-Source code: https://github.com/PRiNCeKUsHW/Javascript/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
+Source code: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-01-python-ai-engineering
 
 00:00 Introduction
 00:15 Writing reports
