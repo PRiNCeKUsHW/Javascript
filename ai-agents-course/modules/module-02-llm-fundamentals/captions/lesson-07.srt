@@ -1,0 +1,522 @@
+1
+00:00:00,700 --> 00:00:01,725
+Welcome back.
+
+2
+00:00:01,945 --> 00:00:03,304
+Explanations work.
+
+3
+00:00:03,524 --> 00:00:08,873
+Now we add quizzes as structured output,
+a chat mode with trimmed history, and the
+
+4
+00:00:08,873 --> 00:00:11,156
+command line that ties it together.
+
+5
+00:00:11,376 --> 00:00:15,570
+Then we'll run the full demo, look
+at the tests, and finish the module.
+
+6
+00:00:16,870 --> 00:00:22,568
+A question has its text, exactly four
+options, the index of the correct option, and
+
+7
+00:00:22,568 --> 00:00:24,834
+an explanation of why it's right.
+
+8
+00:00:25,184 --> 00:00:28,020
+A quiz is a topic
+plus a list of questions.
+
+9
+00:00:28,240 --> 00:00:32,376
+This one class becomes the
+JSON schema the model must follow.
+
+10
+00:00:33,676 --> 00:00:38,928
+Make quiz fills in the request: write N
+multiple-choice questions about a topic.
+
+11
+00:00:39,278 --> 00:00:44,547
+It calls parse with output format set
+to Quiz, so the reply is constrained to the
+
+12
+00:00:44,547 --> 00:00:45,003
+schema.
+
+13
+00:00:45,223 --> 00:00:50,922
+Quizzes need more care than
+explanations, so we use medium effort, and a generous
+
+14
+00:00:50,922 --> 00:00:51,696
+max tokens.
+
+15
+00:00:52,046 --> 00:00:57,829
+If the reply somehow doesn't fit the
+schema, for example three options instead of
+
+16
+00:00:57,829 --> 00:01:03,683
+four, the SDK's validation raises a
+pydantic validation error, and we turn it into
+
+17
+00:01:03,683 --> 00:01:04,968
+one clear message.
+
+18
+00:01:05,318 --> 00:01:11,195
+Finally, if the quiz was cut off by max
+tokens, we refuse to return a half-finished
+
+19
+00:01:11,195 --> 00:01:14,382
+quiz, and suggest
+asking for fewer questions.
+
+20
+00:01:15,682 --> 00:01:20,490
+For trimming, a quick local estimate
+is good enough: about four characters per
+
+21
+00:01:20,490 --> 00:01:20,859
+token.
+
+22
+00:01:21,079 --> 00:01:25,424
+When you need an exact number, use
+the token counting endpoint instead.
+
+23
+00:01:25,774 --> 00:01:29,722
+A chat session holds the
+history list and a token budget for it.
+
+24
+00:01:30,072 --> 00:01:35,334
+Trim drops the oldest user and
+assistant pair while the history is over budget,
+
+25
+00:01:35,334 --> 00:01:37,665
+exactly the rule from lesson three.
+
+26
+00:01:37,885 --> 00:01:40,581
+It always keeps at
+least the latest exchange.
+
+27
+00:01:40,931 --> 00:01:45,835
+Send appends the question, trims, and
+calls the model with the whole history.
+
+28
+00:01:46,055 --> 00:01:51,652
+If the call fails, it removes the
+unanswered question, so the history never ends up
+
+29
+00:01:51,652 --> 00:01:53,608
+with two user turns in a row.
+
+30
+00:01:53,828 --> 00:01:55,288
+Then the reply is stored.
+
+31
+00:01:56,588 --> 00:02:00,241
+For explain, the on text
+callback prints each piece immediately.
+
+32
+00:02:00,461 --> 00:02:05,576
+The footer with tokens and cost goes
+to standard error, so it never mixes into
+
+33
+00:02:05,576 --> 00:02:07,150
+output you save or pipe.
+
+34
+00:02:07,500 --> 00:02:12,675
+Quiz prints the questions with letters,
+optionally saves the JSON, and grades your
+
+35
+00:02:12,675 --> 00:02:14,253
+answers if you pass them.
+
+36
+00:02:14,603 --> 00:02:20,173
+Chat reads one message per line from
+standard input, so it works interactively, and
+
+37
+00:02:20,173 --> 00:02:22,320
+from a file for demos and tests.
+
+38
+00:02:22,670 --> 00:02:28,150
+And main builds the settings, the
+client, and the assistant, and turns any study
+
+39
+00:02:28,150 --> 00:02:33,219
+error into one clean line and exit
+code one, just like Module 1's toolkit.
+
+40
+00:02:34,519 --> 00:02:36,334
+A two-question quiz, graded.
+
+41
+00:02:36,554 --> 00:02:42,040
+These are the fake API's placeholder
+questions, but they went through exactly the
+
+42
+00:02:42,040 --> 00:02:46,171
+same structured output path:
+schema, parsing, and validation.
+
+43
+00:02:46,521 --> 00:02:48,740
+And a chat with two messages piped in.
+
+44
+00:02:48,960 --> 00:02:53,179
+Look at the second reply: the
+request carried two earlier messages.
+
+45
+00:02:53,399 --> 00:02:54,926
+That's our history at work.
+
+46
+00:02:55,276 --> 00:02:58,520
+The tokens command
+uses the counting endpoint.
+
+47
+00:02:58,740 --> 00:03:00,848
+Offline, it's labelled as an estimate.
+
+48
+00:03:02,148 --> 00:03:03,556
+Now the failure paths.
+
+49
+00:03:03,776 --> 00:03:09,372
+A single rate limit: the SDK retries
+automatically and the explanation still
+
+50
+00:03:09,372 --> 00:03:09,961
+arrives.
+
+51
+00:03:10,311 --> 00:03:15,602
+Three rate limits in a row exhausts
+the two retries, and we get one clear error
+
+52
+00:03:15,602 --> 00:03:17,076
+line, not a traceback.
+
+53
+00:03:17,426 --> 00:03:20,081
+And a refusal is reported plainly too.
+
+54
+00:03:21,381 --> 00:03:24,265
+The tests use the
+fake API as a test double.
+
+55
+00:03:24,485 --> 00:03:29,620
+This one checks that the explanation
+arrived in pieces, that the pieces add up to
+
+56
+00:03:29,620 --> 00:03:34,819
+the final text, and, by inspecting what
+the fake received, that the request really
+
+57
+00:03:34,819 --> 00:03:38,369
+was streamed, with
+fallbacks, and with the right prompt.
+
+58
+00:03:38,719 --> 00:03:42,077
+This test proves max
+tokens truncation is detected.
+
+59
+00:03:42,427 --> 00:03:48,081
+And these two test the SDK's real retry
+behaviour: two failures then success makes
+
+60
+00:03:48,081 --> 00:03:52,977
+three requests, and three rate
+limits in a row becomes our clean error.
+
+61
+00:03:54,277 --> 00:03:57,936
+Twenty-three tests, all
+passing, with no key and no network.
+
+62
+00:03:58,156 --> 00:04:03,579
+A conftest fixture also removes any real
+key from the environment during tests, so
+
+63
+00:04:03,579 --> 00:04:05,563
+they can never cost you money.
+
+64
+00:04:05,913 --> 00:04:11,018
+And mypy is happy with every type
+hint, including the SDK's own types.
+
+65
+00:04:12,318 --> 00:04:17,917
+If your key is rejected, check the
+environment variable: no stray quotes or spaces,
+
+66
+00:04:17,917 --> 00:04:20,750
+not revoked, and from the right workspace.
+
+67
+00:04:21,100 --> 00:04:26,228
+If you expected real answers but see
+offline mode, Python can't see the key.
+
+68
+00:04:26,448 --> 00:04:28,529
+Set it in the same terminal session.
+
+69
+00:04:28,879 --> 00:04:33,200
+Repeated rate limits mean you're
+sending too fast for your account's limits.
+
+70
+00:04:33,420 --> 00:04:35,647
+Slow down, or allow more retries.
+
+71
+00:04:35,997 --> 00:04:39,926
+And for cut-off answers,
+raise max tokens, or ask for less.
+
+72
+00:04:41,226 --> 00:04:46,205
+Language models predict tokens, and
+tokens drive cost, limits, and speed.
+
+73
+00:04:46,555 --> 00:04:51,319
+You called the API and read
+content blocks, stop reasons, and usage.
+
+74
+00:04:51,669 --> 00:04:55,228
+You managed stateless
+conversations, with trimmed history.
+
+75
+00:04:55,578 --> 00:04:59,325
+You streamed replies, and
+got validated structured output.
+
+76
+00:04:59,675 --> 00:05:05,251
+And you handled errors, retries,
+refusals, costs, and budgets, in a fully tested
+
+77
+00:05:05,251 --> 00:05:05,808
+project.
+
+78
+00:05:07,108 --> 00:05:08,937
+Module quiz, question one.
+
+79
+00:05:09,157 --> 00:05:12,056
+Why do output tokens
+matter so much for cost?
+
+80
+00:05:17,756 --> 00:05:21,271
+They usually cost several
+times more than input tokens.
+
+81
+00:05:21,491 --> 00:05:24,612
+Five times more, on Claude Opus 5.5.
+
+82
+00:05:25,912 --> 00:05:26,948
+Question two.
+
+83
+00:05:27,168 --> 00:05:29,910
+What does a stop
+reason of max tokens tell you?
+
+84
+00:05:35,610 --> 00:05:39,234
+The reply was cut off at
+your limit, and may be incomplete.
+
+85
+00:05:40,534 --> 00:05:41,596
+Question three.
+
+86
+00:05:41,816 --> 00:05:44,428
+A chat bot forgets
+everything said earlier.
+
+87
+00:05:44,648 --> 00:05:46,188
+What's the most likely bug?
+
+88
+00:05:51,888 --> 00:05:55,512
+The app isn't sending the
+earlier messages with each request.
+
+89
+00:05:55,732 --> 00:05:57,283
+The API is stateless.
+
+90
+00:05:58,583 --> 00:05:59,646
+Question four.
+
+91
+00:05:59,866 --> 00:06:02,444
+Which errors are worth
+retrying automatically?
+
+92
+00:06:08,144 --> 00:06:11,177
+Rate limits, server
+errors, and connection errors.
+
+93
+00:06:11,397 --> 00:06:14,253
+And the SDK already retries them for you.
+
+94
+00:06:15,553 --> 00:06:16,815
+And question five.
+
+95
+00:06:17,035 --> 00:06:20,501
+What does parse with output
+format equals Quiz give you?
+
+96
+00:06:26,201 --> 00:06:28,048
+A validated Quiz object.
+
+97
+00:06:28,268 --> 00:06:31,341
+The structure is
+guaranteed, but the facts are not.
+
+98
+00:06:31,561 --> 00:06:34,274
+A valid quiz can still
+contain a wrong answer.
+
+99
+00:06:35,574 --> 00:06:37,080
+Your extension challenge.
+
+100
+00:06:37,300 --> 00:06:41,533
+Pick one or more, and write a
+test for each, using the fake API.
+
+101
+00:06:41,883 --> 00:06:46,525
+Add a model option, and compare
+costs between Opus, Sonnet, and Haiku.
+
+102
+00:06:46,875 --> 00:06:49,905
+Show the exact token
+count before each chat turn.
+
+103
+00:06:50,255 --> 00:06:54,551
+Add an interactive quiz mode that
+shows the explanations at the end.
+
+104
+00:06:54,901 --> 00:07:00,785
+Or save chat history to a file and
+reload it next time, a first step towards Module
+
+105
+00:07:00,785 --> 00:07:00,927
+6.
+
+106
+00:07:02,227 --> 00:07:07,100
+These are the official
+documentation pages for everything in this module.
+
+107
+00:07:07,320 --> 00:07:10,709
+Links are in the description,
+along with the full source code.
+
+108
+00:07:14,809 --> 00:07:16,548
+That's Module 2 complete.
+
+109
+00:07:16,768 --> 00:07:22,464
+You can now call a language model from
+Python reliably, affordably, and testably.
+
+110
+00:07:22,684 --> 00:07:28,462
+In Module 3, you'll learn to write
+prompts that work consistently, validate every
+
+111
+00:07:28,462 --> 00:07:34,383
+output with Pydantic, version your
+prompts, and evaluate them, while building an AI
+
+112
+00:07:34,383 --> 00:07:35,524
+Resume Analyzer.
+
+113
+00:07:35,744 --> 00:07:36,607
+See you there.
