@@ -30,6 +30,8 @@ from pygments.token import Comment, Keyword, Name, Number, Operator, String, Tok
 
 ROOT = Path(__file__).resolve().parent.parent
 STUDIO = ROOT / "studio"
+VENV_BIN = ROOT / ".venv" / ("Scripts" if os.name == "nt" else "bin")  # Windows venvs use Scripts/
+VENV_PY = VENV_BIN / ("python.exe" if os.name == "nt" else "python")
 TTS_CACHE = ROOT / "shared/tts_cache"
 KOKORO = Path(os.environ.get("KOKORO_DIR", Path.home() / ".cache/hyperframes/tts"))  # models/ + voices/
 SR = 24000
@@ -163,11 +165,32 @@ def load_code(scene, module_dir):
     return code
 
 
+def posix_path(path):
+    """How bash prints a path: unchanged on Linux/macOS, /c/Users/... under Git Bash."""
+    path = Path(path)
+    if os.name != "nt":
+        return str(path)
+    return "/" + path.drive[0].lower() + path.as_posix()[len(path.drive):]
+
+
+def shell_env(env):
+    """Windows only: Git Bash has no python3 (it is the Microsoft Store stub), so add a shim
+    that runs whichever `python` is first on PATH, exactly as python3 does in a Linux venv."""
+    if os.name != "nt":
+        return env
+    shim = ROOT / ".venv/shim"
+    shim.mkdir(parents=True, exist_ok=True)
+    (shim / "python3").write_text('#!/bin/sh\nexec python "$@"\n', newline="\n")
+    return dict(env, PATH=f"{shim}{os.pathsep}{env['PATH']}")  # ahead of the WindowsApps stub
+
+
 def run_terminal(entry, cwd, env):
     """Run the real command and capture what a terminal would show (stdout + stderr interleaved)."""
     if "out" in entry:
         return entry["out"].rstrip("\n").split("\n") if entry["out"] else []
     command = entry.get("run", entry["cmd"])
+    if os.name == "nt":  # Git Bash: a Windows venv keeps its scripts in Scripts/, not bin/
+        command = command.replace(".venv/bin/", ".venv/Scripts/")
     proc = subprocess.run(["bash", "-c", command], cwd=cwd, env=env, capture_output=False,
                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=300)
     expected = entry.get("exit", 0)
@@ -193,7 +216,7 @@ def pick_lines(lines, spec):
 def run_repl(steps, cwd, env):
     """Run every step's statements in ONE interpreter session, like typing at the >>> prompt."""
     statements = [line for step in steps for line in step["cmd"].strip("\n").split("\n")]
-    proc = subprocess.run([str(ROOT / ".venv/bin/python"), str(ROOT / "tools/repl_capture.py")],
+    proc = subprocess.run([str(VENV_PY), str(ROOT / "tools/repl_capture.py")],
                           input=json.dumps(statements), cwd=cwd, env=env, capture_output=True, text=True,
                           timeout=120)
     if proc.returncode:
@@ -263,7 +286,9 @@ def build_scene(scene, module_dir, env):
                 step["pairs"] = [{"cmd": step.get("cmd", ""), "out": out}] if step.get("cmd") else []
             if alias:
                 for pair in step["pairs"]:
-                    pair["out"] = [line.replace(str(cwd), alias) for line in pair["out"]]
+                    pair["out"] = [line.replace(str(cwd), alias).replace(posix_path(cwd), alias)
+                                   .replace(f"/tmp/{cwd.name}", alias)  # Git Bash mounts %TEMP% at /tmp
+                                   for line in pair["out"]]
             for key in ("say", "run", "keep", "exit", "cmd"):
                 step.pop(key, None)
     if isinstance(props.get("aside"), dict) and "code" in props["aside"]:
@@ -365,8 +390,9 @@ def module_dir_for(module):
 def build(module, lesson, allow_new=True):
     mdir = module_dir_for(module)
     spec = yaml.safe_load((mdir / f"scripts/lesson-{lesson:02d}.yaml").read_text(encoding="utf-8"))
-    env = dict(os.environ, PATH=f"{ROOT / '.venv/bin'}:{os.environ['PATH']}", PYTHONDONTWRITEBYTECODE="1",
+    env = dict(os.environ, PATH=f"{VENV_BIN}{os.pathsep}{os.environ['PATH']}", PYTHONDONTWRITEBYTECODE="1",
                VIRTUAL_ENV=str(ROOT / ".venv"), COLUMNS="88", NO_COLOR="1")
+    env = shell_env(env)
     env.pop("TOOLKIT_CURRENCY", None)
     env.pop("TOOLKIT_PRICES_FILE", None)
 

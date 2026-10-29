@@ -16,6 +16,18 @@ Remaining for Module 1 (being finished in the cloud session; videos are NOT in g
 - render lessons 4–7 → `python tools/module.py assemble 1` → `python tools/module.py validate 1`
 - if every check passes: `python tools/manifest.py set 1 COMPLETED`
 
+## Local Windows machine (set up 2026-10-29)
+
+- Git Bash runs the demo commands (no WSL). `tools/build_lesson.py` and `tools/module.py` pick
+  `.venv/Scripts` on Windows, add a `python3` shim (the Windows `python3` is the Microsoft Store stub),
+  and map `.venv/bin/` to `.venv/Scripts/` in `run:` commands. On Linux, nothing changes.
+- Kokoro model: the default `~/.cache/hyperframes/tts` already has it; `KOKORO_DIR` isn't needed.
+- Remotion downloads its own Chrome Headless Shell on the first render or still.
+- Windows-built captures show Windows details (Python 3.12.10, `.venv/Scripts/python`). Module 1 was
+  not rebuilt here. Module 2 lessons avoid OS-specific output where possible.
+- Known: Module 1 `test_friendly_error_for_missing_file` fails on Windows only (the message prints
+  `data\missing.json`), so 41/42 tests pass here. The project code was not changed.
+
 ## Next: Module 2: LLM Fundamentals and API Integration (project: AI Study Assistant)
 
 Notes for the next modules, learned in Module 1:
