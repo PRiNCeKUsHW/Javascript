@@ -1,0 +1,157 @@
+module_title: Prompt Engineering and Structured Outputs
+title: "Prompt Anatomy: Instructions, Context and Constraints"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 3 · Lesson 1
+    title: What makes a prompt work
+    subtitle: Instructions, context and constraints, and the advice that is now out of date.
+    say: >
+      Welcome to Module 3. In Module 2 you learned to call a language model reliably. Now we make the model do the right thing, consistently.
+      That's prompt engineering. Not magic words, but clear writing, structured outputs, and measurement.
+      By the end of this module you'll build an AI resume analyzer that turns a resume and a job posting into a skills-gap report.
+
+  - type: objectives
+    items:
+      - {text: "Name the parts of a prompt and what each one does", say: "You'll be able to name the parts of a prompt, and what each part does."}
+      - {text: "Turn a vague request into a specific one", say: "Turn a vague request into a specific one."}
+      - {text: "State constraints plainly, with the reason", say: "State constraints plainly, with the reason behind them."}
+      - {text: "Recognise prompting advice that current models no longer need", say: "And recognise prompting advice that current models no longer need."}
+
+  - type: cards
+    chapter: Prompt anatomy
+    heading: What a prompt is made of
+    say: >
+      A good prompt usually has five parts. Not every prompt needs all five, but knowing them tells you what's missing.
+    cards:
+      - {tag: context, title: Who and why, body: "Who uses the output, and what happens to it next", tone: violet, say: "First, context. Who is the output for, and what happens to it next? This is the part beginners leave out, and the part that matters most."}
+      - {tag: task, title: The instruction, body: "One clear sentence: what to produce", tone: teal, say: "Second, the task: one clear sentence saying what to produce."}
+      - {tag: data, title: The input, body: "The document to work on, kept apart from the instructions", tone: blue, say: "Third, the data: the document the model works on, kept clearly separate from your instructions."}
+      - {tag: constraints, title: Rules and format, body: "What counts, what doesn't, and the shape of the answer", tone: amber, say: "Fourth, constraints: what counts, what doesn't, and the shape of the answer."}
+      - {tag: examples, title: Illustrations, body: "A few varied examples, when the format is subtle", tone: coral, say: "And fifth, examples, when the format or the judgment is subtle. We'll cover those in the next lesson."}
+
+  - type: compare
+    chapter: Be specific
+    heading: The same task, vague and specific
+    left:
+      title: "extract_profile v1"
+      tone: coral
+      label: Vague
+      lang: text
+      code: |
+        system: You are a helpful assistant.
+
+        Read this resume and list the skills.
+
+        {resume}
+    right:
+      title: "extract_profile v2 (excerpt)"
+      tone: teal
+      label: Specific
+      lang: text
+      code: |
+        system: You extract facts from resumes for a
+        skills-gap tool that job seekers use. Code
+        compares your output with a job posting, so
+        a skill you add by mistake becomes a false
+        match: accuracy matters more than completeness.
+
+        Extract the candidate's profile ...
+        <resume>
+        {resume}
+        </resume>
+    steps:
+      - show: left
+        say: >
+          Here are two prompts for the same task, both from this module's project. The first one is how most people start: a generic role, and one short instruction.
+          It isn't wrong, but it leaves every decision to the model. Which skills count? Soft skills too? In what format? Should it guess skills the resume only implies?
+      - show: right
+        say: >
+          The second version says who uses the output, and what happens to it: code compares it with a job posting.
+          That one sentence explains why accuracy matters more than completeness, so the model can make the right call in situations the prompt never mentions.
+
+  - type: bullets
+    heading: "Context is never wasted"
+    items:
+      - {text: "Say who the output is for and how it will be used", say: "Context is the cheapest improvement you can make. Say who the output is for, and how it will be used."}
+      - {text: "Give the quality bar: what a great answer looks like", say: "Describe the quality bar: what does a great answer look like?"}
+      - {text: "Explain the **why** behind each rule", sub: "a reason lets the model handle cases you didn't list", say: "And explain the reason behind each rule. A rule with a reason generalises to cases you never thought of. A bare rule doesn't."}
+      - {text: "Too little context gets generic, safe-default answers", tone: coral, say: "When a prompt is too short, the model fills the gaps with safe defaults, and you get generic output. Give more context than seems necessary."}
+
+  - type: compare
+    chapter: Constraints with reasons
+    heading: "Say what you mean, at normal volume"
+    left:
+      title: shouting, no reason
+      tone: coral
+      label: Avoid
+      lang: text
+      code: |
+        CRITICAL!!! You MUST NEVER invent
+        skills. NEVER. Output ONLY skills.
+        IMPORTANT: Do not be lazy.
+    right:
+      title: plain rule, with the reason
+      tone: teal
+      label: Prefer
+      lang: text
+      code: |
+        Include a skill only if the candidate
+        used it; "no experience with Kubernetes"
+        is not a Kubernetes skill. Code compares
+        your output with the job posting.
+    steps:
+      - show: left
+        say: >
+          You'll find prompts full of capital letters: critical, must, never, important. That style was written for older models that sometimes ignored instructions.
+          Current models follow instructions closely, so shouting makes them over-apply the rule, and stacked prohibitions can even pull them toward the very mistake you mention.
+      - show: right
+        say: >
+          Instead, state the rule once, in a normal voice, say exactly what counts, and give the reason. A concrete edge case, like "no experience with Kubernetes", is worth more than any number of capital letters.
+
+  - type: cards
+    chapter: Outdated advice
+    heading: Advice current models no longer need
+    say: >
+      Prompting advice ages quickly. Here are four patterns you'll still see in tutorials, and what to use instead on current Claude models.
+    cards:
+      - {tag: '"think step by step"', title: Use effort instead, body: "Current models reason before answering; the `effort` setting controls how much", code: 'output_config={"effort": "low"}', tone: violet, say: "Think step by step. Current models already reason before they answer, and you control how much with the effort setting from Module 2, not with prose."}
+      - {tag: '"reply ONLY in JSON"', title: Use structured outputs, body: "The API constrains the reply to your schema; no regex parsing", code: "messages.parse(output_format=...)", tone: teal, say: "Reply only in JSON, followed by regular expressions to dig the JSON out. Use structured outputs instead: the API constrains the reply to your schema. That's lesson three."}
+      - {tag: prefill, title: Not accepted any more, body: "Ending the messages with a partial assistant turn returns a 400 error on current models", tone: coral, say: "Prefilling, where you start the assistant's reply for it, is rejected with a four hundred error on current Claude models. Structured outputs replace it."}
+      - {tag: '"reasoning" field', title: Leave it out, body: "Don't ask for reasoning inside the JSON; ask for a short explanation if you need one", tone: amber, say: "And don't add a reasoning field to your JSON for the model to fill in. If you need to know why, ask for a short explanation of the answer."}
+
+  - type: terminal
+    title: terminal — lesson-01
+    cwd: source/lesson-01
+    steps:
+      - cmd: python compare_prompts.py
+        say: >
+          Is the longer prompt expensive? This script renders both versions for a short resume. Version two is about two hundred tokens longer.
+          At four dollars per million input tokens, that's less than a tenth of a cent per call. Input tokens are cheap, and wrong answers are not.
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "Which change most improves a vague prompt?"
+    options:
+      - "Add CRITICAL and MUST in capital letters"
+      - "Say who uses the output and why accuracy matters"
+      - "Add \"think step by step\""
+      - "Make it as short as possible"
+    answer: 1
+    explain: "Context and reasons let the model make the right call, even in cases the prompt never lists."
+    say_question: >
+      Quick check. Which change most improves a vague prompt?
+    say_answer: >
+      Saying who uses the output, and why accuracy matters. Context and reasons let the model make good decisions in cases you never listed.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 1 recap
+    items:
+      - {text: "Parts of a prompt: context, task, data, constraints, examples", say: "A prompt has context, a task, data, constraints, and sometimes examples."}
+      - {text: "Context and reasons beat bare rules", say: "Context and reasons beat bare rules."}
+      - {text: "Plain language, no shouting", say: "Write in plain language, at normal volume."}
+      - {text: "Effort and structured outputs replace old tricks", say: "And use effort and structured outputs, not old tricks."}
+    outro: >
+      Next lesson: examples, separating data from instructions with tags, and splitting a big task into smaller steps.

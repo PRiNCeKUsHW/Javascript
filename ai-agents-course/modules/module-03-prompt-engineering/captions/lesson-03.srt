@@ -1,0 +1,333 @@
+1
+00:00:00,700 --> 00:00:02,997
+Programs need data, not prose.
+
+2
+00:00:03,217 --> 00:00:06,852
+In Module 2 you asked for
+a quiz as structured output.
+
+3
+00:00:07,072 --> 00:00:12,441
+Now we go deeper: how to design a
+schema, what structured outputs guarantee, what
+
+4
+00:00:12,441 --> 00:00:17,810
+they don't, and how to handle every
+kind of parsing failure with one clear error.
+
+5
+00:00:19,110 --> 00:00:22,633
+You'll design Pydantic
+schemas with useful constraints.
+
+6
+00:00:22,983 --> 00:00:26,565
+Know what structured outputs
+guarantee, and what they don't.
+
+7
+00:00:26,915 --> 00:00:31,336
+Handle replies that are cut
+off, invalid, refused, or invented.
+
+8
+00:00:31,686 --> 00:00:34,061
+And check meaning in code, not just shape.
+
+9
+00:00:35,361 --> 00:00:38,760
+A schema is a contract
+between the model and your code.
+
+10
+00:00:38,980 --> 00:00:44,882
+The candidate profile has a name, years
+of experience, a list of skills, and recent
+
+11
+00:00:44,882 --> 00:00:45,309
+roles.
+
+12
+00:00:45,529 --> 00:00:48,396
+Every field is
+something code will actually use.
+
+13
+00:00:48,746 --> 00:00:50,313
+Field adds constraints.
+
+14
+00:00:50,533 --> 00:00:53,771
+Years of experience must
+be between zero and sixty.
+
+15
+00:00:53,991 --> 00:00:57,076
+A negative number is a
+bug, and we want to catch it.
+
+16
+00:00:57,426 --> 00:01:00,712
+A description tells the
+model what belongs in a field.
+
+17
+00:01:00,932 --> 00:01:04,360
+Here: technical skills
+the resume names, as written.
+
+18
+00:01:04,710 --> 00:01:08,372
+Job requirements split skills
+into must have and nice to have.
+
+19
+00:01:08,592 --> 00:01:11,548
+That split is what makes
+the comparison meaningful.
+
+20
+00:01:11,898 --> 00:01:16,080
+And suggestions are a summary
+plus one piece of advice per skill.
+
+21
+00:01:16,300 --> 00:01:18,383
+Notice there's no reasoning field.
+
+22
+00:01:18,603 --> 00:01:20,423
+Ask only for what you'll use.
+
+23
+00:01:20,643 --> 00:01:23,790
+Current models reason
+before they answer anyway.
+
+24
+00:01:25,090 --> 00:01:29,760
+With structured outputs, the API
+constrains the reply to your schema.
+
+25
+00:01:29,980 --> 00:01:33,168
+You get valid JSON, with
+your fields and your types.
+
+26
+00:01:33,518 --> 00:01:38,739
+Some constraints, like minimum and
+maximum values, can't be enforced during
+
+27
+00:01:38,739 --> 00:01:39,505
+generation.
+
+28
+00:01:39,725 --> 00:01:45,553
+The SDK moves them into the field
+description, and validates them with Pydantic when
+
+29
+00:01:45,553 --> 00:01:46,802
+the reply arrives.
+
+30
+00:01:47,022 --> 00:01:49,557
+If one fails, you get a validation error.
+
+31
+00:01:49,907 --> 00:01:52,001
+And what's never guaranteed is truth.
+
+32
+00:01:52,221 --> 00:01:58,289
+A perfectly valid reply can still contain
+a wrong value, or a skill the resume never
+
+33
+00:01:58,289 --> 00:01:58,939
+mentions.
+
+34
+00:02:00,239 --> 00:02:03,453
+Let's see what Pydantic
+reports for four replies.
+
+35
+00:02:03,673 --> 00:02:08,775
+This needs no model at all: it's
+the same validation the SDK runs.
+
+36
+00:02:08,995 --> 00:02:11,107
+A good reply becomes an object.
+
+37
+00:02:11,327 --> 00:02:14,641
+A negative number of years
+fails greater than or equal.
+
+38
+00:02:14,861 --> 00:02:17,251
+A missing field is reported as missing.
+
+39
+00:02:17,471 --> 00:02:22,208
+And a reply cut off in the
+middle isn't JSON at all: json invalid.
+
+40
+00:02:23,508 --> 00:02:27,125
+Every model call in the
+project goes through this one method.
+
+41
+00:02:27,345 --> 00:02:32,380
+It calls parse with the schema as
+output format, the system prompt, the rendered
+
+42
+00:02:32,380 --> 00:02:34,268
+template, and an effort level.
+
+43
+00:02:34,618 --> 00:02:37,595
+If validation fails, we
+look at the first error.
+
+44
+00:02:37,815 --> 00:02:43,699
+Invalid JSON almost always means the
+reply was cut off by max tokens, so we say
+
+45
+00:02:43,699 --> 00:02:44,072
+that.
+
+46
+00:02:44,422 --> 00:02:48,993
+Any other validation error names
+the field and the problem, in one line.
+
+47
+00:02:49,343 --> 00:02:53,839
+Then we record the call: which
+prompt, its fingerprint, tokens, and cost.
+
+48
+00:02:54,189 --> 00:02:59,524
+And we check the stop reason: a
+refusal, or a reply that was cut off, never gets
+
+49
+00:02:59,524 --> 00:03:01,658
+returned as if it were complete.
+
+50
+00:03:02,958 --> 00:03:04,945
+Structured output checks the shape.
+
+51
+00:03:05,165 --> 00:03:06,696
+Code can check meaning too.
+
+52
+00:03:06,916 --> 00:03:12,785
+Mentions asks: does the resume text
+actually name this skill, or one of its aliases?
+
+53
+00:03:13,135 --> 00:03:18,065
+Grounded splits the extracted skills
+into those the resume names, and those it
+
+54
+00:03:18,065 --> 00:03:18,570
+doesn't.
+
+55
+00:03:18,790 --> 00:03:23,907
+The analyzer keeps the first list, drops
+the second, and tells you what it dropped.
+
+56
+00:03:25,207 --> 00:03:30,618
+The project's fake API can misbehave on
+purpose, so we can watch each failure path.
+
+57
+00:03:30,968 --> 00:03:35,853
+A reply with negative years becomes
+one clear error that names the field.
+
+58
+00:03:36,203 --> 00:03:40,387
+A reply cut off mid-JSON:
+not complete JSON, cut off.
+
+59
+00:03:40,737 --> 00:03:45,851
+And when the reply invents a skill,
+here COBOL, the grounding check drops it and
+
+60
+00:03:45,851 --> 00:03:46,427
+tells us.
+
+61
+00:03:47,727 --> 00:03:48,534
+Quick check.
+
+62
+00:03:48,754 --> 00:03:51,614
+A structured output
+reply passed validation.
+
+63
+00:03:51,834 --> 00:03:53,203
+What do you actually know?
+
+64
+00:03:58,903 --> 00:04:01,000
+That it has the right fields and types.
+
+65
+00:04:01,220 --> 00:04:02,382
+Shape, not truth.
+
+66
+00:04:02,602 --> 00:04:04,680
+Where you can, check meaning in code.
+
+67
+00:04:05,980 --> 00:04:10,774
+A schema holds only the fields you
+use, with constraints and descriptions.
+
+68
+00:04:11,124 --> 00:04:15,698
+The API guarantees the shape,
+and the SDK validates the limits.
+
+69
+00:04:16,048 --> 00:04:20,869
+Cut-off, invalid, and refused
+replies each become one clear error.
+
+70
+00:04:21,219 --> 00:04:25,161
+And code checks meaning, like
+grounding every skill in the resume.
+
+71
+00:04:25,511 --> 00:04:29,278
+Next lesson: how do you know a
+prompt change is an improvement?
+
+72
+00:04:29,498 --> 00:04:31,630
+Prompt versions and evaluations.

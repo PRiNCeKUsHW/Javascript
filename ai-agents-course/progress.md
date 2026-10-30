@@ -32,7 +32,14 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
 - Validation: 70/70 checks (`modules/module-02-llm-fundamentals/validation-report.md`).
 - Upload kits: `modules/module-02-llm-fundamentals/youtube-uploads.md` (videos #8-#14).
 
-## Next: Module 3: Prompt Engineering and Structured Outputs (project: AI Resume Analyzer)
+## Module 3: Prompt Engineering and Structured Outputs: COMPLETED (2026-10-29)
+
+- Delivered as ONE full-module video (user request): 30:32, 49 chapters, 478 captions (6 parts rendered, then joined).
+- Project: AI Resume Analyzer, 27 tests, mypy clean; offline fake uses keyword rules (not a model) and says so.
+- Validation: 62/62 checks (`modules/module-03-prompt-engineering/validation-report.md`).
+- Upload kit: `modules/module-03-prompt-engineering/youtube-uploads.md` (video #15).
+
+## Next: Module 4: AI Agent Architecture (project: Smart Calculator Agent)
 
 Notes carried over from Module 1:
 

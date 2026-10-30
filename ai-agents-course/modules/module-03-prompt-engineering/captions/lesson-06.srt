@@ -1,0 +1,455 @@
+1
+00:00:00,700 --> 00:00:01,725
+Welcome back.
+
+2
+00:00:01,945 --> 00:00:03,246
+The pipeline works.
+
+3
+00:00:03,466 --> 00:00:08,487
+Now we finish the project: the
+report, the command line, a demo that includes
+
+4
+00:00:08,487 --> 00:00:11,096
+failures, the tests, and the evaluation.
+
+5
+00:00:11,316 --> 00:00:15,445
+Then we wrap up the module with a
+quiz and your extension challenge.
+
+6
+00:00:16,745 --> 00:00:21,329
+The Markdown report starts with the
+match score and the experience line, then
+
+7
+00:00:21,329 --> 00:00:22,936
+matched and missing skills.
+
+8
+00:00:23,156 --> 00:00:27,386
+Every number here was computed
+by code, not written by the model.
+
+9
+00:00:27,736 --> 00:00:30,211
+Suggestions appear
+only when there were gaps.
+
+10
+00:00:30,431 --> 00:00:35,138
+And if the grounding check dropped a
+skill, the report says so, rather than hiding
+
+11
+00:00:35,138 --> 00:00:35,310
+it.
+
+12
+00:00:35,660 --> 00:00:40,606
+The footer lists each prompt with its
+fingerprint, the model, the tokens, and the
+
+13
+00:00:40,606 --> 00:00:40,912
+cost.
+
+14
+00:00:41,132 --> 00:00:45,181
+Six months from now, you'll know
+exactly what produced this report.
+
+15
+00:00:45,401 --> 00:00:48,697
+A second function
+writes the same data as JSON.
+
+16
+00:00:49,997 --> 00:00:51,988
+The command line has four commands.
+
+17
+00:00:52,208 --> 00:00:55,291
+Prompts lists versions
+and needs no client at all.
+
+18
+00:00:55,511 --> 00:00:57,468
+Eval runs the evaluation.
+
+19
+00:00:57,818 --> 00:01:00,648
+Extract prints just the profile, as JSON.
+
+20
+00:01:00,868 --> 00:01:03,628
+Handy when you're
+working on the extraction prompt.
+
+21
+00:01:03,978 --> 00:01:09,898
+And analyze writes the full report, in
+Markdown or JSON, to the screen or to a file.
+
+22
+00:01:11,198 --> 00:01:14,992
+JSON output, saved to a
+file, for other programs to use.
+
+23
+00:01:15,342 --> 00:01:18,680
+The prompt option runs
+the older extraction prompt.
+
+24
+00:01:18,900 --> 00:01:23,277
+The footer shows extract profile at
+version one, with its own fingerprint.
+
+25
+00:01:23,627 --> 00:01:26,797
+And here's an honest
+limitation of the offline fake.
+
+26
+00:01:27,017 --> 00:01:32,744
+Leo's resume says, no experience with
+Kubernetes, but the keyword rules list
+
+27
+00:01:32,744 --> 00:01:34,402
+Kubernetes as a skill.
+
+28
+00:01:34,622 --> 00:01:37,845
+A model following the version
+two prompt should leave it out.
+
+29
+00:01:38,065 --> 00:01:41,923
+Only the eval with a real
+key can tell you whether it does.
+
+30
+00:01:43,223 --> 00:01:44,601
+Failures on purpose.
+
+31
+00:01:44,821 --> 00:01:50,461
+A rate limit and then a server error:
+the SDK retries twice, and the extraction
+
+32
+00:01:50,461 --> 00:01:51,532
+still succeeds.
+
+33
+00:01:51,882 --> 00:01:56,614
+A refusal becomes one clear line,
+naming the prompt that was declined.
+
+34
+00:01:56,964 --> 00:02:00,848
+And a missing file is a clean
+error too, with exit code one.
+
+35
+00:02:02,148 --> 00:02:05,807
+Because the task is split into
+steps, each step can be tested.
+
+36
+00:02:06,027 --> 00:02:10,879
+This test checks the comparison, the
+score, and which prompt versions were used.
+
+37
+00:02:11,229 --> 00:02:17,237
+This one inspects the request the SDK
+actually sent: structured output, low effort,
+
+38
+00:02:17,237 --> 00:02:21,291
+the resume inside its tags,
+and the right system prompt.
+
+39
+00:02:21,641 --> 00:02:26,547
+This proves that code skips the
+advice call when nothing is missing: only two
+
+40
+00:02:26,547 --> 00:02:27,120
+requests.
+
+41
+00:02:27,470 --> 00:02:33,709
+And every failure path has a test:
+invented skills, invalid values, cut-off replies,
+
+42
+00:02:33,709 --> 00:02:35,863
+refusals, and a rejected key.
+
+43
+00:02:37,163 --> 00:02:40,992
+Twenty-seven tests, all
+passing, with no key and no network.
+
+44
+00:02:41,212 --> 00:02:44,714
+They include the prompt
+lock and the evaluation itself.
+
+45
+00:02:45,064 --> 00:02:47,484
+And mypy is happy with every type hint.
+
+46
+00:02:48,784 --> 00:02:53,949
+If replies don't fit the schema, read
+the field named in the error, and describe
+
+47
+00:02:53,949 --> 00:02:58,403
+that field more clearly, in the
+prompt or in the field's description.
+
+48
+00:02:58,753 --> 00:03:02,588
+Not complete JSON means
+the reply hit max tokens.
+
+49
+00:03:02,808 --> 00:03:04,839
+Raise the limit, or ask for less.
+
+50
+00:03:05,189 --> 00:03:08,559
+If the lock test fails,
+you edited a released prompt.
+
+51
+00:03:08,779 --> 00:03:11,295
+Restore it, and add a new version instead.
+
+52
+00:03:11,645 --> 00:03:14,809
+And if every version
+scores the same, you're offline.
+
+53
+00:03:15,029 --> 00:03:16,144
+That's expected.
+
+54
+00:03:16,364 --> 00:03:18,288
+Run the evaluation with a key.
+
+55
+00:03:19,588 --> 00:03:25,245
+Good prompts give context, a clear task,
+data in tags, and constraints with reasons.
+
+56
+00:03:25,595 --> 00:03:30,098
+Use a few varied examples, plain
+language, and no outdated tricks.
+
+57
+00:03:30,448 --> 00:03:34,398
+Give the model the judgment,
+and code everything deterministic.
+
+58
+00:03:34,748 --> 00:03:38,445
+Structured outputs guarantee
+shape, and code checks meaning.
+
+59
+00:03:38,795 --> 00:03:43,335
+And version every prompt, and
+measure every change with an evaluation.
+
+60
+00:03:44,635 --> 00:03:46,464
+Module quiz, question one.
+
+61
+00:03:46,684 --> 00:03:51,494
+What's the main problem with critical,
+you must never, in a prompt for a current
+
+62
+00:03:51,494 --> 00:03:51,855
+model?
+
+63
+00:03:57,555 --> 00:04:02,774
+Current models follow instructions
+closely, so shouting makes them over-apply the
+
+64
+00:04:02,774 --> 00:04:03,096
+rule.
+
+65
+00:04:03,316 --> 00:04:05,391
+Say it once, plainly, with the reason.
+
+66
+00:04:06,691 --> 00:04:07,726
+Question two.
+
+67
+00:04:07,946 --> 00:04:10,365
+Why wrap a resume in resume tags?
+
+68
+00:04:16,065 --> 00:04:20,386
+Tags mark exactly where the data
+is, apart from your instructions.
+
+69
+00:04:21,686 --> 00:04:22,748
+Question three.
+
+70
+00:04:22,968 --> 00:04:27,908
+What happens to a Pydantic
+constraint like greater than or equal to zero?
+
+71
+00:04:33,608 --> 00:04:39,648
+The SDK validates it when the reply
+arrives, and raises a validation error if it
+
+72
+00:04:39,648 --> 00:04:40,101
+fails.
+
+73
+00:04:41,401 --> 00:04:42,464
+Question four.
+
+74
+00:04:42,684 --> 00:04:47,072
+Two prompt versions both score
+twenty-one out of twenty-two offline.
+
+75
+00:04:47,292 --> 00:04:48,586
+What can you conclude?
+
+76
+00:04:54,286 --> 00:04:55,680
+Nothing about the prompts.
+
+77
+00:04:55,900 --> 00:04:58,014
+The offline fake ignores wording.
+
+78
+00:04:58,234 --> 00:05:03,137
+Offline runs test the pipeline,
+and only a real model compares prompts.
+
+79
+00:05:04,437 --> 00:05:05,700
+And question five.
+
+80
+00:05:05,920 --> 00:05:08,816
+Which job belongs to
+code, not to the model?
+
+81
+00:05:14,516 --> 00:05:16,387
+Calculating the match percentage.
+
+82
+00:05:16,607 --> 00:05:20,640
+Arithmetic belongs in
+code: exact, free, and testable.
+
+83
+00:05:21,940 --> 00:05:23,446
+Your extension challenge.
+
+84
+00:05:23,666 --> 00:05:27,899
+Pick one or more, and write a
+test for each, using the fake API.
+
+85
+00:05:28,249 --> 00:05:33,762
+Write version three of the extraction
+prompt, add two hard evaluation cases, and
+
+86
+00:05:33,762 --> 00:05:36,311
+compare the versions with a real key.
+
+87
+00:05:36,661 --> 00:05:41,330
+Add a minimum score option that
+exits with code two below a threshold.
+
+88
+00:05:41,680 --> 00:05:46,682
+Grade the advice with a second model
+call and a short rubric: your first model
+
+89
+00:05:46,682 --> 00:05:47,131
+grader.
+
+90
+00:05:47,481 --> 00:05:51,411
+Or accept several job
+postings, and rank them by match score.
+
+91
+00:05:52,711 --> 00:05:56,534
+These are the official
+documentation pages for this module.
+
+92
+00:05:56,754 --> 00:06:01,912
+Start with the prompting best practices:
+it's kept up to date for the latest models.
+
+93
+00:06:02,132 --> 00:06:05,520
+Links are in the description,
+along with the full source code.
+
+94
+00:06:09,620 --> 00:06:11,456
+That's Module 3 complete.
+
+95
+00:06:11,676 --> 00:06:17,198
+You can now write prompts that work
+consistently, get validated data back, and prove
+
+96
+00:06:17,198 --> 00:06:18,973
+a change is an improvement.
+
+97
+00:06:19,193 --> 00:06:24,982
+In Module 4, we finally build an agent:
+the loop at the centre of this course, from
+
+98
+00:06:24,982 --> 00:06:28,748
+scratch, with a smart
+calculator agent as the project.
+
+99
+00:06:28,968 --> 00:06:29,832
+See you there.

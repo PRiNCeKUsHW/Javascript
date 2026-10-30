@@ -1,0 +1,165 @@
+module_title: Prompt Engineering and Structured Outputs
+title: "Prompt Versioning and Evaluations"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 3 · Lesson 4
+    title: Is the new prompt actually better?
+    subtitle: Versions you can trace, and evaluations that answer with numbers.
+    say: >
+      You change one sentence in a prompt, try it on two examples, and it looks better. Is it? Maybe it fixed those two and broke five others.
+      This lesson turns prompt changes into engineering: every prompt has a version you can trace, and every change is measured on an evaluation set.
+
+  - type: objectives
+    items:
+      - {text: "Version prompts, and never edit a released version", say: "You'll version your prompts, and never edit a released version."}
+      - {text: "Trace every result back to the exact prompt text", say: "Trace every result back to the exact prompt text."}
+      - {text: "Build a small, labelled evaluation set", say: "Build a small, labelled evaluation set."}
+      - {text: "Grade with code, and compare versions with numbers", say: "And grade with code, so you can compare versions with numbers."}
+
+  - type: bullets
+    chapter: Why version prompts?
+    heading: A prompt change is a code change
+    items:
+      - {text: "**Trace**: which prompt produced this result?", say: "A prompt change is a code change, and it needs the same discipline. First, tracing: when a report looks wrong, which exact prompt produced it?"}
+      - {text: "**Compare**: is version 3 better than version 2?", say: "Second, comparing: is the new version better than the old one, on the same cases?"}
+      - {text: "**Roll back**: return to the last good version in one line", say: "And third, rolling back: if a new version misbehaves in production, return to the last good one in a single line."}
+
+  - type: code
+    chapter: Versions and fingerprints
+    heading: "A registry of versions, and a default"
+    title: resume/prompts.py
+    file: project/ai-resume-analyzer/resume/prompts.py
+    lines: "92-107"
+    steps:
+      - lines: "92-96"
+        note: "Old versions stay, so you can compare and roll back."
+        say: >
+          The registry maps each prompt name to its versions. Old versions stay in the code, so you can always compare against them, or roll back.
+      - lines: "97-98"
+        note: "Switching the default is a one-line, reviewable change."
+        say: >
+          Default versions says which one the program uses. Switching is a one-line change that shows up clearly in code review.
+      - lines: "101-107"
+        say: >
+          And get prompt returns a version, or a clear error if it doesn't exist.
+
+  - type: terminal
+    title: terminal — ai-resume-analyzer
+    cwd: project/ai-resume-analyzer
+    steps:
+      - cmd: python -m resume prompts
+        say: >
+          The prompts command lists every version with its fingerprint: the first eight characters of a SHA two fifty-six hash of the prompt's text.
+          Change a single character, and the fingerprint changes. Every report records these fingerprints, so you always know exactly which text produced it.
+
+  - type: code
+    heading: "A test that protects released prompts"
+    title: tests/test_prompts.py
+    file: project/ai-resume-analyzer/tests/test_prompts.py
+    lines: "9-21"
+    steps:
+      - lines: "9-15"
+        note: "prompts.lock.json stores each released fingerprint."
+        say: >
+          The fingerprints of released versions are stored in a lock file. This test fails if anyone edits a released prompt in place. The message says what to do instead: add a version.
+      - lines: "18-21"
+        say: >
+          And a second test makes sure every new version gets locked too.
+
+  - type: steps
+    heading: "Changing a prompt, safely"
+    items:
+      - {text: "Copy the current version to a new one, `v3`, and edit the copy", say: "So changing a prompt follows a routine. Copy the current version to a new one, and edit the copy."}
+      - {text: "Run the evaluation on both versions, with a real key", say: "Run the evaluation on both versions, with a real model."}
+      - {text: "Switch the default only if the new version is at least as good", say: "Switch the default only if the new version is at least as good, on every case that matters."}
+      - {text: "Lock the new fingerprint", say: "Then lock the new fingerprint, and commit."}
+
+  - type: cards
+    chapter: Evaluations
+    heading: "An evaluation, in three parts"
+    cards:
+      - {tag: cases, title: Labelled examples, body: "Real inputs, and the answer a person decided is right", tone: blue, say: "An evaluation has three parts. Cases: real inputs, each with the answer a person decided is correct."}
+      - {tag: grader, title: Code first, body: "Exact checks in code; a model grader only for what code can't judge", tone: teal, say: "A grader: code that checks each output. Use exact checks in code wherever you can, and a model as grader only for what code can't judge, like the quality of advice."}
+      - {tag: score, title: One number per version, body: "Same cases, same grader: now versions are comparable", tone: amber, say: "And a score per version. Same cases, same grader, so two versions finally become comparable."}
+    outro: >
+      Start small. Twenty labelled cases are infinitely more than zero, and you can add a case every time you find a bug.
+
+  - type: code
+    heading: "evals/cases.json: labelled by a person"
+    title: evals/cases.json
+    file: project/ai-resume-analyzer/evals/cases.json
+    lines: "1-20"
+    lang: json
+    steps:
+      - lines: "2-8"
+        note: "true = the candidate has this must-have skill."
+        say: >
+          Each case pairs a resume with a job posting. A person labelled every must-have skill: true if the candidate has it, false if not.
+      - lines: "15-20"
+        note: "A hard case: \"No experience with Kubernetes\"."
+        say: >
+          Include hard cases on purpose. Leo's resume says, no experience with Kubernetes. A careless extractor will see the word Kubernetes and count it as a skill.
+
+  - type: code
+    heading: "The grader is plain code"
+    title: resume/evals.py
+    file: project/ai-resume-analyzer/resume/evals.py
+    lines: "27-43"
+    steps:
+      - lines: "28-30"
+        say: >
+          Run case runs the real analyzer on the resume and the job, without the advice step, which this eval doesn't grade.
+      - lines: "34-41"
+        note: "Each verdict is right or wrong: no judgment needed."
+        say: >
+          Then for every labelled skill: was it found in the job at all, and does the verdict, matched or missing, agree with the label? Each verdict is simply right or wrong.
+      - lines: "42-43"
+        say: >
+          The result is a count of correct verdicts, and a list of what went wrong.
+
+  - type: terminal
+    title: terminal — ai-resume-analyzer
+    cwd: project/ai-resume-analyzer
+    font: 24
+    steps:
+      - cmd: python -m resume eval --versions v1,v2
+        say: >
+          Here's the eval for both prompt versions, offline. Be careful reading this. Both versions score exactly the same, twenty-one out of twenty-two, because the offline fake isn't a model: its keyword rules ignore the prompt wording completely.
+          And look at the one failure: Kubernetes in Leo's case. The keyword rules saw the word and missed the negation, exactly the mistake that hard case was written to catch.
+          With an API key, this same command compares the two prompts on a real model. That's the number you'd use to decide.
+
+  - type: bullets
+    heading: Good evaluation habits
+    items:
+      - {text: "Label cases yourself; include hard and boring ones", say: "A few habits. Label cases yourself, and include both hard cases and boring ones."}
+      - {text: "Turn every bug you find into a new case", say: "Turn every bug you find into a new case, so it can never come back unnoticed."}
+      - {text: "State requirements in the prompt; never tell the model it's being graded", say: "Put every requirement in the prompt itself. Never describe the grader to the model."}
+      - {text: "Re-run the eval when the prompt **or the model** changes", say: "And re-run the evaluation whenever the prompt changes, or the model does."}
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "You want to improve a released prompt. What do you do?"
+    options:
+      - "Edit it in place and redeploy"
+      - "Add a new version, run the eval on both, switch if it's at least as good"
+      - "Ask the model to rewrite it"
+      - "Add CRITICAL to the important lines"
+    answer: 1
+    explain: "Released versions never change. A new version plus an eval comparison makes the change traceable and measurable."
+    say_question: >
+      Quick check. You want to improve a released prompt. What do you do?
+    say_answer: >
+      Add a new version, run the evaluation on both, and switch only if the new one is at least as good.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 4 recap
+    items:
+      - {text: "Versions + fingerprints: every result is traceable", say: "Versions and fingerprints make every result traceable."}
+      - {text: "A lock file and a test protect released prompts", say: "A lock file and a test protect released prompts."}
+      - {text: "Evals: labelled cases, a code grader, one score per version", say: "An evaluation is labelled cases, a code grader, and one score per version."}
+      - {text: "Offline numbers test the pipeline, not the prompt", say: "And offline numbers test the pipeline. Only a real model tests the prompt."}
+    outro: >
+      You now have every piece. Next lesson, we build the AI resume analyzer.
