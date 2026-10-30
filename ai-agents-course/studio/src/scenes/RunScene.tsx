@@ -157,7 +157,9 @@ export const RunScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
                   color: C.text,
                 }}
               >
-                <Rich text={st.note} />
+                <div>
+                  <Rich text={st.note} />
+                </div>
               </div>
             ) : null,
           )}
