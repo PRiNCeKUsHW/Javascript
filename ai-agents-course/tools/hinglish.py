@@ -41,3 +41,39 @@ def phonemes(tokenizer, text: str) -> str:
         else:
             out.append(re.sub(r"\((en|hi)\)", "", tokenizer.phonemize(chunk, "hi")))
     return " ".join(p.strip() for p in out if p.strip())
+
+
+def to_speech(text: str) -> str:
+    """Roman Hinglish (as captioned) -> the same sentence with Hindi words in Devanagari."""
+    from hinglish_words import HINDI
+    return re.sub(r"[A-Za-z]+", lambda m: HINDI.get(m.group(0).lower(), m.group(0)), text)
+
+
+def english_words(texts) -> list[str]:
+    """Every word that will be spoken as English: review it for Hindi words missing from HINDI."""
+    from hinglish_words import HINDI
+    return sorted({w.lower() for t in texts for w in re.findall(r"[A-Za-z]+", t)} - set(HINDI))
+
+
+if __name__ == "__main__":
+    import sys
+
+    import yaml
+
+    if sys.argv[1:2] == ["check"]:
+        said = []
+
+        def walk(node):
+            if isinstance(node, dict):
+                for key, value in node.items():
+                    if key in ("say", "outro", "say_question", "say_answer", "say_q", "say_a") and isinstance(value, str):
+                        said.append(value)
+                    else:
+                        walk(value)
+            elif isinstance(node, list):
+                for value in node:
+                    walk(value)
+
+        for path in sys.argv[2:]:
+            walk(yaml.safe_load(open(path, encoding="utf-8")))
+        print(" ".join(english_words(said)))

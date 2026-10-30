@@ -1,30 +1,53 @@
 module_title: LLM Fundamentals and API Integration
 title: "Your First API Call: Keys, Requests and Responses"
+narration: hinglish
 scenes:
   - type: title
     chapter: Introduction
     kicker: Module 2 · Lesson 2
     title: Your first API call
-    subtitle: Set up a key safely, send a message with the Anthropic SDK, and read every part of the response.
+    subtitle: What an API is, how to keep a key safe, and every part of the response.
     say: >
-      Time to talk to a model from Python. In this lesson you'll set up an API key safely, install the official Anthropic SDK, send your first message,
-      and then take the response apart, because every field in it matters when you build agents.
+      Ab time hai Python se ek model ke saath baat karne ka. Iss lesson mein hum pehle samjhenge ki API kya hoti hai aur kyun hoti hai.
+      Phir API key ko safely set karenge, official Anthropic SDK install karenge, pehla message bhejenge, aur response ka har ek hissa kholke dekhenge.
 
   - type: objectives
     items:
-      - {text: "Create and store an API key safely", say: "You'll create and store an API key safely."}
-      - {text: "Install the Anthropic Python SDK", say: "Install the official Anthropic Python SDK."}
-      - {text: "Send a request with `messages.create`", say: "Send a request with messages dot create."}
-      - {text: "Read the response: content blocks, stop reason and usage", say: "And read the response: its content blocks, its stop reason, and its token usage."}
+      - {text: "Explain what an API is, with an analogy", say: "Iss lesson ke baad aap API ko ek simple analogy ke saath explain kar paoge."}
+      - {text: "Create and store an API key safely", say: "API key ko safely create aur store karna seekhoge."}
+      - {text: "Send a request with `messages.create`", say: "Messages dot create se request bhejoge."}
+      - {text: "Read the response: content blocks, stop reason and usage", say: "Aur response ko padhoge: content blocks, stop reason, aur usage."}
+
+  - type: callout
+    chapter: What is an API?
+    kind: analogy
+    title: "An API is a waiter in a restaurant"
+    body: "You don't walk into the kitchen. You give your **order** to the waiter, the waiter takes it to the kitchen, and brings back your **food**. Your code is the customer, the API is the waiter, and the model's servers are the kitchen."
+    say: >
+      Pehle what: API kya hai? Ek restaurant imagine karo. Aap seedhe kitchen mein nahi jaate. Aap waiter ko order dete ho, waiter kitchen tak order le jaata hai, aur khana wapas laata hai.
+    items:
+      - {text: "Your code = the customer, with an order (the request)", say: "Aapka Python code customer hai. Order hai request."}
+      - {text: "The API = the waiter, with fixed rules for orders", say: "API waiter hai. Waiter ke paas order lene ke fixed rules hote hain, jaise menu."}
+      - {text: "The model's servers = the kitchen; the food = the response", say: "Aur model ke servers kitchen hain. Jo khana wapas aata hai, woh response hai."}
+    outro: >
+      Ab why: API kyun hoti hai? Kyunki model bahut bade servers par chalta hai, aapke laptop par nahi. API ek fixed, safe tareeka deti hai, taaki koi bhi program un servers se baat kar sake.
 
   - type: steps
     chapter: API keys
     heading: Get an API key, and keep it secret
     items:
-      - {text: "Create a key in the Claude Console (platform.claude.com)", sub: "API access is billed separately from a Claude chat subscription", say: "First, create an API key in the Claude Console. Note that API usage is billed separately from a Claude chat subscription."}
-      - {text: "Put it in an environment variable called `ANTHROPIC_API_KEY`", sub: "the SDK reads it automatically", say: "Store it in an environment variable called ANTHROPIC API KEY. The SDK reads that variable automatically, so the key never appears in your code."}
-      - {text: "Never paste a key into code, chat, screenshots or git", sub: "if one leaks, delete it in the Console and create a new one", say: "Never paste a key into code, a chat, a screenshot, or a git commit. If a key ever leaks, delete it in the Console straight away and create a new one."}
-      - {text: "No key yet? Follow along in offline mode", sub: "this course's fake API: real SDK, placeholder replies", tone: amber, say: "No key yet? No problem. Everything in this module also runs in offline mode, which I'll explain in a moment."}
+      - {text: "Create a key in the Claude Console (platform.claude.com)", sub: "API access is billed separately from a Claude chat subscription", say: "Ab API key. Pehle Claude Console mein ek API key banao. Dhyan rahe, API ka billing chat subscription se alag hota hai."}
+      - {text: "Put it in an environment variable called `ANTHROPIC_API_KEY`", sub: "the SDK reads it automatically", say: "Phir usse ek environment variable mein rakho, jiska naam hai ANTHROPIC API KEY. SDK isse automatically padh leta hai, toh key aapke code mein kabhi nahi dikhti."}
+      - {text: "Never paste a key into code, chat, screenshots or git", sub: "if one leaks, delete it in the Console and create a new one", say: "Key ko kabhi code, chat, screenshot, ya git commit mein paste mat karo. Agar key leak ho jaaye, toh turant Console mein delete karo aur nayi banao."}
+      - {text: "No key yet? Follow along in offline mode", sub: "this course's fake API: real SDK, placeholder replies", tone: amber, say: "Abhi key nahi hai? Koi baat nahi. Iss module ka sab kuch offline mode mein bhi chalta hai. Woh abhi samjhati hoon."}
+
+  - type: callout
+    kind: analogy
+    title: "An API key is your ATM PIN"
+    body: "Whoever knows your PIN can spend your money. Whoever has your API key can **spend your API credit**. You'd never write your PIN on the card; never write your key in your code."
+    say: >
+      API key ko ATM PIN ki tarah socho. Jiske paas aapka PIN hai, woh aapka paisa kharch kar sakta hai. Jiske paas aapki API key hai, woh aapka API credit kharch kar sakta hai.
+      Aap PIN card par likhkar nahi rakhte. Toh key ko bhi code mein mat likho.
 
   - type: terminal
     chapter: Installing the SDK
@@ -36,114 +59,137 @@ scenes:
       - cmd: python3 -m venv .venv && source .venv/bin/activate
         run: python3 -m venv .venv
         say: >
-          As always, start with a fresh virtual environment.
+          Hamesha ki tarah, ek fresh virtual environment se shuru karo.
       - cmd: pip install anthropic==2.3.0
         run: . .venv/bin/activate && pip install --disable-pip-version-check anthropic==2.3.0
         keep: "1,-1"
         say: >
-          Then install the anthropic package. I'm pinning version 2 point 3 point 0, the version this course was recorded with. It brings its own HTTP library and pydantic, which we'll use for structured output.
+          Phir anthropic package install karo. Mai version two point three point zero pin kar rahi hoon, jis version par yeh course record hua hai. SDK ka matlab hai software development kit, yaani ready made Python code jo API se baat karna aasaan bana deta hai.
       - cmd: export ANTHROPIC_API_KEY="sk-ant-..."
         run: "true"
         say: >
-          And set your key. On Windows PowerShell, use dollar env colon ANTHROPIC API KEY instead. Or keep it in a dot env file, as you learned in Module 1.
+          Aur apni key set karo. Windows PowerShell par dollar env colon ANTHROPIC API KEY use karo. Ya Module 1 ki tarah dot env file mein rakho.
 
   - type: callout
     kind: info
     label: About the demos in this module
     title: "Offline mode: the real SDK, talking to a fake API"
-    body: "So every demo is free and repeatable, the replies you see come from a small fake API built into this module's project. It speaks the same protocol, so the **real SDK code runs unchanged**: requests, streaming, errors and retries. Replies start with `(offline demo reply)` and are placeholders, **not** model output. Set your key and the same code talks to Claude."
+    body: "So every demo is free and repeatable, replies come from a small fake API in this module's project. It speaks the same protocol, so the **real SDK code runs unchanged**. Replies start with `(offline demo reply)` and are placeholders, **not** model output. Set your key and the same code talks to Claude."
     say: >
-      An honest note about the demos. So that every demo is free and repeatable, and so you can follow along without a key, the replies you'll see come from a small fake API built into this module's project.
-      It speaks the same protocol as the real API, so the real SDK code runs unchanged, including streaming, errors, and retries. But the replies are placeholders, clearly marked offline demo reply. They are not model output.
-      With your key set, exactly the same code talks to Claude.
+      Ek honest note, demos ke baare mein. Taaki har demo free ho aur har baar same result de, aur aap bina key ke bhi follow kar sako, aap jo replies dekhoge woh iss project ke ek chhote fake API se aate hain.
+      Yeh fake API real API wala hi protocol bolta hai, isliye real SDK code bilkul waise hi chalta hai. Lekin replies placeholders hain, jin par likha hota hai offline demo reply. Yeh model ka output nahi hai.
+      Key set karoge, toh yahi code seedhe Claude se baat karega.
 
-  - type: code
+  - type: run
     chapter: The first request
-    heading: Your first request
+    heading: "first_call.py: the code, and what it printed"
     title: first_call.py
     file: source/lesson-02/first_call.py
+    cwd: source/lesson-02
+    cmd: python first_call.py
+    say: >
+      Ab how: pehli request. Left side par code hai, right side par uska real output. Line by line chalte hain.
     steps:
       - lines: "2-6"
-        note: "`lesson_client()` = real client with a key, offline fake without. Your code: `anthropic.Anthropic()`."
+        note: "`lesson_client()` = real client with a key, the offline fake without. In your own code: `anthropic.Anthropic()`."
         say: >
-          In your own projects, you create a client with anthropic dot Anthropic, which reads the key from the environment. Our lesson helper does the same when a key is set, and uses the offline fake when it isn't.
+          Pehle client banta hai. Apne projects mein aap anthropic dot Anthropic likhoge, jo environment se key padh leta hai. Hamara lesson helper bhi wahi karta hai jab key set ho, aur key na ho toh offline fake use karta hai.
       - lines: "8-12"
-        note: "`model`, `max_tokens` and `messages` are required."
+        note: "Three required arguments: `model`, `max_tokens`, `messages`."
         say: >
-          Messages dot create sends a request. Three arguments are required: the model ID, max tokens, the longest reply you'll accept, and the list of messages.
-          Each message is a dictionary with a role and content, exactly the shape you built in Module 1.
+          Messages dot create request bhejta hai. Teen arguments zaroori hain. Model, yaani kaunsa model. Max tokens, yaani reply maximum kitna lamba ho sakta hai. Aur messages, yaani conversation ki list.
+          Har message ek dictionary hai, jisme role aur content hota hai. Bilkul wahi shape jo aapne Module 1 mein banayi thi.
       - lines: "14"
-        note: "`content` is a **list of blocks**. Here, one text block."
+        out: "1"
+        note: "`content` is a **list of blocks**; here, one text block."
         say: >
-          The reply's content is a list of blocks. Here there's a single text block, so we print its text.
-      - lines: "15-16"
+          Reply ka content ek list hai, blocks ki. Yahan ek hi text block hai, isliye hum uska text print karte hain. Right side par pehli line yahi hai: offline placeholder reply.
+      - lines: "15"
+        out: "2"
+        note: "`end_turn`: the model finished naturally."
         say: >
-          And we print two more fields: why the model stopped, and how many tokens went in and out.
+          Yeh line stop reason print karti hai. Output mein end turn aaya, matlab model ne apna answer naturally khatam kiya.
+      - lines: "16"
+        out: "3"
+        note: "Usage: what you are billed for."
+        say: >
+          Aur aakhri line tokens print karti hai. Nau tokens gaye, chausath tokens wapas aaye. Usage hi woh cheez hai jiska aapko bill aata hai.
 
-  - type: terminal
-    title: terminal — lesson-02
-    cwd: source/lesson-02
-    steps:
-      - cmd: python first_call.py
-        say: >
-          Here's the run, in offline mode. A placeholder reply, a stop reason of end turn, which means the model finished naturally, and the token counts. With a real key you'd see a real one-sentence answer here.
-
-  - type: terminal
+  - type: table
     chapter: Anatomy of a response
-    repl: true
-    heading: Take the response apart
-    title: python — lesson-02
-    cwd: source/lesson-02
-    steps:
-      - cmd: |
-          from offline import lesson_client
-          client = lesson_client()
-          msg = [{"role": "user", "content": "Hi!"}]
-          r = client.messages.create(model="claude-opus-5-5", max_tokens=500, messages=msg)
-        say: >
-          Let's explore the response object in the interactive prompt.
-      - cmd: |
-          r.id, r.model, r.role
-          [block.type for block in r.content]
-        say: >
-          Every response has an ID, which you include when reporting problems, the model that answered, and the role, assistant. Content is a list of typed blocks.
-      - cmd: |
-          r.stop_reason
-          r.usage.input_tokens, r.usage.output_tokens
-        say: >
-          The stop reason and the usage. Usage is what you are billed for, so production code always records it. We'll do exactly that in the project.
+    heading: "Every field of the response, and why it matters"
+    columns: [Field, Example, Why you care]
+    widths: [1.3, 1.2, 2.2]
+    rows:
+      - {cells: ["`id`", "msg_…", "Quote it when reporting a problem"], say: "Ab response ko kholke dekhte hain. ID har response ka unique number hai. Koi problem report karni ho, toh yeh ID batate hain."}
+      - {cells: ["`model`", "claude-opus-5-5", "Which model actually answered"], say: "Model batata hai kaunse model ne actually answer diya."}
+      - {cells: ["`content`", "[TextBlock]", "The answer, as a list of blocks"], say: "Content mein answer hai, blocks ki list ki form mein."}
+      - {cells: ["`stop_reason`", "end_turn", "Complete, cut off, or refused?"], say: "Stop reason batata hai answer complete hua, cut off hua, ya refuse hua."}
+      - {cells: ["`usage`", "9 in · 64 out", "Tokens = what you pay for"], say: "Aur usage batata hai kitne tokens gaye aur aaye. Production code isse hamesha record karta hai. Project mein hum yahi karenge.", tone: teal}
 
   - type: cards
     heading: Content is a list of blocks
     cards:
-      - {tag: text, title: Text, body: "The written answer", code: "block.text", tone: teal, say: "Why is content a list? Because a reply can contain different kinds of block. Text blocks hold the written answer."}
-      - {tag: thinking, title: Thinking, body: "Reasoning the model did (often hidden by default)", code: "block.type == \"thinking\"", tone: violet, say: "Thinking blocks can hold the model's reasoning. On current models it's hidden by default, but the block may still be there."}
-      - {tag: tool_use, title: Tool use, body: "A request to run one of your tools (Module 5)", code: "block.name, block.input", tone: amber, say: "And tool use blocks are requests to run one of your tools, which is how agents act. You'll handle those in Module 5."}
+      - {tag: text, title: Text, body: "The written answer", code: "block.text", tone: teal, say: "Content list kyun hai? Kyunki ek reply mein alag alag type ke blocks ho sakte hain. Text block mein likha hua answer hota hai."}
+      - {tag: thinking, title: Thinking, body: "Reasoning the model did (often hidden by default)", code: "block.type == \"thinking\"", tone: violet, say: "Thinking block mein model ki reasoning ho sakti hai. Current models par yeh by default hidden hoti hai, lekin block wahan ho sakta hai."}
+      - {tag: tool_use, title: Tool use, body: "A request to run one of your tools (Module 5)", code: "block.name, block.input", tone: amber, say: "Aur tool use block ek request hai ki aapka koi tool chalaya jaaye. Agents isi tarah kaam karte hain. Yeh Module 5 mein aayega."}
     outro: >
-      So robust code never assumes the first block is text. It checks each block's type, as the next example does.
+      Isliye achha code yeh assume nahi karta ki pehla block hamesha text hai. Woh har block ka type check karta hai. Agla example yahi dikhata hai.
 
-  - type: code
+  - type: callout
     chapter: System prompts
-    heading: System prompts set the role and the rules
+    kind: analogy
+    title: "The system prompt is the briefing before a shift"
+    body: "Before a shift, a manager tells a new employee: **who you are, what the rules are, how to talk to customers**. The system prompt is that briefing, for the whole conversation."
+    say: >
+      Ab system prompt. Isse ek shift se pehle ki briefing ki tarah socho. Manager naye employee ko batata hai: tum kaun ho, rules kya hain, aur customers se kaise baat karni hai.
+      System prompt wahi briefing hai, poori conversation ke liye.
+
+  - type: run
+    heading: "system_prompt.py: role, rules, and reading blocks safely"
     title: system_prompt.py
     file: source/lesson-02/system_prompt.py
+    cwd: source/lesson-02
+    cmd: python system_prompt.py
     steps:
       - lines: "9"
-        note: "`system=` applies to the whole conversation, outside `messages`."
+        note: "`system=` sits outside `messages` and applies to the whole conversation."
         say: >
-          The system parameter gives the model its role and rules for the whole conversation. It sits outside the messages list. Here: be a patient tutor, and answer in at most two sentences.
+          System parameter model ko role aur rules deta hai. Yeh messages list ke bahar hota hai. Yahan rule hai: patient tutor bano, aur maximum do sentences mein answer do.
       - lines: "13-15"
+        out: "1"
         note: "Check `block.type` before reading `.text`."
         say: >
-          And here's the robust way to read the answer: loop over the blocks and only print text blocks.
+          Aur yeh answer padhne ka safe tareeka hai: har block par loop karo, aur sirf text blocks print karo. Offline mode mein placeholder instructions follow nahi kar sakta. Real model do sentences mein answer deta. Prompt design par poora Module 3 hai.
 
-  - type: terminal
-    title: terminal — lesson-02
-    cwd: source/lesson-02
-    steps:
-      - cmd: python system_prompt.py
-        say: >
-          In offline mode the placeholder can't follow the instructions, of course. A real model would answer in two sentences. Prompt design gets a whole module of its own, Module 3.
+  - type: interview
+    chapter: Interview corner
+    items:
+      - q: "What is an API?"
+        a: "A defined way for one program to ask another for something: you send a **request** in an agreed format, and get a **response** back. Like a waiter between you and the kitchen."
+        trap: "Saying an API is \"a library\" or \"a website\". It's the contract for the conversation between programs."
+        say_q: "Interview corner. Sabse basic, lekin sabse common question: API kya hai?"
+        say_a: "Ek achha answer: API ek defined tareeka hai jisse ek program doosre program se kuch maang sake. Aap ek agreed format mein request bhejte ho, aur response wapas aata hai. Waiter wali analogy bhi bol sakte ho. Trap: API ko library ya website mat bolna. API dono programs ke beech ka contract hai."
+      - q: "How do you keep API keys out of your code?"
+        a: "Store them in **environment variables** or a secrets manager, never in the source. Use separate keys per app, and revoke a key the moment it leaks."
+        trap: "\"I put it in a config file in the repo.\" Anything committed to git should be treated as public."
+        say_q: "Doosra question: API keys ko code se bahar kaise rakhte ho?"
+        say_a: "Answer: environment variables mein, ya kisi secrets manager mein. Source code mein kabhi nahi. Har app ki alag key, aur leak hote hi key revoke karo. Trap: config file mein repo ke andar rakhna. Git mein jo bhi gaya, usse public samjho."
+
+  - type: callout
+    chapter: Practice
+    kind: practice
+    title: "Try these before the next lesson"
+    body: "Easy to hard. Answers are in the module's quiz.md."
+    say: >
+      Practice time. Video pause karo aur khud try karo.
+    items:
+      - {text: "Which three arguments does `messages.create` require?", say: "Pehla: messages dot create ke teen zaroori arguments kaun se hain?"}
+      - {text: "Change `first_call.py` to print every block's type before its text.", say: "Doosra: first call dot py ko badlo, taaki woh har block ka type print kare."}
+      - {text: "Why is `response.content[0].text` risky in an agent?", say: "Teesra: agent mein content zero dot text likhna risky kyun hai?"}
+      - {text: "Scenario: a teammate pushed a key to GitHub. List your steps, in order.", say: "Aur scenario: aapke teammate ne ek key GitHub par push kar di. Aap kya karoge, order mein batao.", pause: 6}
+    outro: >
+      Hint for the last one: pehla step hai key ko turant revoke karna. Git history se hata dena kaafi nahi hai.
 
   - type: quiz
     chapter: Quick check
@@ -157,17 +203,17 @@ scenes:
     answer: 1
     explain: "`model`, `max_tokens` and `messages` are required. The key comes from `ANTHROPIC_API_KEY`; `system` is optional."
     say_question: >
-      Quick check. Which three arguments does messages dot create require?
+      Quick check. Messages dot create ke liye kaun se teen arguments zaroori hain?
     say_answer: >
-      Model, max tokens, and messages. The key comes from the environment, and the system prompt is optional.
+      Model, max tokens, aur messages. Key environment se aati hai, aur system prompt optional hai.
 
   - type: recap
     chapter: Recap
     heading: Lesson 2 recap
     items:
-      - {text: "Keys live in `ANTHROPIC_API_KEY`, never in code", say: "API keys live in an environment variable, never in your code."}
-      - {text: "`client.messages.create(model=..., max_tokens=..., messages=[...])`", say: "Messages dot create needs a model, max tokens, and messages."}
-      - {text: "The reply: content blocks, `stop_reason`, `usage`", say: "The response gives you content blocks, a stop reason, and token usage."}
-      - {text: "`system=` sets the role and rules", say: "And the system prompt sets the role and the rules."}
+      - {text: "An API is the waiter between your code and the model", say: "Recap. API aapke code aur model ke beech ka waiter hai."}
+      - {text: "Keys live in `ANTHROPIC_API_KEY`, never in code", say: "Keys environment variable mein rehti hain, code mein kabhi nahi."}
+      - {text: "`messages.create(model=..., max_tokens=..., messages=[...])`", say: "Messages dot create ko model, max tokens, aur messages chahiye."}
+      - {text: "The reply: content blocks, `stop_reason`, `usage`", say: "Response mein content blocks, stop reason, aur usage milta hai."}
     outro: >
-      Next lesson: conversations. You'll see exactly why the model forgets, and how to manage message history properly.
+      Agle lesson mein conversations. Aap khud dekhoge ki model bhoolta kyun hai, aur message history ko sahi tareeke se kaise manage karte hain.

@@ -51,3 +51,17 @@ Skip the analogy when a direct explanation is clearer.
 - Say when something is version-dependent or uncertain.
 - Explain trade-offs when there are several approaches.
 - Never fabricate output: every terminal output in a video is a real run.
+
+## Voice, language and look (from the Module 2 remake on)
+- **Narration: Hinglish**, by an Indian female voice (Kokoro `hf_beta`, "voice B", the learner's pick)
+  at speed 0.85 ("a little slower"). Scripts set `narration: hinglish`.
+- Write `say` text in **Roman Hinglish** ("Token kya hota hai"): captions show it exactly. Before
+  speaking, `tools/hinglish.py` swaps Hindi words for Devanagari (table in `tools/hinglish_words.py`)
+  and gives English words an Indian-English accent. Run `python tools/hinglish.py check <yaml>` and
+  make sure every listed word really is English; add missing Hindi words to the table.
+- Spelling rules that avoid clashes: `iss` (not `is`), `toh` (not `to`), `mai` (not `main`), and never
+  Hindi `the` (थे): rephrase. The narrator is female: `samjhati hoon`, `kar rahi hoon`.
+- On-screen text (headings, cards, code, quiz) stays in simple English.
+- **Light "Paper" theme** (`studio/src/theme.ts`): warm off-white page, dark ink, light code editor.
+- Scene types for this style: `run` (code left, real output right), `table` (dry runs, comparisons),
+  `interview` (question, answer to say out loud, trap), callout kinds `analogy`, `scenario`, `practice`.

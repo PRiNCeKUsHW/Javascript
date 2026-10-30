@@ -1,79 +1,123 @@
 module_title: LLM Fundamentals and API Integration
 title: "How LLMs Work: Tokens, Context Windows and Generation"
+narration: hinglish
 scenes:
   - type: title
     chapter: Introduction
     kicker: Module 2 · Lesson 1
     title: How a language model actually works
-    subtitle: Tokens, next-token prediction, context windows, and the settings you control.
+    subtitle: Tokens, next-token prediction, the context window, and the controls you have.
     say: >
-      Welcome to Module 2. In Module 1 you built a solid Python foundation. Now we meet the engine behind every agent in this course: the large language model.
-      Before writing a single API call, you need a clear mental model of what these systems do, and just as importantly, what they don't do.
+      Namaste dosto, aur Module 2 mein aapka swagat hai. Module 1 mein humne Python ki strong foundation banayi thi.
+      Ab hum uss engine ko samjhenge jo har AI agent ke andar chalta hai: large language model, ya short mein LLM.
+      Code likhne se pehle ek clear picture banana zaroori hai, ki yeh model actually kya karta hai, aur kya nahi karta.
 
   - type: objectives
     items:
-      - {text: "Explain next-token prediction in plain words", say: "You will be able to explain next-token prediction in plain words."}
-      - {text: "Understand tokens, and why they decide cost, limits and speed", say: "Understand tokens, and why they decide your cost, your limits, and your speed."}
-      - {text: "Reason about the context window and what fills it", say: "Reason about the context window, and what fills it up."}
-      - {text: "Know the controls you actually have over generation", say: "And know which controls you actually have over generation, on current models."}
+      - {text: "Explain next-token prediction in simple words", say: "Iss lesson ke baad aap next token prediction ko simple words mein explain kar paoge."}
+      - {text: "Understand tokens: why they decide cost, limits and speed", say: "Aap samjhoge ki tokens kya hote hain, aur yeh cost, limits aur speed ko kaise decide karte hain."}
+      - {text: "Reason about the context window", say: "Context window kya hai, aur usme kya kya jaata hai."}
+      - {text: "Know the controls you really have", say: "Aur model ko control karne ke liye aapke paas kaun se options hain."}
+
+  - type: callout
+    chapter: Next-token prediction
+    kind: analogy
+    title: "Your phone keyboard already does this"
+    body: "Type **\"Happy birthday to\"** and the keyboard suggests **\"you\"**. It guessed the most likely next word from patterns it has seen. An LLM does the same thing, at a much bigger scale, one token at a time."
+    say: >
+      Chalo ek simple example se shuru karte hain. Aapke phone ka keyboard dekho. Aap type karte ho, Happy birthday to, aur keyboard suggest karta hai, you.
+      Keyboard ne koi fact look up nahi kiya. Usne bas patterns dekhe hain, ki iss text ke baad usually kya aata hai.
+    items:
+      - {text: "An LLM is that idea, scaled up enormously", say: "LLM bhi basically yahi karta hai, bas bahut bade scale par. Usne training mein bahut saara text padha hai."}
+      - {text: "It predicts the next piece of text, again and again", say: "Aur woh baar baar predict karta hai ki agla piece of text kya hona chahiye."}
 
   - type: diagram
-    chapter: Next-token prediction
     heading: An LLM predicts the next token, again and again
     nodes:
       - {id: input, label: "\"Agents call\"", sub: text so far, x: 230, y: 300, w: 300, tone: amber, mono: true}
       - {id: model, label: Language model, sub: billions of learned weights, x: 760, y: 300, w: 360, h: 150, tone: violet}
       - {id: probs, label: "tools 62% · APIs 21% · …", sub: likely next tokens, x: 1370, y: 140, w: 470, tone: blue, mono: true}
-      - {id: pick, label: "\"Agents call tools\"", sub: the chosen token is appended, x: 1370, y: 480, w: 470, tone: teal, mono: true}
+      - {id: pick, label: "\"Agents call tools\"", sub: the chosen token is added, x: 1370, y: 480, w: 470, tone: teal, mono: true}
     edges:
       - {from: input, to: model}
       - {from: model, to: probs}
       - {from: probs, to: pick}
       - {from: pick, to: model, label: repeat, bend: 0.25}
     say: >
-      Here is the core idea, simplified but accurate.
+      Ab yahi idea thoda technically dekhte hain.
     steps:
       - show: [input, model, "input->model"]
         focus: [input, model]
         flow: ["input->model"]
         say: >
-          A language model takes the text so far as input. During training it saw an enormous amount of text, and its weights encode patterns of how text continues.
+          Model ko input milta hai, ab tak ka text. Jaise, Agents call. Model ke andar billions of numbers hain, jinhe weights kehte hain. Training ke time pe yeh weights text ke patterns seekh lete hain.
       - show: [probs, "model->probs"]
         focus: [model, probs]
         flow: ["model->probs"]
         caption: "Illustrative numbers, not real model output"
         say: >
-          Its output is not a whole answer. It is a probability for every possible next token. These percentages are just an illustration.
+          Model ka output poora answer nahi hota. Output hota hai har possible next token ki probability. Jaise, tools ke chances bahut zyada, APIs ke thode kam. Yeh numbers sirf samjhane ke liye hain.
       - show: [pick, "probs->pick", "pick->model"]
         focus: [pick, model]
         flow: ["probs->pick", "pick->model"]
         say: >
-          One token is chosen and appended to the text, and the whole thing goes back in to predict the next one. A long answer is just this loop, run hundreds or thousands of times.
-      - focus: [model]
-        caption: "It predicts plausible text. It does not look facts up."
-        say: >
-          This explains a lot of behaviour. The model produces plausible text, not looked-up facts. It can be confidently wrong, which is often called hallucination, and its knowledge stops at its training cut-off.
-          That's why agents give models tools and documents to check facts, which is exactly what this course builds.
+          Phir ek token choose hota hai, text ke end mein jud jaata hai, aur poora text wapas model mein jaata hai, agla token predict karne ke liye.
+          Ek lamba answer bas yahi loop hai, jo sainkdon ya hazaaron baar chalta hai.
+
+  - type: table
+    heading: "Dry run: how a reply grows, one token at a time"
+    columns: [Step, Text so far, Most likely next, Added]
+    widths: [0.6, 1.8, 1.4, 0.8]
+    rows:
+      - {cells: ["1", "\"Agents call\"", "tools", "✓"], say: "Iss process ka dry run karte hain. Step one: text hai, Agents call. Sabse likely next token hai tools, toh woh add ho jaata hai."}
+      - {cells: ["2", "\"Agents call tools\"", "to", "✓"], say: "Step two: ab text hai, Agents call tools. Agla likely token hai, to."}
+      - {cells: ["3", "\"Agents call tools to\"", "act", "✓"], say: "Step three: Agents call tools to, aur agla token hai, act."}
+      - {cells: ["4", "\"Agents call tools to act\"", ".", "stop"], say: "Step four: full stop aata hai, aur model decide karta hai ki answer complete hai. Yahan generation ruk jaata hai.", tone: teal, note: "Every new token sees everything before it, including its own earlier tokens."}
+
+  - type: callout
+    kind: warn
+    title: "Plausible text, not looked-up facts"
+    body: "The model writes what is **likely**, not what it has **checked**. It can be confidently wrong (a \"hallucination\"), and it knows nothing after its training cut-off. That's why agents get tools and documents."
+    say: >
+      Iss loop se ek bahut important baat samajh aati hai. Model plausible text likhta hai, yaani jo sahi lagta hai. Woh facts look up nahi karta.
+      Isliye model kabhi kabhi confidently galat answer de sakta hai. Isse hallucination kehte hain. Aur uski knowledge ek date tak hi hoti hai, jise training cut off kehte hain.
+      Yahi reason hai ki agents ko tools aur documents diye jaate hain, taaki woh facts check kar sakein. Yeh poora course wahi sikhata hai.
 
   - type: cards
     chapter: Tokens
     heading: "Tokens: the units a model reads and writes"
     say: >
-      So what is a token? It's a chunk of text, often a whole short word, a piece of a longer word, a space, or a punctuation mark.
+      Ab sabse important word: token. Token kya hai? Token text ka ek chhota tukda hai. Kabhi ek poora chhota word, kabhi kisi lambe word ka hissa, kabhi space ya punctuation.
     cards:
-      - {tag: illustration, title: "\"Agents call tools.\"", body: "might become: Agents · ␣call · ␣tools · .", code: "≈ 4 tokens", tone: amber, say: "For example, agents call tools, full stop, might be split into four tokens. This is an illustration. The exact split depends on each model's tokenizer."}
-      - {tag: rule of thumb, title: "About 4 characters", body: "per token for English text. Code and other languages often use more.", code: "1,000 words ≈ 1,300+ tokens", tone: blue, say: "A rough rule of thumb for English is about four characters per token. Code, unusual words, and many other languages use more tokens for the same text."}
-      - {tag: exact, title: "Count, don't guess", body: "The API has a free token-counting endpoint for the exact model you use.", code: "count_tokens(...)", tone: teal, say: "When you need an exact number, don't guess, and don't use another company's tokenizer. Ask the API: it has a token counting endpoint for the exact model you're using. You'll use it in lesson five."}
+      - {tag: illustration, title: "\"Agents call tools.\"", body: "might become: Agents · ␣call · ␣tools · .", code: "≈ 4 tokens", tone: amber, say: "Jaise, Agents call tools, full stop. Yeh shayad chaar tokens mein toot jaaye. Yeh sirf ek example hai. Exact split har model ke tokenizer par depend karta hai."}
+      - {tag: rule of thumb, title: "About 4 characters", body: "per token for English text. Code and other languages often use more.", code: "1,000 words ≈ 1,300+ tokens", tone: blue, say: "English text ke liye ek rough rule hai: lagbhag chaar characters ka ek token. Code, unusual words, aur Hindi jaisi doosri languages mein same text ke liye zyada tokens lagte hain."}
+      - {tag: exact, title: "Count, don't guess", body: "The API has a free token-counting endpoint for the exact model you use.", code: "count_tokens(...)", tone: teal, say: "Jab exact number chahiye, toh guess mat karo. API ke paas ek token counting endpoint hai, jo aapke exact model ke liye tokens ginta hai. Lesson five mein hum isse use karenge."}
+
+  - type: callout
+    kind: analogy
+    title: "Tokens are like a taxi meter"
+    body: "A taxi charges by the kilometre, both ways. The API charges by the token: **input** tokens you send, and **output** tokens it writes, and output costs more."
+    say: >
+      Tokens ko ek taxi meter ki tarah socho. Taxi kilometre ke hisaab se charge karti hai. API token ke hisaab se charge karti hai.
+      Aap jo bhejte ho, woh input tokens hain. Model jo likhta hai, woh output tokens hain. Aur output tokens usually kaafi mehenge hote hain.
 
   - type: bullets
     heading: Why tokens matter to you
     items:
-      - {text: "**Cost**: you pay per input token and per output token", sub: "output tokens usually cost several times more", say: "Tokens matter for three reasons. First, cost. You pay per input token and per output token, and output tokens usually cost several times more."}
-      - {text: "**Limits**: every request has a maximum size", sub: "the context window, and a cap on the reply", say: "Second, limits. Every request has a maximum size, measured in tokens."}
-      - {text: "**Speed**: replies are generated one token at a time", sub: "longer answers take longer: streaming helps", say: "And third, speed. Replies are generated one token at a time, so long answers take longer. Streaming, in lesson four, makes that wait feel much shorter."}
+      - {text: "**Cost**: you pay per input token and per output token", sub: "output tokens usually cost several times more", say: "Toh tokens aapke liye teen reasons se matter karte hain. Pehla, cost. Har input aur output token ka paisa lagta hai."}
+      - {text: "**Limits**: every request has a maximum size", sub: "the context window, and a cap on the reply", say: "Doosra, limits. Har request ka ek maximum size hota hai, jo tokens mein measure hota hai."}
+      - {text: "**Speed**: replies are generated one token at a time", sub: "longer answers take longer: streaming helps", say: "Aur teesra, speed. Reply ek ek token karke banta hai, toh lamba answer zyada time leta hai. Lesson four mein streaming se iska solution dekhenge."}
+
+  - type: callout
+    chapter: The context window
+    kind: analogy
+    title: "The context window is your exam desk"
+    body: "In an exam you can only use what is **on your desk**: the question paper, your rough sheet, and the answer sheet. The model can only use what is **in the request**, and its answer must fit on the same desk."
+    say: >
+      Ab context window. Isse exam ki desk ki tarah socho. Exam mein aap sirf wahi use kar sakte ho jo aapki desk par hai: question paper, rough sheet, aur answer sheet.
+      Model bhi sirf wahi dekh sakta hai jo request ke andar hai. Aur uska answer bhi usi desk par fit hona chahiye.
 
   - type: diagram
-    chapter: The context window
     heading: Everything must fit in the context window
     nodes:
       - {id: system, label: System prompt, sub: instructions and rules, x: 300, y: 110, w: 460, h: 112, tone: violet}
@@ -89,27 +133,36 @@ scenes:
       - {from: new, to: window}
       - {from: window, to: output}
     say: >
-      The context window is the maximum number of tokens the model can consider in one request, input and output together.
+      Technically, context window ka matlab hai: ek request mein model maximum kitne tokens consider kar sakta hai, input aur output dono milake.
     steps:
       - show: [system, history, docs, new]
         say: >
-          Everything you send goes in: the system prompt with your instructions, the whole conversation so far, any documents or tool results, and the new message.
+          Jo bhi aap bhejte ho, sab isme jaata hai. System prompt, yaani aapki instructions. Ab tak ki poori conversation. Koi documents ya tool results. Aur naya message.
       - show: [window, "system->window", "history->window", "docs->window", "new->window"]
         focus: [window]
         say: >
-          Current models have very large windows. Claude Opus 5.5, the model we use in this course, accepts up to one million tokens.
+          Aaj ke models ki window bahut badi hai. Claude Opus 5.5, jo model hum iss course mein use karenge, ek million tokens tak le sakta hai.
       - show: [output, "window->output"]
         focus: [window, output]
         flow: ["window->output"]
         say: >
-          The reply must fit too, and it has its own cap: up to one hundred and twenty-eight thousand output tokens on this model.
+          Reply ko bhi fit hona padta hai, aur uski apni limit hai: iss model par ek lakh atthaais hazaar output tokens tak.
       - focus: [history, docs]
         caption: "Big windows still cost money: every token you send is billed"
         say: >
-          A huge window does not mean you should fill it. Every token you send is billed on every request, and focused context usually gives better answers. Managing what goes into the window is a core agent engineering skill.
+          Lekin badi window ka matlab yeh nahi ki usse poora bhar do. Har request mein bheja gaya har token bill hota hai. Aur focused context se usually answers bhi better aate hain.
+          Window mein kya jaaye, yeh decide karna ek core agent engineering skill hai.
+
+  - type: callout
+    chapter: No memory between requests
+    kind: analogy
+    title: "A doctor who never keeps your file"
+    body: "Imagine a doctor who forgets every patient the moment they leave. To get good advice, **you must bring your full file every visit**. The model is that doctor; your app carries the file."
+    say: >
+      Ab ek aur crucial baat. Imagine karo ek doctor, jo har patient ko bhool jaata hai jaise hi woh room se bahar jaata hai.
+      Achhi advice chahiye, toh har visit par apni poori file saath le jaani padegi. Model wahi doctor hai. Aur file le jaane ka kaam aapki app ka hai.
 
   - type: compare
-    chapter: Models have no memory
     heading: The model has no memory between requests
     left:
       title: What it feels like
@@ -127,27 +180,56 @@ scenes:
     steps:
       - show: left
         say: >
-          One more crucial fact. When you chat with an assistant, it seems to remember what you said earlier.
+          Jab aap kisi chatbot se baat karte ho, lagta hai ki usse yaad hai aapne pehle kya bola tha.
       - show: right
         say: >
-          But the model itself has no memory between requests. Your application sends the whole conversation every time. The model's weights don't change while you chat.
-          If your code forgets to send the history, the conversation is gone. You'll see this happen in lesson three.
+          Lekin model ke paas requests ke beech koi memory nahi hoti. Aapki app har baar poori conversation bhejti hai. Chat karte waqt model ke weights change nahi hote.
+          Agar code history bhejna bhool gaya, toh conversation gayi. Lesson three mein aap yeh khud hote hue dekhoge.
 
   - type: cards
     chapter: Your controls
     heading: The controls you have on current Claude models
     cards:
-      - {tag: system, title: System prompt, body: "Role, rules and style for the whole conversation", tone: violet, say: "You control generation with a few levers. The system prompt sets the role, rules, and style."}
-      - {tag: max_tokens, title: Output cap, body: "The most tokens the reply may use", tone: amber, say: "Max tokens caps the length of the reply."}
-      - {tag: effort, title: Effort, body: "How much the model thinks: low to max", tone: teal, say: "Effort controls how much reasoning the model does, from low to max. Higher effort means better answers on hard problems, but more tokens."}
-      - {tag: model, title: Model choice, body: "Opus, Sonnet or Haiku: capability vs cost", tone: blue, say: "And you choose the model itself: Opus, Sonnet, or Haiku, trading capability against cost and speed."}
+      - {tag: system, title: System prompt, body: "Role, rules and style for the whole conversation", tone: violet, say: "Toh model ko control kaise karein? Pehla lever hai system prompt. Isse aap role, rules aur style set karte ho."}
+      - {tag: max_tokens, title: Output cap, body: "The most tokens the reply may use", tone: amber, say: "Max tokens se aap reply ki maximum length set karte ho."}
+      - {tag: effort, title: Effort, body: "How much the model thinks: low to max", tone: teal, say: "Effort se decide hota hai model kitna sochega, low se lekar max tak. Zyada effort mein mushkil problems par better answers milte hain, lekin tokens bhi zyada lagte hain."}
+      - {tag: model, title: Model choice, body: "Opus, Sonnet or Haiku: capability vs cost", tone: blue, say: "Aur aap model choose karte ho: Opus, Sonnet, ya Haiku. Yeh capability aur cost ke beech ka trade off hai."}
     outro: >
-      You may have read about temperature and top p in older tutorials. On current Claude models those sampling settings are no longer accepted. You steer the model with instructions, effort, and the model you pick.
+      Ek note. Purane tutorials mein aapne temperature aur top p ke baare mein padha hoga. Current Claude models par yeh sampling settings ab accept nahi hoti. Aap model ko instructions, effort, aur model choice se steer karte ho.
+
+  - type: interview
+    chapter: Interview corner
+    items:
+      - q: "How does an LLM generate text?"
+        a: "It predicts the **next token** from everything so far, adds it, and repeats until it decides the answer is complete. It produces likely text; it does not look facts up."
+        trap: "Saying it \"searches the internet\" or \"retrieves answers from a database\". On its own, it does neither."
+        say_q: "Interview corner. Yeh question bahut common hai: ek LLM text kaise generate karta hai? Pause karke socho, aap kya bologe."
+        say_a: "Ek achha answer: model ab tak ke text se next token predict karta hai, usse add karta hai, aur repeat karta hai jab tak answer complete na ho. Aur trap se bachna: yeh mat bolna ki woh internet search karta hai. Akele model aisa nahi karta."
+      - q: "Why does a chatbot \"remember\" earlier messages if the model has no memory?"
+        a: "Because the **application resends the conversation history** with every request. The API is stateless; the app owns the memory."
+        trap: "Saying the model \"learns\" from the chat. Its weights don't change while you talk to it."
+        say_q: "Doosra question: agar model ki memory nahi hai, toh chatbot pichle messages kaise yaad rakhta hai?"
+        say_a: "Answer: kyunki application har request ke saath poori history dobara bhejti hai. API stateless hai, memory app ke paas hai. Trap: yeh mat bolna ki model chat se seekhta hai. Uske weights change nahi hote."
+
+  - type: callout
+    chapter: Practice
+    kind: practice
+    title: "Try these before the next lesson"
+    body: "Easy to hard. Answers are in the module's quiz.md."
+    say: >
+      Ab practice ka time. Yeh questions easy se hard order mein hain. Video pause karo aur khud socho.
+    items:
+      - {text: "Why can an LLM be confidently wrong?", say: "Pehla: ek LLM confidently galat kyun ho sakta hai?"}
+      - {text: "Roughly how many tokens is a 400-character English paragraph?", say: "Doosra: chaar sau characters ka English paragraph, roughly kitne tokens ka hoga?"}
+      - {text: "Your chat app sends 50 old messages every turn. Name two problems.", say: "Teesra: aapki chat app har turn mein pachaas purane messages bhejti hai. Do problems batao."}
+      - {text: "Scenario: a support bot must answer from a 300-page manual. Why not paste the whole manual into every request?", say: "Aur chautha, ek real world scenario: ek support bot ko teen sau page ke manual se answer dena hai. Har request mein poora manual paste kyun nahi karna chahiye?", pause: 6}
+    outro: >
+      Hints: plausible text, chaar characters ka rule, cost aur context window. Answers quiz dot md file mein hain.
 
   - type: quiz
     chapter: Quick check
     number: 1
-    question: "You ask a chatbot your name in a new request, but your app didn't send the earlier messages. What happens?"
+    question: "Your app sends a new request without the earlier messages. What happens?"
     options:
       - "It remembers anyway"
       - "It doesn't know: the model has no memory between requests"
@@ -156,17 +238,17 @@ scenes:
     answer: 1
     explain: "Each request is independent. The model only sees what you send in that request, so the app must resend the history."
     say_question: >
-      Quick check. Your app sends a new request without the earlier messages. What happens?
+      Quick check. Aapki app ek nayi request bhejti hai, bina pichle messages ke. Kya hoga?
     say_answer: >
-      The model simply doesn't know. It has no memory between requests. It only sees what you send in that request.
+      Model ko pata hi nahi hoga. Requests ke beech uski koi memory nahi hoti. Woh sirf wahi dekhta hai jo uss request mein bheja gaya.
 
   - type: recap
     chapter: Recap
     heading: Lesson 1 recap
     items:
-      - {text: "An LLM predicts the next token, in a loop", say: "A language model predicts the next token, over and over."}
-      - {text: "It produces plausible text, not looked-up facts", say: "It produces plausible text, not looked-up facts, so important claims need checking."}
-      - {text: "Tokens drive cost, limits and speed; count them with the API", say: "Tokens drive cost, limits, and speed, and the API can count them exactly."}
-      - {text: "Everything must fit the context window; the app resends history", say: "Everything must fit in the context window, and your app resends the history every time."}
+      - {text: "An LLM predicts the next token, in a loop", say: "Recap karte hain. LLM next token predict karta hai, ek loop mein."}
+      - {text: "It writes plausible text, not looked-up facts", say: "Woh plausible text likhta hai, checked facts nahi. Isliye important claims check karne padte hain."}
+      - {text: "Tokens drive cost, limits and speed", say: "Tokens se cost, limits aur speed decide hoti hai."}
+      - {text: "Everything must fit the context window; the app resends history", say: "Sab kuch context window mein fit hona chahiye, aur app har baar history dobara bhejti hai."}
     outro: >
-      Next lesson, you make your first real API call, and take the response apart piece by piece.
+      Agle lesson mein aap apni pehli real API call karoge, aur uske response ka har hissa samjhoge.

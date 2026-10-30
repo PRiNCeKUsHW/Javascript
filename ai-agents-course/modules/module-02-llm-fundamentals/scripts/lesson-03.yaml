@@ -1,5 +1,6 @@
 module_title: LLM Fundamentals and API Integration
 title: "Conversations: Message History and the Growing Context"
+narration: hinglish
 scenes:
   - type: title
     chapter: Introduction
@@ -7,18 +8,28 @@ scenes:
     title: Conversations and message history
     subtitle: The API is stateless. Your code owns the conversation, and its cost.
     say: >
-      Every chat app and every agent is a conversation: a list of messages that grows over time.
-      In this lesson you'll see that the API remembers nothing, that your code owns the history, and that a growing history means a growing bill.
+      Har chat app aur har agent asal mein ek conversation hai: messages ki ek list, jo time ke saath badhti jaati hai.
+      Iss lesson mein aap dekhoge ki API kuch bhi yaad nahi rakhti, history aapke code ki zimmedari hai, aur badhti history ka matlab hai badhta bill.
 
   - type: objectives
     items:
-      - {text: "Build a multi-turn conversation correctly", say: "You'll build a multi-turn conversation correctly."}
-      - {text: "Spot and fix the classic forgotten-reply bug", say: "Spot and fix the classic forgotten reply bug."}
-      - {text: "Measure how input tokens grow every turn", say: "Measure how input tokens grow with every turn."}
-      - {text: "Choose a strategy for long conversations", say: "And choose a strategy for keeping long conversations under control."}
+      - {text: "Explain what \"stateless\" means", say: "Iss lesson ke baad aap explain kar paoge ki stateless ka matlab kya hai."}
+      - {text: "Build a multi-turn conversation correctly", say: "Multi turn conversation sahi tareeke se banaoge."}
+      - {text: "Spot and fix the forgotten-reply bug", say: "Forgotten reply wala classic bug pakdoge aur fix karoge."}
+      - {text: "Keep long conversations under control", say: "Aur lambi conversations ko control mein rakhna seekhoge."}
+
+  - type: callout
+    chapter: A stateless API
+    kind: analogy
+    title: "Stateless = a call centre with no customer records"
+    body: "Every time you call, a **different agent** picks up and knows nothing about you. If you want help with an old problem, **you must explain the whole story again**. The API works exactly like that."
+    say: >
+      Pehle what: stateless ka matlab kya hai? Ek call centre socho, jiske paas customers ka koi record nahi hai. Har baar call karo, toh ek naya agent phone uthata hai, jo aapke baare mein kuch nahi jaanta.
+      Purani problem par help chahiye, toh poori kahani phirse sunani padegi. API bilkul aise hi kaam karti hai. Har request akeli hai.
+    outro: >
+      Why aisa design kiya gaya? Kyunki stateless servers simple hote hain aur scale karna aasaan hota hai. Koi bhi server kisi bhi request ko handle kar sakta hai. Lekin iska matlab hai ki memory ka kaam aapke code ko karna hai.
 
   - type: diagram
-    chapter: A stateless API
     heading: Every request carries the whole conversation
     nodes:
       - {id: r1, label: "Request 1", sub: "user", x: 260, y: 120, w: 300, h: 100, tone: blue}
@@ -32,102 +43,141 @@ scenes:
       - {from: r3, to: api}
       - {from: api, to: app, label: reply}
     say: >
-      Here's how a conversation really works.
+      Ab how: ek conversation actually kaise chalti hai.
     steps:
       - show: [r1, api, "r1->api"]
         flow: ["r1->api"]
         say: >
-          The first request contains one user message.
+          Pehli request mein ek user message hota hai.
       - show: [app, "api->app"]
         flow: ["api->app"]
         focus: [api, app]
         say: >
-          The API replies, and then forgets everything. Your app stores the user message and the reply in a list.
+          API reply karti hai, aur phir sab bhool jaati hai. Aapki app user message aur reply, dono ko ek list mein store karti hai.
       - show: [r2, "r2->api"]
         flow: ["r2->api"]
         focus: [r2, api]
         say: >
-          The second request sends the whole list: the first question, the first reply, and the new question.
+          Doosri request poori list bhejti hai: pehla question, pehla reply, aur naya question.
       - show: [r3, "r3->api"]
         flow: ["r3->api"]
         focus: [r3, api]
         caption: "Roles alternate: user, assistant, user, … The first message is always user."
         say: >
-          And the third request sends five messages. Roles alternate between user and assistant, and the first message is always from the user.
+          Aur teesri request paanch messages bhejti hai. Roles alternate hote hain, user, assistant, user. Aur pehla message hamesha user ka hota hai.
 
-  - type: code
+  - type: run
     chapter: Building the history
-    heading: Building a conversation in Python
+    heading: "conversation.py: the history, and what each turn costs"
     title: conversation.py
     file: source/lesson-03/conversation.py
+    cwd: source/lesson-03
+    cmd: python conversation.py
     steps:
       - lines: "5"
         note: "The history is just a list of message dictionaries."
         say: >
-          The history is just a Python list of message dictionaries.
+          Ab code. History bas ek Python list hai, message dictionaries ki.
       - lines: "7-10"
         note: "Append the question, then send the **whole** list."
         say: >
-          For each question, we append it to the history, and send the whole list as messages.
+          Har question ke liye, pehle usse history mein append karo, phir poori list messages mein bhejo.
       - lines: "11-12"
         note: "Append the reply too, or the model never sees it."
         say: >
-          Then we append the assistant's reply. This line is the one people forget.
+          Phir assistant ka reply bhi append karo. Yahi woh line hai jo log aksar bhool jaate hain.
       - lines: "13-15"
+        out: "1-2"
+        note: "Turn 1: one message sent."
         say: >
-          Finally we print how many messages we sent, and how many input tokens that cost.
-
-  - type: terminal
-    title: terminal — lesson-03
-    cwd: source/lesson-03
-    steps:
-      - cmd: python conversation.py
+          Phir hum print karte hain kitne messages bheje, aur kitne input tokens lage. Right side dekho: pehle turn mein ek message gaya, aur paanch input tokens.
+      - lines: "13-15"
+        out: "3-4"
+        note: "Turn 2: three messages, more tokens."
         say: >
-          Look at the numbers. One message, then three, then five. And the input tokens grow every turn, because every request re-sends everything before it.
-          The offline fake even reports how many earlier messages it received, so you can see the history arriving.
+          Doosre turn mein teen messages gaye, aur input tokens badh gaye. Offline fake bhi bata raha hai ki iss request ke saath kitne purane messages aaye.
+      - lines: "13-15"
+        out: "5-6"
+        note: "Turn 3: five messages. Input grows every turn."
+        say: >
+          Aur teesre turn mein paanch messages. Har request apne se pehle ka sab kuch dobara bhejti hai, isliye input tokens har turn badhte hain.
 
-  - type: code
+  - type: table
+    heading: "Dry run: what each request sends"
+    columns: [Turn, History before the call, Messages sent, Input tokens]
+    widths: [0.6, 2.4, 1, 1]
+    rows:
+      - {cells: ["1", "user", "1", "5"], say: "Isko ek table mein dry run karte hain. Turn one: history mein sirf ek user message hai. Ek message gaya, paanch tokens."}
+      - {cells: ["2", "user · assistant · user", "3", "69"], say: "Turn two: pehla question, pehla reply, aur naya question. Teen messages, unhattar tokens."}
+      - {cells: ["3", "user · assistant · user · assistant · user", "5", "104"], say: "Turn three: paanch messages, ek sau chaar tokens.", tone: coral, note: "Same short questions, but the input keeps growing: you pay for the whole history every turn. (Offline estimates.)"}
+
+  - type: run
     chapter: The forgotten reply
     heading: "Bug: forgetting to store the reply"
     title: forgetful.py
     file: source/lesson-03/forgetful.py
+    cwd: source/lesson-03
+    cmd: python forgetful.py
     steps:
       - lines: "7-11"
         tone: coral
         note: "The assistant's reply is never appended."
         say: >
-          Here's the classic bug. The loop appends each question, but never the reply.
+          Ab ek classic bug. Yeh loop har question append karta hai, lekin reply kabhi nahi.
       - lines: "13"
+        out: "1"
         tone: coral
-        note: "Two user messages in a row: the API merges them into one turn."
+        note: "Two user messages in a row: no assistant turn at all."
         say: >
-          So the history contains two user messages in a row. The API accepts that, and merges them into a single user turn. But the model never sees what it said before, so it can't refer to its own earlier answers.
-
-  - type: terminal
-    title: terminal — lesson-03
-    cwd: source/lesson-03
-    steps:
-      - cmd: python forgetful.py
-        say: >
-          User, user. No assistant turn. In a chat app, that shows up as an assistant that seems to have amnesia. Always store the reply right after you receive it.
+          Output dekho: user, user. Koi assistant turn hi nahi hai. API isse accept kar leti hai aur dono user messages ko ek turn mein merge kar deti hai. Lekin model ko kabhi pata nahi chalta ki usne pehle kya bola tha.
+          Chat app mein yeh aisa lagta hai jaise assistant ki memory chali gayi ho. Isliye reply milte hi usse store karo.
 
   - type: cards
     chapter: Long conversations
     heading: Keeping long conversations under control
     say: >
-      Since every turn re-sends the whole history, long conversations get slower and more expensive, and eventually hit the context window. There are a few standard strategies.
+      Har turn poori history dobara bhejta hai, toh lambi conversations slow aur mehengi ho jaati hain, aur aakhir mein context window bhar jaati hai. Iske kuch standard solutions hain.
     cards:
-      - {tag: window, title: Sliding window, body: "Keep only the most recent turns; drop the oldest pairs", tone: teal, say: "The simplest is a sliding window: keep the most recent turns, and drop the oldest user and assistant pair once you're over a budget. Our project does this."}
-      - {tag: summary, title: Summarise, body: "Replace old turns with a short summary (Module 6)", tone: blue, say: "A smarter option replaces old turns with a short summary written by the model. That's part of Module 6 on memory."}
-      - {tag: memory, title: Store facts, body: "Save key facts to a database, add only what's relevant", tone: violet, say: "And agents often store key facts in a database, and add back only what's relevant to the current question."}
-      - {tag: cache, title: Prompt caching, body: "Re-sent, unchanged prefixes can be billed at a large discount", tone: amber, say: "Finally, prompt caching lets an unchanged prefix of the conversation be billed at a large discount when you re-send it. You'll use it later in the course."}
+      - {tag: window, title: Sliding window, body: "Keep only the most recent turns; drop the oldest pairs", tone: teal, say: "Sabse simple hai sliding window: sirf latest turns rakho, aur budget cross hone par sabse purana user aur assistant pair hata do. Hamara project yahi karta hai."}
+      - {tag: summary, title: Summarise, body: "Replace old turns with a short summary (Module 6)", tone: blue, say: "Doosra option: purane turns ko model se ek chhoti summary mein badal do. Yeh Module 6 mein aayega."}
+      - {tag: memory, title: Store facts, body: "Save key facts to a database, add only what's relevant", tone: violet, say: "Teesra: important facts ek database mein save karo, aur sirf relevant facts wapas add karo."}
+      - {tag: cache, title: Prompt caching, body: "Re-sent, unchanged prefixes can be billed at a large discount", tone: amber, say: "Aur prompt caching: conversation ka jo starting hissa change nahi hua, usse dobara bhejne par bahut kam bill lagta hai. Course mein aage yeh use karenge."}
+
+  - type: table
+    heading: "Dry run: trimming in pairs"
+    columns: [Step, History, "Over budget?", Action]
+    widths: [0.6, 2.6, 1, 1.4]
+    rows:
+      - {cells: ["1", "U1 · A1 · U2 · A2 · U3", "yes", "drop U1 + A1"], say: "Trimming ka ek dry run. Maan lo history hai user one, assistant one, user two, assistant two, user three, aur budget cross ho gaya. Toh pehla pair hatao: user one aur assistant one, saath mein."}
+      - {cells: ["2", "U2 · A2 · U3", "no", "send"], say: "Ab history hai user two, assistant two, user three. Budget ke andar hai, toh bhej do.", tone: teal}
+      - {cells: ["✗", "A1 · U2 · A2 · U3", "—", "wrong: starts with assistant"], say: "Aur yeh galat tareeka hai: sirf user one hataya, toh history assistant se shuru hogi. Roles ka order toot jaata hai.", tone: coral, note: "Drop a user + assistant pair together, so roles keep alternating and the history starts with user."}
+
+  - type: interview
+    chapter: Interview corner
+    items:
+      - q: "What does it mean that the Messages API is stateless?"
+        a: "The server keeps **no memory between requests**. Each request must contain everything the model needs, including the conversation history, which the client stores and resends."
+        trap: "Confusing stateless with \"no conversation possible\". Conversations work fine; the client carries the state."
+        say_q: "Interview corner. Messages API stateless hai, iska kya matlab hai?"
+        say_a: "Answer: server requests ke beech koi memory nahi rakhta. Har request mein woh sab hona chahiye jo model ko chahiye, history ke saath, jo client store karta hai aur dobara bhejta hai. Trap: stateless ka matlab yeh nahi ki conversation possible nahi. Conversation chalti hai, bas state client ke paas hai."
+      - q: "A long chat is getting slow and expensive. What would you do?"
+        a: "Measure tokens per turn, then **trim old turns in pairs**, summarise older context, or keep facts in a store and add only what's relevant. Prompt caching cuts the cost of the unchanged prefix."
+        trap: "\"Use a model with a bigger context window.\" That delays the problem and raises the bill."
+        say_q: "Doosra, scenario based question: ek lambi chat slow aur mehengi ho rahi hai. Aap kya karoge?"
+        say_a: "Answer: pehle har turn ke tokens measure karo. Phir purane turns ko pairs mein trim karo, purana context summarise karo, ya facts ek store mein rakho aur sirf relevant wale add karo. Prompt caching unchanged hisse ki cost kam karti hai. Trap: bas badi context window wala model le lo. Isse problem sirf aage khisakti hai, aur bill badhta hai."
 
   - type: callout
-    kind: warn
-    title: "Trim in pairs, and keep the first message a user turn"
-    body: "When you drop old messages, remove a **user and assistant pair** together, so roles keep alternating and the history still starts with `user`."
+    chapter: Practice
+    kind: practice
+    title: "Try these before the next lesson"
+    body: "Easy to hard. Answers are in the module's quiz.md."
     say: >
-      One practical rule when trimming. Drop messages in pairs, a user message and its reply together, so the roles keep alternating and the history still starts with a user turn.
+      Practice time.
+    items:
+      - {text: "A conversation has 10 messages. How many does the next request send?", say: "Pehla: conversation mein das messages hain. Agli request kitne messages bhejegi?"}
+      - {text: "Fix `forgetful.py` and show the roles printed after the fix.", say: "Doosra: forgetful dot py ko fix karo, aur batao fix ke baad kaun se roles print honge."}
+      - {text: "Write `trim(history, max_messages)` that drops the oldest pairs.", say: "Teesra: ek trim function likho, jo sabse purane pairs hataye."}
+      - {text: "Scenario: users complain the bot \"forgets\" after an error. What might your code be doing?", say: "Aur scenario: users complain karte hain ki error ke baad bot sab bhool jaata hai. Aapka code kya galti kar raha hoga?", pause: 6}
 
   - type: quiz
     chapter: Quick check
@@ -137,17 +187,17 @@ scenes:
     answer: 2
     explain: "The API is stateless: you send all 10 earlier messages plus the new one (unless you trim the history on purpose)."
     say_question: >
-      Quick check. A conversation already has ten messages. How many messages does your next request send?
+      Quick check. Conversation mein pehle se das messages hain. Agli request kitne messages bhejegi?
     say_answer: >
-      Eleven: all ten earlier messages plus the new one, unless you deliberately trim the history.
+      Gyaarah. Saare das purane messages, aur ek naya. Jab tak aap jaan boojhkar history trim nahi karte.
 
   - type: recap
     chapter: Recap
     heading: Lesson 3 recap
     items:
-      - {text: "The API is stateless; your code keeps the history list", say: "The API is stateless, and your code keeps the history."}
-      - {text: "Append the question **and** the reply, every turn", say: "Append both the question and the reply, every turn."}
-      - {text: "Input tokens, and cost, grow with every turn", say: "Input tokens, and cost, grow with every turn."}
-      - {text: "Trim in user and assistant pairs, or summarise", say: "So trim in pairs, or summarise, to keep conversations under control."}
+      - {text: "The API is stateless; your code keeps the history list", say: "Recap. API stateless hai, aur history aapka code rakhta hai."}
+      - {text: "Append the question **and** the reply, every turn", say: "Har turn question aur reply, dono append karo."}
+      - {text: "Input tokens, and cost, grow with every turn", say: "Har turn ke saath input tokens aur cost badhte hain."}
+      - {text: "Trim in user and assistant pairs, or summarise", say: "Isliye pairs mein trim karo, ya summarise karo."}
     outro: >
-      Next, you'll control the output itself: length limits, streaming, and structured JSON.
+      Agle lesson mein aap output ko control karoge: length limits, streaming, aur structured JSON.

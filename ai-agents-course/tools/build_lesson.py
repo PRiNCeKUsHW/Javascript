@@ -41,7 +41,8 @@ FPS = 60
 VOICE, LANG, SPEED = "am_michael", "en-us", 1.0
 # Hinglish narration (Module 2 remake on): a lesson script with `narration: hinglish` is spoken by an
 # Indian female voice; tools/hinglish.py gives its English words an Indian-English accent.
-HINGLISH_VOICE = os.environ.get("HINGLISH_VOICE", "hf_alpha")
+HINGLISH_VOICE = os.environ.get("HINGLISH_VOICE", "hf_beta")  # the learner chose voice B
+HINGLISH_SPEED = 0.85  # "a little slower" than the 0.95 sample
 
 LEAD, TAIL, GAP = 0.7, 0.6, 0.35       # seconds before the first beat, after the last, between beats
 SENTENCE_GAP = 0.22
@@ -130,7 +131,8 @@ def tts(sentence, allow_new):
     if not allow_new:
         raise SystemExit(f"narration not cached: {sentence[:70]}")
     if LANG == "hinglish":
-        audio, sr = kokoro().create(hinglish.phonemes(kokoro().tokenizer, spoken), voice=VOICE, speed=SPEED,
+        audio, sr = kokoro().create(hinglish.phonemes(kokoro().tokenizer, hinglish.to_speech(spoken)), voice=VOICE,
+                                    speed=SPEED,
                                     is_phonemes=True)
     else:
         audio, sr = kokoro().create(spoken, voice=VOICE, speed=SPEED, lang=LANG)
@@ -441,6 +443,9 @@ def build(module, lesson, allow_new=True):
     spec = yaml.safe_load((mdir / f"scripts/lesson-{lesson:02d}.yaml").read_text(encoding="utf-8"))
     global VOICE, LANG
     VOICE, LANG = ("am_michael", "en-us") if spec.get("narration") != "hinglish" else (HINGLISH_VOICE, "hinglish")
+    if LANG == "hinglish":
+        global SPEED
+        SPEED = HINGLISH_SPEED
     env = dict(os.environ, PATH=f"{VENV_BIN}{os.pathsep}{os.environ['PATH']}", PYTHONDONTWRITEBYTECODE="1",
                VIRTUAL_ENV=str(ROOT / ".venv"), COLUMNS="88", NO_COLOR="1")
     env = shell_env(env)

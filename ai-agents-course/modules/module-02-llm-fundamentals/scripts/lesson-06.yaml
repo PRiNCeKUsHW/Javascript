@@ -1,5 +1,6 @@
 module_title: LLM Fundamentals and API Integration
 title: "Project, Part 1: AI Study Assistant, Client, Costs and Explanations"
+narration: hinglish
 scenes:
   - type: title
     chapter: Introduction
@@ -8,18 +9,18 @@ scenes:
     subtitle: Plan the tool, build an offline-capable client, track costs, and stream explanations.
     loop: [Ask, Stream, Measure, Budget]
     say: >
-      Project time. Over two lessons you'll build the AI Study Assistant: a command line tool that explains programming concepts, writes quizzes as validated JSON, and chats with memory, while tracking every cent it spends.
-      Everything from this module appears in it.
+      Project time! Do lessons mein hum AI Study Assistant banayenge. Ek command line tool, jo programming concepts explain karta hai, validated JSON mein quizzes banata hai, aur memory ke saath chat karta hai. Aur saath mein har ek cent ka hisaab rakhta hai.
+      Iss module ki har cheez isme aayegi. Ek ek file karke, aaram se chalenge.
 
   - type: bullets
     chapter: What we are building
     heading: "The brief"
     items:
-      - {text: "`explain`: stream an explanation at a chosen level", say: "The explain command streams an explanation of any topic, at a beginner, intermediate, or advanced level."}
-      - {text: "`quiz`: multiple-choice questions as validated JSON; save and grade them", say: "The quiz command generates multiple-choice questions as validated JSON, which you can save and grade."}
-      - {text: "`chat`: a conversation with history, trimmed to a token budget", say: "The chat command holds a conversation with history, trimmed to a token budget."}
-      - {text: "Every call reports tokens and cost; a budget stops runaway spending", say: "Every call reports its tokens and cost, and a budget stops runaway spending."}
-      - {text: "Clear errors, automatic retries, and an offline mode for tests", say: "And it has clear errors, automatic retries, and an offline mode, so the tests never need a key or the network."}
+      - {text: "`explain`: stream an explanation at a chosen level", say: "Explain command kisi bhi topic ko stream karke samjhata hai, beginner, intermediate, ya advanced level par."}
+      - {text: "`quiz`: multiple-choice questions as validated JSON; save and grade them", say: "Quiz command validated JSON mein multiple choice questions banata hai, jinhe aap save aur grade kar sakte ho."}
+      - {text: "`chat`: a conversation with history, trimmed to a token budget", say: "Chat command history ke saath conversation karta hai, ek token budget ke andar trim karke."}
+      - {text: "Every call reports tokens and cost; a budget stops runaway spending", say: "Har call apne tokens aur cost batati hai, aur ek budget faltu kharche ko rokta hai."}
+      - {text: "Clear errors, automatic retries, and an offline mode for tests", say: "Aur clear errors, automatic retries, aur ek offline mode, taaki tests ko kabhi key ya network na chahiye."}
 
   - type: diagram
     chapter: Architecture
@@ -41,47 +42,55 @@ scenes:
       - {from: assistant, to: client}
       - {from: client, to: api, label: key set}
       - {from: client, to: fake, label: offline}
+    say: >
+      Code se pehle architecture. Har file ka ek hi kaam hai. Isse separation of concerns kehte hain.
     steps:
       - show: [cli, assistant, "cli->assistant"]
         focus: [cli, assistant]
         say: >
-          The command line handles arguments and printing, and calls the assistant, which holds the logic for explaining, quizzing, and chatting.
+          Command line arguments aur printing sambhalti hai, aur assistant ko call karti hai. Assistant mein asli logic hai: explain, quiz, aur chat.
       - show: [prompts, models, "assistant->prompts", "assistant->models"]
         focus: [prompts, models]
         say: >
-          Prompts live in their own module, so you can improve them without touching the code. And models holds the quiz schema.
+          Prompts ki apni alag file hai, taaki aap code chhue bina prompts improve kar sako. Aur models mein quiz ka schema hai.
       - show: [pricing, "assistant->pricing"]
         focus: [pricing]
         say: >
-          Pricing calculates costs and enforces the budget.
+          Pricing cost calculate karti hai aur budget enforce karti hai.
       - show: [client, api, fake, "assistant->client", "client->api", "client->fake"]
         focus: [client, api, fake]
         flow: ["client->api", "client->fake"]
         say: >
-          And client builds the SDK client: a real one when your key is set, or the same SDK pointed at the offline fake API when it isn't. Nothing else in the program knows the difference.
+          Aur client SDK client banata hai. Key set hai toh real client, nahi toh wahi SDK offline fake API ki taraf. Program ke baaki hisse ko yeh fark pata hi nahi chalta.
+
+  - type: callout
+    chapter: The offline fake API
+    kind: analogy
+    title: "The fake API is a flight simulator"
+    body: "Pilots train in a simulator with **the real cockpit controls**; only the outside world is simulated. Our tests use **the real SDK**; only the server is simulated. Crashes are free, and you can practise failures on purpose."
+    say: >
+      Sabse pehle woh cheez jo testing ko possible banati hai: fake API. Isse flight simulator ki tarah socho. Pilots simulator mein real cockpit controls ke saath train karte hain. Sirf bahar ki duniya simulated hoti hai.
+      Hamare tests real SDK use karte hain. Sirf server simulated hai. Crash free mein hota hai, aur failures jaan boojhkar practice kar sakte ho.
 
   - type: code
-    chapter: The offline fake API
     heading: "fake_api.py: a fake server the real SDK talks to"
     title: study/fake_api.py
     file: project/ai-study-assistant/study/fake_api.py
     lines: "33-63"
-    say: >
-      Let's start with the piece that makes testing possible: the fake API.
     steps:
       - lines: "33-41"
         note: "A callable handler. `STUDY_FAKE_FAIL` scripts failures."
         say: >
-          It's a class whose objects can be called like a function, once per HTTP request. A list of planned failures lets tests and demos make it return a four twenty-nine or a five hundred on purpose.
+          Yeh ek class hai jiske objects ko function ki tarah call kar sakte ho, har HTTP request par ek baar. Planned failures ki ek list se tests aur demos jaan boojhkar four twenty nine ya five hundred mangwa sakte hain.
       - lines: "43-50"
         note: "It reads the real JSON request the SDK sent."
         say: >
-          Each call receives the real HTTP request the SDK built, and parses its JSON body. It records the body, so tests can check exactly what was sent, and it answers token counting requests with a rough estimate.
+          Har call ko SDK ki banayi hui real HTTP request milti hai, aur woh uska JSON body parse karti hai. Body record hoti hai, taaki tests check kar sakein ki exactly kya bheja gaya.
       - lines: "52-63"
         note: "Same shapes as the real API: errors, refusals, `max_tokens`, streaming."
         say: >
-          Then it prepares a placeholder reply, applies any planned failure or refusal, cuts the reply at max tokens just like the real API, and returns either a normal JSON message or a stream of server-sent events.
-          Because the responses have the same shape as the real API's, the SDK can't tell the difference. That means our tests exercise the real SDK code.
+          Phir woh placeholder reply banati hai, planned failure ya refusal lagati hai, real API ki tarah max tokens par reply kaatti hai, aur normal JSON ya server sent events ki stream wapas deti hai.
+          Responses ki shape real API jaisi hai, isliye SDK ko fark pata nahi chalta. Matlab hamare tests real SDK code ko test karte hain.
 
   - type: code
     chapter: Client and settings
@@ -92,11 +101,11 @@ scenes:
       - lines: "16-19"
         note: "Real mode: the SDK reads `ANTHROPIC_API_KEY` itself."
         say: >
-          With a key, we create a normal client. The SDK reads the key from the environment, so it never appears in our code. We pass the retry count and a sixty-second timeout.
+          Key hai, toh normal client banta hai. SDK key environment se khud padhta hai, toh key hamare code mein kabhi nahi aati. Hum retry count aur saath second ka timeout dete hain.
       - lines: "20-25"
         note: "Offline: a `MockTransport` replaces the network."
         say: >
-          Without a key, we print a clear offline notice, and give the same SDK an HTTP client whose transport is our fake API instead of the network.
+          Key nahi hai, toh ek clear offline notice print hota hai, aur wahi SDK ek aise HTTP client ke saath banta hai jiska transport network ki jagah hamari fake API hai.
 
   - type: code
     title: study/config.py
@@ -105,7 +114,7 @@ scenes:
       - lines: "15-23"
         note: "No key → offline. Everything else has a safe default."
         say: >
-          Settings come from environment variables, as in Module 1. If there's no key, we switch to offline mode automatically. The model defaults to Claude Opus 5.5, and the budget to fifty cents.
+          Settings environment variables se aati hain, Module 1 ki tarah. Key nahi, toh automatically offline mode. Model ka default Claude Opus 5.5 hai, aur budget ka pachaas cents.
 
   - type: code
     chapter: Costs and budget
@@ -116,17 +125,28 @@ scenes:
       - lines: "5-12"
         note: "List prices per million tokens. Check the pricing page; they change."
         say: >
-          The price table holds dollars per million input and output tokens, for each model.
+          Price table mein har model ke liye per million input aur output tokens ke dollars hain.
       - lines: "15-19"
         say: >
-          Cost u s d is the formula from lesson five. An unknown model raises an error rather than silently costing zero.
+          Cost USD lesson five wala formula hai. Unknown model par error aata hai, chupchaap zero cost nahi.
       - lines: "22-34"
         note: "`check()` runs **before** each call."
         say: >
-          The cost tracker adds up spending. Its check method runs before every call, and raises budget exceeded once the budget is used up. That's your protection against a runaway loop.
+          Cost tracker kharcha jodta hai. Iska check method har call se pehle chalta hai, aur budget khatam hote hi budget exceeded raise karta hai. Yahi runaway loop se aapki suraksha hai.
       - lines: "36-40"
         say: >
-          And add records the cost of each finished call.
+          Aur add har poori hui call ki cost record karta hai.
+
+  - type: table
+    heading: "Dry run: a $0.003 budget, one check before every call"
+    columns: [Call, check()  before, Cost of call, Spent after]
+    widths: [0.6, 1.6, 1.2, 1.2]
+    mono: true
+    rows:
+      - {cells: ["1", "0.0000 < 0.003 → ok", "0.0013", "0.0013"], say: "Ek chhote budget ke saath dry run. Teen tenth of a cent ka budget. Call one: check, spent zero hai, theek hai. Call ki cost point zero zero one three, spent ab utna hi."}
+      - {cells: ["2", "0.0013 < 0.003 → ok", "0.0013", "0.0026"], say: "Call two: check, abhi bhi budget ke andar. Call hui, spent ab point zero zero two six."}
+      - {cells: ["3", "0.0026 < 0.003 → ok", "0.0013", "0.0039"], tone: amber, say: "Call three: check pass, kyunki point zero zero two six abhi bhi budget se kam hai. Call ke baad spent budget se thoda upar chala gaya."}
+      - {cells: ["4", "0.0039 ≥ 0.003 → stop", "—", "0.0039"], tone: coral, say: "Call four: check fail. BudgetExceeded, aur request bheji hi nahi jaati.", note: "A check before each call can overshoot by at most one call: pick a budget with that margin."}
 
   - type: code
     chapter: The assistant
@@ -138,23 +158,23 @@ scenes:
       - lines: "20-30"
         note: "An `Answer` carries the text, stop reason, tokens and cost."
         say: >
-          An Answer bundles everything we learn from a call: the text, the stop reason, the tokens, and the cost. Truncated is true when the reply hit max tokens.
+          Answer ek call se mili har jaankari ko ek saath rakhta hai: text, stop reason, tokens, aur cost. Truncated true hota hai jab reply max tokens par kata.
       - lines: "33-53"
         note: "One place maps SDK errors to clear messages, most specific first."
         say: >
-          Friendly errors is a context manager that catches SDK exceptions, most specific first, and turns each into one clear message. It's lesson five's error table, written once and reused by every call.
+          Friendly errors ek context manager hai jo SDK exceptions ko pakadta hai, sabse specific pehle, aur har ek ko ek clear message mein badalta hai. Yeh lesson five wali error table hai, ek baar likhi, aur har call mein reuse.
       - lines: "16-17"
         note: "Opt in to server-side fallbacks for refusals."
         say: >
-          Next, fallbacks. If the model declines a request, the API can re-run it on another model automatically. We opt in with this beta flag.
+          Ab fallbacks. Agar model request mana kar de, toh API usse automatically doosre model par chala sakti hai. Hum iss beta flag se opt in karte hain.
       - lines: "63-65"
         note: "Every request shares the model, the beta flag and `fallbacks`."
         say: >
-          And base builds the arguments every request shares: the model, the beta flag, and fallbacks set to default, so the API chooses a suitable fallback model for us.
+          Base woh arguments banata hai jo har request mein common hain: model, beta flag, aur fallbacks equals default, taaki API khud suitable fallback model chune.
       - lines: "67-75"
         note: "Record the cost first, then check for a refusal, then read the text."
         say: >
-          Answer turns a response into an Answer. It records the cost first, because even a declined request is billed, then checks for a refusal, and only then joins the text blocks.
+          Answer function ek response ko Answer mein badalta hai. Pehle cost record karta hai, kyunki mana ki gayi request ka bhi bill aata hai. Phir refusal check, aur uske baad hi text blocks jodta hai.
 
   - type: code
     heading: "explain(): streaming an answer"
@@ -164,15 +184,15 @@ scenes:
     steps:
       - lines: "81-82"
         say: >
-          Explain checks the budget first, then fills in the request template from prompts dot py.
+          Explain pehle budget check karta hai, phir prompts dot py se request template bharta hai.
       - lines: "83-86"
-        note: "`beta.messages.stream` + our shared arguments + low effort."
+        note: "`beta.messages.stream` + shared arguments + low effort."
         say: >
-          It opens a stream, inside friendly errors, using the shared arguments, the tutor system prompt, and low effort, which is plenty for explanations.
+          Friendly errors ke andar ek stream kholta hai, shared arguments, tutor system prompt, aur low effort ke saath. Explanations ke liye low effort kaafi hai.
       - lines: "87-91"
         note: "Each piece goes to `on_text`; the final message is costed."
         say: >
-          Each piece of text is passed to an on text callback as it arrives, so the assistant doesn't know or care whether it's printed, shown in a web page, or collected by a test. Then the final message becomes an Answer.
+          Har text piece aate hi on text callback ko diya jaata hai. Toh assistant ko farak nahi padta ki text print ho raha hai, web page par dikh raha hai, ya test collect kar raha hai. Phir final message ek Answer banta hai.
 
   - type: terminal
     chapter: First run
@@ -182,22 +202,34 @@ scenes:
     steps:
       - cmd: python -m study explain "Python decorators"
         say: >
-          Let's run it. The offline notice comes first, then the streamed placeholder, then a footer with the model, tokens, cost, and stop reason, and finally the session total against the budget.
+          Chalo run karte hain. Pehle offline notice, phir streamed placeholder, phir ek footer jisme model, tokens, cost, aur stop reason hai. Aur aakhir mein budget ke against session ka total.
       - cmd: python -m study explain "recursion" --max-tokens 20
         say: >
-          With a tiny max tokens, the reply is cut off, and the tool warns you instead of pretending everything is fine.
+          Bahut chhote max tokens ke saath reply kat jaata hai, aur tool aapko warning deta hai, sab theek hone ka natak nahi karta.
       - cmd: STUDY_BUDGET_USD=0 python -m study explain "anything"
         exit: 1
         say: >
-          And with a budget of zero, it refuses before sending anything, with a one-line explanation.
+          Aur zero budget ke saath, kuch bhi bhejne se pehle hi mana kar deta hai, ek line ke explanation ke saath.
+
+  - type: callout
+    chapter: Pause and try
+    kind: try
+    title: "Pause and try: trace the budget"
+    body: "Budget $0.002. Each call costs $0.0013."
+    say: >
+      Video pause karo aur socho. Budget hai point zero zero two dollars, aur har call point zero zero one three ki.
+    items:
+      - {text: "How many calls run before BudgetExceeded?", say: "BudgetExceeded se pehle kitni calls chalengi?", pause: 6}
+    outro: >
+      Do calls. Pehli ke baad spent point zero zero one three, jo budget se kam hai, toh doosri chalti hai. Uske baad spent point zero zero two six, toh teesri ka check fail hota hai.
 
   - type: recap
     chapter: Recap
     heading: Part 1 recap
     items:
-      - {text: "A fake API with the real protocol makes tests free and repeatable", say: "A fake API that speaks the real protocol makes tests free and repeatable."}
-      - {text: "One function decides: real client or offline client", say: "One function decides between the real and the offline client."}
-      - {text: "Every call is costed; a budget check runs before each call", say: "Every call is costed, and a budget check runs before each one."}
-      - {text: "Errors are mapped once; fallbacks handle refusals", say: "Errors are mapped once, in one place, and fallbacks handle refusals."}
+      - {text: "A fake API with the real protocol makes tests free and repeatable", say: "Recap. Real protocol bolne wali fake API tests ko free aur repeatable banati hai."}
+      - {text: "One function decides: real client or offline client", say: "Ek function decide karta hai: real client ya offline client."}
+      - {text: "Every call is costed; a budget check runs before each call", say: "Har call ki cost lagti hai, aur har call se pehle budget check hota hai."}
+      - {text: "Errors are mapped once; fallbacks handle refusals", say: "Errors ek hi jagah map hote hain, aur fallbacks refusals sambhalte hain."}
     outro: >
-      In part two: quizzes as structured output, chat with history, the full demo, the tests, and the module quiz.
+      Part two mein: structured output se quizzes, history ke saath chat, poora demo, tests, interview corner, aur module quiz.
