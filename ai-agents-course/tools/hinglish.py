@@ -43,9 +43,17 @@ def phonemes(tokenizer, text: str) -> str:
     return " ".join(p.strip() for p in out if p.strip())
 
 
+# Indian names of letters, for spelled-out abbreviations ("A P I", "L L M"). Read as English, a lone
+# "A" is the article "uh", so "A P I" came out as "uh-pee-eye".
+LETTERS = dict(zip("ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                   "ए बी सी डी ई एफ़ जी एच आई जे के एल एम एन ओ पी क्यू आर एस टी यू वी डब्ल्यू एक्स वाई ज़ेड".split()))
+
+
 def to_speech(text: str) -> str:
     """Roman Hinglish (as captioned) -> the same sentence with Hindi words in Devanagari."""
     from hinglish_words import HINDI
+    text = re.sub(r"\b(API|SDK|HTTP|LLM|AI|ID|ATM|USD|FAQ|CLI)(s?)\b", lambda m: " ".join(m.group(1)) + m.group(2), text)
+    text = re.sub(r"\b([A-Z])(s?)\b", lambda m: LETTERS[m.group(1)] + ("ज़" if m.group(2) else ""), text)
     return re.sub(r"[A-Za-z]+", lambda m: HINDI.get(m.group(0).lower(), m.group(0)), text)
 
 
