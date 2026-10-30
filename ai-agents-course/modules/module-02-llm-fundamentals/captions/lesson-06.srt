@@ -1,408 +1,545 @@
 1
-00:00:00,700 --> 00:00:01,775
-Project time.
+00:00:00,700 --> 00:00:02,003
+Project time!
 
 2
-00:00:01,995 --> 00:00:07,439
-Over two lessons you'll build the AI
-Study Assistant: a command line tool that
+00:00:02,223 --> 00:00:05,674
+Do lessons mein hum AI
+Study Assistant banayenge.
 
 3
-00:00:07,439 --> 00:00:12,953
-explains programming concepts, writes
-quizzes as validated JSON, and chats with
+00:00:05,894 --> 00:00:11,814
+Ek command line tool, jo programming
+concepts explain karta hai, validated JSON mein
 
 4
-00:00:12,953 --> 00:00:16,024
-memory, while
-tracking every cent it spends.
+00:00:11,814 --> 00:00:15,689
+quizzes banata hai, aur
+memory ke saath chat karta hai.
 
 5
-00:00:16,244 --> 00:00:18,621
-Everything from this module appears in it.
+00:00:15,909 --> 00:00:18,915
+Aur saath mein har ek
+cent ka hisaab rakhta hai.
 
 6
-00:00:19,921 --> 00:00:24,717
-The explain command streams an
-explanation of any topic, at a beginner,
+00:00:19,135 --> 00:00:21,615
+Iss module ki har cheez isme aayegi.
 
 7
-00:00:24,717 --> 00:00:26,879
-intermediate, or advanced level.
+00:00:21,835 --> 00:00:24,577
+Ek ek file karke, aaram se chalenge.
 
 8
-00:00:27,229 --> 00:00:32,934
-The quiz command generates
-multiple-choice questions as validated JSON, which you
+00:00:25,877 --> 00:00:31,974
+Explain command kisi bhi topic ko stream
+karke samjhata hai, beginner, intermediate,
 
 9
-00:00:32,934 --> 00:00:34,272
-can save and grade.
+00:00:31,974 --> 00:00:33,570
+ya advanced level par.
 
 10
-00:00:34,622 --> 00:00:39,336
-The chat command holds a conversation
-with history, trimmed to a token budget.
+00:00:33,920 --> 00:00:39,438
+Quiz command validated JSON mein
+multiple choice questions banata hai, jinhe aap
 
 11
-00:00:39,686 --> 00:00:44,917
-Every call reports its tokens and
-cost, and a budget stops runaway spending.
+00:00:39,438 --> 00:00:41,369
+save aur grade kar sakte ho.
 
 12
-00:00:45,267 --> 00:00:50,880
-And it has clear errors, automatic
-retries, and an offline mode, so the tests never
+00:00:41,719 --> 00:00:47,532
+Chat command history ke saath
+conversation karta hai, ek token budget ke andar trim
 
 13
-00:00:50,880 --> 00:00:52,638
-need a key or the network.
+00:00:47,532 --> 00:00:47,952
+karke.
 
 14
-00:00:53,938 --> 00:00:58,999
-The command line handles arguments and
-printing, and calls the assistant, which
+00:00:48,302 --> 00:00:54,101
+Har call apne tokens aur cost batati
+hai, aur ek budget faltu kharche ko rokta hai.
 
 15
-00:00:58,999 --> 00:01:02,523
-holds the logic for
-explaining, quizzing, and chatting.
+00:00:54,451 --> 00:01:00,284
+Aur clear errors, automatic retries, aur
+ek offline mode, taaki tests ko kabhi key
 
 16
-00:01:02,873 --> 00:01:07,696
-Prompts live in their own module, so you
-can improve them without touching the code.
+00:01:00,284 --> 00:01:01,849
+ya network na chahiye.
 
 17
-00:01:07,916 --> 00:01:09,742
-And models holds the quiz schema.
+00:01:03,149 --> 00:01:05,273
+Code se pehle architecture.
 
 18
-00:01:10,092 --> 00:01:13,399
-Pricing calculates
-costs and enforces the budget.
+00:01:05,493 --> 00:01:07,406
+Har file ka ek hi kaam hai.
 
 19
-00:01:13,749 --> 00:01:20,107
-And client builds the SDK client: a real
-one when your key is set, or the same SDK
+00:01:07,626 --> 00:01:10,574
+Isse separation of concerns kehte hain.
 
 20
-00:01:20,107 --> 00:01:23,674
-pointed at the offline
-fake API when it isn't.
+00:01:10,924 --> 00:01:16,565
+Command line arguments aur printing
+sambhalti hai, aur assistant ko call karti hai.
 
 21
-00:01:23,894 --> 00:01:26,843
-Nothing else in the
-program knows the difference.
+00:01:16,785 --> 00:01:20,734
+Assistant mein asli logic
+hai: explain, quiz, aur chat.
 
 22
-00:01:28,143 --> 00:01:32,572
-Let's start with the piece that
-makes testing possible: the fake API.
+00:01:21,084 --> 00:01:26,485
+Prompts ki apni alag file hai, taaki aap
+code chhue bina prompts improve kar sako.
 
 23
-00:01:32,922 --> 00:01:38,590
-It's a class whose objects can be
-called like a function, once per HTTP request.
+00:01:26,705 --> 00:01:28,885
+Aur models mein quiz ka schema hai.
 
 24
-00:01:38,810 --> 00:01:44,344
-A list of planned failures lets tests and
-demos make it return a four twenty-nine or
+00:01:29,235 --> 00:01:33,662
+Pricing cost calculate karti
+hai aur budget enforce karti hai.
 
 25
-00:01:44,344 --> 00:01:46,057
-a five hundred on purpose.
+00:01:34,012 --> 00:01:36,728
+Aur client SDK client banata hai.
 
 26
-00:01:46,407 --> 00:01:53,574
-Each call receives the real HTTP
-request the SDK built, and parses its JSON body.
+00:01:36,948 --> 00:01:42,603
+Key set hai toh real client, nahi
+toh wahi SDK offline fake API ki taraf.
 
 27
-00:01:53,794 --> 00:01:59,145
-It records the body, so tests can check
-exactly what was sent, and it answers token
+00:01:42,823 --> 00:01:46,587
+Program ke baaki hisse ko
+yeh fark pata hi nahi chalta.
 
 28
-00:01:59,145 --> 00:02:01,725
-counting requests with a rough estimate.
+00:01:47,887 --> 00:01:52,956
+Sabse pehle woh cheez jo testing
+ko possible banati hai: fake API.
 
 29
-00:02:02,075 --> 00:02:08,249
-Then it prepares a placeholder reply,
-applies any planned failure or refusal, cuts
+00:01:53,176 --> 00:01:55,904
+Isse flight simulator ki tarah socho.
 
 30
-00:02:08,249 --> 00:02:14,273
-the reply at max tokens just like the
-real API, and returns either a normal JSON
+00:01:56,124 --> 00:02:01,006
+Pilots simulator mein real cockpit
+controls ke saath train karte hain.
 
 31
-00:02:14,273 --> 00:02:17,435
-message or a stream of server-sent events.
+00:02:01,226 --> 00:02:04,227
+Sirf bahar ki duniya simulated hoti hai.
 
 32
-00:02:17,655 --> 00:02:23,340
-Because the responses have the same
-shape as the real API's, the SDK can't tell the
+00:02:04,447 --> 00:02:07,442
+Hamare tests real SDK use karte hain.
 
 33
-00:02:23,340 --> 00:02:24,093
-difference.
+00:02:07,662 --> 00:02:09,600
+Sirf server simulated hai.
 
 34
-00:02:24,313 --> 00:02:27,952
-That means our tests
-exercise the real SDK code.
+00:02:09,820 --> 00:02:14,623
+Crash free mein hota hai, aur
+failures jaan boojhkar practice kar sakte ho.
 
 35
-00:02:29,252 --> 00:02:31,788
-With a key, we create a normal client.
+00:02:15,923 --> 00:02:22,105
+Yeh ek class hai jiske objects ko
+function ki tarah call kar sakte ho, har HTTP
 
 36
-00:02:32,008 --> 00:02:37,048
-The SDK reads the key from the
-environment, so it never appears in our code.
+00:02:22,105 --> 00:02:23,670
+request par ek baar.
 
 37
-00:02:37,268 --> 00:02:40,603
-We pass the retry count
-and a sixty-second timeout.
+00:02:23,890 --> 00:02:29,373
+Planned failures ki ek list se tests
+aur demos jaan boojhkar four twenty nine ya
 
 38
-00:02:40,953 --> 00:02:47,297
-Without a key, we print a clear offline
-notice, and give the same SDK an HTTP client
+00:02:29,373 --> 00:02:31,497
+five hundred mangwa sakte hain.
 
 39
-00:02:47,297 --> 00:02:51,451
-whose transport is our
-fake API instead of the network.
+00:02:31,847 --> 00:02:38,373
+Har call ko SDK ki banayi hui real HTTP
+request milti hai, aur woh uska JSON body
 
 40
-00:02:52,751 --> 00:02:56,603
-Settings come from
-environment variables, as in Module 1.
+00:02:38,373 --> 00:02:39,662
+parse karti hai.
 
 41
-00:02:56,823 --> 00:03:00,583
-If there's no key, we switch
-to offline mode automatically.
+00:02:39,882 --> 00:02:45,232
+Body record hoti hai, taaki tests
+check kar sakein ki exactly kya bheja gaya.
 
 42
-00:03:00,803 --> 00:03:06,274
-The model defaults to Claude Opus
-5.5, and the budget to fifty cents.
+00:02:45,582 --> 00:02:51,321
+Phir woh placeholder reply banati hai,
+planned failure ya refusal lagati hai, real
 
 43
-00:03:07,574 --> 00:03:13,083
-The price table holds dollars per
-million input and output tokens, for each model.
+00:02:51,321 --> 00:02:57,130
+API ki tarah max tokens par reply kaatti
+hai, aur normal JSON ya server sent events
 
 44
-00:03:13,433 --> 00:03:16,738
-Cost u s d is the
-formula from lesson five.
+00:02:57,130 --> 00:02:58,879
+ki stream wapas deti hai.
 
 45
-00:03:16,958 --> 00:03:21,707
-An unknown model raises an error
-rather than silently costing zero.
+00:02:59,099 --> 00:03:04,959
+Responses ki shape real API jaisi
+hai, isliye SDK ko fark pata nahi chalta.
 
 46
-00:03:22,057 --> 00:03:23,955
-The cost tracker adds up spending.
+00:03:05,179 --> 00:03:09,303
+Matlab hamare tests real
+SDK code ko test karte hain.
 
 47
-00:03:24,175 --> 00:03:29,783
-Its check method runs before every call,
-and raises budget exceeded once the budget
+00:03:10,603 --> 00:03:12,930
+Key hai, toh normal client banta hai.
 
 48
-00:03:29,783 --> 00:03:30,527
-is used up.
+00:03:13,150 --> 00:03:18,684
+SDK key environment se khud padhta hai,
+toh key hamare code mein kabhi nahi aati.
 
 49
-00:03:30,747 --> 00:03:33,434
-That's your protection
-against a runaway loop.
+00:03:18,904 --> 00:03:22,487
+Hum retry count aur saath
+second ka timeout dete hain.
 
 50
-00:03:33,784 --> 00:03:36,460
-And add records the
-cost of each finished call.
+00:03:22,837 --> 00:03:28,932
+Key nahi hai, toh ek clear offline
+notice print hota hai, aur wahi SDK ek aise HTTP
 
 51
-00:03:37,760 --> 00:03:43,126
-An Answer bundles everything we learn
-from a call: the text, the stop reason, the
+00:03:28,932 --> 00:03:34,733
+client ke saath banta hai jiska
+transport network ki jagah hamari fake API hai.
 
 52
-00:03:43,126 --> 00:03:44,517
-tokens, and the cost.
+00:03:36,033 --> 00:03:40,503
+Settings environment variables
+se aati hain, Module 1 ki tarah.
 
 53
-00:03:44,737 --> 00:03:48,147
-Truncated is true when
-the reply hit max tokens.
+00:03:40,723 --> 00:03:43,463
+Key nahi, toh automatically offline mode.
 
 54
-00:03:48,497 --> 00:03:54,365
-Friendly errors is a context manager
-that catches SDK exceptions, most specific
+00:03:43,683 --> 00:03:49,082
+Model ka default Claude Opus 5.5
+hai, aur budget ka pachaas cents.
 
 55
-00:03:54,365 --> 00:03:57,707
-first, and turns each
-into one clear message.
+00:03:50,382 --> 00:03:55,557
+Price table mein har model ke liye per
+million input aur output tokens ke dollars
 
 56
-00:03:57,927 --> 00:04:02,503
-It's lesson five's error table,
-written once and reused by every call.
+00:03:55,557 --> 00:03:55,876
+hain.
 
 57
-00:04:02,853 --> 00:04:04,003
-Next, fallbacks.
+00:03:56,226 --> 00:03:59,222
+Cost USD lesson five wala formula hai.
 
 58
-00:04:04,223 --> 00:04:09,124
-If the model declines a request,
-the API can re-run it on another model
+00:03:59,442 --> 00:04:03,461
+Unknown model par error aata
+hai, chupchaap zero cost nahi.
 
 59
-00:04:09,124 --> 00:04:10,090
-automatically.
+00:04:03,811 --> 00:04:06,110
+Cost tracker kharcha jodta hai.
 
 60
-00:04:10,310 --> 00:04:12,200
-We opt in with this beta flag.
+00:04:06,330 --> 00:04:11,797
+Iska check method har call se pehle
+chalta hai, aur budget khatam hote hi budget
 
 61
-00:04:12,550 --> 00:04:18,298
-And base builds the arguments every
-request shares: the model, the beta flag, and
+00:04:11,797 --> 00:04:13,506
+exceeded raise karta hai.
 
 62
-00:04:18,298 --> 00:04:23,833
-fallbacks set to default, so the API
-chooses a suitable fallback model for us.
+00:04:13,726 --> 00:04:16,445
+Yahi runaway loop se aapki suraksha hai.
 
 63
-00:04:24,183 --> 00:04:26,426
-Answer turns a response into an Answer.
+00:04:16,795 --> 00:04:20,078
+Aur add har poori hui
+call ki cost record karta hai.
 
 64
-00:04:26,646 --> 00:04:32,297
-It records the cost first, because even
-a declined request is billed, then checks
+00:04:21,378 --> 00:04:23,965
+Ek chhote budget ke saath dry run.
 
 65
-00:04:32,297 --> 00:04:35,856
-for a refusal, and only
-then joins the text blocks.
+00:04:24,185 --> 00:04:26,464
+Teen tenth of a cent ka budget.
 
 66
-00:04:37,156 --> 00:04:42,581
-Explain checks the budget first, then
-fills in the request template from prompts dot
+00:04:26,684 --> 00:04:29,132
+Call one: check,
+spent zero hai, theek hai.
 
 67
-00:04:42,581 --> 00:04:42,775
-py.
+00:04:29,352 --> 00:04:33,291
+Call ki cost point zero
+zero one three, spent ab utna hi.
 
 68
-00:04:43,125 --> 00:04:48,738
-It opens a stream, inside friendly
-errors, using the shared arguments, the tutor
+00:04:33,641 --> 00:04:36,298
+Call two: check, abhi bhi budget ke andar.
 
 69
-00:04:48,738 --> 00:04:53,228
-system prompt, and low effort,
-which is plenty for explanations.
+00:04:36,518 --> 00:04:39,670
+Call hui, spent ab
+point zero zero two six.
 
 70
-00:04:53,578 --> 00:04:59,209
-Each piece of text is passed to an on
-text callback as it arrives, so the assistant
+00:04:40,020 --> 00:04:45,395
+Call three: check pass, kyunki point
+zero zero two six abhi bhi budget se kam hai.
 
 71
-00:04:59,209 --> 00:05:04,704
-doesn't know or care whether it's
-printed, shown in a web page, or collected by a
+00:04:45,615 --> 00:04:49,008
+Call ke baad spent
+budget se thoda upar chala gaya.
 
 72
-00:05:04,704 --> 00:05:05,044
-test.
+00:04:49,358 --> 00:04:50,864
+Call four: check fail.
 
 73
-00:05:05,264 --> 00:05:07,779
-Then the final message becomes an Answer.
+00:04:51,084 --> 00:04:54,785
+BudgetExceeded, aur
+request bheji hi nahi jaati.
 
 74
-00:05:09,079 --> 00:05:09,995
-Let's run it.
+00:04:56,085 --> 00:05:01,843
+Answer ek call se mili har jaankari ko
+ek saath rakhta hai: text, stop reason,
 
 75
-00:05:10,215 --> 00:05:15,516
-The offline notice comes first, then
-the streamed placeholder, then a footer with
+00:05:01,843 --> 00:05:03,098
+tokens, aur cost.
 
 76
-00:05:15,516 --> 00:05:20,948
-the model, tokens, cost, and stop
-reason, and finally the session total against the
+00:05:03,318 --> 00:05:07,334
+Truncated true hota hai
+jab reply max tokens par kata.
 
 77
-00:05:20,948 --> 00:05:21,406
-budget.
+00:05:07,684 --> 00:05:13,316
+Friendly errors ek context manager hai
+jo SDK exceptions ko pakadta hai, sabse
 
 78
-00:05:21,756 --> 00:05:27,081
-With a tiny max tokens, the reply is
-cut off, and the tool warns you instead of
+00:05:13,316 --> 00:05:17,937
+specific pehle, aur har ek ko
+ek clear message mein badalta hai.
 
 79
-00:05:27,081 --> 00:05:29,103
-pretending everything is fine.
+00:05:18,157 --> 00:05:23,465
+Yeh lesson five wali error table hai,
+ek baar likhi, aur har call mein reuse.
 
 80
-00:05:29,453 --> 00:05:34,867
-And with a budget of zero, it refuses
-before sending anything, with a one-line
+00:05:23,815 --> 00:05:24,971
+Ab fallbacks.
 
 81
-00:05:34,867 --> 00:05:35,700
-explanation.
+00:05:25,191 --> 00:05:31,091
+Agar model request mana kar de, toh API
+usse automatically doosre model par chala
 
 82
-00:05:37,000 --> 00:05:41,838
-A fake API that speaks the real
-protocol makes tests free and repeatable.
+00:05:31,091 --> 00:05:31,819
+sakti hai.
 
 83
-00:05:42,188 --> 00:05:46,288
-One function decides between
-the real and the offline client.
+00:05:32,039 --> 00:05:34,753
+Hum iss beta flag se opt in karte hain.
 
 84
-00:05:46,638 --> 00:05:50,747
-Every call is costed, and a
-budget check runs before each one.
+00:05:35,103 --> 00:05:41,071
+Base woh arguments banata hai jo har
+request mein common hain: model, beta flag, aur
 
 85
-00:05:51,097 --> 00:05:55,444
-Errors are mapped once, in one
-place, and fallbacks handle refusals.
+00:05:41,071 --> 00:05:46,115
+fallbacks equals default, taaki
+API khud suitable fallback model chune.
 
 86
-00:05:55,794 --> 00:06:01,094
-In part two: quizzes as structured
-output, chat with history, the full demo, the
+00:05:46,465 --> 00:05:50,133
+Answer function ek
+response ko Answer mein badalta hai.
 
 87
-00:06:01,094 --> 00:06:02,882
-tests, and the module quiz.
+00:05:50,353 --> 00:05:55,607
+Pehle cost record karta hai, kyunki
+mana ki gayi request ka bhi bill aata hai.
+
+88
+00:05:55,827 --> 00:05:59,901
+Phir refusal check, aur uske
+baad hi text blocks jodta hai.
+
+89
+00:06:01,201 --> 00:06:06,971
+Explain pehle budget check karta hai,
+phir prompts dot py se request template bharta
+
+90
+00:06:06,971 --> 00:06:07,246
+hai.
+
+91
+00:06:07,596 --> 00:06:13,110
+Friendly errors ke andar ek stream
+kholta hai, shared arguments, tutor system
+
+92
+00:06:13,110 --> 00:06:15,402
+prompt, aur low effort ke saath.
+
+93
+00:06:15,622 --> 00:06:18,347
+Explanations ke liye low effort kaafi hai.
+
+94
+00:06:18,697 --> 00:06:22,438
+Har text piece aate hi on
+text callback ko diya jaata hai.
+
+95
+00:06:22,658 --> 00:06:28,103
+Toh assistant ko farak nahi padta ki
+text print ho raha hai, web page par dikh raha
+
+96
+00:06:28,103 --> 00:06:30,333
+hai, ya test collect kar raha hai.
+
+97
+00:06:30,553 --> 00:06:33,366
+Phir final message ek Answer banta hai.
+
+98
+00:06:34,666 --> 00:06:36,179
+Chalo run karte hain.
+
+99
+00:06:36,399 --> 00:06:42,169
+Pehle offline notice, phir streamed
+placeholder, phir ek footer jisme model, tokens,
+
+100
+00:06:42,169 --> 00:06:43,955
+cost, aur stop reason hai.
+
+101
+00:06:44,175 --> 00:06:47,418
+Aur aakhir mein budget
+ke against session ka total.
+
+102
+00:06:47,768 --> 00:06:53,644
+Bahut chhote max tokens ke saath reply
+kat jaata hai, aur tool aapko warning deta
+
+103
+00:06:53,644 --> 00:06:56,546
+hai, sab theek hone ka natak nahi karta.
+
+104
+00:06:56,896 --> 00:07:02,957
+Aur zero budget ke saath, kuch bhi
+bhejne se pehle hi mana kar deta hai, ek line ke
+
+105
+00:07:02,957 --> 00:07:04,490
+explanation ke saath.
+
+106
+00:07:05,790 --> 00:07:07,789
+Video pause karo aur socho.
+
+107
+00:07:08,009 --> 00:07:13,709
+Budget hai point zero zero two dollars,
+aur har call point zero zero one three ki.
+
+108
+00:07:14,059 --> 00:07:17,385
+BudgetExceeded se
+pehle kitni calls chalengi?
+
+109
+00:07:23,735 --> 00:07:24,740
+Do calls.
+
+110
+00:07:24,960 --> 00:07:30,405
+Pehli ke baad spent point zero zero
+one three, jo budget se kam hai, toh doosri
+
+111
+00:07:30,405 --> 00:07:31,164
+chalti hai.
+
+112
+00:07:31,384 --> 00:07:36,586
+Uske baad spent point zero zero two
+six, toh teesri ka check fail hota hai.
+
+113
+00:07:37,886 --> 00:07:38,726
+Recap.
+
+114
+00:07:38,946 --> 00:07:44,714
+Real protocol bolne wali fake API
+tests ko free aur repeatable banati hai.
+
+115
+00:07:45,064 --> 00:07:49,739
+Ek function decide karta hai:
+real client ya offline client.
+
+116
+00:07:50,089 --> 00:07:54,802
+Har call ki cost lagti hai, aur har
+call se pehle budget check hota hai.
+
+117
+00:07:55,152 --> 00:07:59,846
+Errors ek hi jagah map hote hain,
+aur fallbacks refusals sambhalte hain.
+
+118
+00:08:00,196 --> 00:08:05,772
+Part two mein: structured output se
+quizzes, history ke saath chat, poora demo,
+
+119
+00:08:05,772 --> 00:08:08,666
+tests, interview corner, aur module quiz.
