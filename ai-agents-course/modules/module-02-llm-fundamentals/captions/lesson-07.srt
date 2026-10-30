@@ -39,711 +39,711 @@ Ek quiz matlab topic
 aur questions ki list.
 
 10
-00:00:33,075 --> 00:00:38,329
+00:00:33,075 --> 00:00:38,278
 Yahi ek class woh JSON schema
 banti hai jise model ko follow karna hai.
 
 11
-00:00:38,549 --> 00:00:41,245
+00:00:38,498 --> 00:00:41,194
 Yaad hai, government form wali analogy.
 
 12
-00:00:42,545 --> 00:00:47,966
+00:00:42,494 --> 00:00:47,871
 Make quiz request bharta hai: iss
 topic par N multiple choice questions likho.
 
 13
-00:00:48,316 --> 00:00:54,106
+00:00:48,221 --> 00:00:54,011
 Yeh parse call karta hai, output format
 Quiz ke saath, toh reply schema ke andar hi
 
 14
-00:00:54,106 --> 00:00:54,803
+00:00:54,011 --> 00:00:54,708
 rehta hai.
 
 15
-00:00:55,023 --> 00:01:01,032
+00:00:54,928 --> 00:01:00,937
 Quizzes ko explanations se zyada care
 chahiye, isliye medium effort, aur generous
 
 16
-00:01:01,032 --> 00:01:01,848
+00:01:00,937 --> 00:01:01,753
 max tokens.
 
 17
-00:01:02,198 --> 00:01:07,713
+00:01:02,103 --> 00:01:07,671
 Agar reply phir bhi schema mein fit na
 ho, jaise chaar ki jagah teen options, toh
 
 18
-00:01:07,713 --> 00:01:13,092
+00:01:07,671 --> 00:01:13,101
 SDK ki validation ek pydantic
 validation error raise karti hai, aur hum usse ek
 
 19
-00:01:13,092 --> 00:01:15,271
+00:01:13,101 --> 00:01:15,301
 clear message mein badalte hain.
 
 20
-00:01:15,621 --> 00:01:20,869
+00:01:15,651 --> 00:01:20,898
 Aur agar quiz max tokens par kat
 gaya, toh hum aadha quiz return nahi karte.
 
 21
-00:01:21,089 --> 00:01:24,199
+00:01:21,118 --> 00:01:24,229
 Kam questions maangne
 ka suggestion dete hain.
 
 22
-00:01:25,499 --> 00:01:31,025
+00:01:25,529 --> 00:01:31,054
 Trimming ke liye ek quick local estimate
 kaafi hai: lagbhag chaar characters ka ek
 
 23
-00:01:31,025 --> 00:01:31,429
+00:01:31,054 --> 00:01:31,459
 token.
 
 24
-00:01:31,649 --> 00:01:36,006
+00:01:31,679 --> 00:01:36,036
 Exact number chahiye, toh
 token counting endpoint use karo.
 
 25
-00:01:36,356 --> 00:01:40,420
+00:01:36,386 --> 00:01:40,449
 Chat session history list
 aur uska token budget rakhta hai.
 
 26
-00:01:40,770 --> 00:01:46,529
+00:01:40,799 --> 00:01:46,559
 Trim sabse purana user aur assistant
 pair hatata hai jab tak history budget mein na
 
 27
-00:01:46,529 --> 00:01:47,154
+00:01:46,559 --> 00:01:47,183
 aa jaaye.
 
 28
-00:01:47,374 --> 00:01:49,596
+00:01:47,403 --> 00:01:49,626
 Bilkul lesson three wala rule.
 
 29
-00:01:49,816 --> 00:01:52,637
+00:01:49,846 --> 00:01:52,666
 Aur latest exchange hamesha rakhta hai.
 
 30
-00:01:52,987 --> 00:01:58,664
+00:01:53,016 --> 00:01:58,674
 Send question append karta hai, trim
 karta hai, aur poori history ke saath model ko
 
 31
-00:01:58,664 --> 00:01:59,690
+00:01:58,674 --> 00:01:59,696
 call karta hai.
 
 32
-00:01:59,910 --> 00:02:05,673
+00:01:59,916 --> 00:02:05,679
 Call fail hui, toh bina jawab wala
 question hata deta hai, taaki history mein kabhi
 
 33
-00:02:05,673 --> 00:02:07,686
+00:02:05,679 --> 00:02:07,693
 do user turns lagatar na hon.
 
 34
-00:02:07,906 --> 00:02:09,766
+00:02:07,913 --> 00:02:09,772
 Phir reply store hota hai.
 
 35
-00:02:11,066 --> 00:02:14,446
+00:02:11,072 --> 00:02:14,452
 Ek dry run, sau tokens ke budget ke saath.
 
 36
-00:02:14,666 --> 00:02:18,914
+00:02:14,672 --> 00:02:18,920
 Teesra question append hua,
 history ab ek sau tees tokens.
 
 37
-00:02:19,134 --> 00:02:21,142
+00:02:19,140 --> 00:02:21,148
 Budget se zyada, toh trim.
 
 38
-00:02:21,492 --> 00:02:25,308
+00:02:21,498 --> 00:02:25,314
 Sabse purana pair, user
 one aur assistant one, hata.
 
 39
-00:02:25,528 --> 00:02:27,898
+00:02:25,534 --> 00:02:27,904
 Ab pachaasi tokens, budget mein.
 
 40
-00:02:28,118 --> 00:02:29,758
+00:02:28,124 --> 00:02:29,737
 Model ko call karo.
 
 41
-00:02:30,108 --> 00:02:33,796
+00:02:30,087 --> 00:02:33,774
 Call successful, toh reply
 assistant three store hota hai.
 
 42
-00:02:34,146 --> 00:02:39,716
+00:02:34,124 --> 00:02:39,695
 Aur agar call fail hoti, toh user three
 hata diya jaata, aur error upar raise hota.
 
 43
-00:02:39,936 --> 00:02:41,797
+00:02:39,915 --> 00:02:41,775
 History valid rehti.
 
 44
-00:02:43,097 --> 00:02:47,459
+00:02:43,075 --> 00:02:47,437
 Explain ke liye on text callback
 har piece turant print karta hai.
 
 45
-00:02:47,679 --> 00:02:53,048
+00:02:47,657 --> 00:02:53,027
 Tokens aur cost wala footer standard
 error mein jaata hai, taaki woh save ya pipe
 
 46
-00:02:53,048 --> 00:02:55,169
+00:02:53,027 --> 00:02:55,148
 kiye gaye output mein mix na ho.
 
 47
-00:02:55,519 --> 00:03:01,018
+00:02:55,498 --> 00:03:00,997
 Quiz questions ko letters ke saath print
 karta hai, chahe toh JSON save karta hai,
 
 48
-00:03:01,018 --> 00:03:03,768
+00:03:00,997 --> 00:03:03,746
 aur answers doge toh grade bhi karta hai.
 
 49
-00:03:04,118 --> 00:03:08,310
+00:03:04,096 --> 00:03:08,288
 Chat standard input se har
 line ek message ki tarah padhta hai.
 
 50
-00:03:08,530 --> 00:03:13,636
+00:03:08,508 --> 00:03:13,615
 Toh yeh interactively bhi chalta hai,
 aur demos aur tests ke liye file se bhi.
 
 51
-00:03:13,986 --> 00:03:19,753
+00:03:13,965 --> 00:03:19,731
 Aur main settings, client, aur assistant
 banata hai, aur har study error ko ek saaf
 
 52
-00:03:19,753 --> 00:03:24,616
+00:03:19,731 --> 00:03:24,595
 line aur exit code one mein
 badalta hai, Module 1 ke toolkit ki tarah.
 
 53
-00:03:25,916 --> 00:03:28,906
+00:03:25,895 --> 00:03:28,885
 Do questions ka quiz, grading ke saath.
 
 54
-00:03:29,126 --> 00:03:35,223
+00:03:29,105 --> 00:03:35,200
 Yeh fake API ke placeholder questions
 hain, lekin bilkul same structured output path
 
 55
-00:03:35,223 --> 00:03:38,272
+00:03:35,200 --> 00:03:38,248
 se guzre: schema, parsing, aur validation.
 
 56
-00:03:38,622 --> 00:03:40,853
+00:03:38,598 --> 00:03:40,830
 Aur do messages ke saath chat.
 
 57
-00:03:41,073 --> 00:03:45,845
+00:03:41,050 --> 00:03:45,821
 Doosra reply dekho: request
 ke saath do purane messages gaye.
 
 58
-00:03:46,065 --> 00:03:48,679
+00:03:46,041 --> 00:03:48,655
 Yahi hamari history kaam kar rahi hai.
 
 59
-00:03:49,029 --> 00:03:52,320
+00:03:49,005 --> 00:03:52,296
 Tokens command
 counting endpoint use karta hai.
 
 60
-00:03:52,540 --> 00:03:55,321
+00:03:52,516 --> 00:03:55,298
 Offline mein isse
 estimate likha jaata hai.
 
 61
-00:03:56,621 --> 00:03:58,095
+00:03:56,598 --> 00:03:58,072
 Ab failure paths.
 
 62
-00:03:58,315 --> 00:04:04,437
+00:03:58,292 --> 00:04:04,503
 Ek rate limit: SDK automatically retry
 karta hai aur explanation phir bhi aata hai.
 
 63
-00:04:04,787 --> 00:04:10,279
+00:04:04,853 --> 00:04:10,345
 Lagatar teen rate limits do retries
 khatam kar dete hain, aur hamein ek clear error
 
 64
-00:04:10,279 --> 00:04:12,330
+00:04:10,345 --> 00:04:12,396
 line milti hai, traceback nahi.
 
 65
-00:04:12,680 --> 00:04:15,587
+00:04:12,746 --> 00:04:15,653
 Aur refusal bhi saaf saaf report hota hai.
 
 66
-00:04:16,887 --> 00:04:20,675
+00:04:16,953 --> 00:04:20,787
 Tests fake API ko test
 double ki tarah use karte hain.
 
 67
-00:04:20,895 --> 00:04:26,252
+00:04:21,007 --> 00:04:26,364
 Yeh test check karta hai ki explanation
 pieces mein aaya, pieces milkar final text
 
 68
-00:04:26,252 --> 00:04:31,479
+00:04:26,364 --> 00:04:31,591
 bante hain, aur fake ko kya mila yeh
 dekhkar, ki request sach mein streamed thi,
 
 69
-00:04:31,479 --> 00:04:34,418
+00:04:31,591 --> 00:04:34,530
 fallbacks ke saath,
 aur sahi prompt ke saath.
 
 70
-00:04:34,768 --> 00:04:39,828
+00:04:34,880 --> 00:04:39,940
 Yeh test prove karta hai ki max
 tokens wala truncation pakda jaata hai.
 
 71
-00:04:40,178 --> 00:04:44,666
+00:04:40,290 --> 00:04:44,847
 Aur yeh do tests SDK ka real
 retry behaviour test karte hain.
 
 72
-00:04:44,886 --> 00:04:48,384
+00:04:45,067 --> 00:04:48,565
 Do failures phir
 success, matlab teen requests.
 
 73
-00:04:48,604 --> 00:04:51,978
+00:04:48,785 --> 00:04:52,159
 Aur lagatar teen rate
 limits, hamara clean error.
 
 74
-00:04:53,278 --> 00:04:56,664
+00:04:53,459 --> 00:04:56,845
 Teyees tests, sab pass,
 bina key aur bina network.
 
 75
-00:04:56,884 --> 00:05:02,694
+00:04:57,065 --> 00:05:02,875
 Ek conftest fixture tests ke dauraan
 environment se real key hata deta hai, taaki
 
 76
-00:05:02,694 --> 00:05:05,634
+00:05:02,875 --> 00:05:05,815
 tests kabhi aapka paisa kharch na karein.
 
 77
-00:05:05,984 --> 00:05:10,976
+00:05:06,165 --> 00:05:11,158
 Aur mypy har type hint se khush
 hai, SDK ke apne types ke saath bhi.
 
 78
-00:05:12,276 --> 00:05:13,984
+00:05:12,458 --> 00:05:14,165
 Key reject ho rahi hai?
 
 79
-00:05:14,204 --> 00:05:19,805
+00:05:14,385 --> 00:05:19,987
 Environment variable check karo: extra
 quotes ya spaces nahi, revoke nahi hui, aur
 
 80
-00:05:19,805 --> 00:05:21,308
+00:05:19,987 --> 00:05:21,489
 sahi workspace ki hai.
 
 81
-00:05:21,658 --> 00:05:25,428
+00:05:21,839 --> 00:05:25,610
 Real answers chahiye,
 lekin offline mode aa raha hai?
 
 82
-00:05:25,648 --> 00:05:27,681
+00:05:25,830 --> 00:05:27,863
 Python ko key dikh nahi rahi.
 
 83
-00:05:27,901 --> 00:05:30,299
+00:05:28,083 --> 00:05:30,481
 Usi terminal session mein set karo.
 
 84
-00:05:30,649 --> 00:05:32,240
+00:05:30,831 --> 00:05:32,421
 Baar baar rate limit?
 
 85
-00:05:32,460 --> 00:05:35,588
+00:05:32,641 --> 00:05:35,770
 Aap apne account ki
 limit se tez bhej rahe ho.
 
 86
-00:05:35,808 --> 00:05:38,895
+00:05:35,990 --> 00:05:39,077
 Dheere karo, ya zyada retries allow karo.
 
 87
-00:05:39,245 --> 00:05:43,743
+00:05:39,427 --> 00:05:43,925
 Aur kate hue answers ke liye,
 max tokens badhao, ya kam maango.
 
 88
-00:05:45,043 --> 00:05:47,263
+00:05:45,225 --> 00:05:47,445
 Module ka interview corner.
 
 89
-00:05:47,483 --> 00:05:53,702
+00:05:47,665 --> 00:05:54,092
 Pehla question: LLM API call karne wale
 code ko bina paisa kharch kiye kaise test
 
 90
-00:05:53,702 --> 00:05:54,239
+00:05:54,092 --> 00:05:54,647
 karoge?
 
 91
-00:05:56,589 --> 00:06:00,338
+00:05:56,997 --> 00:06:00,753
 Answer: real SDK ke
 peeche ek test double lagao.
 
 92
-00:06:00,558 --> 00:06:05,505
+00:06:00,973 --> 00:06:05,920
 Ek fake server, jaise yahan
 MockTransport, jo same protocol bolta hai.
 
 93
-00:06:05,725 --> 00:06:11,361
+00:06:06,140 --> 00:06:11,776
 Tests real client code chalate hain, aur
 errors, refusals, aur truncation script kar
 
 94
-00:06:11,361 --> 00:06:12,099
+00:06:11,776 --> 00:06:12,514
 sakte hain.
 
 95
-00:06:12,319 --> 00:06:17,435
+00:06:12,734 --> 00:06:17,843
 Trap: apne function ko mock kar
 dena, jisse SDK kabhi chalta hi nahi.
 
 96
-00:06:17,655 --> 00:06:21,320
+00:06:18,063 --> 00:06:21,729
 Tab retries, streaming,
 aur parsing test hi nahi hote.
 
 97
-00:06:21,670 --> 00:06:26,457
+00:06:22,079 --> 00:06:27,082
 Doosra: ek AI feature ko bahut
 bada bill banane se kaise rokoge?
 
 98
-00:06:28,807 --> 00:06:34,459
+00:06:29,432 --> 00:06:35,084
 Answer: har call ke tokens measure karo,
 unhe cost mein badlo, aur har call se pehle
 
 99
-00:06:34,459 --> 00:06:35,670
+00:06:35,084 --> 00:06:36,295
 budget check karo.
 
 100
-00:06:35,890 --> 00:06:40,743
+00:06:36,515 --> 00:06:41,368
 Saath mein max tokens, loops ke
 liye step limits, aur kharche par alerts.
 
 101
-00:06:40,963 --> 00:06:43,248
+00:06:41,588 --> 00:06:43,873
 Trap: hum dashboard dekhte rahenge.
 
 102
-00:06:43,468 --> 00:06:47,648
+00:06:44,093 --> 00:06:48,273
 Jab tak aap dekhoge, ek
 loop paisa kharch kar chuka hoga.
 
 103
-00:06:47,998 --> 00:06:51,383
+00:06:48,623 --> 00:06:52,008
 Teesra: structured output
 ne validation pass kar li.
 
 104
-00:06:51,603 --> 00:06:53,221
+00:06:52,228 --> 00:06:53,846
 Kya content sahi hai?
 
 105
-00:06:55,571 --> 00:06:57,203
+00:06:56,196 --> 00:06:57,828
 Answer: zaroori nahi.
 
 106
-00:06:57,423 --> 00:07:00,297
+00:06:58,048 --> 00:07:00,922
 Schema shape
 guarantee karta hai, truth nahi.
 
 107
-00:07:00,517 --> 00:07:05,908
+00:07:01,142 --> 00:07:06,533
 Facts aur business rules phir bhi check
 karne padte hain, aur evals se test karna
 
 108
-00:07:05,908 --> 00:07:06,573
+00:07:06,533 --> 00:07:07,198
 padta hai.
 
 109
-00:07:06,793 --> 00:07:09,390
+00:07:07,418 --> 00:07:10,015
 Trap: schema valid ko sahi maan lena.
 
 110
-00:07:10,690 --> 00:07:12,116
+00:07:11,315 --> 00:07:12,741
 Module recap.
 
 111
-00:07:12,336 --> 00:07:18,425
+00:07:12,961 --> 00:07:19,108
 Language models tokens predict karte
 hain, aur tokens cost, limits, aur speed decide
 
 112
-00:07:18,425 --> 00:07:19,223
+00:07:19,108 --> 00:07:19,913
 karte hain.
 
 113
-00:07:19,573 --> 00:07:24,670
+00:07:20,263 --> 00:07:25,461
 Aapne API call ki aur content
 blocks, stop reasons, aur usage padhe.
 
 114
-00:07:25,020 --> 00:07:29,258
+00:07:25,811 --> 00:07:30,049
 Stateless conversations
 manage ki, trimmed history ke saath.
 
 115
-00:07:29,608 --> 00:07:33,704
+00:07:30,399 --> 00:07:34,496
 Replies stream kiye, aur
 validated structured output liya.
 
 116
-00:07:34,054 --> 00:07:39,921
+00:07:34,846 --> 00:07:40,712
 Aur errors, retries, refusals, costs,
 aur budgets handle kiye, ek fully tested
 
 117
-00:07:39,921 --> 00:07:40,899
+00:07:40,712 --> 00:07:41,690
 project mein.
 
 118
-00:07:42,199 --> 00:07:44,206
+00:07:42,990 --> 00:07:44,997
 Module quiz, question one.
 
 119
-00:07:44,426 --> 00:07:48,038
+00:07:45,217 --> 00:07:48,829
 Output tokens cost ke
 liye itne important kyun hain?
 
 120
-00:07:53,738 --> 00:07:57,918
+00:07:54,529 --> 00:07:58,709
 Kyunki woh usually input
 tokens se kai guna mehenge hote hain.
 
 121
-00:07:58,138 --> 00:08:00,976
+00:07:58,929 --> 00:08:01,768
 Claude Opus 5.5 par paanch guna.
 
 122
-00:08:02,276 --> 00:08:03,408
+00:08:03,068 --> 00:08:04,200
 Question two.
 
 123
-00:08:03,628 --> 00:08:06,466
+00:08:04,420 --> 00:08:07,257
 Stop reason max tokens kya batata hai?
 
 124
-00:08:12,166 --> 00:08:16,208
+00:08:12,957 --> 00:08:16,999
 Reply aapki limit par kat
 gaya, aur adhoora ho sakta hai.
 
 125
-00:08:17,508 --> 00:08:18,815
+00:08:18,299 --> 00:08:19,607
 Question three.
 
 126
-00:08:19,035 --> 00:08:22,529
+00:08:19,827 --> 00:08:23,321
 Ek chat bot pehle kahi
 gayi har baat bhool jaata hai.
 
 127
-00:08:22,749 --> 00:08:24,717
+00:08:23,541 --> 00:08:25,509
 Sabse likely bug kya hai?
 
 128
-00:08:30,417 --> 00:08:34,622
+00:08:31,209 --> 00:08:35,414
 App har request ke saath
 purane messages nahi bhej rahi.
 
 129
-00:08:34,842 --> 00:08:36,578
+00:08:35,634 --> 00:08:37,420
 API stateless hai.
 
 130
-00:08:37,878 --> 00:08:39,113
+00:08:38,720 --> 00:08:39,955
 Question four.
 
 131
-00:08:39,333 --> 00:08:42,813
+00:08:40,175 --> 00:08:43,655
 Kaun se errors
 automatically retry karne layak hain?
 
 132
-00:08:48,513 --> 00:08:51,644
+00:08:49,355 --> 00:08:52,487
 Rate limits, server
 errors, aur connection errors.
 
 133
-00:08:51,864 --> 00:08:55,317
+00:08:52,707 --> 00:08:56,366
 Aur SDK yeh already
 aapke liye retry karta hai.
 
 134
-00:08:56,617 --> 00:08:58,071
+00:08:57,666 --> 00:08:59,121
 Aur question five.
 
 135
-00:08:58,291 --> 00:09:02,126
+00:08:59,341 --> 00:09:03,175
 Parse, output format Quiz
 ke saath, aapko kya deta hai?
 
 136
-00:09:07,826 --> 00:09:09,988
+00:09:08,875 --> 00:09:11,037
 Ek validated Quiz object.
 
 137
-00:09:10,208 --> 00:09:12,576
+00:09:11,257 --> 00:09:13,625
 Structure guaranteed hai, facts nahi.
 
 138
-00:09:12,796 --> 00:09:16,188
+00:09:13,845 --> 00:09:17,237
 Ek valid quiz mein bhi
 galat answer ho sakta hai.
 
 139
-00:09:17,488 --> 00:09:21,593
+00:09:18,537 --> 00:09:22,642
 Ab ek real world scenario,
 poore module ko jodne ke liye.
 
 140
-00:09:21,813 --> 00:09:27,435
+00:09:22,862 --> 00:09:28,406
 Aapke college ko ek bot chahiye jo
 admissions FAQ se students ke questions answer
 
 141
-00:09:27,435 --> 00:09:33,057
+00:09:28,406 --> 00:09:33,951
 kare, conversation yaad rakhe, aur ek
 din mein paanch sau rupaye se zyada kharcha
 
 142
-00:09:33,057 --> 00:09:34,028
+00:09:33,951 --> 00:09:34,909
 kabhi na kare.
 
 143
-00:09:34,378 --> 00:09:38,683
+00:09:35,259 --> 00:09:39,563
 Socho: conversation ki memory
 kahan rahegi, aur trim kaise hogi?
 
 144
-00:09:39,033 --> 00:09:41,732
+00:09:39,913 --> 00:09:42,612
 Daily budget kaise enforce karoge?
 
 145
-00:09:42,082 --> 00:09:46,415
+00:09:42,962 --> 00:09:47,295
 Four twenty nine, four oh one,
 aur refusal par bot kya karega?
 
 146
-00:09:52,765 --> 00:09:58,271
+00:09:53,645 --> 00:09:59,346
 Is module ki har cheez yahan kaam aati
 hai: history list aur pair trimming, budget
 
 147
-00:09:58,271 --> 00:09:59,815
+00:09:59,346 --> 00:10:00,945
 check, aur error table.
 
 148
-00:10:00,035 --> 00:10:02,124
+00:10:01,165 --> 00:10:03,254
 Answers quiz dot md mein hain.
 
 149
-00:10:03,424 --> 00:10:05,365
+00:10:04,554 --> 00:10:06,495
 Aapka extension challenge.
 
 150
-00:10:05,585 --> 00:10:10,577
+00:10:06,715 --> 00:10:11,723
 Ek ya zyada chuno, aur har ek ke
 liye fake API ke saath test likho.
 
 151
-00:10:10,927 --> 00:10:16,238
+00:10:12,073 --> 00:10:17,531
 Ek model option add karo, aur Opus,
 Sonnet, aur Haiku ki cost compare karo.
 
 152
-00:10:16,588 --> 00:10:20,256
+00:10:17,881 --> 00:10:21,549
 Har chat turn se pehle
 exact token count dikhao.
 
 153
-00:10:20,606 --> 00:10:25,507
+00:10:21,899 --> 00:10:26,800
 Ek interactive quiz mode banao
 jo aakhir mein explanations dikhaye.
 
 154
-00:10:25,857 --> 00:10:30,322
+00:10:27,150 --> 00:10:31,615
 Ya chat history ko file mein
 save karo aur agli baar reload karo.
 
 155
-00:10:30,542 --> 00:10:33,364
+00:10:31,835 --> 00:10:34,658
 Yeh Module 6 ki taraf pehla kadam hai.
 
 156
-00:10:34,664 --> 00:10:38,554
+00:10:35,958 --> 00:10:39,848
 Yeh iss module ke
 official documentation pages hain.
 
 157
-00:10:38,774 --> 00:10:43,585
+00:10:40,068 --> 00:10:44,878
 Links description mein hain, poore
 source code aur course glossary ke saath.
 
 158
-00:10:47,685 --> 00:10:49,468
+00:10:48,978 --> 00:10:50,761
 Module 2 complete!
 
 159
-00:10:49,688 --> 00:10:55,844
+00:10:50,981 --> 00:10:57,069
 Ab aap Python se ek language model ko
 reliably, sasta, aur testable tareeke se call
 
 160
-00:10:55,844 --> 00:10:56,808
+00:10:57,069 --> 00:10:58,023
 kar sakte ho.
 
 161
-00:10:57,028 --> 00:11:02,977
+00:10:58,243 --> 00:11:04,182
 Module 3 mein aap aise prompts likhna
 seekhoge jo consistently kaam karein, Pydantic
 
 162
-00:11:02,977 --> 00:11:08,926
+00:11:04,182 --> 00:11:10,121
 se har output validate karoge, prompts ko
 version karoge, aur evaluate karoge, ek AI
 
 163
-00:11:08,926 --> 00:11:10,838
+00:11:10,121 --> 00:11:12,030
 Resume Analyzer banate hue.
 
 164
-00:11:11,058 --> 00:11:13,220
+00:11:12,250 --> 00:11:14,411
 Milte hain agle module mein!

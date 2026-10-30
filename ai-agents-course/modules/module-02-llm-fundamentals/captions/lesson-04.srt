@@ -12,602 +12,602 @@ program bharosa kar sake, uske liye thodi care
 chahiye.
 
 4
-00:00:10,113 --> 00:00:15,816
+00:00:10,113 --> 00:00:15,806
 Iss lesson mein aap reply ki length
 control karoge, reply ko banate banate screen
 
 5
-00:00:15,816 --> 00:00:21,731
+00:00:15,806 --> 00:00:21,710
 par dikhaoge, free text ki jagah
 structured JSON loge, aur un cases ko handle karoge
 
 6
-00:00:21,731 --> 00:00:23,984
+00:00:21,710 --> 00:00:23,959
 jahan model jaldi ruk jaata hai.
 
 7
-00:00:25,284 --> 00:00:29,893
+00:00:25,259 --> 00:00:29,868
 Aap max tokens use karoge, aur
 har baar stop reason check karoge.
 
 8
-00:00:30,243 --> 00:00:34,119
+00:00:30,218 --> 00:00:34,094
 Replies ko stream karoge,
 taaki interface fast lage.
 
 9
-00:00:34,469 --> 00:00:37,939
+00:00:34,444 --> 00:00:37,914
 Structured outputs se validated JSON loge.
 
 10
-00:00:38,289 --> 00:00:41,045
+00:00:38,264 --> 00:00:41,020
 Aur refusals ko safely handle karoge.
 
 11
-00:00:42,345 --> 00:00:44,990
+00:00:42,320 --> 00:00:44,965
 Har response batata hai ki woh kyun ruka.
 
 12
-00:00:45,210 --> 00:00:47,031
+00:00:45,185 --> 00:00:47,006
 Yeh field hai stop reason.
 
 13
-00:00:47,381 --> 00:00:52,019
+00:00:47,356 --> 00:00:52,019
 End turn ka matlab: model ne
 apna answer naturally poora kiya.
 
 14
-00:00:52,369 --> 00:00:57,911
+00:00:52,369 --> 00:00:57,910
 Max tokens ka matlab: aapki limit aa
 gayi aur reply beech mein kat gaya, shayad
 
 15
-00:00:57,911 --> 00:00:59,244
+00:00:57,910 --> 00:00:59,243
 aadhe sentence par.
 
 16
-00:00:59,594 --> 00:01:04,559
+00:00:59,593 --> 00:01:04,586
 Refusal ka matlab: model ne
 safety reasons se request mana kar di.
 
 17
-00:01:04,909 --> 00:01:09,904
+00:01:04,936 --> 00:01:09,952
 Stop sequence: model ne aapka diya
 hua koi custom stop text likh diya.
 
 18
-00:01:10,254 --> 00:01:13,719
+00:01:10,302 --> 00:01:13,816
 Tool use: model aapka
 koi tool chalana chahta hai.
 
 19
-00:01:13,939 --> 00:01:16,912
+00:01:14,036 --> 00:01:17,009
 Yeh agents ka dil hai, Module 5 mein.
 
 20
-00:01:17,262 --> 00:01:23,093
+00:01:17,359 --> 00:01:23,190
 Aur pause turn: ek lamba agentic turn
 ruka hai, aur aap usse continue kar sakte ho.
 
 21
-00:01:24,393 --> 00:01:30,543
+00:01:24,490 --> 00:01:30,640
 Max tokens ko exam ki word limit ki
 tarah socho, ek strict invigilator ke saath.
 
 22
-00:01:30,763 --> 00:01:35,332
+00:01:30,860 --> 00:01:35,429
 Time khatam, aur invigilator paper
 beech sentence mein hi le leta hai.
 
 23
-00:01:35,552 --> 00:01:39,614
+00:01:35,649 --> 00:01:39,697
 Model apna answer limit
 ke hisaab se plan nahi karta.
 
 24
-00:01:39,834 --> 00:01:41,924
+00:01:39,917 --> 00:01:42,007
 Usse bas rok diya jaata hai.
 
 25
-00:01:42,144 --> 00:01:45,381
+00:01:42,227 --> 00:01:45,464
 Aur stop reason batata
 hai ki aisa hua ya nahi.
 
 26
-00:01:46,681 --> 00:01:49,302
+00:01:46,764 --> 00:01:49,385
 Hum ek hi question do baar puchte hain.
 
 27
-00:01:49,522 --> 00:01:54,313
+00:01:49,605 --> 00:01:54,396
 Ek baar badi limit ke saath, ek
 baar sirf pandrah tokens ke saath.
 
 28
-00:01:54,663 --> 00:01:57,162
+00:01:54,746 --> 00:01:57,244
 Pehli run: hazaar tokens ki limit.
 
 29
-00:01:57,382 --> 00:02:00,885
+00:01:57,464 --> 00:02:00,968
 Stop reason end turn,
 matlab answer complete hai.
 
 30
-00:02:01,235 --> 00:02:03,389
+00:02:01,318 --> 00:02:03,472
 Doosri run: pandrah tokens.
 
 31
-00:02:03,609 --> 00:02:08,328
+00:02:03,692 --> 00:02:08,410
 Stop reason max tokens, aur
 theek pandrah output tokens use hue.
 
 32
-00:02:08,548 --> 00:02:10,479
+00:02:08,630 --> 00:02:10,561
 Answer beech mein kat gaya.
 
 33
-00:02:10,829 --> 00:02:13,167
+00:02:10,911 --> 00:02:13,250
 Aur yeh check sabse important hai.
 
 34
-00:02:13,387 --> 00:02:16,892
+00:02:13,470 --> 00:02:16,975
 Kata hua reply ek normal
 string jaisa hi dikhta hai.
 
 35
-00:02:17,112 --> 00:02:22,874
+00:02:17,195 --> 00:02:22,957
 Check nahi kiya, toh aap users ko aadha
 answer dikha doge, ya aadhe JSON ko parse
 
 36
-00:02:22,874 --> 00:02:24,581
+00:02:22,957 --> 00:02:24,664
 karne ki koshish karoge.
 
 37
-00:02:24,931 --> 00:02:28,060
+00:02:25,014 --> 00:02:28,142
 Toh max tokens kaam
 ke hisaab se kaafi rakho.
 
 38
-00:02:28,280 --> 00:02:34,108
+00:02:28,362 --> 00:02:34,190
 Paise bachane ke liye bahut kam mat
 rakho, kyunki kata hua answer usually ek retry
 
 39
-00:02:34,108 --> 00:02:35,742
+00:02:34,190 --> 00:02:35,825
 ka kharcha karwata hai.
 
 40
-00:02:37,042 --> 00:02:38,142
+00:02:37,125 --> 00:02:38,224
 Ab streaming.
 
 41
-00:02:38,362 --> 00:02:40,802
+00:02:38,444 --> 00:02:40,885
 Isse online video ki tarah socho.
 
 42
-00:02:41,022 --> 00:02:45,842
+00:02:41,105 --> 00:02:45,924
 Bina streaming ke, aap poori movie
 download karte ho, phir play karte ho.
 
 43
-00:02:46,062 --> 00:02:51,686
+00:02:46,144 --> 00:02:51,768
 Streaming ke saath, video kuch seconds
 mein chal padti hai, aur baaki hissa peeche
 
 44
-00:02:51,686 --> 00:02:52,920
+00:02:51,768 --> 00:02:53,003
 se aata rehta hai.
 
 45
-00:02:53,140 --> 00:02:57,684
+00:02:53,223 --> 00:02:57,767
 Total data utna hi hai, lekin
 intezaar bahut achha lagta hai.
 
 46
-00:02:58,984 --> 00:03:02,037
+00:02:59,067 --> 00:03:02,070
 Yaad hai, model ek ek
 token karke likhta hai.
 
 47
-00:03:02,257 --> 00:03:07,692
+00:03:02,290 --> 00:03:07,725
 Bina streaming ke, aapka program poore
 reply ka intezaar karta hai, aur screen
 
 48
-00:03:07,692 --> 00:03:08,876
+00:03:07,725 --> 00:03:08,910
 khaali rehti hai.
 
 49
-00:03:09,226 --> 00:03:14,797
+00:03:09,260 --> 00:03:14,910
 Streaming mein API pieces bhejti rehti
 hai jaise jaise woh bante hain, toh text
 
 50
-00:03:14,797 --> 00:03:17,053
+00:03:14,910 --> 00:03:17,199
 lagbhag turant dikhne lagta hai.
 
 51
-00:03:17,273 --> 00:03:21,200
+00:03:17,419 --> 00:03:21,346
 Total time same, lekin
 experience kaafi fast lagta hai.
 
 52
-00:03:21,420 --> 00:03:26,100
+00:03:21,566 --> 00:03:26,245
 Bahut lambe replies par streaming
 request timeout se bhi bachata hai.
 
 53
-00:03:27,400 --> 00:03:33,294
+00:03:27,545 --> 00:03:33,440
 Messages dot stream bilkul create jaise
 hi arguments leta hai, aur with ke saath
 
 54
-00:03:33,294 --> 00:03:36,094
+00:03:33,440 --> 00:03:36,240
 context manager ki tarah use hota hai.
 
 55
-00:03:36,444 --> 00:03:41,399
+00:03:36,590 --> 00:03:41,545
 Text stream text ke chhote pieces
 deta hai, jaise jaise woh aate hain.
 
 56
-00:03:41,619 --> 00:03:47,047
+00:03:41,765 --> 00:03:47,193
 Hum har piece turant print karte hain,
 flush equals True ke saath, taaki woh buffer
 
 57
-00:03:47,047 --> 00:03:48,028
+00:03:47,193 --> 00:03:48,174
 mein ruke nahi.
 
 58
-00:03:48,378 --> 00:03:54,219
+00:03:48,524 --> 00:03:54,365
 Aur stream khatam hone par get final
 message poora message object deta hai, stop
 
 59
-00:03:54,219 --> 00:03:57,870
+00:03:54,365 --> 00:03:58,015
 reason aur usage ke
 saath, bilkul create ki tarah.
 
 60
-00:03:58,090 --> 00:04:02,208
+00:03:58,235 --> 00:04:02,416
 Video mein pieces turant aa
 gaye kyunki fake API local hai.
 
 61
-00:04:02,428 --> 00:04:05,355
+00:04:02,636 --> 00:04:05,563
 Lekin code path real
 streaming wala hi hai.
 
 62
-00:04:06,655 --> 00:04:08,327
+00:04:06,863 --> 00:04:08,535
 Ab structured output.
 
 63
-00:04:08,547 --> 00:04:11,701
+00:04:08,755 --> 00:04:11,910
 Ek letter aur ek
 government form mein fark socho.
 
 64
-00:04:11,921 --> 00:04:15,834
+00:04:12,130 --> 00:04:16,042
 Letter mein kuch bhi, kisi
 bhi order mein likha ja sakta hai.
 
 65
-00:04:16,054 --> 00:04:19,667
+00:04:16,262 --> 00:04:19,875
 Form mein fixed boxes hote
 hain: naam yahan, date wahan.
 
 66
-00:04:19,887 --> 00:04:22,937
+00:04:20,095 --> 00:04:23,145
 Form ko program bina
 guess kiye padh sakta hai.
 
 67
-00:04:23,157 --> 00:04:26,595
+00:04:23,365 --> 00:04:26,852
 Structured outputs model
 se ek form bharwaate hain.
 
 68
-00:04:27,895 --> 00:04:33,791
+00:04:28,152 --> 00:04:34,049
 Agents ko baar baar machine readable
 output chahiye: ek quiz, ek plan, ek tool
 
 69
-00:04:33,791 --> 00:04:34,472
+00:04:34,049 --> 00:04:34,729
 decision.
 
 70
-00:04:34,692 --> 00:04:37,497
+00:04:34,949 --> 00:04:37,754
 Prompt mein sirf JSON maangna fragile hai.
 
 71
-00:04:37,717 --> 00:04:41,661
+00:04:37,974 --> 00:04:41,919
 Extra words, galat keys,
 ya toota JSON aa sakta hai.
 
 72
-00:04:42,011 --> 00:04:44,777
+00:04:42,269 --> 00:04:45,035
 Structured outputs isse fix karte hain.
 
 73
-00:04:44,997 --> 00:04:51,335
+00:04:45,255 --> 00:04:51,636
 Aap ek JSON schema dete ho, aur API
 reply ko uss schema ke valid JSON tak hi limit
 
 74
-00:04:51,335 --> 00:04:52,108
+00:04:51,636 --> 00:04:52,415
 karti hai.
 
 75
-00:04:52,328 --> 00:04:58,473
+00:04:52,635 --> 00:04:58,727
 Pydantic class doge, toh SDK schema bhi
 banata hai aur reply ko Python object mein
 
 76
-00:04:58,473 --> 00:04:59,972
+00:04:58,727 --> 00:05:00,213
 parse bhi karta hai.
 
 77
-00:05:01,272 --> 00:05:04,592
+00:05:01,513 --> 00:05:04,834
 Pehle Pydantic classes
 se shape describe karo.
 
 78
-00:05:04,812 --> 00:05:10,307
+00:05:05,054 --> 00:05:10,549
 Ek question mein text, chaar options,
 sahi answer ka index, aur explanation.
 
 79
-00:05:10,527 --> 00:05:13,154
+00:05:10,769 --> 00:05:13,395
 Ek quiz mein topic aur questions ki list.
 
 80
-00:05:13,374 --> 00:05:16,633
+00:05:13,615 --> 00:05:16,875
 Pydantic par Module 3
 mein poora lesson hai.
 
 81
-00:05:16,853 --> 00:05:19,745
+00:05:17,095 --> 00:05:19,986
 Abhi inhe typed
 dataclasses ki tarah padho.
 
 82
-00:05:20,095 --> 00:05:26,130
+00:05:20,336 --> 00:05:26,372
 Yeh Field constraints kehte hain: exactly
 chaar options, aur index zero se teen tak.
 
 83
-00:05:26,350 --> 00:05:32,154
+00:05:26,592 --> 00:05:32,406
 API ka schema support limited hai, toh
 SDK yeh limits field descriptions mein daal
 
 84
-00:05:32,154 --> 00:05:35,693
+00:05:32,406 --> 00:05:35,951
 deta hai, aur reply aane
 par khud check karta hai.
 
 85
-00:05:36,043 --> 00:05:41,459
+00:05:36,301 --> 00:05:41,717
 Phir create ki jagah messages dot
 parse call karo, output format mein class do.
 
 86
-00:05:41,809 --> 00:05:45,434
+00:05:42,067 --> 00:05:45,692
 Parsed output ek real,
 validated Quiz object hai.
 
 87
-00:05:45,654 --> 00:05:50,741
+00:05:45,912 --> 00:05:50,870
 Right side dekho: type hai
 Quiz, topic HTTP, aur do questions.
 
 88
-00:05:50,961 --> 00:05:55,214
+00:05:51,090 --> 00:05:55,343
 Dictionaries mein khodne ki
 jagah aap attributes use karte ho.
 
 89
-00:05:55,434 --> 00:05:59,143
+00:05:55,563 --> 00:05:59,272
 Offline fake schema valid
 placeholder questions deta hai.
 
 90
-00:05:59,363 --> 00:06:05,410
+00:05:59,492 --> 00:06:05,518
 Agar reply schema mein fit na ho, toh
 SDK validation error raise karta hai, kharab
 
 91
-00:06:05,410 --> 00:06:06,516
+00:06:05,518 --> 00:06:06,621
 data nahi deta.
 
 92
-00:06:07,816 --> 00:06:09,789
+00:06:07,921 --> 00:06:09,894
 Aakhri case: refusals.
 
 93
-00:06:10,009 --> 00:06:15,846
+00:06:10,114 --> 00:06:15,961
 Agar stop reason refusal hai, toh model
 ne safety reasons se mana kiya, aur content
 
 94
-00:06:15,846 --> 00:06:17,252
+00:06:15,961 --> 00:06:17,369
 khaali ho sakta hai.
 
 95
-00:06:17,472 --> 00:06:21,063
+00:06:17,589 --> 00:06:21,181
 Isliye text padhne se
 pehle stop reason check karo.
 
 96
-00:06:21,283 --> 00:06:27,424
+00:06:21,401 --> 00:06:27,672
 Current models par API ek declined
 request ko automatically doosre model par chala
 
 97
-00:06:27,424 --> 00:06:28,173
+00:06:27,672 --> 00:06:28,436
 sakti hai.
 
 98
-00:06:28,393 --> 00:06:30,684
+00:06:28,656 --> 00:06:30,947
 Iss feature ko fallbacks kehte hain.
 
 99
-00:06:30,904 --> 00:06:35,538
+00:06:31,167 --> 00:06:35,802
 Hamara project isse on karta
 hai, lesson six mein code dekhoge.
 
 100
-00:06:36,838 --> 00:06:38,297
+00:06:37,102 --> 00:06:38,561
 Interview corner.
 
 101
-00:06:38,517 --> 00:06:41,334
+00:06:38,781 --> 00:06:41,537
 LLM response ko stream kyun karte hain?
 
 102
-00:06:43,684 --> 00:06:49,641
+00:06:43,887 --> 00:06:49,845
 Answer: generation token by token hoti
 hai, toh streaming text ko bante hue dikhati
 
 103
-00:06:49,641 --> 00:06:49,928
+00:06:49,845 --> 00:06:50,132
 hai.
 
 104
-00:06:50,148 --> 00:06:55,585
+00:06:50,352 --> 00:06:55,789
 User ko turant progress dikhta hai,
 total time same rehta hai, aur bahut lambe
 
 105
-00:06:55,585 --> 00:06:57,746
+00:06:55,789 --> 00:06:57,949
 replies timeout se bachte hain.
 
 106
-00:06:57,966 --> 00:07:01,911
+00:06:58,169 --> 00:07:02,084
 Trap: yeh mat bolna ki
 streaming se model fast ho jaata hai.
 
 107
-00:07:02,131 --> 00:07:05,524
+00:07:02,304 --> 00:07:05,696
 Woh sirf intezaar ko
 chhota mehsoos karwati hai.
 
 108
-00:07:05,874 --> 00:07:10,559
+00:07:06,046 --> 00:07:10,751
 Doosra question: ek LLM se
 reliable JSON kaise lete ho?
 
 109
-00:07:12,909 --> 00:07:15,422
+00:07:13,101 --> 00:07:15,614
 Answer: structured outputs use karo.
 
 110
-00:07:15,642 --> 00:07:21,534
+00:07:15,834 --> 00:07:21,757
 JSON schema ya Pydantic model do, taaki
 reply usi shape mein aaye, object mein parse
 
 111
-00:07:21,534 --> 00:07:25,814
+00:07:21,757 --> 00:07:26,057
 karo, aur phir bhi stop
 reason aur business rules check karo.
 
 112
-00:07:26,034 --> 00:07:29,845
+00:07:26,277 --> 00:07:30,089
 Trap: prompt mein JSON
 maango aur regex se theek karo.
 
 113
-00:07:30,065 --> 00:07:33,353
+00:07:30,309 --> 00:07:33,596
 Yeh pehle unusual
 reply par toot jaata hai.
 
 114
-00:07:34,653 --> 00:07:35,910
+00:07:34,896 --> 00:07:36,153
 Practice time.
 
 115
-00:07:36,260 --> 00:07:41,342
+00:07:36,503 --> 00:07:41,585
 Pehla: do sabse common stop reasons
 kaun se hain, aur dono ka matlab kya hai?
 
 116
-00:07:41,692 --> 00:07:46,109
+00:07:41,935 --> 00:07:46,353
 Doosra: stream dot py mein flush
 equals True hata do, toh kya hoga?
 
 117
-00:07:46,459 --> 00:07:51,740
+00:07:46,703 --> 00:07:51,984
 Teesra: Quiz schema mein ek
 difficulty field add karo, easy, medium, ya hard.
 
 118
-00:07:52,090 --> 00:07:56,729
+00:07:52,334 --> 00:07:56,973
 Aur scenario: JSON parsing sirf
 lambe replies par fail hoti hai.
 
 119
-00:07:56,949 --> 00:07:59,933
+00:07:57,193 --> 00:08:00,177
 Pehle kya check karoge, aur fix kya hoga?
 
 120
-00:08:07,233 --> 00:08:08,162
+00:08:07,477 --> 00:08:08,405
 Quick check.
 
 121
-00:08:08,382 --> 00:08:14,371
+00:08:08,625 --> 00:08:14,615
 Aapka code reply ko JSON ki tarah parse
 karta hai, aur lambe reply par fail ho jaata
 
 122
-00:08:14,371 --> 00:08:14,656
+00:08:14,615 --> 00:08:14,900
 hai.
 
 123
-00:08:14,876 --> 00:08:17,077
+00:08:15,120 --> 00:08:17,321
 Sabse pehle kya check karoge?
 
 124
-00:08:22,777 --> 00:08:25,394
+00:08:23,021 --> 00:08:25,637
 Ki stop reason max tokens hai ya nahi.
 
 125
-00:08:25,614 --> 00:08:29,237
+00:08:25,857 --> 00:08:29,481
 Kata hua reply JSON ke
 beech mein khatam hota hai.
 
 126
-00:08:30,537 --> 00:08:31,377
+00:08:30,781 --> 00:08:31,621
 Recap.
 
 127
-00:08:31,597 --> 00:08:35,122
+00:08:31,841 --> 00:08:35,366
 Stop reason batata hai ki
 reply complete hai ya nahi.
 
 128
-00:08:35,342 --> 00:08:36,978
+00:08:35,586 --> 00:08:37,222
 Hamesha check karo.
 
 129
-00:08:37,328 --> 00:08:40,059
+00:08:37,572 --> 00:08:40,302
 Responsive output ke liye stream karo.
 
 130
-00:08:40,409 --> 00:08:45,861
+00:08:40,652 --> 00:08:46,105
 Validated JSON ke liye messages
 dot parse ke saath structured outputs.
 
 131
-00:08:46,211 --> 00:08:49,903
+00:08:46,455 --> 00:08:50,146
 Aur content padhne se
 pehle refusal handle karo.
 
 132
-00:08:50,253 --> 00:08:52,537
+00:08:50,496 --> 00:08:52,781
 Agla lesson: production basics.
 
 133
-00:08:52,757 --> 00:08:56,897
+00:08:53,001 --> 00:08:57,140
 Errors, rate limits, retries,
 aur yeh sab kitne ka padta hai.

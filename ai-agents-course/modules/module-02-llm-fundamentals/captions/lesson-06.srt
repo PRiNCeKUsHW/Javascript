@@ -3,543 +3,543 @@
 Project time!
 
 2
-00:00:02,223 --> 00:00:05,674
+00:00:02,223 --> 00:00:05,699
 Do lessons mein hum AI
 Study Assistant banayenge.
 
 3
-00:00:05,894 --> 00:00:11,814
+00:00:05,919 --> 00:00:11,838
 Ek command line tool, jo programming
 concepts explain karta hai, validated JSON mein
 
 4
-00:00:11,814 --> 00:00:15,689
+00:00:11,838 --> 00:00:15,714
 quizzes banata hai, aur
 memory ke saath chat karta hai.
 
 5
-00:00:15,909 --> 00:00:18,915
+00:00:15,934 --> 00:00:18,939
 Aur saath mein har ek
 cent ka hisaab rakhta hai.
 
 6
-00:00:19,135 --> 00:00:21,615
+00:00:19,159 --> 00:00:21,640
 Iss module ki har cheez isme aayegi.
 
 7
-00:00:21,835 --> 00:00:24,577
+00:00:21,860 --> 00:00:24,602
 Ek ek file karke, aaram se chalenge.
 
 8
-00:00:25,877 --> 00:00:31,974
+00:00:25,902 --> 00:00:31,998
 Explain command kisi bhi topic ko stream
 karke samjhata hai, beginner, intermediate,
 
 9
-00:00:31,974 --> 00:00:33,570
+00:00:31,998 --> 00:00:33,595
 ya advanced level par.
 
 10
-00:00:33,920 --> 00:00:39,438
+00:00:33,945 --> 00:00:39,462
 Quiz command validated JSON mein
 multiple choice questions banata hai, jinhe aap
 
 11
-00:00:39,438 --> 00:00:41,369
+00:00:39,462 --> 00:00:41,393
 save aur grade kar sakte ho.
 
 12
-00:00:41,719 --> 00:00:47,532
+00:00:41,743 --> 00:00:47,556
 Chat command history ke saath
 conversation karta hai, ek token budget ke andar trim
 
 13
-00:00:47,532 --> 00:00:47,952
+00:00:47,556 --> 00:00:47,976
 karke.
 
 14
-00:00:48,302 --> 00:00:54,101
+00:00:48,326 --> 00:00:54,125
 Har call apne tokens aur cost batati
 hai, aur ek budget faltu kharche ko rokta hai.
 
 15
-00:00:54,451 --> 00:01:00,284
+00:00:54,475 --> 00:01:00,308
 Aur clear errors, automatic retries, aur
 ek offline mode, taaki tests ko kabhi key
 
 16
-00:01:00,284 --> 00:01:01,849
+00:01:00,308 --> 00:01:01,873
 ya network na chahiye.
 
 17
-00:01:03,149 --> 00:01:05,273
+00:01:03,173 --> 00:01:05,297
 Code se pehle architecture.
 
 18
-00:01:05,493 --> 00:01:07,406
+00:01:05,517 --> 00:01:07,431
 Har file ka ek hi kaam hai.
 
 19
-00:01:07,626 --> 00:01:10,574
+00:01:07,651 --> 00:01:10,598
 Isse separation of concerns kehte hain.
 
 20
-00:01:10,924 --> 00:01:16,565
+00:01:10,948 --> 00:01:16,590
 Command line arguments aur printing
 sambhalti hai, aur assistant ko call karti hai.
 
 21
-00:01:16,785 --> 00:01:20,734
+00:01:16,810 --> 00:01:20,758
 Assistant mein asli logic
 hai: explain, quiz, aur chat.
 
 22
-00:01:21,084 --> 00:01:26,485
+00:01:21,108 --> 00:01:26,509
 Prompts ki apni alag file hai, taaki aap
 code chhue bina prompts improve kar sako.
 
 23
-00:01:26,705 --> 00:01:28,885
+00:01:26,729 --> 00:01:28,886
 Aur models mein quiz ka schema hai.
 
 24
-00:01:29,235 --> 00:01:33,662
+00:01:29,236 --> 00:01:33,664
 Pricing cost calculate karti
 hai aur budget enforce karti hai.
 
 25
-00:01:34,012 --> 00:01:36,728
+00:01:34,014 --> 00:01:36,693
 Aur client SDK client banata hai.
 
 26
-00:01:36,948 --> 00:01:42,603
+00:01:36,913 --> 00:01:42,550
 Key set hai toh real client, nahi
 toh wahi SDK offline fake API ki taraf.
 
 27
-00:01:42,823 --> 00:01:46,587
+00:01:42,770 --> 00:01:46,534
 Program ke baaki hisse ko
 yeh fark pata hi nahi chalta.
 
 28
-00:01:47,887 --> 00:01:52,956
+00:01:47,834 --> 00:01:52,820
 Sabse pehle woh cheez jo testing
 ko possible banati hai: fake API.
 
 29
-00:01:53,176 --> 00:01:55,904
+00:01:53,040 --> 00:01:55,768
 Isse flight simulator ki tarah socho.
 
 30
-00:01:56,124 --> 00:02:01,006
+00:01:55,988 --> 00:02:00,869
 Pilots simulator mein real cockpit
 controls ke saath train karte hain.
 
 31
-00:02:01,226 --> 00:02:04,227
+00:02:01,089 --> 00:02:04,090
 Sirf bahar ki duniya simulated hoti hai.
 
 32
-00:02:04,447 --> 00:02:07,442
+00:02:04,310 --> 00:02:07,258
 Hamare tests real SDK use karte hain.
 
 33
-00:02:07,662 --> 00:02:09,600
+00:02:07,478 --> 00:02:09,416
 Sirf server simulated hai.
 
 34
-00:02:09,820 --> 00:02:14,623
+00:02:09,636 --> 00:02:14,438
 Crash free mein hota hai, aur
 failures jaan boojhkar practice kar sakte ho.
 
 35
-00:02:15,923 --> 00:02:22,105
+00:02:15,738 --> 00:02:21,861
 Yeh ek class hai jiske objects ko
 function ki tarah call kar sakte ho, har HTTP
 
 36
-00:02:22,105 --> 00:02:23,670
+00:02:21,861 --> 00:02:23,411
 request par ek baar.
 
 37
-00:02:23,890 --> 00:02:29,373
+00:02:23,631 --> 00:02:29,114
 Planned failures ki ek list se tests
 aur demos jaan boojhkar four twenty nine ya
 
 38
-00:02:29,373 --> 00:02:31,497
+00:02:29,114 --> 00:02:31,238
 five hundred mangwa sakte hain.
 
 39
-00:02:31,847 --> 00:02:38,373
+00:02:31,588 --> 00:02:38,078
 Har call ko SDK ki banayi hui real HTTP
 request milti hai, aur woh uska JSON body
 
 40
-00:02:38,373 --> 00:02:39,662
+00:02:38,078 --> 00:02:39,360
 parse karti hai.
 
 41
-00:02:39,882 --> 00:02:45,232
+00:02:39,580 --> 00:02:44,929
 Body record hoti hai, taaki tests
 check kar sakein ki exactly kya bheja gaya.
 
 42
-00:02:45,582 --> 00:02:51,321
+00:02:45,279 --> 00:02:51,040
 Phir woh placeholder reply banati hai,
 planned failure ya refusal lagati hai, real
 
 43
-00:02:51,321 --> 00:02:57,130
+00:02:51,040 --> 00:02:56,871
 API ki tarah max tokens par reply kaatti
 hai, aur normal JSON ya server sent events
 
 44
-00:02:57,130 --> 00:02:58,879
+00:02:56,871 --> 00:02:58,627
 ki stream wapas deti hai.
 
 45
-00:02:59,099 --> 00:03:04,959
+00:02:58,847 --> 00:03:04,939
 Responses ki shape real API jaisi
 hai, isliye SDK ko fark pata nahi chalta.
 
 46
-00:03:05,179 --> 00:03:09,303
+00:03:05,159 --> 00:03:09,331
 Matlab hamare tests real
 SDK code ko test karte hain.
 
 47
-00:03:10,603 --> 00:03:12,930
+00:03:10,631 --> 00:03:12,958
 Key hai, toh normal client banta hai.
 
 48
-00:03:13,150 --> 00:03:18,684
+00:03:13,178 --> 00:03:18,712
 SDK key environment se khud padhta hai,
 toh key hamare code mein kabhi nahi aati.
 
 49
-00:03:18,904 --> 00:03:22,487
+00:03:18,932 --> 00:03:22,515
 Hum retry count aur saath
 second ka timeout dete hain.
 
 50
-00:03:22,837 --> 00:03:28,932
+00:03:22,865 --> 00:03:28,921
 Key nahi hai, toh ek clear offline
 notice print hota hai, aur wahi SDK ek aise HTTP
 
 51
-00:03:28,932 --> 00:03:34,733
+00:03:28,921 --> 00:03:34,685
 client ke saath banta hai jiska
 transport network ki jagah hamari fake API hai.
 
 52
-00:03:36,033 --> 00:03:40,503
+00:03:35,985 --> 00:03:40,455
 Settings environment variables
 se aati hain, Module 1 ki tarah.
 
 53
-00:03:40,723 --> 00:03:43,463
+00:03:40,675 --> 00:03:43,415
 Key nahi, toh automatically offline mode.
 
 54
-00:03:43,683 --> 00:03:49,082
+00:03:43,635 --> 00:03:49,060
 Model ka default Claude Opus 5.5
 hai, aur budget ka pachaas cents.
 
 55
-00:03:50,382 --> 00:03:55,557
+00:03:50,360 --> 00:03:55,588
 Price table mein har model ke liye per
 million input aur output tokens ke dollars
 
 56
-00:03:55,557 --> 00:03:55,876
+00:03:55,588 --> 00:03:55,911
 hain.
 
 57
-00:03:56,226 --> 00:03:59,222
+00:03:56,261 --> 00:03:59,269
 Cost USD lesson five wala formula hai.
 
 58
-00:03:59,442 --> 00:04:03,461
+00:03:59,489 --> 00:04:03,388
 Unknown model par error aata
 hai, chupchaap zero cost nahi.
 
 59
-00:04:03,811 --> 00:04:06,110
+00:04:03,738 --> 00:04:06,037
 Cost tracker kharcha jodta hai.
 
 60
-00:04:06,330 --> 00:04:11,797
+00:04:06,257 --> 00:04:11,724
 Iska check method har call se pehle
 chalta hai, aur budget khatam hote hi budget
 
 61
-00:04:11,797 --> 00:04:13,506
+00:04:11,724 --> 00:04:13,433
 exceeded raise karta hai.
 
 62
-00:04:13,726 --> 00:04:16,445
+00:04:13,653 --> 00:04:16,372
 Yahi runaway loop se aapki suraksha hai.
 
 63
-00:04:16,795 --> 00:04:20,078
+00:04:16,722 --> 00:04:20,005
 Aur add har poori hui
 call ki cost record karta hai.
 
 64
-00:04:21,378 --> 00:04:23,965
+00:04:21,305 --> 00:04:23,892
 Ek chhote budget ke saath dry run.
 
 65
-00:04:24,185 --> 00:04:26,464
+00:04:24,112 --> 00:04:26,391
 Teen tenth of a cent ka budget.
 
 66
-00:04:26,684 --> 00:04:29,132
+00:04:26,611 --> 00:04:29,059
 Call one: check,
 spent zero hai, theek hai.
 
 67
-00:04:29,352 --> 00:04:33,291
+00:04:29,279 --> 00:04:33,218
 Call ki cost point zero
 zero one three, spent ab utna hi.
 
 68
-00:04:33,641 --> 00:04:36,298
+00:04:33,568 --> 00:04:36,225
 Call two: check, abhi bhi budget ke andar.
 
 69
-00:04:36,518 --> 00:04:39,670
+00:04:36,445 --> 00:04:39,597
 Call hui, spent ab
 point zero zero two six.
 
 70
-00:04:40,020 --> 00:04:45,395
+00:04:39,947 --> 00:04:45,322
 Call three: check pass, kyunki point
 zero zero two six abhi bhi budget se kam hai.
 
 71
-00:04:45,615 --> 00:04:49,008
+00:04:45,542 --> 00:04:48,935
 Call ke baad spent
 budget se thoda upar chala gaya.
 
 72
-00:04:49,358 --> 00:04:50,864
+00:04:49,285 --> 00:04:50,791
 Call four: check fail.
 
 73
-00:04:51,084 --> 00:04:54,785
+00:04:51,011 --> 00:04:54,712
 BudgetExceeded, aur
 request bheji hi nahi jaati.
 
 74
-00:04:56,085 --> 00:05:01,843
+00:04:56,012 --> 00:05:01,770
 Answer ek call se mili har jaankari ko
 ek saath rakhta hai: text, stop reason,
 
 75
-00:05:01,843 --> 00:05:03,098
+00:05:01,770 --> 00:05:03,025
 tokens, aur cost.
 
 76
-00:05:03,318 --> 00:05:07,334
+00:05:03,245 --> 00:05:07,261
 Truncated true hota hai
 jab reply max tokens par kata.
 
 77
-00:05:07,684 --> 00:05:13,316
+00:05:07,611 --> 00:05:13,222
 Friendly errors ek context manager hai
 jo SDK exceptions ko pakadta hai, sabse
 
 78
-00:05:13,316 --> 00:05:17,937
+00:05:13,222 --> 00:05:17,825
 specific pehle, aur har ek ko
 ek clear message mein badalta hai.
 
 79
-00:05:18,157 --> 00:05:23,465
+00:05:18,045 --> 00:05:23,354
 Yeh lesson five wali error table hai,
 ek baar likhi, aur har call mein reuse.
 
 80
-00:05:23,815 --> 00:05:24,971
+00:05:23,704 --> 00:05:24,859
 Ab fallbacks.
 
 81
-00:05:25,191 --> 00:05:31,091
+00:05:25,079 --> 00:05:31,113
 Agar model request mana kar de, toh API
 usse automatically doosre model par chala
 
 82
-00:05:31,091 --> 00:05:31,819
+00:05:31,113 --> 00:05:31,857
 sakti hai.
 
 83
-00:05:32,039 --> 00:05:34,753
+00:05:32,077 --> 00:05:34,791
 Hum iss beta flag se opt in karte hain.
 
 84
-00:05:35,103 --> 00:05:41,071
+00:05:35,141 --> 00:05:41,110
 Base woh arguments banata hai jo har
 request mein common hain: model, beta flag, aur
 
 85
-00:05:41,071 --> 00:05:46,115
+00:05:41,110 --> 00:05:46,155
 fallbacks equals default, taaki
 API khud suitable fallback model chune.
 
 86
-00:05:46,465 --> 00:05:50,133
+00:05:46,505 --> 00:05:50,173
 Answer function ek
 response ko Answer mein badalta hai.
 
 87
-00:05:50,353 --> 00:05:55,607
+00:05:50,393 --> 00:05:55,647
 Pehle cost record karta hai, kyunki
 mana ki gayi request ka bhi bill aata hai.
 
 88
-00:05:55,827 --> 00:05:59,901
+00:05:55,867 --> 00:05:59,941
 Phir refusal check, aur uske
 baad hi text blocks jodta hai.
 
 89
-00:06:01,201 --> 00:06:06,971
+00:06:01,241 --> 00:06:07,011
 Explain pehle budget check karta hai,
 phir prompts dot py se request template bharta
 
 90
-00:06:06,971 --> 00:06:07,246
+00:06:07,011 --> 00:06:07,285
 hai.
 
 91
-00:06:07,596 --> 00:06:13,110
+00:06:07,635 --> 00:06:13,150
 Friendly errors ke andar ek stream
 kholta hai, shared arguments, tutor system
 
 92
-00:06:13,110 --> 00:06:15,402
+00:06:13,150 --> 00:06:15,442
 prompt, aur low effort ke saath.
 
 93
-00:06:15,622 --> 00:06:18,347
+00:06:15,662 --> 00:06:18,387
 Explanations ke liye low effort kaafi hai.
 
 94
-00:06:18,697 --> 00:06:22,438
+00:06:18,737 --> 00:06:22,478
 Har text piece aate hi on
 text callback ko diya jaata hai.
 
 95
-00:06:22,658 --> 00:06:28,103
+00:06:22,698 --> 00:06:28,142
 Toh assistant ko farak nahi padta ki
 text print ho raha hai, web page par dikh raha
 
 96
-00:06:28,103 --> 00:06:30,333
+00:06:28,142 --> 00:06:30,373
 hai, ya test collect kar raha hai.
 
 97
-00:06:30,553 --> 00:06:33,366
+00:06:30,593 --> 00:06:33,406
 Phir final message ek Answer banta hai.
 
 98
-00:06:34,666 --> 00:06:36,179
+00:06:34,706 --> 00:06:36,219
 Chalo run karte hain.
 
 99
-00:06:36,399 --> 00:06:42,169
+00:06:36,439 --> 00:06:42,247
 Pehle offline notice, phir streamed
 placeholder, phir ek footer jisme model, tokens,
 
 100
-00:06:42,169 --> 00:06:43,955
+00:06:42,247 --> 00:06:44,045
 cost, aur stop reason hai.
 
 101
-00:06:44,175 --> 00:06:47,418
+00:06:44,265 --> 00:06:47,508
 Aur aakhir mein budget
 ke against session ka total.
 
 102
-00:06:47,768 --> 00:06:53,644
+00:06:47,858 --> 00:06:53,734
 Bahut chhote max tokens ke saath reply
 kat jaata hai, aur tool aapko warning deta
 
 103
-00:06:53,644 --> 00:06:56,546
+00:06:53,734 --> 00:06:56,636
 hai, sab theek hone ka natak nahi karta.
 
 104
-00:06:56,896 --> 00:07:02,957
+00:06:56,986 --> 00:07:03,047
 Aur zero budget ke saath, kuch bhi
 bhejne se pehle hi mana kar deta hai, ek line ke
 
 105
-00:07:02,957 --> 00:07:04,490
+00:07:03,047 --> 00:07:04,580
 explanation ke saath.
 
 106
-00:07:05,790 --> 00:07:07,789
+00:07:05,880 --> 00:07:07,878
 Video pause karo aur socho.
 
 107
-00:07:08,009 --> 00:07:13,709
+00:07:08,098 --> 00:07:13,799
 Budget hai point zero zero two dollars,
 aur har call point zero zero one three ki.
 
 108
-00:07:14,059 --> 00:07:17,385
+00:07:14,149 --> 00:07:17,475
 BudgetExceeded se
 pehle kitni calls chalengi?
 
 109
-00:07:23,735 --> 00:07:24,740
+00:07:23,825 --> 00:07:24,829
 Do calls.
 
 110
-00:07:24,960 --> 00:07:30,405
+00:07:25,049 --> 00:07:30,495
 Pehli ke baad spent point zero zero
 one three, jo budget se kam hai, toh doosri
 
 111
-00:07:30,405 --> 00:07:31,164
+00:07:30,495 --> 00:07:31,253
 chalti hai.
 
 112
-00:07:31,384 --> 00:07:36,586
+00:07:31,473 --> 00:07:36,676
 Uske baad spent point zero zero two
 six, toh teesri ka check fail hota hai.
 
 113
-00:07:37,886 --> 00:07:38,726
+00:07:37,976 --> 00:07:38,816
 Recap.
 
 114
-00:07:38,946 --> 00:07:44,714
+00:07:39,036 --> 00:07:44,903
 Real protocol bolne wali fake API
 tests ko free aur repeatable banati hai.
 
 115
-00:07:45,064 --> 00:07:49,739
+00:07:45,253 --> 00:07:49,929
 Ek function decide karta hai:
 real client ya offline client.
 
 116
-00:07:50,089 --> 00:07:54,802
+00:07:50,279 --> 00:07:54,992
 Har call ki cost lagti hai, aur har
 call se pehle budget check hota hai.
 
 117
-00:07:55,152 --> 00:07:59,846
+00:07:55,342 --> 00:08:00,035
 Errors ek hi jagah map hote hain,
 aur fallbacks refusals sambhalte hain.
 
 118
-00:08:00,196 --> 00:08:05,772
+00:08:00,385 --> 00:08:05,961
 Part two mein: structured output se
 quizzes, history ke saath chat, poora demo,
 
 119
-00:08:05,772 --> 00:08:08,666
+00:08:05,961 --> 00:08:08,855
 tests, interview corner, aur module quiz.

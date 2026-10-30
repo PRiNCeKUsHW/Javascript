@@ -9,751 +9,751 @@ Module 1 mein humne Python
 ki strong foundation banayi thi.
 
 3
-00:00:08,999 --> 00:00:15,371
+00:00:08,999 --> 00:00:15,447
 Ab hum uss engine ko samjhenge jo har AI
 agent ke andar chalta hai: large language
 
 4
-00:00:15,371 --> 00:00:17,313
+00:00:15,447 --> 00:00:17,412
 model, ya short mein LLM.
 
 5
-00:00:17,533 --> 00:00:23,021
+00:00:17,632 --> 00:00:23,104
 Code likhne se pehle ek clear picture
 banana zaroori hai, ki yeh model actually kya
 
 6
-00:00:23,021 --> 00:00:25,004
+00:00:23,104 --> 00:00:25,082
 karta hai, aur kya nahi karta.
 
 7
-00:00:26,304 --> 00:00:32,145
+00:00:26,382 --> 00:00:32,223
 Iss lesson ke baad aap next token
 prediction ko simple words mein explain kar paoge.
 
 8
-00:00:32,495 --> 00:00:38,436
+00:00:32,573 --> 00:00:38,514
 Aap samjhoge ki tokens kya hote hain, aur
 yeh cost, limits aur speed ko kaise decide
 
 9
-00:00:38,436 --> 00:00:39,214
+00:00:38,514 --> 00:00:39,292
 karte hain.
 
 10
-00:00:39,564 --> 00:00:42,967
+00:00:39,642 --> 00:00:43,044
 Context window kya hai,
 aur usme kya kya jaata hai.
 
 11
-00:00:43,317 --> 00:00:47,811
+00:00:43,394 --> 00:00:47,943
 Aur model ko control karne ke
 liye aapke paas kaun se options hain.
 
 12
-00:00:49,111 --> 00:00:52,035
+00:00:49,243 --> 00:00:52,167
 Chalo ek simple
 example se shuru karte hain.
 
 13
-00:00:52,255 --> 00:00:54,392
+00:00:52,387 --> 00:00:54,524
 Aapke phone ka keyboard dekho.
 
 14
-00:00:54,612 --> 00:00:59,491
+00:00:54,744 --> 00:00:59,622
 Aap type karte ho, Happy birthday
 to, aur keyboard suggest karta hai, you.
 
 15
-00:00:59,711 --> 00:01:02,228
+00:00:59,842 --> 00:01:02,360
 Keyboard ne koi fact look up nahi kiya.
 
 16
-00:01:02,448 --> 00:01:07,177
+00:01:02,580 --> 00:01:07,309
 Usne bas patterns dekhe hain, ki
 iss text ke baad usually kya aata hai.
 
 17
-00:01:07,527 --> 00:01:11,923
+00:01:07,659 --> 00:01:12,112
 LLM bhi basically yahi karta
 hai, bas bahut bade scale par.
 
 18
-00:01:12,143 --> 00:01:15,145
+00:01:12,332 --> 00:01:15,335
 Usne training mein
 bahut saara text padha hai.
 
 19
-00:01:15,495 --> 00:01:20,561
+00:01:15,685 --> 00:01:20,750
 Aur woh baar baar predict karta hai
 ki agla piece of text kya hona chahiye.
 
 20
-00:01:21,861 --> 00:01:24,640
+00:01:22,050 --> 00:01:24,829
 Ab yahi idea thoda
 technically dekhte hain.
 
 21
-00:01:24,990 --> 00:01:28,143
+00:01:25,179 --> 00:01:28,287
 Model ko input milta hai, ab tak ka text.
 
 22
-00:01:28,364 --> 00:01:30,057
+00:01:28,507 --> 00:01:30,201
 Jaise, Agents call.
 
 23
-00:01:30,277 --> 00:01:34,466
+00:01:30,421 --> 00:01:34,473
 Model ke andar billions of
 numbers hain, jinhe weights kehte hain.
 
 24
-00:01:34,686 --> 00:01:38,594
+00:01:34,693 --> 00:01:38,602
 Training ke time pe yeh weights
 text ke patterns seekh lete hain.
 
 25
-00:01:38,944 --> 00:01:41,890
+00:01:38,952 --> 00:01:41,965
 Model ka output poora answer nahi hota.
 
 26
-00:01:42,110 --> 00:01:46,165
+00:01:42,185 --> 00:01:46,239
 Output hota hai har
 possible next token ki probability.
 
 27
-00:01:46,385 --> 00:01:50,724
+00:01:46,459 --> 00:01:50,977
 Jaise, tools ke chances
 bahut zyada, APIs ke thode kam.
 
 28
-00:01:50,944 --> 00:01:53,471
+00:01:51,197 --> 00:01:53,724
 Yeh numbers sirf samjhane ke liye hain.
 
 29
-00:01:53,821 --> 00:01:59,517
+00:01:54,074 --> 00:01:59,784
 Phir ek token choose hota hai, text ke
 end mein jud jaata hai, aur poora text wapas
 
 30
-00:01:59,517 --> 00:02:03,291
+00:01:59,784 --> 00:02:03,568
 model mein jaata hai, agla
 token predict karne ke liye.
 
 31
-00:02:03,511 --> 00:02:08,361
+00:02:03,788 --> 00:02:08,638
 Ek lamba answer bas yahi loop hai,
 jo sainkdon ya hazaaron baar chalta hai.
 
 32
-00:02:09,661 --> 00:02:11,998
+00:02:09,938 --> 00:02:12,275
 Iss process ka dry run karte hain.
 
 33
-00:02:12,218 --> 00:02:14,429
+00:02:12,495 --> 00:02:14,706
 Step one: text hai, Agents call.
 
 34
-00:02:14,649 --> 00:02:18,752
+00:02:14,926 --> 00:02:19,029
 Sabse likely next token hai
 tools, toh woh add ho jaata hai.
 
 35
-00:02:19,102 --> 00:02:22,014
+00:02:19,379 --> 00:02:22,291
 Step two: ab text hai, Agents call tools.
 
 36
-00:02:22,234 --> 00:02:24,289
+00:02:22,511 --> 00:02:24,566
 Agla likely token hai, to.
 
 37
-00:02:24,639 --> 00:02:28,658
+00:02:24,916 --> 00:02:28,935
 Step three: Agents call
 tools to, aur agla token hai, act.
 
 38
-00:02:29,008 --> 00:02:34,253
+00:02:29,285 --> 00:02:34,574
 Step four: full stop aata hai, aur
 model decide karta hai ki answer complete hai.
 
 39
-00:02:34,473 --> 00:02:36,778
+00:02:34,794 --> 00:02:37,099
 Yahan generation ruk jaata hai.
 
 40
-00:02:38,078 --> 00:02:41,485
+00:02:38,399 --> 00:02:41,806
 Iss loop se ek bahut
 important baat samajh aati hai.
 
 41
-00:02:41,705 --> 00:02:45,674
+00:02:42,026 --> 00:02:45,944
 Model plausible text likhta
 hai, yaani jo sahi lagta hai.
 
 42
-00:02:45,894 --> 00:02:48,063
+00:02:46,164 --> 00:02:48,333
 Woh facts look up nahi karta.
 
 43
-00:02:48,283 --> 00:02:52,854
+00:02:48,553 --> 00:02:53,076
 Isliye model kabhi kabhi
 confidently galat answer de sakta hai.
 
 44
-00:02:53,074 --> 00:02:55,290
+00:02:53,296 --> 00:02:55,512
 Isse hallucination kehte hain.
 
 45
-00:02:55,510 --> 00:03:00,390
+00:02:55,732 --> 00:03:00,613
 Aur uski knowledge ek date tak hi
 hoti hai, jise training cut off kehte hain.
 
 46
-00:03:00,610 --> 00:03:06,034
+00:03:00,833 --> 00:03:06,257
 Yahi reason hai ki agents ko tools aur
 documents diye jaate hain, taaki woh facts
 
 47
-00:03:06,034 --> 00:03:07,172
+00:03:06,257 --> 00:03:07,395
 check kar sakein.
 
 48
-00:03:07,392 --> 00:03:09,764
+00:03:07,615 --> 00:03:09,986
 Yeh poora course wahi sikhata hai.
 
 49
-00:03:11,064 --> 00:03:13,536
+00:03:11,286 --> 00:03:13,758
 Ab sabse important word: token.
 
 50
-00:03:13,756 --> 00:03:15,057
+00:03:13,978 --> 00:03:15,280
 Token kya hai?
 
 51
-00:03:15,277 --> 00:03:17,927
+00:03:15,500 --> 00:03:18,149
 Token text ka ek chhota tukda hai.
 
 52
-00:03:18,147 --> 00:03:23,409
+00:03:18,369 --> 00:03:23,631
 Kabhi ek poora chhota word, kabhi
 kisi lambe word ka hissa, kabhi space ya
 
 53
-00:03:23,409 --> 00:03:24,262
+00:03:23,631 --> 00:03:24,485
 punctuation.
 
 54
-00:03:24,612 --> 00:03:27,221
+00:03:24,835 --> 00:03:27,444
 Jaise, Agents call tools, full stop.
 
 55
-00:03:27,441 --> 00:03:30,070
+00:03:27,664 --> 00:03:30,293
 Yeh shayad chaar tokens mein toot jaaye.
 
 56
-00:03:30,290 --> 00:03:32,242
+00:03:30,513 --> 00:03:32,464
 Yeh sirf ek example hai.
 
 57
-00:03:32,462 --> 00:03:36,654
+00:03:32,684 --> 00:03:36,779
 Exact split har model ke
 tokenizer par depend karta hai.
 
 58
-00:03:37,004 --> 00:03:42,268
+00:03:37,129 --> 00:03:42,392
 English text ke liye ek rough rule
 hai: lagbhag chaar characters ka ek token.
 
 59
-00:03:42,488 --> 00:03:48,327
+00:03:42,612 --> 00:03:48,451
 Code, unusual words, aur Hindi jaisi
 doosri languages mein same text ke liye zyada
 
 60
-00:03:48,327 --> 00:03:49,609
+00:03:48,451 --> 00:03:49,733
 tokens lagte hain.
 
 61
-00:03:49,959 --> 00:03:53,101
+00:03:50,083 --> 00:03:53,225
 Jab exact number
 chahiye, toh guess mat karo.
 
 62
-00:03:53,321 --> 00:03:59,347
+00:03:53,445 --> 00:03:59,558
 API ke paas ek token counting endpoint
 hai, jo aapke exact model ke liye tokens
 
 63
-00:03:59,347 --> 00:04:00,110
+00:03:59,558 --> 00:04:00,332
 ginta hai.
 
 64
-00:04:00,330 --> 00:04:02,940
+00:04:00,552 --> 00:04:03,163
 Lesson five mein hum isse use karenge.
 
 65
-00:04:04,240 --> 00:04:07,242
+00:04:04,463 --> 00:04:07,464
 Tokens ko ek taxi meter ki tarah socho.
 
 66
-00:04:07,462 --> 00:04:10,857
+00:04:07,684 --> 00:04:11,079
 Taxi kilometre ke
 hisaab se charge karti hai.
 
 67
-00:04:11,077 --> 00:04:14,297
+00:04:11,299 --> 00:04:14,695
 API token ke hisaab se charge karti hai.
 
 68
-00:04:14,517 --> 00:04:17,423
+00:04:14,915 --> 00:04:17,822
 Aap jo bhejte ho, woh input tokens hain.
 
 69
-00:04:17,643 --> 00:04:20,652
+00:04:18,042 --> 00:04:21,104
 Model jo likhta hai,
 woh output tokens hain.
 
 70
-00:04:20,872 --> 00:04:24,272
+00:04:21,324 --> 00:04:24,725
 Aur output tokens
 usually kaafi mehenge hote hain.
 
 71
-00:04:25,572 --> 00:04:29,305
+00:04:26,025 --> 00:04:29,758
 Toh tokens aapke liye teen
 reasons se matter karte hain.
 
 72
-00:04:29,525 --> 00:04:30,723
+00:04:29,978 --> 00:04:31,175
 Pehla, cost.
 
 73
-00:04:30,943 --> 00:04:34,192
+00:04:31,395 --> 00:04:34,644
 Har input aur output
 token ka paisa lagta hai.
 
 74
-00:04:34,542 --> 00:04:35,869
+00:04:34,994 --> 00:04:36,321
 Doosra, limits.
 
 75
-00:04:36,089 --> 00:04:41,285
+00:04:36,541 --> 00:04:41,737
 Har request ka ek maximum size hota
 hai, jo tokens mein measure hota hai.
 
 76
-00:04:41,635 --> 00:04:43,107
+00:04:42,087 --> 00:04:43,560
 Aur teesra, speed.
 
 77
-00:04:43,327 --> 00:04:48,573
+00:04:43,780 --> 00:04:49,025
 Reply ek ek token karke banta hai,
 toh lamba answer zyada time leta hai.
 
 78
-00:04:48,793 --> 00:04:52,269
+00:04:49,245 --> 00:04:52,721
 Lesson four mein
 streaming se iska solution dekhenge.
 
 79
-00:04:53,569 --> 00:04:55,204
+00:04:54,021 --> 00:04:55,656
 Ab context window.
 
 80
-00:04:55,424 --> 00:04:58,016
+00:04:55,876 --> 00:04:58,468
 Isse exam ki desk ki tarah socho.
 
 81
-00:04:58,236 --> 00:05:03,610
+00:04:58,688 --> 00:05:04,062
 Exam mein aap sirf wahi use kar sakte
 ho jo aapki desk par hai: question paper,
 
 82
-00:05:03,610 --> 00:05:05,651
+00:05:04,062 --> 00:05:06,103
 rough sheet, aur answer sheet.
 
 83
-00:05:05,871 --> 00:05:10,109
+00:05:06,323 --> 00:05:10,587
 Model bhi sirf wahi dekh
 sakta hai jo request ke andar hai.
 
 84
-00:05:10,329 --> 00:05:14,030
+00:05:10,807 --> 00:05:14,508
 Aur uska answer bhi usi
 desk par fit hona chahiye.
 
 85
-00:05:15,330 --> 00:05:20,908
+00:05:15,808 --> 00:05:21,401
 Technically, context window ka matlab
 hai: ek request mein model maximum kitne
 
 86
-00:05:20,908 --> 00:05:25,199
+00:05:21,401 --> 00:05:25,703
 tokens consider kar sakta
 hai, input aur output dono milake.
 
 87
-00:05:25,549 --> 00:05:28,583
+00:05:26,053 --> 00:05:29,086
 Jo bhi aap bhejte ho, sab isme jaata hai.
 
 88
-00:05:28,803 --> 00:05:31,679
+00:05:29,306 --> 00:05:32,183
 System prompt, yaani aapki instructions.
 
 89
-00:05:31,899 --> 00:05:34,004
+00:05:32,403 --> 00:05:34,508
 Ab tak ki poori conversation.
 
 90
-00:05:34,224 --> 00:05:36,533
+00:05:34,728 --> 00:05:37,036
 Koi documents ya tool results.
 
 91
-00:05:36,753 --> 00:05:38,180
+00:05:37,256 --> 00:05:38,684
 Aur naya message.
 
 92
-00:05:38,530 --> 00:05:41,112
+00:05:39,034 --> 00:05:41,616
 Aaj ke models ki window bahut badi hai.
 
 93
-00:05:41,332 --> 00:05:47,750
+00:05:41,836 --> 00:05:48,270
 Claude Opus 5.5, jo model hum iss course
 mein use karenge, ek million tokens tak le
 
 94
-00:05:47,750 --> 00:05:48,523
+00:05:48,270 --> 00:05:49,045
 sakta hai.
 
 95
-00:05:48,873 --> 00:05:54,721
+00:05:49,395 --> 00:05:55,231
 Reply ko bhi fit hona padta hai, aur
 uski apni limit hai: iss model par ek lakh
 
 96
-00:05:54,721 --> 00:05:57,238
+00:05:55,231 --> 00:05:57,743
 atthaais hazaar output tokens tak.
 
 97
-00:05:57,588 --> 00:06:01,910
+00:05:58,093 --> 00:06:02,415
 Lekin badi window ka matlab
 yeh nahi ki usse poora bhar do.
 
 98
-00:06:02,130 --> 00:06:05,555
+00:06:02,635 --> 00:06:06,060
 Har request mein bheja
 gaya har token bill hota hai.
 
 99
-00:06:05,775 --> 00:06:09,806
+00:06:06,280 --> 00:06:10,310
 Aur focused context se
 usually answers bhi better aate hain.
 
 100
-00:06:10,026 --> 00:06:15,028
+00:06:10,530 --> 00:06:15,533
 Window mein kya jaaye, yeh decide
 karna ek core agent engineering skill hai.
 
 101
-00:06:16,328 --> 00:06:18,204
+00:06:16,833 --> 00:06:18,709
 Ab ek aur crucial baat.
 
 102
-00:06:18,424 --> 00:06:24,416
+00:06:18,929 --> 00:06:24,920
 Imagine karo ek doctor, jo har patient ko
 bhool jaata hai jaise hi woh room se bahar
 
 103
-00:06:24,416 --> 00:06:25,129
+00:06:24,920 --> 00:06:25,634
 jaata hai.
 
 104
-00:06:25,349 --> 00:06:30,796
+00:06:25,854 --> 00:06:31,300
 Achhi advice chahiye, toh har visit
 par apni poori file saath le jaani padegi.
 
 105
-00:06:31,016 --> 00:06:32,883
+00:06:31,520 --> 00:06:33,291
 Model wahi doctor hai.
 
 106
-00:06:33,103 --> 00:06:35,933
+00:06:33,511 --> 00:06:36,341
 Aur file le jaane ka
 kaam aapki app ka hai.
 
 107
-00:06:37,233 --> 00:06:43,032
+00:06:37,641 --> 00:06:43,440
 Jab aap kisi chatbot se baat karte ho,
 lagta hai ki usse yaad hai aapne pehle kya
 
 108
-00:06:43,032 --> 00:06:43,676
+00:06:43,440 --> 00:06:44,085
 bola tha.
 
 109
-00:06:44,026 --> 00:06:48,395
+00:06:44,435 --> 00:06:48,777
 Lekin model ke paas requests
 ke beech koi memory nahi hoti.
 
 110
-00:06:48,615 --> 00:06:51,968
+00:06:48,997 --> 00:06:52,349
 Aapki app har baar
 poori conversation bhejti hai.
 
 111
-00:06:52,188 --> 00:06:55,505
+00:06:52,569 --> 00:06:55,875
 Chat karte waqt model ke
 weights change nahi hote.
 
 112
-00:06:55,725 --> 00:06:59,761
+00:06:56,095 --> 00:07:00,131
 Agar code history bhejna
 bhool gaya, toh conversation gayi.
 
 113
-00:06:59,981 --> 00:07:03,225
+00:07:00,351 --> 00:07:03,595
 Lesson three mein aap
 yeh khud hote hue dekhoge.
 
 114
-00:07:04,525 --> 00:07:06,860
+00:07:04,895 --> 00:07:07,167
 Toh model ko control kaise karein?
 
 115
-00:07:07,080 --> 00:07:09,228
+00:07:07,387 --> 00:07:09,535
 Pehla lever hai system prompt.
 
 116
-00:07:09,448 --> 00:07:12,548
+00:07:09,755 --> 00:07:12,855
 Isse aap role, rules
 aur style set karte ho.
 
 117
-00:07:12,898 --> 00:07:16,958
+00:07:13,205 --> 00:07:17,266
 Max tokens se aap reply ki
 maximum length set karte ho.
 
 118
-00:07:17,308 --> 00:07:22,323
+00:07:17,616 --> 00:07:22,643
 Effort se decide hota hai model
 kitna sochega, low se lekar max tak.
 
 119
-00:07:22,543 --> 00:07:28,100
+00:07:22,863 --> 00:07:28,420
 Zyada effort mein mushkil problems par
 better answers milte hain, lekin tokens bhi
 
 120
-00:07:28,100 --> 00:07:29,252
+00:07:28,420 --> 00:07:29,572
 zyada lagte hain.
 
 121
-00:07:29,602 --> 00:07:33,366
+00:07:29,922 --> 00:07:33,708
 Aur aap model choose karte
 ho: Opus, Sonnet, ya Haiku.
 
 122
-00:07:33,586 --> 00:07:36,833
+00:07:33,928 --> 00:07:37,175
 Yeh capability aur cost
 ke beech ka trade off hai.
 
 123
-00:07:37,183 --> 00:07:38,212
+00:07:37,525 --> 00:07:38,555
 Ek note.
 
 124
-00:07:38,432 --> 00:07:43,643
+00:07:38,775 --> 00:07:43,985
 Purane tutorials mein aapne
 temperature aur top p ke baare mein padha hoga.
 
 125
-00:07:43,863 --> 00:07:48,194
+00:07:44,205 --> 00:07:48,646
 Current Claude models par yeh
 sampling settings ab accept nahi hoti.
 
 126
-00:07:48,414 --> 00:07:53,227
+00:07:48,866 --> 00:07:53,756
 Aap model ko instructions, effort,
 aur model choice se steer karte ho.
 
 127
-00:07:54,527 --> 00:07:55,986
+00:07:55,056 --> 00:07:56,515
 Interview corner.
 
 128
-00:07:56,206 --> 00:08:01,259
+00:07:56,735 --> 00:08:01,890
 Yeh question bahut common hai: ek
 LLM text kaise generate karta hai?
 
 129
-00:08:01,479 --> 00:08:04,090
+00:08:02,110 --> 00:08:04,722
 Pause karke socho, aap kya bologe.
 
 130
-00:08:06,440 --> 00:08:12,103
+00:08:07,072 --> 00:08:12,664
 Ek achha answer: model ab tak ke text
 se next token predict karta hai, usse add
 
 131
-00:08:12,103 --> 00:08:16,546
+00:08:12,664 --> 00:08:17,053
 karta hai, aur repeat karta
 hai jab tak answer complete na ho.
 
 132
-00:08:16,766 --> 00:08:21,372
+00:08:17,273 --> 00:08:21,878
 Aur trap se bachna: yeh mat
 bolna ki woh internet search karta hai.
 
 133
-00:08:21,592 --> 00:08:23,983
+00:08:22,098 --> 00:08:24,492
 Akele model aisa nahi karta.
 
 134
-00:08:24,333 --> 00:08:30,041
+00:08:24,842 --> 00:08:30,526
 Doosra question: agar model ki memory
 nahi hai, toh chatbot pichle messages kaise
 
 135
-00:08:30,041 --> 00:08:31,168
+00:08:30,526 --> 00:08:31,649
 yaad rakhta hai?
 
 136
-00:08:33,518 --> 00:08:39,155
+00:08:33,999 --> 00:08:39,636
 Answer: kyunki application har request
 ke saath poori history dobara bhejti hai.
 
 137
-00:08:39,375 --> 00:08:42,439
+00:08:39,856 --> 00:08:43,007
 API stateless hai, memory app ke paas hai.
 
 138
-00:08:42,659 --> 00:08:45,791
+00:08:43,227 --> 00:08:46,399
 Trap: yeh mat bolna ki
 model chat se seekhta hai.
 
 139
-00:08:46,011 --> 00:08:48,157
+00:08:46,619 --> 00:08:48,765
 Uske weights change nahi hote.
 
 140
-00:08:49,457 --> 00:08:51,096
+00:08:50,065 --> 00:08:51,704
 Ab practice ka time.
 
 141
-00:08:51,316 --> 00:08:54,068
+00:08:51,924 --> 00:08:54,676
 Yeh questions easy
 se hard order mein hain.
 
 142
-00:08:54,288 --> 00:08:56,524
+00:08:54,896 --> 00:08:57,132
 Video pause karo aur khud socho.
 
 143
-00:08:56,874 --> 00:09:00,597
+00:08:57,482 --> 00:09:01,197
 Pehla: ek LLM
 confidently galat kyun ho sakta hai?
 
 144
-00:09:00,947 --> 00:09:06,345
+00:09:01,547 --> 00:09:06,945
 Doosra: chaar sau characters ka English
 paragraph, roughly kitne tokens ka hoga?
 
 145
-00:09:06,695 --> 00:09:11,539
+00:09:07,295 --> 00:09:12,139
 Teesra: aapki chat app har turn
 mein pachaas purane messages bhejti hai.
 
 146
-00:09:11,759 --> 00:09:13,345
+00:09:12,359 --> 00:09:13,945
 Do problems batao.
 
 147
-00:09:13,695 --> 00:09:19,412
+00:09:14,295 --> 00:09:20,012
 Aur chautha, ek real world scenario: ek
 support bot ko teen sau page ke manual se
 
 148
-00:09:19,412 --> 00:09:20,541
+00:09:20,012 --> 00:09:21,141
 answer dena hai.
 
 149
-00:09:20,761 --> 00:09:24,697
+00:09:21,361 --> 00:09:25,298
 Har request mein poora manual
 paste kyun nahi karna chahiye?
 
 150
-00:09:31,047 --> 00:09:36,015
+00:09:31,648 --> 00:09:36,615
 Hints: plausible text, chaar
 characters ka rule, cost aur context window.
 
 151
-00:09:36,235 --> 00:09:38,719
+00:09:36,835 --> 00:09:39,319
 Answers quiz dot md file mein hain.
 
 152
-00:09:40,019 --> 00:09:40,947
+00:09:40,619 --> 00:09:41,547
 Quick check.
 
 153
-00:09:41,167 --> 00:09:45,643
+00:09:41,767 --> 00:09:46,243
 Aapki app ek nayi request
 bhejti hai, bina pichle messages ke.
 
 154
-00:09:45,863 --> 00:09:46,935
+00:09:46,463 --> 00:09:47,535
 Kya hoga?
 
 155
-00:09:52,635 --> 00:09:54,846
+00:09:53,235 --> 00:09:55,388
 Model ko pata hi nahi hoga.
 
 156
-00:09:55,066 --> 00:09:58,289
+00:09:55,608 --> 00:09:58,832
 Requests ke beech
 uski koi memory nahi hoti.
 
 157
-00:09:58,509 --> 00:10:02,472
+00:09:59,052 --> 00:10:03,014
 Woh sirf wahi dekhta hai jo
 uss request mein bheja gaya.
 
 158
-00:10:03,772 --> 00:10:05,189
+00:10:04,314 --> 00:10:05,731
 Recap karte hain.
 
 159
-00:10:05,409 --> 00:10:08,958
+00:10:05,951 --> 00:10:09,482
 LLM next token predict
 karta hai, ek loop mein.
 
 160
-00:10:09,308 --> 00:10:12,557
+00:10:09,832 --> 00:10:13,081
 Woh plausible text
 likhta hai, checked facts nahi.
 
 161
-00:10:12,777 --> 00:10:15,896
+00:10:13,301 --> 00:10:16,420
 Isliye important
 claims check karne padte hain.
 
 162
-00:10:16,246 --> 00:10:19,775
+00:10:16,770 --> 00:10:20,299
 Tokens se cost, limits
 aur speed decide hoti hai.
 
 163
-00:10:20,125 --> 00:10:25,450
+00:10:20,649 --> 00:10:25,974
 Sab kuch context window mein fit hona
 chahiye, aur app har baar history dobara
 
 164
-00:10:25,450 --> 00:10:26,201
+00:10:25,974 --> 00:10:26,725
 bhejti hai.
 
 165
-00:10:26,551 --> 00:10:32,755
+00:10:27,075 --> 00:10:33,254
 Agle lesson mein aap apni pehli real API
 call karoge, aur uske response ka har hissa
 
 166
-00:10:32,755 --> 00:10:33,420
+00:10:33,254 --> 00:10:33,916
 samjhoge.
