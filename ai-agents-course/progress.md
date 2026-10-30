@@ -48,6 +48,9 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
 
 ## Next: Module 5: Tool Calling and Function Execution (project: Personal Productivity Agent)
 
+All scripts follow `TEACHING_STYLE.md` (the learner's brief): What → Why → How → Where → Practice,
+real-life analogies, line-by-line code with dry runs, an interview section, and practice at the end.
+
 Beginner-friendliness rules from Module 4 on (user request, 2026-10-30):
 - Slower pacing: `tools/build_lesson.py` applies `BEGINNER_PACING` for module >= 4 (voice speed 0.92,
   longer pauses between beats and sentences). Modules 1-3 keep the original pacing.
