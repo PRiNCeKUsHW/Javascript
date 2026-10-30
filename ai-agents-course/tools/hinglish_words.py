@@ -122,6 +122,8 @@ HINDI = {
     "zarur": "ज़रूर", "hamesha": "हमेशा", "kabhi": "कभी", "kabhie": "कभी", "aksar": "अक्सर", "phirse": "फिर से",
     "pakka": "पक्का", "mazboot": "मज़बूत", "saaf": "साफ़", "theek": "ठीक", "khaas": "ख़ास", "aage": "आगे",
     "peeche": "पीछे", "sath": "साथ", "andaaza": "अंदाज़ा",
+    # English words given a fixed Indian pronunciation (the learner's pick: "mo-DEL")
+    "model": "मॉडेल", "models": "मॉडेल्स",
     # misc forms used by the scripts
     "samjhati": "समझाती",
     "aa": "आ",
