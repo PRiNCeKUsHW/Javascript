@@ -1,0 +1,189 @@
+module_title: AI Agent Architecture
+title: "Stopping Safely: Step Limits, Tool Errors and Safe Tools"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 4 · Lesson 4
+    title: How an agent stops, and fails, safely
+    subtitle: Step limits, tool errors as observations, and why you never eval tool input.
+    say: >
+      A loop that works on a good day is the easy part. A good agent also behaves well on a bad day: when it can't finish, when a tool fails, or when the input is dangerous.
+      This lesson is about stopping safely. These habits will protect every agent you build from now on.
+
+  - type: objectives
+    items:
+      - {text: "List every way an agent loop can end", say: "You'll list every way an agent loop can end."}
+      - {text: "Return tool errors to the model instead of crashing", say: "You'll return tool errors to the model, instead of crashing."}
+      - {text: "Build tools that refuse dangerous input", say: "And you'll build tools that refuse dangerous input."}
+
+  - type: cards
+    chapter: How a loop ends
+    heading: Every way the loop can end
+    say: >
+      A well-built agent knows exactly why it stopped. Here are the six ways our calculator agent can end.
+    cards:
+      - {tag: answered, title: The good ending, body: "No tool requests: the model gave its answer", tone: teal, say: "First, the good ending: the model answered."}
+      - {tag: max steps, title: Too many turns, body: "Stop after N turns, even if the model wants more", tone: amber, say: "Second, the step limit. After a fixed number of turns, we stop, even if the model wants to continue."}
+      - {tag: budget, title: Out of money, body: "Stop when spending reaches the budget (Module 2)", tone: amber, say: "Third, the budget, from Module 2. When spending reaches the limit, we stop."}
+      - {tag: refusal, title: Declined, body: "The model declined the request", tone: coral, say: "Fourth, a refusal: the model declined the request."}
+      - {tag: cut off, title: Too long, body: "The reply hit max_tokens before it finished", tone: coral, say: "Fifth, the reply was cut off at max tokens."}
+      - {tag: API error, title: No reply, body: "Rate limits after retries, a bad key, a network failure", tone: coral, say: "And sixth, an API error that retries couldn't fix, like a rejected key."}
+    outro: >
+      For each ending, the user gets one clear message. Never a traceback, and never a silent stop.
+
+  - type: terminal
+    chapter: Step limits
+    title: terminal — smart-calculator-agent
+    cwd: project/smart-calculator-agent
+    font: 24
+    say: >
+      Why does the step limit matter so much? A model can get stuck, asking for tools again and again. Our fake API has a mode that does exactly that, so we can watch the limit work.
+    steps:
+      - cmd: CALC_FAKE_FAIL=loop python -m calc_agent ask "What is 2 + 2?" --max-steps 3
+        exit: 1
+        say: >
+          The fake keeps asking for one plus one. After three turns, the agent stops and explains why, instead of running, and costing money, forever.
+
+  - type: bullets
+    chapter: Tool errors
+    heading: "A tool error is an observation, not a crash"
+    items:
+      - {text: "Tools will fail: bad input, division by zero, unknown units", say: "Next, tool errors. Tools will fail sometimes: the input is invalid, there's a division by zero, or a unit doesn't exist."}
+      - {text: "Don't crash: send the error message back to the model", say: "Don't let that crash your program. Instead, send the error message back to the model, as the tool's result."}
+      - {text: "Mark it with `is_error: true`", say: "Mark it with is error, true, so the model knows the call failed."}
+      - {text: "The model can fix its input and try again", sub: "your step limit still caps how many tries", say: "Now the model can read the error, fix its input, and try again. And your step limit still caps how many times it can try."}
+
+  - type: code
+    heading: "act(): one tool call, one Step, never a crash"
+    title: calc_agent/agent.py
+    file: project/smart-calculator-agent/calc_agent/agent.py
+    lines: "63-68"
+    steps:
+      - lines: "65-66"
+        say: >
+          Here's how the project does it. Act runs one tool call and records it as a step.
+      - lines: "67-68"
+        note: "A ToolError becomes the observation, marked as an error."
+        say: >
+          If the tool raises a tool error, we don't crash. The error message becomes the observation, marked as an error, and the loop carries on.
+
+  - type: terminal
+    title: terminal — smart-calculator-agent
+    cwd: project/smart-calculator-agent
+    font: 24
+    steps:
+      - cmd: CALC_FAKE_FAIL=badexpr python -m calc_agent ask "What is 18 * 1.15?"
+        say: >
+          Here the fake is scripted to send a broken expression first: eighteen x one point one five. The calculator returns an error, shown with an exclamation mark. On the next turn the expression is fixed, and the agent finishes normally.
+          With a real model, this recovery isn't scripted. The model reads the error message and corrects itself, which is why clear error messages matter.
+
+  - type: compare
+    chapter: Never eval tool input
+    heading: "Never run tool input as code"
+    left:
+      title: runs ANY Python
+      tone: coral
+      label: Avoid
+      code: |
+        def calculate(expression):
+            return str(eval(expression))
+    right:
+      title: allows only arithmetic
+      tone: teal
+      label: Prefer
+      code: |
+        def calculate(expression):
+            tree = ast.parse(expression, mode="eval")
+            return format_number(_evaluate(tree.body))
+            # _evaluate allows numbers, + - * / ** %,
+            # and three functions. Nothing else.
+    steps:
+      - show: left
+        say: >
+          Now the most important safety rule in this lesson. Tool input comes from the model, and the model's input comes, partly, from users. So treat tool input like any untrusted input.
+          A calculator built with Python's eval function looks clever, but eval runs any Python code at all, not just arithmetic.
+      - show: right
+        say: >
+          Instead, our calculator parses the expression into a tree, and walks through it, allowing only numbers, a few operators, and three functions. Anything else is refused.
+
+  - type: terminal
+    title: terminal — lesson-04
+    cwd: source/lesson-04
+    font: 24
+    steps:
+      - cmd: python why_not_eval.py
+        say: >
+          This script shows the difference, with a harmless example. Given this text, eval happily imports the os module and runs a function: here it prints the current folder. It could just as easily delete files.
+          Our calculate function refuses it, and still does real maths perfectly.
+
+  - type: code
+    heading: "_evaluate(): an allow-list, not a block-list"
+    title: calc_agent/tools.py
+    file: project/smart-calculator-agent/calc_agent/tools.py
+    lines: "30-51"
+    steps:
+      - lines: "31-35"
+        note: "Numbers, and plus or minus signs."
+        say: >
+          Here's the idea. Each kind of node in the tree must be explicitly allowed. Numbers are allowed, and so are plus and minus signs.
+      - lines: "36-43"
+        note: "Only the operators in OPERATORS; huge powers are refused."
+        say: >
+          Arithmetic operators are allowed, but only the ones in our list, and very large powers are refused, so nobody can freeze your program with a giant calculation.
+      - lines: "44-50"
+        say: >
+          Three named functions are allowed: square root, absolute value, and round.
+      - lines: "51"
+        note: "Everything else is refused."
+        say: >
+          Everything else is refused. That's an allow list: you list what's permitted, and refuse the rest. It's much safer than trying to list everything that's dangerous.
+
+  - type: bullets
+    chapter: In real projects
+    heading: "From this loop to production"
+    items:
+      - {text: "The SDK has a **tool runner** that can run this loop for you", say: "One more thing. In real projects, the Anthropic SDK has a tool runner that can run this loop for you."}
+      - {text: "We built it by hand so you understand every step", say: "We built the loop by hand, so you understand exactly what any tool runner does underneath."}
+      - {text: "Module 5: more tools, validation, permissions, confirmation", say: "In Module 5, you'll add more tools, validate their inputs, and ask a human for confirmation before risky actions."}
+      - {text: "Module 7: timeouts, token budgets, logging and tracing", say: "And in Module 7, you'll make agents reliable, with timeouts, token budgets, logging, and tracing."}
+
+  - type: callout
+    chapter: Pause and try
+    kind: tip
+    title: "Pause and try: which protection?"
+    body: "Match each problem to the protection that handles it."
+    say: >
+      Pause and match each problem to the protection that handles it.
+    items:
+      - {text: "The model keeps asking for tools and never answers", say: "One. The model keeps asking for tools, and never answers."}
+      - {text: "A user types: calculate __import__('os').remove('notes.txt')", say: "Two. A user tries to sneak Python code into the calculator."}
+      - {text: "The model sends \"18 x 1.15\" instead of \"18 * 1.15\"", say: "Three. The model sends a letter x instead of a multiplication sign.", pause: 5}
+    outro: >
+      One: the step limit. Two: the allow-list calculator, which refuses anything that isn't arithmetic. Three: the tool error goes back to the model, which fixes its input.
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "Why send a tool's error message back to the model instead of raising an exception?"
+    options:
+      - "Exceptions are slow"
+      - "So the model can fix its input and continue"
+      - "The API requires it"
+      - "To hide the error from the user"
+    answer: 1
+    explain: "The error is an observation. The model can read it, correct the call, and finish. The step limit caps the retries."
+    say_question: >
+      Quick check. Why send a tool's error back to the model, instead of raising an exception?
+    say_answer: >
+      So the model can read it, fix its input, and continue. And the step limit still caps how often it can try.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 4 recap
+    items:
+      - {text: "Six endings, each with one clear message", say: "A loop can end six ways, and each gets one clear message."}
+      - {text: "A step limit stops endless loops", say: "A step limit stops endless loops."}
+      - {text: "Tool errors are observations, marked is_error", say: "Tool errors are observations, marked with is error."}
+      - {text: "Never eval tool input: use an allow-list", say: "And never eval tool input. Use an allow list."}
+    outro: >
+      You now know every idea the project needs. Next lesson, we build the smart calculator agent.

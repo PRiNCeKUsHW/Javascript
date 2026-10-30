@@ -67,3 +67,25 @@ in brackets. New terms are added with each module.
 | **task decomposition** [3] | Splitting a big task into steps: the model for judgment, plain code for everything deterministic. |
 | **validation / ValidationError** [3] | Checking data against a schema; Pydantic raises `ValidationError` when it doesn't fit. |
 | **XML tags** [3] | Markers like `<resume>...</resume>` that show the model exactly where data starts and ends. |
+
+## Agents
+
+| Term | Meaning |
+|---|---|
+| **agent** [4] | A program where the model decides the next step itself, in a loop, using tools, until the job is done. |
+| **agent loop** [4] | Decide (the model picks an action), act (your code runs a tool), observe (the result goes back), repeat. |
+| **allow-list** [4] | Listing exactly what is permitted and refusing everything else. Safer than listing what is forbidden. |
+| **AST** (abstract syntax tree) [4] | Python's tree form of code. The calculator parses an expression into an AST and allows only arithmetic nodes. |
+| **chatbot** [4] | One question, one answer. The human decides what happens next. |
+| **dispatch** [4] | Choosing which function to run from a name, e.g. the model's tool name picks `calculate` or `convert`. |
+| **eval()** [4] | Python's built-in that runs any text as code. Never use it on tool or user input. |
+| **is_error** [4] | A flag on a `tool_result` saying the tool failed; the error message is the content. |
+| **observation** [4] | What the agent learns from an action: a tool's result or error, sent back to the model. |
+| **step limit (max steps)** [4] | The most turns an agent loop may take, so it always stops. |
+| **tool** [4] | A function in your program that the model can ask you to run. The model only asks; your code runs it. |
+| **tool definition** [4] | The description of a tool sent to the model: name, description and input schema. |
+| **tool_result** [4] | The block your program sends back with a tool's output, matched to the request by `tool_use_id`. |
+| **tool runner** [4] | An SDK helper that runs the agent loop for you. The course builds the loop by hand first. |
+| **tool_use** [4] | A block in the model's reply that requests a tool call: a name, an input and an id. |
+| **trace** [4] | A printout of every action an agent took and what it observed, used to understand and debug it. |
+| **workflow** [4] | A program whose code runs fixed steps in a fixed order, some of them model calls. |

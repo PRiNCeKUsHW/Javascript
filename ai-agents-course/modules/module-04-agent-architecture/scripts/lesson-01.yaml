@@ -1,0 +1,153 @@
+module_title: AI Agent Architecture
+title: "Chatbots, Workflows and Agents: What Makes an AI Agent"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 4 · Lesson 1
+    title: What is an AI agent, really?
+    subtitle: Chatbots, workflows and agents, and how to choose between them.
+    say: >
+      Welcome to Module 4. This is the module where we build our first real AI agent.
+      The word agent is used for almost everything these days, so before we write any code, let's get a clear, simple definition that you can actually use.
+      By the end of this module, you'll have built a smart calculator agent from scratch, and you'll understand every line of it.
+
+  - type: objectives
+    items:
+      - {text: "Tell a chatbot, a workflow and an agent apart", say: "In this lesson, you'll learn to tell a chatbot, a workflow, and an agent apart."}
+      - {text: "Explain who decides the next step in each one", say: "You'll be able to explain who decides the next step in each one."}
+      - {text: "Choose the simplest design that does the job", say: "And you'll learn to choose the simplest design that does the job, which is often not an agent."}
+
+  - type: bullets
+    chapter: What you already know
+    heading: "Where we are so far"
+    items:
+      - {text: "Module 2: call a model and read its reply", say: "Let's start with a quick look back. In Module 2, you learned to send a request to a language model and read its reply."}
+      - {text: "Module 3: get validated data, split a task into steps", say: "In Module 3, you got validated data back, and you split a bigger task into smaller steps."}
+      - {text: "Now: let the **model** choose the next step", say: "Now we add one new idea. Instead of your code choosing every step, we let the model choose the next step itself. That one change is what turns a program into an agent."}
+
+  - type: cards
+    chapter: Three designs
+    heading: Three ways to use a language model
+    say: >
+      There are three common ways to build with a language model. The difference between them is simple: who decides what happens next?
+    cards:
+      - {tag: chatbot, title: One question, one answer, body: "You send a message, the model replies. You decide what to ask next.", tone: blue, say: "First, a chatbot. You send a message, and the model replies. That's it. If something else needs to happen, you, the human, decide what to ask next."}
+      - {tag: workflow, title: Code decides the steps, body: "Your program runs fixed steps in a fixed order, some of them model calls.", tone: amber, say: "Second, a workflow. Your program runs a fixed list of steps, in a fixed order, and some of those steps are model calls. The resume analyzer from Module 3 is a workflow: extract, compare, advise, always in that order."}
+      - {tag: agent, title: The model decides the steps, body: "The model chooses an action, sees the result, and chooses again, in a loop.", tone: teal, say: "Third, an agent. The model chooses an action, like using a tool, sees the result, and then chooses again. It repeats this in a loop until the job is done. The model decides the steps, not your code."}
+
+  - type: diagram
+    chapter: The agent loop
+    heading: An agent is a model in a loop
+    nodes:
+      - {id: goal, label: Goal, sub: "\"What is 18 × 1.15?\"", x: 200, y: 300, w: 300, h: 110, tone: blue}
+      - {id: decide, label: Decide, sub: the model picks an action, x: 680, y: 150, w: 330, h: 110, tone: violet}
+      - {id: act, label: Act, sub: your code runs a tool, x: 1200, y: 150, w: 330, h: 110, tone: amber}
+      - {id: observe, label: Observe, sub: the result goes back, x: 1200, y: 450, w: 330, h: 110, tone: blue}
+      - {id: answer, label: Answer, sub: when nothing is left to do, x: 680, y: 450, w: 330, h: 110, tone: teal}
+    edges:
+      - {from: goal, to: decide}
+      - {from: decide, to: act}
+      - {from: act, to: observe}
+      - {from: observe, to: decide, label: repeat}
+      - {from: decide, to: answer}
+    say: >
+      Here's the picture we'll keep coming back to in this module. Take your time with it.
+    steps:
+      - show: [goal, decide, "goal->decide"]
+        focus: [decide]
+        flow: ["goal->decide"]
+        say: >
+          It starts with a goal, here, a maths question. The model reads it and decides what to do first.
+      - show: [act, "decide->act"]
+        focus: [act]
+        flow: ["decide->act"]
+        say: >
+          Say it decides to use the calculator. Important: the model can't run the calculator itself. It can only ask. Your program does the actual work. That's the act step.
+      - show: [observe, "act->observe", "observe->decide"]
+        focus: [observe, decide]
+        flow: ["act->observe", "observe->decide"]
+        say: >
+          The result goes back to the model. That's the observe step. Now the model knows something new, so it decides again. Maybe it needs another calculation.
+      - show: [answer, "decide->answer"]
+        focus: [answer]
+        flow: ["decide->answer"]
+        say: >
+          And when the model decides nothing is left to do, it answers, and the loop ends. Decide, act, observe, repeat. That loop is the heart of every agent in this course.
+
+  - type: compare
+    chapter: Workflow or agent?
+    heading: "Workflow or agent? It depends on the steps"
+    left:
+      title: Workflow
+      tone: amber
+      label: Steps known
+      items:
+        - "You know the steps in advance"
+        - "Predictable cost and time"
+        - "Easy to test, step by step"
+    right:
+      title: Agent
+      tone: teal
+      label: Steps unknown
+      items:
+        - "The steps depend on what you find"
+        - "Flexible, but cost and time vary"
+        - "Harder to predict and test"
+    steps:
+      - show: left
+        say: >
+          So when should you use which? Ask yourself one question: do I know the steps in advance?
+          If you do, use a workflow. It's predictable, its cost is predictable, and you can test each step on its own.
+      - show: right
+        say: >
+          If the steps depend on what you discover along the way, use an agent. An agent is flexible, but you pay for that: its cost and time vary from run to run, and it's harder to test.
+
+  - type: bullets
+    heading: "Start simple: you often don't need an agent"
+    items:
+      - {text: "One answer from one request? Use a single call", say: "A very practical rule: always start with the simplest design. If one request gives you the answer, use a single call."}
+      - {text: "Fixed steps? Use a workflow", say: "If the steps are fixed, use a workflow."}
+      - {text: "Only when the path is unknown: an agent", say: "Reach for an agent only when the path really is unknown."}
+      - {text: "Big or irreversible actions need checks, whatever the design", tone: coral, say: "And whatever you choose, actions that are expensive or can't be undone, like paying, deleting, or sending, need checks and limits. We'll build those habits from this module on."}
+
+  - type: callout
+    chapter: Pause and try
+    kind: tip
+    title: "Pause and try: chatbot, workflow or agent?"
+    body: "Pause the video and decide for each one."
+    say: >
+      Time to check your understanding. Pause the video, and for each of these three tasks, decide: single call, workflow, or agent?
+    items:
+      - {text: "Translate a paragraph into Spanish", say: "One. Translate a paragraph into Spanish."}
+      - {text: "Turn a resume and a job posting into a gap report", say: "Two. Turn a resume and a job posting into a skills-gap report."}
+      - {text: "Plan a trip within a budget, checking prices as you go", say: "Three. Plan a trip within a budget, checking prices as you go.", pause: 5}
+    outro: >
+      Here are my answers. Translation is a single call: one request, one answer. The gap report is a workflow: the steps are always the same.
+      And trip planning is an agent: what to check next depends on the prices you find.
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "What makes a program an agent?"
+    options:
+      - "It uses the most powerful model"
+      - "The model decides the next step, in a loop, using tools"
+      - "It has a long system prompt"
+      - "It answers in JSON"
+    answer: 1
+    explain: "In an agent, the model chooses actions and sees their results in a loop. In a workflow, your code chooses."
+    say_question: >
+      Quick check. What makes a program an agent?
+    say_answer: >
+      The model decides the next step, in a loop, using tools. In a workflow, your code makes those decisions instead.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 1 recap
+    items:
+      - {text: "Chatbot: one question, one answer", say: "A chatbot answers one question at a time."}
+      - {text: "Workflow: your code decides the steps", say: "In a workflow, your code decides the steps."}
+      - {text: "Agent: the model decides, acts, observes, repeats", say: "In an agent, the model decides, acts, observes, and repeats."}
+      - {text: "Choose the simplest design that works", say: "And you should always choose the simplest design that works."}
+    outro: >
+      Next lesson, we open an agent up and look at its four parts: the model, the instructions, the tools, and the state.

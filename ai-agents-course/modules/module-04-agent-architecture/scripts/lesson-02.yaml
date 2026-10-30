@@ -1,0 +1,162 @@
+module_title: AI Agent Architecture
+title: "Inside an Agent: Model, Instructions, Tools and State"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 4 · Lesson 2
+    title: The four parts of every agent
+    subtitle: The model, the instructions, the tools, and the state.
+    say: >
+      In the last lesson you saw the agent loop: decide, act, observe, repeat. Now let's open an agent up.
+      Every agent, from a tiny calculator to a big coding assistant, is built from the same four parts. Once you can name them, any agent becomes much easier to understand.
+
+  - type: objectives
+    items:
+      - {text: "Name the four parts of an agent", say: "In this lesson, you'll name the four parts of an agent."}
+      - {text: "Understand what a tool is, and who runs it", say: "You'll understand what a tool is, and, very importantly, who actually runs it."}
+      - {text: "Read a tool definition and a tool call", say: "You'll read a tool definition, and a real tool call."}
+      - {text: "See where the agent keeps its state", say: "And you'll see where the agent keeps its state."}
+
+  - type: cards
+    chapter: The four parts
+    heading: Four parts, one agent
+    cards:
+      - {tag: model, title: The model, body: "Reads everything so far and decides the next action", tone: violet, say: "Part one: the model. It reads everything so far and decides the next action. It's the decision maker."}
+      - {tag: instructions, title: The instructions, body: "The system prompt: the goal, the rules, the style of answer", tone: amber, say: "Part two: the instructions. That's the system prompt you know from Module 2. It sets the goal, the rules, and the style of the answer."}
+      - {tag: tools, title: The tools, body: "Functions in your program that the model can ask you to run", tone: teal, say: "Part three: the tools. These are functions in your program that the model can ask you to run. Without tools, a model can only talk."}
+      - {tag: state, title: The state, body: "The message list: the question, every action, every result", tone: blue, say: "And part four: the state. That's the list of messages: the question, every action the model took, and every result it got back."}
+
+  - type: bullets
+    chapter: What is a tool?
+    heading: "What a tool really is"
+    items:
+      - {text: "A model can only produce text; it can't run code or open files", say: "Let's slow down on tools, because this is the idea most beginners find surprising. A language model can only produce text. It can't run code, it can't open your files, and it can't browse the web by itself."}
+      - {text: "A tool is a normal Python function in **your** program", say: "A tool is just a normal Python function, in your program. For our calculator, it's a function called calculate."}
+      - {text: "You describe the tool to the model: name, purpose, inputs", say: "You describe that function to the model: its name, what it does, and what inputs it needs."}
+      - {text: "The model **asks** for a call; your code **runs** it", sub: "the model never touches your computer directly", say: "Then the model can ask for the tool to be called, and your code decides to run it, and sends back the result. The model never touches your computer directly. You stay in control."}
+
+  - type: code
+    chapter: Describing a tool
+    heading: "A tool definition: name, description, input schema"
+    title: calc_agent/tools.py
+    file: project/smart-calculator-agent/calc_agent/tools.py
+    lines: "92-110"
+    steps:
+      - lines: "94"
+        note: "The name the model will use to ask for this tool."
+        say: >
+          Here's how we describe the calculate tool to the model. First, a name. The model uses this name when it asks for the tool.
+      - lines: "95-100"
+        note: "What it does, what it accepts, what it returns, how it fails."
+        say: >
+          Then a description, written for the model. It says what the tool does, what it accepts, what it returns, and what happens when something goes wrong. A clear description is the main way the model knows when, and how, to use a tool.
+      - lines: "101-108"
+        note: "A JSON schema: the inputs, their types, which are required."
+        say: >
+          Then the input schema. You've seen schemas in Module 3. This one says the tool takes one input, called expression, and it's a string. It's required, and no other inputs are allowed.
+      - lines: "109"
+        note: "`strict`: the model's input must match the schema exactly."
+        say: >
+          And strict true asks the API to make sure the model's input matches this schema exactly.
+
+  - type: terminal
+    chapter: What a tool call looks like
+    title: terminal — lesson-02
+    cwd: source/lesson-02
+    say: >
+      Now let's see what comes back when the model wants to use a tool. This script sends one question, with the tool definitions attached.
+    steps:
+      - cmd: python tool_call.py
+        say: >
+          Remember, this recording uses the offline fake API, so a script plays the model's part. The shape of the reply is exactly what the real API sends.
+          The stop reason is tool use: the model stopped because it wants a tool. The block's type is tool use, the name is calculate, the input is the expression, and there's an ID, which we'll need in a moment.
+
+  - type: diagram
+    heading: "Who runs the tool? Your program"
+    nodes:
+      - {id: model, label: The model, sub: "writes: calculate(\"18 * 1.15\")", x: 300, y: 300, w: 400, h: 130, tone: violet}
+      - {id: program, label: Your program, sub: reads the request, x: 960, y: 300, w: 340, h: 130, tone: amber}
+      - {id: tool, label: calculate(), sub: "a Python function → 20.7", x: 1560, y: 300, w: 380, h: 130, tone: teal, mono: true}
+    edges:
+      - {from: model, to: program, label: tool request}
+      - {from: program, to: tool}
+      - {from: tool, to: model, label: result, bend: 0.35}
+    steps:
+      - show: [model, program, "model->program"]
+        flow: ["model->program"]
+        say: >
+          So here's the full picture. The model writes a request: please call calculate with this expression. That's all it does.
+      - show: [tool, "program->tool"]
+        flow: ["program->tool"]
+        say: >
+          Your program reads that request and runs the real Python function. This is where you can check the request first, or refuse it.
+      - show: ["tool->model"]
+        flow: ["tool->model"]
+        say: >
+          And your program sends the result back to the model, so it can continue.
+
+  - type: code
+    chapter: Instructions
+    heading: "The instructions: goal, rules and reasons"
+    title: calc_agent/agent.py
+    file: project/smart-calculator-agent/calc_agent/agent.py
+    lines: "13-18"
+    steps:
+      - lines: "14-15"
+        say: >
+          Part two, the instructions. Notice we use everything from Module 3. First, context: who this helps, and with what.
+      - lines: "15-17"
+        note: "A rule with its reason: the tools are exact."
+        say: >
+          Then the rules, each with a reason: work numbers out with the tools, because the tools are exact. Models can make arithmetic mistakes, but a calculator can't. And if a tool returns an error, fix the input and try again.
+      - lines: "18"
+        say: >
+          Finally, the shape of the answer: one or two sentences, with the number and its unit.
+
+  - type: bullets
+    chapter: State
+    heading: "The state is the message list"
+    items:
+      - {text: "The API remembers nothing between requests (Module 2)", say: "And part four, the state. Remember from Module 2: the API remembers nothing between requests."}
+      - {text: "So the agent keeps a list: question, tool calls, results", say: "So the agent keeps a list of messages: the question, each tool request from the model, and each result from your program."}
+      - {text: "Every turn sends the **whole** list again", say: "Every time the agent asks the model to decide, it sends the whole list again. That's how the model knows what has already happened."}
+      - {text: "The list grows each turn, and so does the cost", sub: "one reason agents need limits", say: "This means the list grows every turn, and so does the cost of each request. That's one reason agents need limits, which is lesson four."}
+
+  - type: callout
+    chapter: Pause and try
+    kind: tip
+    title: "Pause and try: describe a tool"
+    body: "Imagine a get_weather tool. What would you put in its description?"
+    say: >
+      Your turn. Imagine a tool called get weather. Pause the video, and write down what its description should say.
+    items:
+      - {text: "Think about: what it does, its inputs, what it returns, how it fails", say: "Think about what it does, what inputs it needs, what it returns, and how it can fail.", pause: 5}
+    outro: >
+      A good answer: it returns the current temperature and conditions for a city. It needs a city name. It returns the temperature in Celsius and a short description. And it returns an error if the city isn't found. Notice that's the same pattern as our calculate tool.
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "When the agent uses the calculate tool, who runs the calculation?"
+    options:
+      - "The model, inside its own servers"
+      - "Your program, after the model asks for it"
+      - "The API, automatically"
+      - "Nobody: the model guesses the result"
+    answer: 1
+    explain: "The model only writes a request. Your program runs the function and sends the result back."
+    say_question: >
+      Quick check. When the agent uses the calculate tool, who actually runs the calculation?
+    say_answer: >
+      Your program does, after the model asks for it. The model only writes the request.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 2 recap
+    items:
+      - {text: "Four parts: model, instructions, tools, state", say: "An agent has four parts: the model, the instructions, the tools, and the state."}
+      - {text: "A tool is your function; the model only asks for it", say: "A tool is your function. The model only asks for it."}
+      - {text: "A tool definition: name, description, input schema", say: "A tool definition has a name, a description, and an input schema."}
+      - {text: "State: the message list, sent in full every turn", say: "And the state is the message list, sent in full every turn."}
+    outro: >
+      Next lesson, we connect the four parts and write the agent loop itself, in about twenty lines of Python.

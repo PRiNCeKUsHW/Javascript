@@ -160,10 +160,21 @@ PROJECT_CHECKS = {
         ("clean error (exit 1)", "RESUME_FAKE_FAIL=invalid {bin}/python -m resume extract data/resume_sam.md; "
                                  "test $? -eq 1"),
     ],
+    "smart-calculator-agent": [
+        ("mypy", "{bin}/mypy --no-incremental calc_agent"),
+        ("calc tool", "{bin}/python -m calc_agent calc '(18 * 1.15) / 3' | grep -qx 6.9"),
+        ("calc refuses code (exit 1)", "{bin}/python -m calc_agent calc \"__import__('os')\"; test $? -eq 1"),
+        ("multi-step ask", "{bin}/python -m calc_agent ask 'What is 18 * 1.15 and 42.195 km to mi?' "
+                           "| grep -q 'observe  = 26.2188 mi'"),
+        ("tool error recovery", "CALC_FAKE_FAIL=badexpr {bin}/python -m calc_agent ask 'What is 18 * 1.15?' "
+                                "| grep -q 'observe  = 20.7'"),
+        ("step limit (exit 1)", "CALC_FAKE_FAIL=loop {bin}/python -m calc_agent ask '2 + 2' --max-steps 2; "
+                                "test $? -eq 1"),
+    ],
 }
 # project checks run offline and reproducibly: no real key, proxy or scripted failures
 CHECK_ENV = {k: v for k, v in os.environ.items()
-             if not k.startswith(("ANTHROPIC_", "STUDY_", "TOOLKIT_", "RESUME_"))}
+             if not k.startswith(("ANTHROPIC_", "STUDY_", "TOOLKIT_", "RESUME_", "CALC_"))}
 
 def run(cmd, cwd, **kw):
     if isinstance(cmd, str) and sys.platform == "win32":

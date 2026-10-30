@@ -1,0 +1,191 @@
+module_title: AI Agent Architecture
+title: "Project, Part 1: Smart Calculator Agent, Tools and the Loop"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 4 · Lesson 5 · Project
+    title: "Build the Smart Calculator Agent, part 1"
+    subtitle: Two safe tools, and an agent loop that knows why it stopped.
+    loop: [Decide, Act, Observe, Answer]
+    say: >
+      Project time. We're building a smart calculator agent: you ask an everyday maths question, and the agent works it out with real tools, step by step, showing its work.
+      Everything from the last four lessons comes together here. We'll take it one file at a time.
+
+  - type: bullets
+    chapter: The brief
+    heading: The brief
+    items:
+      - {text: "Ask a maths question in plain words", say: "Here's what we're building. You ask a maths question in plain words, at the command line."}
+      - {text: "Two tools: **calculate** (arithmetic) and **convert** (units)", say: "The agent has two tools: calculate, for arithmetic, and convert, for units like kilometres to miles."}
+      - {text: "It shows every action and result: a trace", say: "It prints every action and every result as it goes. That printout is called a trace, and it lets you see exactly what the agent did."}
+      - {text: "Step limit, budget, clear errors, offline mode, tests", say: "And it has a step limit, a budget, clear errors, an offline mode, and a full set of tests."}
+
+  - type: diagram
+    chapter: Architecture
+    heading: Architecture
+    nodes:
+      - {id: cli, label: cli.py, sub: "ask · calc · tools", x: 864, y: 60, w: 360, h: 110, tone: amber, mono: true}
+      - {id: agent, label: agent.py, sub: the loop + stop reasons, x: 864, y: 290, w: 420, h: 120, tone: teal, mono: true}
+      - {id: tools, label: tools.py, sub: "calculate · convert", x: 1500, y: 290, w: 340, h: 120, tone: teal, mono: true}
+      - {id: pricing, label: pricing.py, sub: cost & budget, x: 230, y: 290, w: 320, h: 110, tone: blue, mono: true}
+      - {id: client, label: client.py, sub: real or offline, x: 864, y: 530, w: 360, h: 110, tone: blue, mono: true}
+      - {id: api, label: Claude API, sub: needs a key, x: 1500, y: 600, w: 320, h: 100, tone: violet}
+      - {id: fake, label: fake_api.py, sub: scripted stand-in, x: 230, y: 600, w: 320, h: 100, tone: muted, mono: true}
+    edges:
+      - {from: cli, to: agent}
+      - {from: agent, to: tools}
+      - {from: agent, to: pricing}
+      - {from: agent, to: client}
+      - {from: client, to: api}
+      - {from: client, to: fake}
+    steps:
+      - show: [cli, agent, "cli->agent"]
+        focus: [agent]
+        say: >
+          Here's the plan. The command line passes your question to the agent, which runs the loop.
+      - show: [tools, pricing, "agent->tools", "agent->pricing"]
+        focus: [tools, pricing]
+        flow: ["agent->tools"]
+        say: >
+          The agent runs tools from tools dot py, and adds up costs with the pricing module from Module 2.
+      - show: [client, api, fake, "agent->client", "client->api", "client->fake"]
+        focus: [client, api, fake]
+        flow: ["agent->client", "client->fake"]
+        say: >
+          And it talks to the model through the client: the real Claude API with a key, or the offline fake without one.
+
+  - type: code
+    chapter: An honest fake
+    heading: "fake_api.py: a script, not a model"
+    title: calc_agent/fake_api.py
+    file: project/smart-calculator-agent/calc_agent/fake_api.py
+    lines: "1-10"
+    steps:
+      - lines: "1-7"
+        say: >
+          First, a word about the offline fake, so you know exactly what you're seeing in this video. It speaks the same protocol as the real API, so the SDK and our loop run unchanged.
+          But it follows a fixed script: it finds arithmetic and unit conversions in the question, asks for one tool per turn, then writes a placeholder answer.
+      - lines: "7-9"
+        note: "It can't read word problems, plan, or check its work."
+        say: >
+          That's not a model. It can't understand a word problem, it can't plan, and it can't check its work. No API key was used in this recording, so every model turn you see comes from this script. The tools and the loop, though, are completely real.
+
+  - type: code
+    chapter: The convert tool
+    heading: "convert(): one table, one rule"
+    title: calc_agent/tools.py
+    file: project/smart-calculator-agent/calc_agent/tools.py
+    lines: "62-88"
+    steps:
+      - lines: "63-70"
+        note: "Every unit maps to a kind and a factor to the base unit."
+        say: >
+          You've seen calculate. The second tool is convert. It uses one table: each unit has a kind, like length or mass, and a factor that converts it to a base unit. For example, one kilometre is a thousand metres.
+      - lines: "77-80"
+        note: "Temperatures need a formula, not a factor."
+        say: >
+          Temperatures are different: Celsius to Fahrenheit needs a formula, not a simple factor, so they get their own small branch.
+      - lines: "81-87"
+        note: "Unknown units and mixed kinds become ToolErrors."
+        say: >
+          An unknown unit, or converting kilograms to kilometres, raises a tool error with a helpful message, which goes back to the model as an observation.
+      - lines: "88"
+        say: >
+          And the conversion itself is one line: multiply by one factor, divide by the other.
+
+  - type: code
+    heading: "run_tool(): the dispatcher"
+    title: calc_agent/tools.py
+    file: project/smart-calculator-agent/calc_agent/tools.py
+    lines: "133-144"
+    steps:
+      - lines: "133-136"
+        note: "The model's tool name picks the Python function."
+        say: >
+          When the model asks for a tool, run tool connects the name to the right Python function. This is called dispatching.
+      - lines: "137-143"
+        note: "Bad inputs become a clear ToolError."
+        say: >
+          For convert, it also checks the inputs. If anything is missing or the wrong type, the model gets a clear message saying what was expected.
+      - lines: "144"
+        note: "An unknown tool name is refused."
+        say: >
+          And if the model asks for a tool that doesn't exist, it's refused. The agent can only use the tools you chose to give it.
+
+  - type: code
+    chapter: The agent
+    heading: "Step and Result: what the loop records"
+    title: calc_agent/agent.py
+    file: project/smart-calculator-agent/calc_agent/agent.py
+    lines: "21-41"
+    steps:
+      - lines: "21-28"
+        note: "One action and its observation."
+        say: >
+          Now the agent itself. A step records one action and what was observed: the tool, its input, its output, and whether it was an error.
+      - lines: "31-41"
+        note: "The answer, and **why** the loop stopped."
+        say: >
+          A result holds the answer, and, just as important, why the loop stopped: answered, max steps, refused, cut off, or budget. It also keeps the steps, the number of turns, and the cost.
+
+  - type: code
+    heading: "decide(): one request to the model"
+    title: calc_agent/agent.py
+    file: project/smart-calculator-agent/calc_agent/agent.py
+    lines: "79-88"
+    steps:
+      - lines: "82-85"
+        note: "System prompt, tools, low effort, the whole history."
+        say: >
+          Decide sends one request: the instructions, the tools, low effort because these are simple decisions, and the whole message list.
+      - lines: "86-88"
+        say: >
+          Then it records the cost of that request, and returns the reply.
+
+  - type: code
+    heading: "run(): the loop, with every stop reason"
+    title: calc_agent/agent.py
+    file: project/smart-calculator-agent/calc_agent/agent.py
+    lines: "90-122"
+    steps:
+      - lines: "93-97"
+        note: "A limited loop; check the budget before each turn."
+        say: >
+          And here's run. It's the same loop as lesson three, with all the safety from lesson four. It runs at most max steps turns, and checks the budget before every turn.
+      - lines: "98-104"
+        say: >
+          Decide, store the reply unchanged, then stop cleanly on a refusal or a cut-off reply.
+      - lines: "105-110"
+        note: "No tool requests: the answer."
+        say: >
+          No tool requests means we have the answer.
+      - lines: "111-121"
+        note: "Act, report the step, observe with `is_error`."
+        say: >
+          Otherwise we act, report each step so the trace can print it, and send back the results, including the is error flag.
+      - lines: "122"
+        say: >
+          And if the loop runs out of turns, we stop with max steps.
+
+  - type: terminal
+    chapter: First run
+    title: terminal — smart-calculator-agent
+    cwd: project/smart-calculator-agent
+    font: 24
+    steps:
+      - cmd: python -m calc_agent calc "(18 * 1.15) / 3"
+        say: >
+          First, the calc command runs the calculator tool directly, with no model at all. It's useful for checking that a tool works on its own.
+      - cmd: python -m calc_agent ask "What is 18 * 1.15?"
+        say: >
+          And now the agent. One act, one observe, and an answer, in two turns. The footer shows the turns, the tool calls, and the cost, which is an estimate offline.
+
+  - type: recap
+    chapter: Recap
+    heading: Part 1 recap
+    items:
+      - {text: "Two tools with clear errors: calculate and convert", say: "We built two tools with clear errors: calculate and convert."}
+      - {text: "run_tool dispatches by name and refuses unknown tools", say: "Run tool dispatches by name, and refuses unknown tools."}
+      - {text: "The loop records every step, and why it stopped", say: "And the loop records every step, and exactly why it stopped."}
+    outro: >
+      In part two: the trace, a multi-step demo, failures on purpose, the tests, and the module quiz.

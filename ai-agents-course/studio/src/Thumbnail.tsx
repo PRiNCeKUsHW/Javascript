@@ -34,6 +34,14 @@ export const THUMBS: ThumbProps[] = [
     tagline: "Pydantic · JSON · prompt evals",
     code: ["$ python -m resume eval", "extract_profile@v2", "  sam-backend   6/6", "  total 21/22 (95%)"],
   },
+  {
+    id: "thumb-m04",
+    module: 4,
+    lines: ["BUILD YOUR", "FIRST AI", "AGENT"],
+    accentLine: 1,
+    tagline: "Decide · Act · Observe · Repeat",
+    code: ["act      calculate('18 * 1.15')", "observe  = 20.7", "act      convert(42.195, km, mi)", "observe  = 26.2188 mi"],
+  },
 ];
 
 export const Thumbnail: React.FC<ThumbProps> = ({ module, lines, accentLine, tagline, code }) => (

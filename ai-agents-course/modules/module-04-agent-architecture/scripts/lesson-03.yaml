@@ -1,0 +1,127 @@
+module_title: AI Agent Architecture
+title: "The Agent Loop: Decide, Act, Observe, Repeat"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 4 · Lesson 3
+    title: Writing the agent loop
+    subtitle: About twenty lines of Python, explained one line at a time.
+    say: >
+      You know the four parts of an agent. Now we connect them. In this lesson we write the agent loop itself: about twenty lines of Python.
+      We'll go slowly, one small piece at a time, and then run it and look at exactly what happened.
+
+  - type: objectives
+    items:
+      - {text: "Write a loop that decides, acts, observes and stops", say: "You'll write a loop that decides, acts, observes, and stops."}
+      - {text: "Send tool results back in the format the API expects", say: "You'll send tool results back in the format the API expects."}
+      - {text: "Follow how the message list grows, turn by turn", say: "And you'll follow how the message list grows, turn by turn."}
+
+  - type: code
+    chapter: The loop, line by line
+    heading: "mini_agent.py: a complete agent in 25 lines"
+    title: source/lesson-03/mini_agent.py
+    file: source/lesson-03/mini_agent.py
+    steps:
+      - lines: "1-5"
+        note: "The tools from the project, and the first message: the question."
+        say: >
+          We start with a client, the tool definitions from our project, and the message list. Right now the list holds just one message: the user's question, which needs two calculations.
+      - lines: "7"
+        note: "A `for` loop with a limit, not `while True`."
+        say: >
+          Then the loop. Notice it's a for loop that runs at most five times, not a while true loop. If something goes wrong, this agent can never run forever. Always give a loop a limit.
+      - lines: "8-10"
+        note: "1. Decide: send the tools and the whole history."
+        say: >
+          Step one, decide. We send the tools and the whole message list to the model, and it decides what to do next.
+      - lines: "11"
+        note: "Store the reply exactly as it came back."
+        say: >
+          We add the model's reply to the list, exactly as it came back. Don't edit it, and don't rebuild it. The next request must contain it unchanged.
+      - lines: "12-16"
+        note: "No tool requests means the model is done."
+        say: >
+          Now we look for tool requests in the reply. If there aren't any, the model has finished, so we print its answer and stop. That's step four, stop.
+      - lines: "17-20"
+        note: "2. Act: your code runs each requested tool."
+        say: >
+          Otherwise, step two, act. For each tool request, our code runs the tool, using the name and the input the model gave us.
+      - lines: "21-22"
+        note: "3. Observe: a tool_result with the matching `tool_use_id`."
+        say: >
+          Step three, observe. We wrap each output in a tool result. The tool use ID connects the result to the request it answers. That's why every request has an ID.
+      - lines: "23"
+        note: "Results go back as a **user** message."
+        say: >
+          And we add the results to the list as a user message. Then the loop goes round again, and the model decides with the new information.
+
+  - type: terminal
+    chapter: Running it
+    title: terminal — lesson-03
+    cwd: source/lesson-03
+    say: >
+      Let's run it. Again, the offline fake plays the model, following a fixed script, but the loop is exactly the code you just read.
+    steps:
+      - cmd: python mini_agent.py
+        say: >
+          Turn one: the model asks for eighteen times one point one five, and our code returns twenty point seven.
+          Turn two: it asks for twenty point seven divided by three, and gets six point nine.
+          Turn three: no more tool requests, so it answers, and the loop stops. Offline, that answer is a placeholder that lists the results.
+
+  - type: steps
+    chapter: The message list
+    heading: "What the message list holds after the run"
+    items:
+      - {text: "user: \"What is 18 * 1.15, then 20.7 / 3?\"", say: "The script printed six messages. Let's walk through them, because this list is the agent's memory. One: the user's question."}
+      - {text: "assistant: tool request, calculate(\"18 * 1.15\")", say: "Two: the model's first tool request."}
+      - {text: "user: tool result, \"20.7\"", say: "Three: our result, sent as a user message."}
+      - {text: "assistant: tool request, calculate(\"20.7 / 3\")", say: "Four: the second tool request."}
+      - {text: "user: tool result, \"6.9\"", say: "Five: the second result."}
+      - {text: "assistant: the final answer", say: "And six: the final answer. Three requests in total, and each one sent the whole list so far."}
+
+  - type: bullets
+    chapter: Three rules
+    heading: "Three rules the API expects"
+    items:
+      - {text: "Tool results go in a **user** message", say: "When you build a loop like this, three rules matter. First, tool results always go back in a user message."}
+      - {text: "Every tool request gets a result with the **same id**", say: "Second, every tool request needs a result with the same ID. If the model asks for two tools at once, send back two results."}
+      - {text: "Send the model's replies back **unchanged**", say: "And third, send the model's replies back unchanged. Current models check that the history hasn't been edited, so treat the list as append only: you add to the end, and never change what's there."}
+
+  - type: callout
+    chapter: Pause and try
+    kind: tip
+    title: "Pause and try: predict the turns"
+    body: "A question needs three separate calculations, one per turn."
+    say: >
+      Pause the video and predict. A question needs three separate calculations, and the model asks for one per turn. How many requests will the loop make?
+    items:
+      - {text: "How many requests? How many messages at the end?", say: "And how many messages will the list hold at the end?", pause: 5}
+    outro: >
+      Four requests: three tool turns, plus one for the answer. And eight messages: the question, then three pairs of request and result, then the answer.
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "How does the loop know the agent has finished?"
+    options:
+      - "The model says the word \"done\""
+      - "The reply contains no tool requests"
+      - "After exactly three turns"
+      - "When a tool returns an error"
+    answer: 1
+    explain: "No tool_use blocks in the reply means the model chose to answer. The stop reason is then end_turn."
+    say_question: >
+      Quick check. How does the loop know the agent has finished?
+    say_answer: >
+      The reply contains no tool requests. The model chose to answer instead, and the stop reason is end turn.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 3 recap
+    items:
+      - {text: "Decide, act, observe, repeat, inside a loop with a limit", say: "The loop decides, acts, observes, and repeats, always with a limit."}
+      - {text: "No tool requests: the model has answered", say: "No tool requests means the model has answered."}
+      - {text: "Results go back as user messages, matched by id", say: "Results go back as user messages, matched by ID."}
+      - {text: "The history is append-only", say: "And the history is append only."}
+    outro: >
+      Next lesson: everything that can go wrong in a loop, and how to stop safely.
