@@ -124,7 +124,7 @@ scenes:
 
   - type: callout
     chapter: Pause and try
-    kind: tip
+    kind: try
     title: "Pause and try: describe a tool"
     body: "Imagine a get_weather tool. What would you put in its description?"
     say: >

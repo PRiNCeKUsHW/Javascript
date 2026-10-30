@@ -180,6 +180,20 @@ scenes:
         say: >
           And now the agent. One act, one observe, and an answer, in two turns. The footer shows the turns, the tool calls, and the cost, which is an estimate offline.
 
+  - type: callout
+    chapter: Pause and try
+    kind: try
+    title: "Pause and try: follow the dispatcher"
+    body: "Use run_tool on lines 133 to 144."
+    say: >
+      Pause and think it through, using the run tool code you saw.
+    items:
+      - {text: "The model asks for a tool called \"delete_files\". What happens?", say: "One. The model asks for a tool called delete files. What happens?"}
+      - {text: "It calls convert with value \"lots\". What happens?", say: "Two. It calls convert, with the value lots. What happens?", pause: 5}
+    outro: >
+      One: run tool raises a tool error, unknown tool, which goes back to the model as an observation. Nothing is deleted, because that tool simply doesn't exist in our program.
+      Two: turning lots into a number fails, so the model gets a clear message saying convert needs a value, a from unit, and a to unit.
+
   - type: recap
     chapter: Recap
     heading: Part 1 recap

@@ -149,7 +149,7 @@ scenes:
 
   - type: callout
     chapter: Pause and try
-    kind: tip
+    kind: try
     title: "Pause and try: which protection?"
     body: "Match each problem to the protection that handles it."
     say: >

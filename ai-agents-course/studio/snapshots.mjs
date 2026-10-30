@@ -21,3 +21,4 @@ for (const [i, frame] of frames.entries()) {
   await renderStill({ composition, serveUrl, frame, output: file, imageFormat: "png", browserExecutable });
   console.log(file);
 }
+fs.rmSync(serveUrl, { recursive: true, force: true }); // bundles are ~0.5 GB each: don't leave them in /tmp

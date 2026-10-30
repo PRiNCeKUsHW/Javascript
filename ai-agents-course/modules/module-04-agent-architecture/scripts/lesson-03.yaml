@@ -89,7 +89,7 @@ scenes:
 
   - type: callout
     chapter: Pause and try
-    kind: tip
+    kind: try
     title: "Pause and try: predict the turns"
     body: "A question needs three separate calculations, one per turn."
     say: >

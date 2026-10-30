@@ -16,20 +16,20 @@ scenes:
     heading: "cli.py: printing what the agent does"
     title: calc_agent/cli.py
     file: project/smart-calculator-agent/calc_agent/cli.py
-    lines: "43-62"
+    lines: "47-67"
     steps:
-      - lines: "43-47"
+      - lines: "47-51"
         note: "One line for the action, one for the observation."
         say: >
           A trace prints what the agent does while it works. For each step: an act line with the tool and its input, and an observe line with the result. An equals sign means success, an exclamation mark means an error.
-      - lines: "50-55"
+      - lines: "54-59"
         note: "`on_step` is called after every tool call."
         say: >
           Ask builds the agent and runs it, passing show step as the on step callback, so each step prints as soon as it happens.
-      - lines: "56-57"
+      - lines: "60-62"
         say: >
           The summary line, with turns, tool calls, and cost, goes to standard error, so it never mixes with the answer.
-      - lines: "58-61"
+      - lines: "63-66"
         note: "Any ending except `answered` becomes one clear error."
         say: >
           And if the agent stopped for any reason other than answering, that reason becomes one clear error message, with exit code one.
@@ -49,7 +49,7 @@ scenes:
 
   - type: callout
     chapter: Pause and try
-    kind: tip
+    kind: try
     title: "Pause and try: read the trace"
     body: "Look at the trace above."
     say: >

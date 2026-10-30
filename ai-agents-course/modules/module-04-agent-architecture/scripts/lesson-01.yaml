@@ -112,7 +112,7 @@ scenes:
 
   - type: callout
     chapter: Pause and try
-    kind: tip
+    kind: try
     title: "Pause and try: chatbot, workflow or agent?"
     body: "Pause the video and decide for each one."
     say: >

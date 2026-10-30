@@ -40,6 +40,10 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def plural(n: int, word: str) -> str:
+    return f"{n} {word}" if n == 1 else f"{n} {word}s"
+
+
 def show_step(step: Step) -> None:
     args = ", ".join(f"{k}={v!r}" for k, v in step.input.items())
     mark = "!" if step.is_error else "="
@@ -53,7 +57,8 @@ def ask(args: argparse.Namespace, settings: Settings) -> int:
                             CostTracker(settings.budget_usd), steps)
     result: Result = agent.run(args.question,
                                on_step=None if args.quiet else show_step)
-    print(f"[{result.turns} turns · {len(result.steps)} tool calls · "
+    print(f"[{plural(result.turns, 'turn')} · "
+          f"{plural(len(result.steps), 'tool call')} · "
           f"${result.cost_usd:.4f}]", file=sys.stderr)
     if not result.ok:
         message = STOP_MESSAGES[result.stop].format(turns=result.turns)
