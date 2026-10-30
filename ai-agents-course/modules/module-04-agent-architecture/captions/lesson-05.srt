@@ -1,0 +1,405 @@
+1
+00:00:00,900 --> 00:00:02,058
+Project time.
+
+2
+00:00:02,408 --> 00:00:08,653
+We're building a smart calculator agent:
+you ask an everyday maths question, and the
+
+3
+00:00:08,653 --> 00:00:13,633
+agent works it out with real
+tools, step by step, showing its work.
+
+4
+00:00:13,983 --> 00:00:17,394
+Everything from the last
+four lessons comes together here.
+
+5
+00:00:17,744 --> 00:00:19,788
+We'll take it one file at a time.
+
+6
+00:00:21,588 --> 00:00:23,000
+Here's what we're building.
+
+7
+00:00:23,350 --> 00:00:27,350
+You ask a maths question in
+plain words, at the command line.
+
+8
+00:00:27,950 --> 00:00:33,772
+The agent has two tools: calculate,
+for arithmetic, and convert, for units like
+
+9
+00:00:33,772 --> 00:00:35,246
+kilometres to miles.
+
+10
+00:00:35,846 --> 00:00:39,354
+It prints every action
+and every result as it goes.
+
+11
+00:00:39,704 --> 00:00:44,935
+That printout is called a trace, and it
+lets you see exactly what the agent did.
+
+12
+00:00:45,535 --> 00:00:51,221
+And it has a step limit, a budget, clear
+errors, an offline mode, and a full set of
+
+13
+00:00:51,221 --> 00:00:51,632
+tests.
+
+14
+00:00:53,432 --> 00:00:54,562
+Here's the plan.
+
+15
+00:00:54,912 --> 00:00:59,495
+The command line passes your
+question to the agent, which runs the loop.
+
+16
+00:01:00,095 --> 00:01:06,131
+The agent runs tools from tools dot py,
+and adds up costs with the pricing module
+
+17
+00:01:06,131 --> 00:01:07,174
+from Module 2.
+
+18
+00:01:07,774 --> 00:01:13,674
+And it talks to the model through the
+client: the real Claude API with a key, or the
+
+19
+00:01:13,674 --> 00:01:15,430
+offline fake without one.
+
+20
+00:01:17,230 --> 00:01:22,540
+First, a word about the offline fake, so
+you know exactly what you're seeing in this
+
+21
+00:01:22,540 --> 00:01:22,919
+video.
+
+22
+00:01:23,269 --> 00:01:29,996
+It speaks the same protocol as the real
+API, so the SDK and our loop run unchanged.
+
+23
+00:01:30,346 --> 00:01:35,964
+But it follows a fixed script: it
+finds arithmetic and unit conversions in the
+
+24
+00:01:35,964 --> 00:01:41,078
+question, asks for one tool per
+turn, then writes a placeholder answer.
+
+25
+00:01:41,678 --> 00:01:42,932
+That's not a model.
+
+26
+00:01:43,282 --> 00:01:48,385
+It can't understand a word problem, it
+can't plan, and it can't check its work.
+
+27
+00:01:48,735 --> 00:01:54,522
+No API key was used in this recording,
+so every model turn you see comes from this
+
+28
+00:01:54,522 --> 00:01:55,016
+script.
+
+29
+00:01:55,366 --> 00:01:58,499
+The tools and the loop,
+though, are completely real.
+
+30
+00:02:00,299 --> 00:02:01,732
+You've seen calculate.
+
+31
+00:02:02,082 --> 00:02:03,835
+The second tool is convert.
+
+32
+00:02:04,185 --> 00:02:09,939
+It uses one table: each unit has a
+kind, like length or mass, and a factor that
+
+33
+00:02:09,939 --> 00:02:11,905
+converts it to a base unit.
+
+34
+00:02:12,255 --> 00:02:15,762
+For example, one
+kilometre is a thousand metres.
+
+35
+00:02:16,362 --> 00:02:21,733
+Temperatures are different: Celsius to
+Fahrenheit needs a formula, not a simple
+
+36
+00:02:21,733 --> 00:02:24,656
+factor, so they get
+their own small branch.
+
+37
+00:02:25,256 --> 00:02:31,304
+An unknown unit, or converting kilograms
+to kilometres, raises a tool error with a
+
+38
+00:02:31,304 --> 00:02:36,025
+helpful message, which goes
+back to the model as an observation.
+
+39
+00:02:36,625 --> 00:02:42,717
+And the conversion itself is one line:
+multiply by one factor, divide by the other.
+
+40
+00:02:44,517 --> 00:02:49,546
+When the model asks for a tool, run
+tool connects the name to the right Python
+
+41
+00:02:49,546 --> 00:02:50,126
+function.
+
+42
+00:02:50,476 --> 00:02:52,107
+This is called dispatching.
+
+43
+00:02:52,707 --> 00:02:55,186
+For convert, it also checks the inputs.
+
+44
+00:02:55,536 --> 00:03:01,262
+If anything is missing or the wrong type,
+the model gets a clear message saying what
+
+45
+00:03:01,262 --> 00:03:02,148
+was expected.
+
+46
+00:03:02,748 --> 00:03:07,093
+And if the model asks for a tool
+that doesn't exist, it's refused.
+
+47
+00:03:07,443 --> 00:03:10,829
+The agent can only use the
+tools you chose to give it.
+
+48
+00:03:12,629 --> 00:03:14,215
+Now the agent itself.
+
+49
+00:03:14,565 --> 00:03:20,080
+A step records one action and what was
+observed: the tool, its input, its output,
+
+50
+00:03:20,080 --> 00:03:21,987
+and whether it was an error.
+
+51
+00:03:22,587 --> 00:03:28,270
+A result holds the answer, and, just as
+important, why the loop stopped: answered,
+
+52
+00:03:28,270 --> 00:03:30,973
+max steps, refused, cut off, or budget.
+
+53
+00:03:31,323 --> 00:03:35,147
+It also keeps the steps, the
+number of turns, and the cost.
+
+54
+00:03:36,947 --> 00:03:42,838
+Decide sends one request: the
+instructions, the tools, low effort because these are
+
+55
+00:03:42,838 --> 00:03:46,032
+simple decisions, and
+the whole message list.
+
+56
+00:03:46,632 --> 00:03:51,118
+Then it records the cost of
+that request, and returns the reply.
+
+57
+00:03:52,919 --> 00:03:54,057
+And here's run.
+
+58
+00:03:54,407 --> 00:03:59,103
+It's the same loop as lesson three,
+with all the safety from lesson four.
+
+59
+00:03:59,453 --> 00:04:04,563
+It runs at most max steps turns,
+and checks the budget before every turn.
+
+60
+00:04:05,163 --> 00:04:11,459
+Decide, store the reply unchanged,
+then stop cleanly on a refusal or a cut-off
+
+61
+00:04:11,459 --> 00:04:11,944
+reply.
+
+62
+00:04:12,544 --> 00:04:15,279
+No tool requests means we have the answer.
+
+63
+00:04:15,879 --> 00:04:21,433
+Otherwise we act, report each step so
+the trace can print it, and send back the
+
+64
+00:04:21,433 --> 00:04:24,034
+results, including the is error flag.
+
+65
+00:04:24,634 --> 00:04:28,510
+And if the loop runs out of
+turns, we stop with max steps.
+
+66
+00:04:30,310 --> 00:04:35,766
+First, the calc command runs the
+calculator tool directly, with no model at all.
+
+67
+00:04:36,116 --> 00:04:39,267
+It's useful for checking
+that a tool works on its own.
+
+68
+00:04:39,867 --> 00:04:41,180
+And now the agent.
+
+69
+00:04:41,530 --> 00:04:44,949
+One act, one observe,
+and an answer, in two turns.
+
+70
+00:04:45,299 --> 00:04:50,425
+The footer shows the turns, the tool
+calls, and the cost, which is an estimate
+
+71
+00:04:50,425 --> 00:04:50,950
+offline.
+
+72
+00:04:52,750 --> 00:04:56,703
+Pause and think it through,
+using the run tool code you saw.
+
+73
+00:04:57,303 --> 00:04:57,942
+One.
+
+74
+00:04:58,292 --> 00:05:01,294
+The model asks for a
+tool called delete files.
+
+75
+00:05:01,644 --> 00:05:02,660
+What happens?
+
+76
+00:05:03,260 --> 00:05:03,882
+Two.
+
+77
+00:05:04,232 --> 00:05:06,699
+It calls convert, with the value lots.
+
+78
+00:05:07,049 --> 00:05:08,065
+What happens?
+
+79
+00:05:13,665 --> 00:05:20,089
+One: run tool raises a tool error,
+unknown tool, which goes back to the model as an
+
+80
+00:05:20,089 --> 00:05:21,018
+observation.
+
+81
+00:05:21,368 --> 00:05:26,304
+Nothing is deleted, because that
+tool simply doesn't exist in our program.
+
+82
+00:05:26,654 --> 00:05:32,572
+Two: turning lots into a number fails,
+so the model gets a clear message saying
+
+83
+00:05:32,572 --> 00:05:36,316
+convert needs a value, a
+from unit, and a to unit.
+
+84
+00:05:38,116 --> 00:05:42,313
+We built two tools with clear
+errors: calculate and convert.
+
+85
+00:05:42,913 --> 00:05:47,251
+Run tool dispatches by
+name, and refuses unknown tools.
+
+86
+00:05:47,851 --> 00:05:51,772
+And the loop records every
+step, and exactly why it stopped.
+
+87
+00:05:52,372 --> 00:05:58,365
+In part two: the trace, a multi-step
+demo, failures on purpose, the tests, and the
+
+88
+00:05:58,365 --> 00:05:59,242
+module quiz.

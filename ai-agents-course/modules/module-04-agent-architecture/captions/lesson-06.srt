@@ -1,0 +1,470 @@
+1
+00:00:00,900 --> 00:00:01,960
+Welcome back.
+
+2
+00:00:02,310 --> 00:00:03,579
+The agent works.
+
+3
+00:00:03,929 --> 00:00:09,528
+Now we make it easy to watch, run a
+bigger demo, break it on purpose, and test it.
+
+4
+00:00:09,878 --> 00:00:14,372
+Then we'll wrap up the module with
+a quiz and your extension challenge.
+
+5
+00:00:16,172 --> 00:00:19,266
+A trace prints what the
+agent does while it works.
+
+6
+00:00:19,616 --> 00:00:25,227
+For each step: an act line with the tool
+and its input, and an observe line with the
+
+7
+00:00:25,227 --> 00:00:25,695
+result.
+
+8
+00:00:26,045 --> 00:00:30,845
+An equals sign means success,
+an exclamation mark means an error.
+
+9
+00:00:31,445 --> 00:00:37,331
+Ask builds the agent and runs it, passing
+show step as the on step callback, so each
+
+10
+00:00:37,331 --> 00:00:39,714
+step prints as soon as it happens.
+
+11
+00:00:40,314 --> 00:00:45,974
+The summary line, with turns, tool
+calls, and cost, goes to standard error, so it
+
+12
+00:00:45,974 --> 00:00:47,931
+never mixes with the answer.
+
+13
+00:00:48,531 --> 00:00:53,927
+And if the agent stopped for any reason
+other than answering, that reason becomes
+
+14
+00:00:53,927 --> 00:00:56,858
+one clear error
+message, with exit code one.
+
+15
+00:00:58,658 --> 00:01:04,509
+Now a bigger question, with three pieces
+of work: a price with a tip, a split three
+
+16
+00:01:04,509 --> 00:01:07,259
+ways, and a marathon distance in miles.
+
+17
+00:01:07,859 --> 00:01:09,568
+Read the trace from the top.
+
+18
+00:01:09,918 --> 00:01:13,465
+Act: calculate eighteen
+times one point one five.
+
+19
+00:01:13,815 --> 00:01:15,595
+Observe: twenty point seven.
+
+20
+00:01:15,945 --> 00:01:17,603
+Act: divide by three.
+
+21
+00:01:17,953 --> 00:01:19,756
+Observe: six point nine.
+
+22
+00:01:20,106 --> 00:01:24,598
+Act: convert forty-two point
+one nine five kilometres to miles.
+
+23
+00:01:24,948 --> 00:01:27,476
+Observe: twenty-six point two miles.
+
+24
+00:01:27,826 --> 00:01:29,766
+Four turns, three tool calls.
+
+25
+00:01:30,116 --> 00:01:33,957
+A real model would also
+write a friendly final sentence.
+
+26
+00:01:34,307 --> 00:01:36,914
+Offline, the
+placeholder lists the results.
+
+27
+00:01:38,714 --> 00:01:40,768
+Pause and look at that trace again.
+
+28
+00:01:41,368 --> 00:01:45,910
+Which tool call would change if the
+tip were twenty percent instead of fifteen?
+
+29
+00:01:46,510 --> 00:01:48,888
+And which other
+results would change after it?
+
+30
+00:01:54,488 --> 00:01:58,246
+The first call changes:
+eighteen times one point two.
+
+31
+00:01:58,596 --> 00:02:01,936
+And so does the split,
+because it uses that result.
+
+32
+00:02:02,286 --> 00:02:05,192
+The marathon
+conversion doesn't change at all.
+
+33
+00:02:05,542 --> 00:02:09,197
+Reading a trace like
+this is how you debug agents.
+
+34
+00:02:10,997 --> 00:02:12,991
+Now let's break things on purpose.
+
+35
+00:02:13,341 --> 00:02:15,983
+Kilograms to kilometres makes no sense.
+
+36
+00:02:16,333 --> 00:02:22,410
+The convert tool refuses with a clear
+reason, cannot convert mass to length, and the
+
+37
+00:02:22,410 --> 00:02:23,929
+agent still finishes.
+
+38
+00:02:24,279 --> 00:02:27,655
+A real model would
+explain the problem to the user.
+
+39
+00:02:28,255 --> 00:02:31,106
+A refusal ends the
+loop with one clear line.
+
+40
+00:02:31,706 --> 00:02:34,030
+And a rejected API key does too.
+
+41
+00:02:34,380 --> 00:02:35,987
+No tracebacks anywhere.
+
+42
+00:02:37,787 --> 00:02:42,084
+The tests run the real loop and
+the real tools against the fake.
+
+43
+00:02:42,434 --> 00:02:47,815
+This first one checks the full run:
+which tools were used, their outputs, and the
+
+44
+00:02:47,815 --> 00:02:48,878
+number of turns.
+
+45
+00:02:49,478 --> 00:02:54,995
+This one checks what was sent: the tools,
+the system prompt, and the history growing
+
+46
+00:02:54,995 --> 00:02:56,703
+from one message to three.
+
+47
+00:02:57,303 --> 00:03:02,953
+This checks the rule from lesson three:
+each tool result carries the same ID as the
+
+48
+00:03:02,953 --> 00:03:04,246
+request it answers.
+
+49
+00:03:04,846 --> 00:03:09,733
+And these test the safety from lesson
+four: recovering from a tool error, and
+
+50
+00:03:09,733 --> 00:03:11,446
+stopping at the step limit.
+
+51
+00:03:13,246 --> 00:03:17,155
+Thirty-four tests, all
+passing, with no key and no network.
+
+52
+00:03:17,505 --> 00:03:23,762
+They include seven dangerous or invalid
+expressions that the calculator must refuse.
+
+53
+00:03:24,362 --> 00:03:26,942
+And mypy is happy with every type hint.
+
+54
+00:03:28,742 --> 00:03:32,542
+If the agent stops after
+too many turns, read the trace.
+
+55
+00:03:32,892 --> 00:03:38,126
+If it repeats the same call, the tool's
+error message probably isn't clear enough.
+
+56
+00:03:38,476 --> 00:03:42,276
+Only raise the step limit
+if the task really needs more.
+
+57
+00:03:42,876 --> 00:03:47,944
+If the model answers without using the
+tools, check that the description and the
+
+58
+00:03:47,944 --> 00:03:50,605
+instructions say clearly when to use them.
+
+59
+00:03:51,205 --> 00:03:57,817
+A four hundred error about tool use IDs
+means a result is missing, or its ID doesn't
+
+60
+00:03:57,817 --> 00:03:58,290
+match.
+
+61
+00:03:58,640 --> 00:04:02,581
+Every request needs its
+result, in the next user message.
+
+62
+00:04:03,181 --> 00:04:05,807
+And placeholder
+answers mean you're offline.
+
+63
+00:04:06,157 --> 00:04:07,334
+That's expected.
+
+64
+00:04:07,684 --> 00:04:09,958
+Set your API key to use Claude.
+
+65
+00:04:11,758 --> 00:04:16,569
+Chatbots, workflows, and agents
+differ in who decides the next step.
+
+66
+00:04:17,169 --> 00:04:22,442
+Every agent has four parts: the model,
+the instructions, the tools, and the state.
+
+67
+00:04:23,042 --> 00:04:27,611
+The loop decides, acts,
+observes, and repeats, always with a limit.
+
+68
+00:04:28,211 --> 00:04:32,369
+Tool errors are
+observations, and tools use allow lists.
+
+69
+00:04:32,969 --> 00:04:35,375
+And every ending has one clear reason.
+
+70
+00:04:37,175 --> 00:04:39,071
+Module quiz, question one.
+
+71
+00:04:39,421 --> 00:04:44,529
+The resume analyzer always
+runs extract, compare, then advise.
+
+72
+00:04:44,879 --> 00:04:45,783
+What is it?
+
+73
+00:04:51,983 --> 00:04:52,968
+A workflow.
+
+74
+00:04:53,318 --> 00:04:56,043
+Its steps are fixed, and chosen by code.
+
+75
+00:04:57,843 --> 00:04:58,933
+Question two.
+
+76
+00:04:59,283 --> 00:05:01,612
+What does a stop reason of tool use mean?
+
+77
+00:05:07,812 --> 00:05:10,449
+The model wants your
+program to run a tool.
+
+78
+00:05:10,799 --> 00:05:13,941
+Your program runs it,
+and sends back the result.
+
+79
+00:05:15,741 --> 00:05:16,873
+Question three.
+
+80
+00:05:17,223 --> 00:05:18,919
+Where do tool results go?
+
+81
+00:05:25,119 --> 00:05:30,538
+In the next user message, as tool
+result blocks, each with the matching ID.
+
+82
+00:05:32,338 --> 00:05:33,452
+Question four.
+
+83
+00:05:33,802 --> 00:05:36,738
+Why give the loop a
+limit, instead of while true?
+
+84
+00:05:42,938 --> 00:05:48,824
+It guarantees the agent stops, even if
+the model never finishes, and it limits the
+
+85
+00:05:48,824 --> 00:05:49,183
+cost.
+
+86
+00:05:50,983 --> 00:05:52,347
+And question five.
+
+87
+00:05:52,697 --> 00:05:56,877
+Why does the calculator use
+an allow list, instead of eval?
+
+88
+00:06:03,077 --> 00:06:06,053
+Because eval runs any Python code at all.
+
+89
+00:06:06,403 --> 00:06:12,551
+Tool input is untrusted, so we allow
+only arithmetic, and refuse everything else.
+
+90
+00:06:14,351 --> 00:06:15,959
+Your extension challenge.
+
+91
+00:06:16,309 --> 00:06:20,989
+Pick one or more, and write a
+test for each, using the fake API.
+
+92
+00:06:21,589 --> 00:06:25,481
+Add a percent of tool, with
+its own definition and errors.
+
+93
+00:06:26,081 --> 00:06:30,501
+Add a JSON option that prints
+the steps and the answer as JSON.
+
+94
+00:06:31,101 --> 00:06:36,259
+Stop early if the model repeats
+exactly the same tool call twice in a row.
+
+95
+00:06:36,859 --> 00:06:43,378
+Or, with an API key, run five word
+problems on a real model, and compare the traces.
+
+96
+00:06:45,178 --> 00:06:49,251
+These are the official
+documentation pages for this module.
+
+97
+00:06:49,601 --> 00:06:54,418
+Links are in the description, along
+with the full source code, and the course
+
+98
+00:06:54,418 --> 00:06:54,981
+glossary.
+
+99
+00:07:00,381 --> 00:07:02,222
+That's Module 4 complete.
+
+100
+00:07:02,572 --> 00:07:07,402
+You've built a real agent from
+scratch, and you understand every line of it.
+
+101
+00:07:07,752 --> 00:07:14,264
+In Module 5, we give agents more tools,
+and more responsibility: validating inputs,
+
+102
+00:07:14,264 --> 00:07:19,914
+handling timeouts, permissions, and
+asking a human before risky actions.
+
+103
+00:07:20,264 --> 00:07:21,206
+See you there.

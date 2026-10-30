@@ -1,0 +1,454 @@
+1
+00:00:00,900 --> 00:00:04,207
+A loop that works on a
+good day is the easy part.
+
+2
+00:00:04,557 --> 00:00:10,312
+A good agent also behaves well on a
+bad day: when it can't finish, when a tool
+
+3
+00:00:10,312 --> 00:00:13,115
+fails, or when the input is dangerous.
+
+4
+00:00:13,465 --> 00:00:15,967
+This lesson is about stopping safely.
+
+5
+00:00:16,317 --> 00:00:20,173
+These habits will protect
+every agent you build from now on.
+
+6
+00:00:21,973 --> 00:00:24,701
+You'll list every way
+an agent loop can end.
+
+7
+00:00:25,301 --> 00:00:29,082
+You'll return tool errors to
+the model, instead of crashing.
+
+8
+00:00:29,682 --> 00:00:32,849
+And you'll build tools
+that refuse dangerous input.
+
+9
+00:00:34,649 --> 00:00:37,957
+A well-built agent
+knows exactly why it stopped.
+
+10
+00:00:38,307 --> 00:00:41,975
+Here are the six ways
+our calculator agent can end.
+
+11
+00:00:42,575 --> 00:00:45,399
+First, the good
+ending: the model answered.
+
+12
+00:00:45,999 --> 00:00:47,357
+Second, the step limit.
+
+13
+00:00:47,707 --> 00:00:52,853
+After a fixed number of turns, we
+stop, even if the model wants to continue.
+
+14
+00:00:53,453 --> 00:00:55,815
+Third, the budget, from Module 2.
+
+15
+00:00:56,165 --> 00:00:58,717
+When spending reaches the limit, we stop.
+
+16
+00:00:59,317 --> 00:01:02,995
+Fourth, a refusal: the
+model declined the request.
+
+17
+00:01:03,595 --> 00:01:06,462
+Fifth, the reply was
+cut off at max tokens.
+
+18
+00:01:07,062 --> 00:01:12,338
+And sixth, an API error that
+retries couldn't fix, like a rejected key.
+
+19
+00:01:12,938 --> 00:01:16,185
+For each ending, the
+user gets one clear message.
+
+20
+00:01:16,535 --> 00:01:19,528
+Never a traceback,
+and never a silent stop.
+
+21
+00:01:21,328 --> 00:01:23,645
+Why does the step limit matter so much?
+
+22
+00:01:23,995 --> 00:01:27,867
+A model can get stuck,
+asking for tools again and again.
+
+23
+00:01:28,217 --> 00:01:33,750
+Our fake API has a mode that does
+exactly that, so we can watch the limit work.
+
+24
+00:01:34,350 --> 00:01:36,822
+The fake keeps asking for one plus one.
+
+25
+00:01:37,172 --> 00:01:42,900
+After three turns, the agent stops and
+explains why, instead of running, and costing
+
+26
+00:01:42,900 --> 00:01:43,923
+money, forever.
+
+27
+00:01:45,723 --> 00:01:47,150
+Next, tool errors.
+
+28
+00:01:47,500 --> 00:01:53,874
+Tools will fail sometimes: the input is
+invalid, there's a division by zero, or a
+
+29
+00:01:53,874 --> 00:01:55,369
+unit doesn't exist.
+
+30
+00:01:55,969 --> 00:01:57,922
+Don't let that crash your program.
+
+31
+00:01:58,272 --> 00:02:02,781
+Instead, send the error message
+back to the model, as the tool's result.
+
+32
+00:02:03,381 --> 00:02:07,478
+Mark it with is error, true, so
+the model knows the call failed.
+
+33
+00:02:08,078 --> 00:02:12,516
+Now the model can read the
+error, fix its input, and try again.
+
+34
+00:02:12,866 --> 00:02:16,245
+And your step limit still
+caps how many times it can try.
+
+35
+00:02:18,045 --> 00:02:19,869
+Here's how the project does it.
+
+36
+00:02:20,219 --> 00:02:23,577
+Act runs one tool call
+and records it as a step.
+
+37
+00:02:24,177 --> 00:02:27,392
+If the tool raises a
+tool error, we don't crash.
+
+38
+00:02:27,742 --> 00:02:33,262
+The error message becomes the
+observation, marked as an error, and the loop carries
+
+39
+00:02:33,262 --> 00:02:33,461
+on.
+
+40
+00:02:35,261 --> 00:02:41,298
+Here the fake is scripted to send a
+broken expression first: eighteen x one point
+
+41
+00:02:41,298 --> 00:02:41,969
+one five.
+
+42
+00:02:42,319 --> 00:02:46,659
+The calculator returns an
+error, shown with an exclamation mark.
+
+43
+00:02:47,009 --> 00:02:51,526
+On the next turn the expression is
+fixed, and the agent finishes normally.
+
+44
+00:02:51,876 --> 00:02:55,128
+With a real model, this
+recovery isn't scripted.
+
+45
+00:02:55,478 --> 00:03:00,810
+The model reads the error message and
+corrects itself, which is why clear error
+
+46
+00:03:00,810 --> 00:03:01,890
+messages matter.
+
+47
+00:03:03,690 --> 00:03:06,795
+Now the most important
+safety rule in this lesson.
+
+48
+00:03:07,145 --> 00:03:12,646
+Tool input comes from the model, and
+the model's input comes, partly, from users.
+
+49
+00:03:12,996 --> 00:03:16,218
+So treat tool input
+like any untrusted input.
+
+50
+00:03:16,568 --> 00:03:22,540
+A calculator built with Python's eval
+function looks clever, but eval runs any
+
+51
+00:03:22,540 --> 00:03:25,603
+Python code at all, not just arithmetic.
+
+52
+00:03:26,203 --> 00:03:31,801
+Instead, our calculator parses the
+expression into a tree, and walks through it,
+
+53
+00:03:31,801 --> 00:03:36,000
+allowing only numbers, a few
+operators, and three functions.
+
+54
+00:03:36,350 --> 00:03:38,105
+Anything else is refused.
+
+55
+00:03:39,905 --> 00:03:43,558
+This script shows the
+difference, with a harmless example.
+
+56
+00:03:43,908 --> 00:03:49,854
+Given this text, eval happily imports
+the os module and runs a function: here it
+
+57
+00:03:49,854 --> 00:03:51,787
+prints the current folder.
+
+58
+00:03:52,137 --> 00:03:54,778
+It could just as easily delete files.
+
+59
+00:03:55,128 --> 00:04:00,133
+Our calculate function refuses it,
+and still does real maths perfectly.
+
+60
+00:04:01,933 --> 00:04:03,150
+Here's the idea.
+
+61
+00:04:03,500 --> 00:04:07,268
+Each kind of node in the
+tree must be explicitly allowed.
+
+62
+00:04:07,618 --> 00:04:11,187
+Numbers are allowed, and
+so are plus and minus signs.
+
+63
+00:04:11,787 --> 00:04:17,613
+Arithmetic operators are allowed, but
+only the ones in our list, and very large
+
+64
+00:04:17,613 --> 00:04:23,439
+powers are refused, so nobody can
+freeze your program with a giant calculation.
+
+65
+00:04:24,039 --> 00:04:29,025
+Three named functions are allowed:
+square root, absolute value, and round.
+
+66
+00:04:29,625 --> 00:04:31,475
+Everything else is refused.
+
+67
+00:04:31,825 --> 00:04:36,024
+That's an allow list: you list
+what's permitted, and refuse the rest.
+
+68
+00:04:36,374 --> 00:04:39,983
+It's much safer than trying to
+list everything that's dangerous.
+
+69
+00:04:41,783 --> 00:04:42,846
+One more thing.
+
+70
+00:04:43,196 --> 00:04:49,048
+In real projects, the Anthropic SDK has
+a tool runner that can run this loop for
+
+71
+00:04:49,048 --> 00:04:49,340
+you.
+
+72
+00:04:49,940 --> 00:04:55,124
+We built the loop by hand, so you
+understand exactly what any tool runner does
+
+73
+00:04:55,124 --> 00:04:55,855
+underneath.
+
+74
+00:04:56,455 --> 00:05:02,505
+In Module 5, you'll add more tools,
+validate their inputs, and ask a human for
+
+75
+00:05:02,505 --> 00:05:05,142
+confirmation before risky actions.
+
+76
+00:05:05,742 --> 00:05:11,447
+And in Module 7, you'll make agents
+reliable, with timeouts, token budgets, logging,
+
+77
+00:05:11,447 --> 00:05:12,261
+and tracing.
+
+78
+00:05:14,061 --> 00:05:18,001
+Pause and match each problem
+to the protection that handles it.
+
+79
+00:05:18,601 --> 00:05:19,240
+One.
+
+80
+00:05:19,590 --> 00:05:23,197
+The model keeps asking
+for tools, and never answers.
+
+81
+00:05:23,797 --> 00:05:24,419
+Two.
+
+82
+00:05:24,769 --> 00:05:28,421
+A user tries to sneak
+Python code into the calculator.
+
+83
+00:05:29,021 --> 00:05:29,718
+Three.
+
+84
+00:05:30,068 --> 00:05:34,215
+The model sends a letter x
+instead of a multiplication sign.
+
+85
+00:05:39,815 --> 00:05:41,155
+One: the step limit.
+
+86
+00:05:41,505 --> 00:05:46,840
+Two: the allow-list calculator, which
+refuses anything that isn't arithmetic.
+
+87
+00:05:47,190 --> 00:05:51,474
+Three: the tool error goes back
+to the model, which fixes its input.
+
+88
+00:05:53,274 --> 00:05:54,133
+Quick check.
+
+89
+00:05:54,483 --> 00:05:59,189
+Why send a tool's error back to the
+model, instead of raising an exception?
+
+90
+00:06:05,389 --> 00:06:09,089
+So the model can read it,
+fix its input, and continue.
+
+91
+00:06:09,439 --> 00:06:12,462
+And the step limit still
+caps how often it can try.
+
+92
+00:06:14,262 --> 00:06:18,424
+A loop can end six ways,
+and each gets one clear message.
+
+93
+00:06:19,024 --> 00:06:21,177
+A step limit stops endless loops.
+
+94
+00:06:21,777 --> 00:06:25,447
+Tool errors are
+observations, marked with is error.
+
+95
+00:06:26,047 --> 00:06:28,014
+And never eval tool input.
+
+96
+00:06:28,364 --> 00:06:29,762
+Use an allow list.
+
+97
+00:06:30,362 --> 00:06:33,286
+You now know every idea the project needs.
+
+98
+00:06:33,636 --> 00:06:37,265
+Next lesson, we build
+the smart calculator agent.

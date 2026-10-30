@@ -61,6 +61,23 @@ MODULES = {
                 "platform.claude.com/docs/en/build-with-claude/structured-outputs · "
                 "platform.claude.com/docs/en/test-and-evaluate/develop-tests",
     },
+    4: {
+        "title": "AI Agent Architecture",
+        "project": "Smart Calculator Agent",
+        "project_dir": "smart-calculator-agent",
+        "project_blurb": "an AI agent built from scratch that solves everyday maths questions with two "
+                         "safe tools (an allow-list calculator and a unit converter), prints a trace of "
+                         "every action, stops safely, and has 34 tests.",
+        "prereq": "Modules 2 and 3, or equivalent. An Anthropic API key is optional: every demo also "
+                  "runs offline with a built-in scripted fake API (not a model).",
+        "terms": ["ai agent python", "build an ai agent from scratch", "agent loop", "tool use claude",
+                  "function calling python", "ai agent tutorial for beginners", "agent vs workflow",
+                  "claude api python", "anthropic tool use"],
+        "tags": "#AIAgents #Python #ClaudeAPI #LLM #AIEngineering",
+        "docs": "platform.claude.com/docs/en/agents-and-tools/tool-use/overview · "
+                "platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use · "
+                "platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+    },
 }
 
 

@@ -1,0 +1,251 @@
+module_title: AI Agent Architecture
+title: "Project, Part 2: Traces, Demo, Tests and Wrap-up"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 4 · Lesson 6 · Project
+    title: "Build the Smart Calculator Agent, part 2"
+    subtitle: The trace, a multi-step demo, failures on purpose, tests, and the module quiz.
+    loop: [Decide, Act, Observe, Answer]
+    say: >
+      Welcome back. The agent works. Now we make it easy to watch, run a bigger demo, break it on purpose, and test it.
+      Then we'll wrap up the module with a quiz and your extension challenge.
+
+  - type: code
+    chapter: The trace
+    heading: "cli.py: printing what the agent does"
+    title: calc_agent/cli.py
+    file: project/smart-calculator-agent/calc_agent/cli.py
+    lines: "47-67"
+    steps:
+      - lines: "47-51"
+        note: "One line for the action, one for the observation."
+        say: >
+          A trace prints what the agent does while it works. For each step: an act line with the tool and its input, and an observe line with the result. An equals sign means success, an exclamation mark means an error.
+      - lines: "54-59"
+        note: "`on_step` is called after every tool call."
+        say: >
+          Ask builds the agent and runs it, passing show step as the on step callback, so each step prints as soon as it happens.
+      - lines: "60-62"
+        say: >
+          The summary line, with turns, tool calls, and cost, goes to standard error, so it never mixes with the answer.
+      - lines: "63-66"
+        note: "Any ending except `answered` becomes one clear error."
+        say: >
+          And if the agent stopped for any reason other than answering, that reason becomes one clear error message, with exit code one.
+
+  - type: terminal
+    chapter: Demo
+    title: terminal — smart-calculator-agent
+    cwd: project/smart-calculator-agent
+    font: 24
+    say: >
+      Now a bigger question, with three pieces of work: a price with a tip, a split three ways, and a marathon distance in miles.
+    steps:
+      - cmd: python -m calc_agent ask "Pizza is 18 * 1.15 with tip; split 3 ways that's 20.7 / 3. And 42.195 km to mi?"
+        say: >
+          Read the trace from the top. Act: calculate eighteen times one point one five. Observe: twenty point seven. Act: divide by three. Observe: six point nine. Act: convert forty-two point one nine five kilometres to miles. Observe: twenty-six point two miles.
+          Four turns, three tool calls. A real model would also write a friendly final sentence. Offline, the placeholder lists the results.
+
+  - type: callout
+    chapter: Pause and try
+    kind: try
+    title: "Pause and try: read the trace"
+    body: "Look at the trace above."
+    say: >
+      Pause and look at that trace again.
+    items:
+      - {text: "Which tool call would change if the tip were 20%?", say: "Which tool call would change if the tip were twenty percent instead of fifteen?"}
+      - {text: "Which results would change after it?", say: "And which other results would change after it?", pause: 5}
+    outro: >
+      The first call changes: eighteen times one point two. And so does the split, because it uses that result. The marathon conversion doesn't change at all. Reading a trace like this is how you debug agents.
+
+  - type: terminal
+    chapter: Failures on purpose
+    title: terminal — smart-calculator-agent
+    cwd: project/smart-calculator-agent
+    font: 24
+    steps:
+      - cmd: python -m calc_agent ask "Convert 5 kg to km"
+        say: >
+          Now let's break things on purpose. Kilograms to kilometres makes no sense. The convert tool refuses with a clear reason, cannot convert mass to length, and the agent still finishes. A real model would explain the problem to the user.
+      - cmd: CALC_FAKE_FAIL=refusal python -m calc_agent ask "What is 2 + 2?"
+        exit: 1
+        say: >
+          A refusal ends the loop with one clear line.
+      - cmd: CALC_FAKE_FAIL=401 python -m calc_agent ask "What is 2 + 2?"
+        exit: 1
+        say: >
+          And a rejected API key does too. No tracebacks anywhere.
+
+  - type: code
+    chapter: Testing
+    heading: "Tests: the loop, the history, the stops"
+    title: tests/test_agent.py
+    file: project/smart-calculator-agent/tests/test_agent.py
+    lines: "5-48"
+    steps:
+      - lines: "5-12"
+        note: "The whole loop, with real tools and the fake model."
+        say: >
+          The tests run the real loop and the real tools against the fake. This first one checks the full run: which tools were used, their outputs, and the number of turns.
+      - lines: "15-22"
+        note: "The history grows: 1 message, then 3."
+        say: >
+          This one checks what was sent: the tools, the system prompt, and the history growing from one message to three.
+      - lines: "25-31"
+        note: "Every result answers the matching request id."
+        say: >
+          This checks the rule from lesson three: each tool result carries the same ID as the request it answers.
+      - lines: "34-48"
+        note: "Recovery from a tool error; the step limit."
+        say: >
+          And these test the safety from lesson four: recovering from a tool error, and stopping at the step limit.
+
+  - type: terminal
+    title: terminal — smart-calculator-agent
+    cwd: project/smart-calculator-agent
+    steps:
+      - cmd: python -m pytest -q
+        run: python -m pytest -q -p no:cacheprovider
+        say: >
+          Thirty-four tests, all passing, with no key and no network. They include seven dangerous or invalid expressions that the calculator must refuse.
+      - cmd: mypy calc_agent
+        run: mypy --no-incremental calc_agent
+        say: >
+          And mypy is happy with every type hint.
+
+  - type: cards
+    chapter: Troubleshooting
+    heading: Common problems, and fixes
+    cards:
+      - {tag: max steps, title: "\"stopped after N turns\"", body: "Read the trace: is it repeating a call? Fix the tool's error message or raise --max-steps", tone: amber, say: "If the agent stops after too many turns, read the trace. If it repeats the same call, the tool's error message probably isn't clear enough. Only raise the step limit if the task really needs more."}
+      - {tag: no tools, title: "It answers without tools", body: "Check the tool description and the instructions say when to use it", tone: violet, say: "If the model answers without using the tools, check that the description and the instructions say clearly when to use them."}
+      - {tag: "400", title: "\"tool_use ids\" error", body: "Every tool request needs a tool_result with the same id, in the next user message", tone: coral, say: "A four hundred error about tool use IDs means a result is missing, or its ID doesn't match. Every request needs its result, in the next user message."}
+      - {tag: offline, title: Placeholder answers, body: "Expected without a key: the fake is a script. Set ANTHROPIC_API_KEY", tone: blue, say: "And placeholder answers mean you're offline. That's expected. Set your API key to use Claude."}
+
+  - type: recap
+    chapter: Module recap
+    heading: Module 4 recap
+    items:
+      - {text: "Chatbot, workflow, agent: who decides the next step", say: "Chatbots, workflows, and agents differ in who decides the next step."}
+      - {text: "Four parts: model, instructions, tools, state", say: "Every agent has four parts: the model, the instructions, the tools, and the state."}
+      - {text: "The loop: decide, act, observe, repeat, with a limit", say: "The loop decides, acts, observes, and repeats, always with a limit."}
+      - {text: "Tool errors are observations; tools use allow-lists", say: "Tool errors are observations, and tools use allow lists."}
+      - {text: "Every ending has one clear reason", say: "And every ending has one clear reason."}
+
+  - type: quiz
+    chapter: Module quiz
+    number: 1
+    of: 5
+    question: "The resume analyzer from Module 3 always runs extract, compare, advise. What is it?"
+    options:
+      - "An agent"
+      - "A workflow"
+      - "A chatbot"
+      - "A tool"
+    answer: 1
+    explain: "Its steps are fixed and chosen by code, so it's a workflow. In an agent, the model chooses the steps."
+    say_question: >
+      Module quiz, question one. The resume analyzer always runs extract, compare, then advise. What is it?
+    say_answer: >
+      A workflow. Its steps are fixed, and chosen by code.
+
+  - type: quiz
+    number: 2
+    of: 5
+    question: "What does `stop_reason == \"tool_use\"` mean?"
+    options:
+      - "The tool has finished running"
+      - "The model wants your program to run a tool"
+      - "The model can't use tools"
+      - "The API ran the tool for you"
+    answer: 1
+    explain: "The model stopped to request a tool. Your program runs it and sends back a tool_result."
+    say_question: >
+      Question two. What does a stop reason of tool use mean?
+    say_answer: >
+      The model wants your program to run a tool. Your program runs it, and sends back the result.
+
+  - type: quiz
+    number: 3
+    of: 5
+    question: "Where do tool results go in the message list?"
+    options:
+      - "In the system prompt"
+      - "In a user message, as tool_result blocks with matching ids"
+      - "In the assistant's previous message"
+      - "Nowhere: the API remembers them"
+    answer: 1
+    explain: "Results go in the next user message, one tool_result per request, matched by tool_use_id."
+    say_question: >
+      Question three. Where do tool results go?
+    say_answer: >
+      In the next user message, as tool result blocks, each with the matching ID.
+
+  - type: quiz
+    number: 4
+    of: 5
+    question: "Why should the loop be `for turn in range(max_steps)` instead of `while True`?"
+    options:
+      - "for loops are faster"
+      - "It guarantees the agent stops, even if the model never finishes"
+      - "The API limits loops to 6 turns"
+      - "while True doesn't work in Python"
+    answer: 1
+    explain: "A model can get stuck calling tools. A step limit always ends the loop, and limits cost."
+    say_question: >
+      Question four. Why give the loop a limit, instead of while true?
+    say_answer: >
+      It guarantees the agent stops, even if the model never finishes, and it limits the cost.
+
+  - type: quiz
+    number: 5
+    of: 5
+    question: "Why does the calculator use an AST allow-list instead of eval()?"
+    options:
+      - "eval is too slow"
+      - "eval runs any Python code, so tool input could do anything"
+      - "eval can't do multiplication"
+      - "The API forbids eval"
+    answer: 1
+    explain: "Tool input is untrusted. An allow-list permits only arithmetic and refuses everything else."
+    say_question: >
+      And question five. Why does the calculator use an allow list, instead of eval?
+    say_answer: >
+      Because eval runs any Python code at all. Tool input is untrusted, so we allow only arithmetic, and refuse everything else.
+
+  - type: callout
+    chapter: Extension challenge
+    kind: challenge
+    title: "Extend the Calculator Agent"
+    body: "Pick one or more. Each needs code **and** a test using the fake API."
+    say: >
+      Your extension challenge. Pick one or more, and write a test for each, using the fake API.
+    items:
+      - {text: "Add a `percent_of(percent, value)` tool, with its definition", say: "Add a percent of tool, with its own definition and errors."}
+      - {text: "Add a `--json` option that prints the steps and answer as JSON", say: "Add a JSON option that prints the steps and the answer as JSON."}
+      - {text: "Stop early if the model repeats the same call twice in a row", say: "Stop early if the model repeats exactly the same tool call twice in a row."}
+      - {text: "With a key: run 5 word problems and compare the traces", say: "Or, with an API key, run five word problems on a real model, and compare the traces."}
+
+  - type: links
+    chapter: Documentation
+    heading: Official documentation
+    items:
+      - {title: Tool use overview, url: platform.claude.com/docs/en/agents-and-tools/tool-use/overview}
+      - {title: Implement tool use, url: platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use}
+      - {title: Handling stop reasons, url: platform.claude.com/docs/en/build-with-claude/handling-stop-reasons}
+      - {title: Effort, url: platform.claude.com/docs/en/build-with-claude/effort}
+      - {title: Python SDK, url: github.com/anthropics/anthropic-sdk-python}
+      - {title: "Python ast module", url: docs.python.org/3/library/ast.html}
+    say: >
+      These are the official documentation pages for this module. Links are in the description, along with the full source code, and the course glossary.
+
+  - type: title
+    chapter: Next up
+    kicker: Coming next · Module 5
+    title: Tool Calling and Function Execution
+    subtitle: "More tools, input validation, timeouts, permissions and human confirmation. Project: a Personal Productivity Agent."
+    say: >
+      That's Module 4 complete. You've built a real agent from scratch, and you understand every line of it.
+      In Module 5, we give agents more tools, and more responsibility: validating inputs, handling timeouts, permissions, and asking a human before risky actions. See you there.

@@ -14,7 +14,7 @@ a quiz and an extension challenge.
 | 1 | [Python for AI Engineering](ai-agents-course/modules/module-01-python-ai-engineering) | [Python AI Toolkit](ai-agents-course/modules/module-01-python-ai-engineering/project/python-ai-toolkit) | Published |
 | 2 | [LLM Fundamentals and API Integration](ai-agents-course/modules/module-02-llm-fundamentals) | [AI Study Assistant](ai-agents-course/modules/module-02-llm-fundamentals/project/ai-study-assistant) | Published |
 | 3 | [Prompt Engineering and Structured Outputs](ai-agents-course/modules/module-03-prompt-engineering) | [AI Resume Analyzer](ai-agents-course/modules/module-03-prompt-engineering/project/ai-resume-analyzer) | Published |
-| 4 | AI Agent Architecture | Smart Calculator Agent | Coming soon |
+| 4 | [AI Agent Architecture](ai-agents-course/modules/module-04-agent-architecture) | [Smart Calculator Agent](ai-agents-course/modules/module-04-agent-architecture/project/smart-calculator-agent) | Published |
 | 5 | Tool Calling and Function Execution | Personal Productivity Agent | Coming soon |
 | 6 | Agent Memory and Conversation State | Persistent AI Study Companion | Coming soon |
 | 7 | Reliable and Efficient Agents | Resilient API Agent | Coming soon |

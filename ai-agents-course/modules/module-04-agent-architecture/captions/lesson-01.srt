@@ -1,0 +1,395 @@
+1
+00:00:00,900 --> 00:00:02,661
+Welcome to Module 4.
+
+2
+00:00:03,011 --> 00:00:07,306
+This is the module where we
+build our first real AI agent.
+
+3
+00:00:07,656 --> 00:00:13,290
+The word agent is used for almost
+everything these days, so before we write any
+
+4
+00:00:13,290 --> 00:00:18,212
+code, let's get a clear, simple
+definition that you can actually use.
+
+5
+00:00:18,562 --> 00:00:23,852
+By the end of this module, you'll have
+built a smart calculator agent from scratch,
+
+6
+00:00:23,852 --> 00:00:26,338
+and you'll understand every line of it.
+
+7
+00:00:28,138 --> 00:00:33,305
+In this lesson, you'll learn to tell a
+chatbot, a workflow, and an agent apart.
+
+8
+00:00:33,905 --> 00:00:37,694
+You'll be able to explain who
+decides the next step in each one.
+
+9
+00:00:38,294 --> 00:00:43,745
+And you'll learn to choose the simplest
+design that does the job, which is often not
+
+10
+00:00:43,745 --> 00:00:44,329
+an agent.
+
+11
+00:00:46,129 --> 00:00:48,065
+Let's start with a quick look back.
+
+12
+00:00:48,415 --> 00:00:54,261
+In Module 2, you learned to send a
+request to a language model and read its reply.
+
+13
+00:00:54,860 --> 00:01:00,791
+In Module 3, you got validated data
+back, and you split a bigger task into smaller
+
+14
+00:01:00,791 --> 00:01:01,225
+steps.
+
+15
+00:01:01,825 --> 00:01:03,629
+Now we add one new idea.
+
+16
+00:01:03,979 --> 00:01:09,105
+Instead of your code choosing every
+step, we let the model choose the next step
+
+17
+00:01:09,105 --> 00:01:09,560
+itself.
+
+18
+00:01:09,910 --> 00:01:13,762
+That one change is what
+turns a program into an agent.
+
+19
+00:01:15,562 --> 00:01:19,113
+There are three common ways
+to build with a language model.
+
+20
+00:01:19,463 --> 00:01:23,668
+The difference between them is
+simple: who decides what happens next?
+
+21
+00:01:24,268 --> 00:01:25,529
+First, a chatbot.
+
+22
+00:01:25,879 --> 00:01:28,724
+You send a message, and the model replies.
+
+23
+00:01:29,074 --> 00:01:29,918
+That's it.
+
+24
+00:01:30,268 --> 00:01:35,201
+If something else needs to happen,
+you, the human, decide what to ask next.
+
+25
+00:01:35,801 --> 00:01:37,166
+Second, a workflow.
+
+26
+00:01:37,516 --> 00:01:43,141
+Your program runs a fixed list of steps,
+in a fixed order, and some of those steps
+
+27
+00:01:43,141 --> 00:01:44,238
+are model calls.
+
+28
+00:01:44,588 --> 00:01:51,210
+The resume analyzer from Module 3 is a
+workflow: extract, compare, advise, always in
+
+29
+00:01:51,210 --> 00:01:52,077
+that order.
+
+30
+00:01:52,677 --> 00:01:53,887
+Third, an agent.
+
+31
+00:01:54,237 --> 00:01:59,998
+The model chooses an action, like using
+a tool, sees the result, and then chooses
+
+32
+00:01:59,998 --> 00:02:00,425
+again.
+
+33
+00:02:00,775 --> 00:02:04,122
+It repeats this in a
+loop until the job is done.
+
+34
+00:02:04,472 --> 00:02:07,340
+The model decides
+the steps, not your code.
+
+35
+00:02:09,140 --> 00:02:12,499
+Here's the picture we'll keep
+coming back to in this module.
+
+36
+00:02:12,849 --> 00:02:14,170
+Take your time with it.
+
+37
+00:02:14,770 --> 00:02:17,645
+It starts with a goal,
+here, a maths question.
+
+38
+00:02:17,995 --> 00:02:21,323
+The model reads it and
+decides what to do first.
+
+39
+00:02:21,923 --> 00:02:24,393
+Say it decides to use the calculator.
+
+40
+00:02:24,743 --> 00:02:28,639
+Important: the model
+can't run the calculator itself.
+
+41
+00:02:28,989 --> 00:02:30,353
+It can only ask.
+
+42
+00:02:30,703 --> 00:02:33,066
+Your program does the actual work.
+
+43
+00:02:33,416 --> 00:02:34,703
+That's the act step.
+
+44
+00:02:35,303 --> 00:02:37,354
+The result goes back to the model.
+
+45
+00:02:37,704 --> 00:02:39,137
+That's the observe step.
+
+46
+00:02:39,487 --> 00:02:43,001
+Now the model knows
+something new, so it decides again.
+
+47
+00:02:43,351 --> 00:02:45,937
+Maybe it needs another calculation.
+
+48
+00:02:46,537 --> 00:02:51,707
+And when the model decides nothing is
+left to do, it answers, and the loop ends.
+
+49
+00:02:52,057 --> 00:02:54,116
+Decide, act, observe, repeat.
+
+50
+00:02:54,466 --> 00:02:57,769
+That loop is the heart of
+every agent in this course.
+
+51
+00:02:59,569 --> 00:03:01,206
+So when should you use which?
+
+52
+00:03:01,556 --> 00:03:05,396
+Ask yourself one question:
+do I know the steps in advance?
+
+53
+00:03:05,746 --> 00:03:07,609
+If you do, use a workflow.
+
+54
+00:03:07,959 --> 00:03:13,348
+It's predictable, its cost is
+predictable, and you can test each step on its own.
+
+55
+00:03:13,948 --> 00:03:18,541
+If the steps depend on what you
+discover along the way, use an agent.
+
+56
+00:03:18,891 --> 00:03:24,849
+An agent is flexible, but you pay for
+that: its cost and time vary from run to run,
+
+57
+00:03:24,849 --> 00:03:26,572
+and it's harder to test.
+
+58
+00:03:28,372 --> 00:03:32,605
+A very practical rule: always
+start with the simplest design.
+
+59
+00:03:32,955 --> 00:03:36,710
+If one request gives you
+the answer, use a single call.
+
+60
+00:03:37,310 --> 00:03:39,894
+If the steps are fixed, use a workflow.
+
+61
+00:03:40,494 --> 00:03:43,792
+Reach for an agent only
+when the path really is unknown.
+
+62
+00:03:44,392 --> 00:03:50,341
+And whatever you choose, actions that are
+expensive or can't be undone, like paying,
+
+63
+00:03:50,341 --> 00:03:53,528
+deleting, or sending,
+need checks and limits.
+
+64
+00:03:53,878 --> 00:03:56,509
+We'll build those
+habits from this module on.
+
+65
+00:03:58,309 --> 00:04:00,187
+Time to check your understanding.
+
+66
+00:04:00,537 --> 00:04:06,344
+Pause the video, and for each of these
+three tasks, decide: single call, workflow,
+
+67
+00:04:06,344 --> 00:04:06,981
+or agent?
+
+68
+00:04:07,581 --> 00:04:08,219
+One.
+
+69
+00:04:08,569 --> 00:04:10,766
+Translate a paragraph into Spanish.
+
+70
+00:04:11,366 --> 00:04:11,987
+Two.
+
+71
+00:04:12,337 --> 00:04:16,652
+Turn a resume and a job
+posting into a skills-gap report.
+
+72
+00:04:17,252 --> 00:04:17,949
+Three.
+
+73
+00:04:18,299 --> 00:04:22,030
+Plan a trip within a
+budget, checking prices as you go.
+
+74
+00:04:27,630 --> 00:04:29,011
+Here are my answers.
+
+75
+00:04:29,361 --> 00:04:33,325
+Translation is a single
+call: one request, one answer.
+
+76
+00:04:33,675 --> 00:04:37,896
+The gap report is a workflow:
+the steps are always the same.
+
+77
+00:04:38,246 --> 00:04:43,757
+And trip planning is an agent: what to
+check next depends on the prices you find.
+
+78
+00:04:45,557 --> 00:04:46,416
+Quick check.
+
+79
+00:04:46,766 --> 00:04:48,650
+What makes a program an agent?
+
+80
+00:04:54,850 --> 00:04:58,683
+The model decides the next
+step, in a loop, using tools.
+
+81
+00:04:59,033 --> 00:05:02,640
+In a workflow, your code
+makes those decisions instead.
+
+82
+00:05:04,440 --> 00:05:07,159
+A chatbot answers one question at a time.
+
+83
+00:05:07,759 --> 00:05:10,627
+In a workflow, your
+code decides the steps.
+
+84
+00:05:11,227 --> 00:05:15,495
+In an agent, the model
+decides, acts, observes, and repeats.
+
+85
+00:05:16,095 --> 00:05:19,555
+And you should always choose
+the simplest design that works.
+
+86
+00:05:20,155 --> 00:05:25,158
+Next lesson, we open an agent up and
+look at its four parts: the model, the
+
+87
+00:05:25,158 --> 00:05:27,759
+instructions, the tools, and the state.

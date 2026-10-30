@@ -8,6 +8,7 @@ const KINDS: Record<string, { color: string; label: string; icon: string }> = {
   error: { color: "coral", label: "Common error", icon: "!" },
   warn: { color: "amber", label: "Watch out", icon: "!" },
   tip: { color: "teal", label: "Pro tip", icon: "✓" },
+  try: { color: "amber", label: "Pause and try", icon: "⏸" },
   info: { color: "blue", label: "Good to know", icon: "i" },
   challenge: { color: "violet", label: "Extension challenge", icon: "★" },
 };
