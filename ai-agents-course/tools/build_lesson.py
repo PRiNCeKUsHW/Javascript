@@ -124,16 +124,16 @@ def trim(x, thresh=0.008):
 
 def tts(sentence, allow_new):
     spoken = say_as(sentence)
-    key = hashlib.sha1(f"{VOICE}|{LANG}|{SPEED}|{spoken}".encode()).hexdigest()[:16]
+    # Hinglish: key on the exact phonemes, so a pronunciation fix re-synthesises the sentences it changes
+    phonemes = hinglish.phonemes(kokoro().tokenizer, hinglish.to_speech(spoken)) if LANG == "hinglish" else ""
+    key = hashlib.sha1(f"{VOICE}|{LANG}|{SPEED}|{phonemes or spoken}".encode()).hexdigest()[:16]
     path = TTS_CACHE / f"{key}.wav"
     if path.exists():
         return sf.read(path, dtype="float32")[0]
     if not allow_new:
         raise SystemExit(f"narration not cached: {sentence[:70]}")
     if LANG == "hinglish":
-        audio, sr = kokoro().create(hinglish.phonemes(kokoro().tokenizer, hinglish.to_speech(spoken)), voice=VOICE,
-                                    speed=SPEED,
-                                    is_phonemes=True)
+        audio, sr = kokoro().create(phonemes, voice=VOICE, speed=SPEED, is_phonemes=True)
     else:
         audio, sr = kokoro().create(spoken, voice=VOICE, speed=SPEED, lang=LANG)
     assert sr == SR
