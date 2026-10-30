@@ -16,6 +16,7 @@ import { CompareScene } from "./scenes/CompareScene";
 import { CalloutScene } from "./scenes/CalloutScene";
 import { QuizScene } from "./scenes/QuizScene";
 import { LinksScene } from "./scenes/LinksScene";
+import { RunScene } from "./scenes/RunScene";
 
 loadFonts();
 
@@ -49,6 +50,7 @@ const SCENES: Record<string, React.FC<{ scene: SceneBase }>> = {
   callout: CalloutScene,
   quiz: QuizScene,
   links: LinksScene,
+  run: RunScene,
 };
 
 

@@ -247,7 +247,7 @@ def run_repl(steps, cwd, env):
 def scene_beats(scene):
     """Every scene becomes an ordered list of beats; beat i drives the i-th visual step."""
     kind = scene["type"]
-    lists = {"bullets": "items", "recap": "items", "cards": "cards", "code": "steps", "terminal": "steps",
+    lists = {"bullets": "items", "recap": "items", "cards": "cards", "code": "steps", "terminal": "steps", "run": "steps",
              "diagram": "steps", "compare": "steps", "links": "items", "objectives": "items", "steps": "items",
              "callout": "items"}
     if kind == "quiz":
@@ -280,6 +280,24 @@ def build_scene(scene, module_dir, env):
                 step["upto"] -= offset
             step.pop("say", None)
         props.pop("code", None)
+    elif kind == "run":                        # code on the left, the real output of running it on the right
+        code = load_code(scene, module_dir)
+        props["tokens"] = highlight(code, scene.get("lang", "python"))
+        props["first_line"] = scene.get("first_line", 1)
+        n = len(props["tokens"])
+        offset = props["first_line"] - 1
+        out = run_terminal({k: scene[k] for k in ("cmd", "run", "exit", "keep", "out") if k in scene},
+                           module_dir / scene.get("cwd", "."), env)
+        props["out"] = out
+        for step in props.get("steps", []):
+            hl = parse_range(step.get("lines"), n + offset) if step.get("lines") else []
+            step["hl"] = [i - offset for i in hl if 0 < i - offset <= n]
+            if "out" in step:                  # output lines (1-based) this step points at; earlier ones stay shown
+                step["ohl"] = [i for i in parse_range(step["out"], len(out)) if i <= len(out)]
+            step.pop("say", None)
+            step.pop("out", None)
+        for key in ("code", "run", "keep", "exit"):
+            props.pop(key, None)
     elif kind == "compare":
         for side in ("left", "right"):
             if "code" in props[side]:
@@ -306,7 +324,7 @@ def build_scene(scene, module_dir, env):
                 step.pop(key, None)
     if isinstance(props.get("aside"), dict) and "code" in props["aside"]:
         props["aside"]["tokens"] = highlight(props["aside"]["code"].rstrip("\n"), props["aside"].get("lang", "python"))
-    if kind not in ("code", "compare", "terminal"):
+    if kind not in ("code", "compare", "terminal", "run"):
         for key in ("items", "cards", "steps"):
             for item in props.get(key, []) or []:
                 item.pop("say", None)

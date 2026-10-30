@@ -56,6 +56,21 @@ Beginner-friendliness rules from Module 4 on (user request, 2026-10-30):
 - One "Pause and try" moment per lesson: a `callout` (kind: tip) with a short task and a 5 s pause beat.
 - Update `GLOSSARY.md` with the module's new terms.
 
+From Module 5 on (user request, 2026-10-30): explain code with the split `run` scene, code on the
+left and the real output of running it on the right. The builder runs `cmd` in `cwd` once; each
+step highlights code `lines` and can point at output lines with `out: "2"` (the command is typed at
+the first such step, and output appears up to the furthest line pointed at). Keep plain `code`
+scenes for files that don't run on their own (classes, tool definitions).
+
+    - type: run
+      heading: "mini_agent.py: code and what it printed"
+      title: mini_agent.py
+      file: source/lesson-03/mini_agent.py
+      cwd: source/lesson-03
+      cmd: python mini_agent.py
+      steps:
+        - {lines: "17-21", out: "2", note: "...", say: "..."}
+
 Notes carried over from Module 1:
 
 Notes for the next modules, learned in Module 1:
