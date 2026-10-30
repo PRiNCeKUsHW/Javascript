@@ -258,11 +258,17 @@ def scene_beats(scene):
     kind = scene["type"]
     lists = {"bullets": "items", "recap": "items", "cards": "cards", "code": "steps", "terminal": "steps", "run": "steps",
              "diagram": "steps", "compare": "steps", "links": "items", "objectives": "items", "steps": "items",
-             "callout": "items"}
+             "callout": "items", "table": "rows"}
     if kind == "quiz":
         return [{"say": scene["say_question"], "kind": "intro"},
                 {"pause": scene.get("think", 5), "countdown": True, "kind": "think"},
                 {"say": scene["say_answer"], "sfx": "chime", "kind": "reveal"}]
+    if kind == "interview":                    # two beats per question: ask it, then answer it
+        beats = [{"say": scene["say"], "kind": "intro"}] if scene.get("say") else []
+        for item in scene["items"]:
+            beats += [{"say": item["say_q"], "pause": item.get("pause", 2), "kind": "item"},
+                      {"say": item["say_a"], "kind": "item"}]
+        return beats
     beats = []
     if scene.get("say"):
         beats.append({"say": scene["say"], "kind": "intro"})
@@ -334,9 +340,11 @@ def build_scene(scene, module_dir, env):
     if isinstance(props.get("aside"), dict) and "code" in props["aside"]:
         props["aside"]["tokens"] = highlight(props["aside"]["code"].rstrip("\n"), props["aside"].get("lang", "python"))
     if kind not in ("code", "compare", "terminal", "run"):
-        for key in ("items", "cards", "steps"):
+        for key in ("items", "cards", "steps", "rows"):
             for item in props.get(key, []) or []:
                 item.pop("say", None)
+                item.pop("say_q", None)
+                item.pop("say_a", None)
     return props
 
 
