@@ -39,7 +39,14 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
 - Validation: 62/62 checks (`modules/module-03-prompt-engineering/validation-report.md`).
 - Upload kit: `modules/module-03-prompt-engineering/youtube-uploads.md` (video #15).
 
-## Next: Module 4: AI Agent Architecture (project: Smart Calculator Agent)
+## Module 4: AI Agent Architecture: COMPLETED (2026-10-30)
+
+- ONE full-module video: 36:45, 56 chapters, 546 captions, beginner pacing + a Pause-and-try in every part.
+- Project: Smart Calculator Agent, 34 tests, mypy clean; offline fake is a fixed script (not a model) and says so.
+- Validation: 62/62 checks. Upload kit: `modules/module-04-agent-architecture/youtube-uploads.md` (video #16).
+- Rendering: `studio/render.mjs` renders all parts from one bundle and deletes it (avoids /tmp build-up).
+
+## Next: Module 5: Tool Calling and Function Execution (project: Personal Productivity Agent)
 
 Beginner-friendliness rules from Module 4 on (user request, 2026-10-30):
 - Slower pacing: `tools/build_lesson.py` applies `BEGINNER_PACING` for module >= 4 (voice speed 0.92,
