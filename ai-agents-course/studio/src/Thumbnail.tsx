@@ -23,7 +23,7 @@ export const THUMBS: ThumbProps[] = [
     module: 2,
     lines: ["CALL AN LLM", "FROM PYTHON", "THE RIGHT WAY"],
     accentLine: 1,
-    tagline: "Tokens · streaming · JSON · costs",
+    tagline: "Hinglish mein · tokens · JSON",
     code: ["client.messages.create(", '  model="claude-opus-5-5",', "  max_tokens=1000,", "  messages=history)"],
   },
   {
