@@ -6,6 +6,9 @@ How language models work and how to call them from Python reliably: tokens, cont
 message history, output limits, streaming, structured output, errors, rate limits, retries and costs.
 It ends with a complete, tested project.
 
+> **Video language:** the videos are narrated in **Hinglish** (Hindi + English) with Hinglish captions.
+> On-screen text, code and these docs are in English.
+
 > **About the demos:** no API key was used while recording. Every reply on screen comes from the
 > project's offline fake API (`project/ai-study-assistant/study/fake_api.py`), which speaks the Messages
 > API protocol, so the real Anthropic SDK code runs unchanged. Replies are marked

@@ -27,6 +27,13 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
 
 ## Module 2: LLM Fundamentals and API Integration: COMPLETED (2026-10-29)
 
+- **Remade 2026-10-30 in Hinglish** (learner's request): Indian female voice B at 0.85, Roman Hinglish
+  captions, light Paper theme, What → Why → How → Where → Practice with analogies, code + real output
+  side by side, dry-run tables, interview corner and practice questions per lesson (answers in quiz.md).
+  Full video 1:05:33, 73 chapters, 995 captions; validation 70/70. Pronunciation fixes from the
+  learner's review: "API" spelled with Indian letter names, "model" said mo-DEL.
+  The original English details below describe the first version.
+
 - 7 lessons rendered (1920x1080 60 fps), full module video 41:05 with 59 chapters and 632 captions.
 - Project: AI Study Assistant, 23 tests passing; every demo runs offline against `study/fake_api.py`.
 - Validation: 70/70 checks (`modules/module-02-llm-fundamentals/validation-report.md`).

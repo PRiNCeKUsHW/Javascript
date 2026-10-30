@@ -1,2921 +1,4556 @@
 1
-00:00:00,700 --> 00:00:02,300
-Welcome to Module 2.
+00:00:00,700 --> 00:00:04,470
+Namaste dosto, aur
+Module 2 mein aapka swagat hai.
 
 2
-00:00:02,520 --> 00:00:05,870
-In Module 1 you built a
-solid Python foundation.
+00:00:04,690 --> 00:00:08,779
+Module 1 mein humne Python
+ki strong foundation banayi thi.
 
 3
-00:00:06,090 --> 00:00:11,552
-Now we meet the engine behind every
-agent in this course: the large language model.
+00:00:08,999 --> 00:00:15,447
+Ab hum uss engine ko samjhenge jo har AI
+agent ke andar chalta hai: large language
 
 4
-00:00:11,772 --> 00:00:17,092
-Before writing a single API call, you
-need a clear mental model of what these
+00:00:15,447 --> 00:00:17,412
+model, ya short mein LLM.
 
 5
-00:00:17,092 --> 00:00:20,961
-systems do, and just as
-importantly, what they don't do.
+00:00:17,632 --> 00:00:23,104
+Code likhne se pehle ek clear picture
+banana zaroori hai, ki yeh model actually kya
 
 6
-00:00:22,261 --> 00:00:25,994
-You will be able to explain
-next-token prediction in plain words.
+00:00:23,104 --> 00:00:25,082
+karta hai, aur kya nahi karta.
 
 7
-00:00:26,344 --> 00:00:30,961
-Understand tokens, and why they decide
-your cost, your limits, and your speed.
+00:00:26,382 --> 00:00:32,223
+Iss lesson ke baad aap next token
+prediction ko simple words mein explain kar paoge.
 
 8
-00:00:31,311 --> 00:00:34,611
-Reason about the context
-window, and what fills it up.
+00:00:32,573 --> 00:00:38,514
+Aap samjhoge ki tokens kya hote hain, aur
+yeh cost, limits aur speed ko kaise decide
 
 9
-00:00:34,961 --> 00:00:39,865
-And know which controls you actually
-have over generation, on current models.
+00:00:38,514 --> 00:00:39,292
+karte hain.
 
 10
-00:00:41,165 --> 00:00:44,351
-Here is the core idea,
-simplified but accurate.
+00:00:39,642 --> 00:00:43,044
+Context window kya hai,
+aur usme kya kya jaata hai.
 
 11
-00:00:44,701 --> 00:00:47,752
-A language model takes
-the text so far as input.
+00:00:43,394 --> 00:00:47,943
+Aur model ko control karne ke
+liye aapke paas kaun se options hain.
 
 12
-00:00:47,972 --> 00:00:53,567
-During training it saw an enormous
-amount of text, and its weights encode patterns
+00:00:49,243 --> 00:00:52,167
+Chalo ek simple
+example se shuru karte hain.
 
 13
-00:00:53,567 --> 00:00:55,069
-of how text continues.
+00:00:52,387 --> 00:00:54,524
+Aapke phone ka keyboard dekho.
 
 14
-00:00:55,419 --> 00:00:57,502
-Its output is not a whole answer.
+00:00:54,744 --> 00:00:59,622
+Aap type karte ho, Happy birthday
+to, aur keyboard suggest karta hai, you.
 
 15
-00:00:57,722 --> 00:01:00,800
-It is a probability for
-every possible next token.
+00:00:59,842 --> 00:01:02,360
+Keyboard ne koi fact look up nahi kiya.
 
 16
-00:01:01,020 --> 00:01:04,012
-These percentages
-are just an illustration.
+00:01:02,580 --> 00:01:07,309
+Usne bas patterns dekhe hain, ki
+iss text ke baad usually kya aata hai.
 
 17
-00:01:04,362 --> 00:01:09,386
-One token is chosen and appended to the
-text, and the whole thing goes back in to
+00:01:07,659 --> 00:01:12,112
+LLM bhi basically yahi karta
+hai, bas bahut bade scale par.
 
 18
-00:01:09,386 --> 00:01:10,688
-predict the next one.
+00:01:12,332 --> 00:01:15,335
+Usne training mein
+bahut saara text padha hai.
 
 19
-00:01:10,908 --> 00:01:15,393
-A long answer is just this loop,
-run hundreds or thousands of times.
+00:01:15,685 --> 00:01:20,750
+Aur woh baar baar predict karta hai
+ki agla piece of text kya hona chahiye.
 
 20
-00:01:15,743 --> 00:01:17,830
-This explains a lot of behaviour.
+00:01:22,050 --> 00:01:24,829
+Ab yahi idea thoda
+technically dekhte hain.
 
 21
-00:01:18,050 --> 00:01:21,713
-The model produces
-plausible text, not looked-up facts.
+00:01:25,179 --> 00:01:28,287
+Model ko input milta hai, ab tak ka text.
 
 22
-00:01:21,933 --> 00:01:27,298
-It can be confidently wrong, which is
-often called hallucination, and its knowledge
+00:01:28,507 --> 00:01:30,201
+Jaise, Agents call.
 
 23
-00:01:27,298 --> 00:01:29,237
-stops at its training cut-off.
+00:01:30,421 --> 00:01:34,473
+Model ke andar billions of
+numbers hain, jinhe weights kehte hain.
 
 24
-00:01:29,457 --> 00:01:34,649
-That's why agents give models tools and
-documents to check facts, which is exactly
+00:01:34,693 --> 00:01:38,602
+Training ke time pe yeh weights
+text ke patterns seekh lete hain.
 
 25
-00:01:34,649 --> 00:01:36,169
-what this course builds.
+00:01:38,952 --> 00:01:41,965
+Model ka output poora answer nahi hota.
 
 26
-00:01:37,469 --> 00:01:38,812
-So what is a token?
+00:01:42,185 --> 00:01:46,239
+Output hota hai har
+possible next token ki probability.
 
 27
-00:01:39,032 --> 00:01:44,626
-It's a chunk of text, often a whole
-short word, a piece of a longer word, a space,
+00:01:46,459 --> 00:01:50,977
+Jaise, tools ke chances
+bahut zyada, APIs ke thode kam.
 
 28
-00:01:44,626 --> 00:01:46,127
-or a punctuation mark.
+00:01:51,197 --> 00:01:53,724
+Yeh numbers sirf samjhane ke liye hain.
 
 29
-00:01:46,477 --> 00:01:51,740
-For example, agents call tools, full
-stop, might be split into four tokens.
+00:01:54,074 --> 00:01:59,784
+Phir ek token choose hota hai, text ke
+end mein jud jaata hai, aur poora text wapas
 
 30
-00:01:51,960 --> 00:01:53,532
-This is an illustration.
+00:01:59,784 --> 00:02:03,568
+model mein jaata hai, agla
+token predict karne ke liye.
 
 31
-00:01:53,752 --> 00:01:57,211
-The exact split depends
-on each model's tokenizer.
+00:02:03,788 --> 00:02:08,638
+Ek lamba answer bas yahi loop hai,
+jo sainkdon ya hazaaron baar chalta hai.
 
 32
-00:01:57,561 --> 00:02:01,930
-A rough rule of thumb for English
-is about four characters per token.
+00:02:09,938 --> 00:02:12,275
+Iss process ka dry run karte hain.
 
 33
-00:02:02,150 --> 00:02:07,734
-Code, unusual words, and many other
-languages use more tokens for the same text.
+00:02:12,495 --> 00:02:14,706
+Step one: text hai, Agents call.
 
 34
-00:02:08,084 --> 00:02:12,793
-When you need an exact number, don't
-guess, and don't use another company's
+00:02:14,926 --> 00:02:19,029
+Sabse likely next token hai
+tools, toh woh add ho jaata hai.
 
 35
-00:02:12,793 --> 00:02:13,421
-tokenizer.
+00:02:19,379 --> 00:02:22,291
+Step two: ab text hai, Agents call tools.
 
 36
-00:02:13,641 --> 00:02:19,233
-Ask the API: it has a token counting
-endpoint for the exact model you're using.
+00:02:22,511 --> 00:02:24,566
+Agla likely token hai, to.
 
 37
-00:02:19,453 --> 00:02:21,233
-You'll use it in lesson five.
+00:02:24,916 --> 00:02:28,935
+Step three: Agents call
+tools to, aur agla token hai, act.
 
 38
-00:02:22,533 --> 00:02:24,591
-Tokens matter for three reasons.
+00:02:29,285 --> 00:02:34,574
+Step four: full stop aata hai, aur
+model decide karta hai ki answer complete hai.
 
 39
-00:02:24,811 --> 00:02:25,772
-First, cost.
+00:02:34,794 --> 00:02:37,099
+Yahan generation ruk jaata hai.
 
 40
-00:02:25,992 --> 00:02:31,862
-You pay per input token and per output
-token, and output tokens usually cost several
+00:02:38,399 --> 00:02:41,806
+Iss loop se ek bahut
+important baat samajh aati hai.
 
 41
-00:02:31,862 --> 00:02:32,631
-times more.
+00:02:42,026 --> 00:02:45,944
+Model plausible text likhta
+hai, yaani jo sahi lagta hai.
 
 42
-00:02:32,981 --> 00:02:34,037
-Second, limits.
+00:02:46,164 --> 00:02:48,333
+Woh facts look up nahi karta.
 
 43
-00:02:34,257 --> 00:02:38,105
-Every request has a
-maximum size, measured in tokens.
+00:02:48,553 --> 00:02:53,076
+Isliye model kabhi kabhi
+confidently galat answer de sakta hai.
 
 44
-00:02:38,455 --> 00:02:39,606
-And third, speed.
+00:02:53,296 --> 00:02:55,512
+Isse hallucination kehte hain.
 
 45
-00:02:39,826 --> 00:02:45,118
-Replies are generated one token at
-a time, so long answers take longer.
+00:02:55,732 --> 00:03:00,613
+Aur uski knowledge ek date tak hi
+hoti hai, jise training cut off kehte hain.
 
 46
-00:02:45,338 --> 00:02:48,912
-Streaming, in lesson four,
-makes that wait feel much shorter.
+00:03:00,833 --> 00:03:06,257
+Yahi reason hai ki agents ko tools aur
+documents diye jaate hain, taaki woh facts
 
 47
-00:02:50,212 --> 00:02:55,739
-The context window is the maximum
-number of tokens the model can consider in one
+00:03:06,257 --> 00:03:07,395
+check kar sakein.
 
 48
-00:02:55,739 --> 00:02:58,158
-request, input and output together.
+00:03:07,615 --> 00:03:09,986
+Yeh poora course wahi sikhata hai.
 
 49
-00:02:58,508 --> 00:03:04,038
-Everything you send goes in: the system
-prompt with your instructions, the whole
+00:03:11,286 --> 00:03:13,758
+Ab sabse important word: token.
 
 50
-00:03:04,038 --> 00:03:09,016
-conversation so far, any documents
-or tool results, and the new message.
+00:03:13,978 --> 00:03:15,280
+Token kya hai?
 
 51
-00:03:09,366 --> 00:03:12,153
-Current models have very large windows.
+00:03:15,500 --> 00:03:18,149
+Token text ka ek chhota tukda hai.
 
 52
-00:03:12,373 --> 00:03:19,092
-Claude Opus 5.5, the model we use in
-this course, accepts up to one million tokens.
+00:03:18,369 --> 00:03:23,631
+Kabhi ek poora chhota word, kabhi
+kisi lambe word ka hissa, kabhi space ya
 
 53
-00:03:19,442 --> 00:03:24,865
-The reply must fit too, and it has its
-own cap: up to one hundred and twenty-eight
+00:03:23,631 --> 00:03:24,485
+punctuation.
 
 54
-00:03:24,865 --> 00:03:27,313
-thousand output tokens on this model.
+00:03:24,835 --> 00:03:27,444
+Jaise, Agents call tools, full stop.
 
 55
-00:03:27,663 --> 00:03:30,337
-A huge window does not
-mean you should fill it.
+00:03:27,664 --> 00:03:30,293
+Yeh shayad chaar tokens mein toot jaaye.
 
 56
-00:03:30,557 --> 00:03:36,281
-Every token you send is billed on every
-request, and focused context usually gives
+00:03:30,513 --> 00:03:32,464
+Yeh sirf ek example hai.
 
 57
-00:03:36,281 --> 00:03:37,328
-better answers.
+00:03:32,684 --> 00:03:36,779
+Exact split har model ke
+tokenizer par depend karta hai.
 
 58
-00:03:37,548 --> 00:03:42,194
-Managing what goes into the
-window is a core agent engineering skill.
+00:03:37,129 --> 00:03:42,392
+English text ke liye ek rough rule
+hai: lagbhag chaar characters ka ek token.
 
 59
-00:03:43,494 --> 00:03:44,986
-One more crucial fact.
+00:03:42,612 --> 00:03:48,451
+Code, unusual words, aur Hindi jaisi
+doosri languages mein same text ke liye zyada
 
 60
-00:03:45,206 --> 00:03:49,395
-When you chat with an assistant, it
-seems to remember what you said earlier.
+00:03:48,451 --> 00:03:49,733
+tokens lagte hain.
 
 61
-00:03:49,745 --> 00:03:53,160
-But the model itself has
-no memory between requests.
+00:03:50,083 --> 00:03:53,225
+Jab exact number
+chahiye, toh guess mat karo.
 
 62
-00:03:53,380 --> 00:03:57,110
-Your application sends the
-whole conversation every time.
+00:03:53,445 --> 00:03:59,558
+API ke paas ek token counting endpoint
+hai, jo aapke exact model ke liye tokens
 
 63
-00:03:57,330 --> 00:03:59,674
-The model's weights
-don't change while you chat.
+00:03:59,558 --> 00:04:00,332
+ginta hai.
 
 64
-00:03:59,894 --> 00:04:03,973
-If your code forgets to send the
-history, the conversation is gone.
+00:04:00,552 --> 00:04:03,163
+Lesson five mein hum isse use karenge.
 
 65
-00:04:04,193 --> 00:04:06,193
-You'll see this happen in lesson three.
+00:04:04,463 --> 00:04:07,464
+Tokens ko ek taxi meter ki tarah socho.
 
 66
-00:04:07,493 --> 00:04:10,086
-You control generation with a few levers.
+00:04:07,684 --> 00:04:11,079
+Taxi kilometre ke
+hisaab se charge karti hai.
 
 67
-00:04:10,306 --> 00:04:13,447
-The system prompt sets
-the role, rules, and style.
+00:04:11,299 --> 00:04:14,695
+API token ke hisaab se charge karti hai.
 
 68
-00:04:13,797 --> 00:04:16,223
-Max tokens caps the length of the reply.
+00:04:14,915 --> 00:04:17,822
+Aap jo bhejte ho, woh input tokens hain.
 
 69
-00:04:16,573 --> 00:04:20,963
-Effort controls how much
-reasoning the model does, from low to max.
+00:04:18,042 --> 00:04:21,104
+Model jo likhta hai,
+woh output tokens hain.
 
 70
-00:04:21,183 --> 00:04:25,905
-Higher effort means better
-answers on hard problems, but more tokens.
+00:04:21,324 --> 00:04:24,725
+Aur output tokens
+usually kaafi mehenge hote hain.
 
 71
-00:04:26,255 --> 00:04:32,185
-And you choose the model itself: Opus,
-Sonnet, or Haiku, trading capability against
+00:04:26,025 --> 00:04:29,758
+Toh tokens aapke liye teen
+reasons se matter karte hain.
 
 72
-00:04:32,185 --> 00:04:33,257
-cost and speed.
+00:04:29,978 --> 00:04:31,175
+Pehla, cost.
 
 73
-00:04:33,607 --> 00:04:37,770
-You may have read about
-temperature and top p in older tutorials.
+00:04:31,395 --> 00:04:34,644
+Har input aur output
+token ka paisa lagta hai.
 
 74
-00:04:37,990 --> 00:04:42,496
-On current Claude models those
-sampling settings are no longer accepted.
+00:04:34,994 --> 00:04:36,321
+Doosra, limits.
 
 75
-00:04:42,716 --> 00:04:46,688
-You steer the model with
-instructions, effort, and the model you pick.
+00:04:36,541 --> 00:04:41,737
+Har request ka ek maximum size hota
+hai, jo tokens mein measure hota hai.
 
 76
-00:04:47,988 --> 00:04:48,795
-Quick check.
+00:04:42,087 --> 00:04:43,560
+Aur teesra, speed.
 
 77
-00:04:49,015 --> 00:04:52,493
-Your app sends a new request
-without the earlier messages.
+00:04:43,780 --> 00:04:49,025
+Reply ek ek token karke banta hai,
+toh lamba answer zyada time leta hai.
 
 78
-00:04:52,713 --> 00:04:53,657
-What happens?
+00:04:49,245 --> 00:04:52,721
+Lesson four mein
+streaming se iska solution dekhenge.
 
 79
-00:04:59,357 --> 00:05:01,049
-The model simply doesn't know.
+00:04:54,021 --> 00:04:55,656
+Ab context window.
 
 80
-00:05:01,269 --> 00:05:03,418
-It has no memory between requests.
+00:04:55,876 --> 00:04:58,468
+Isse exam ki desk ki tarah socho.
 
 81
-00:05:03,638 --> 00:05:06,193
-It only sees what
-you send in that request.
+00:04:58,688 --> 00:05:04,062
+Exam mein aap sirf wahi use kar sakte
+ho jo aapki desk par hai: question paper,
 
 82
-00:05:07,493 --> 00:05:11,070
-A language model predicts
-the next token, over and over.
+00:05:04,062 --> 00:05:06,103
+rough sheet, aur answer sheet.
 
 83
-00:05:11,420 --> 00:05:16,913
-It produces plausible text, not
-looked-up facts, so important claims need checking.
+00:05:06,323 --> 00:05:10,587
+Model bhi sirf wahi dekh
+sakta hai jo request ke andar hai.
 
 84
-00:05:17,263 --> 00:05:22,564
-Tokens drive cost, limits, and
-speed, and the API can count them exactly.
+00:05:10,807 --> 00:05:14,508
+Aur uska answer bhi usi
+desk par fit hona chahiye.
 
 85
-00:05:22,914 --> 00:05:28,090
-Everything must fit in the context
-window, and your app resends the history every
+00:05:15,808 --> 00:05:21,401
+Technically, context window ka matlab
+hai: ek request mein model maximum kitne
 
 86
-00:05:28,090 --> 00:05:28,410
-time.
+00:05:21,401 --> 00:05:25,703
+tokens consider kar sakta
+hai, input aur output dono milake.
 
 87
-00:05:28,760 --> 00:05:34,569
-Next lesson, you make your first real API
-call, and take the response apart piece by
+00:05:26,053 --> 00:05:29,086
+Jo bhi aap bhejte ho, sab isme jaata hai.
 
 88
-00:05:34,569 --> 00:05:34,984
-piece.
+00:05:29,306 --> 00:05:32,183
+System prompt, yaani aapki instructions.
 
 89
-00:05:36,295 --> 00:05:38,483
-Time to talk to a model from Python.
+00:05:32,403 --> 00:05:34,508
+Ab tak ki poori conversation.
 
 90
-00:05:38,704 --> 00:05:44,510
-In this lesson you'll set up an API key
-safely, install the official Anthropic SDK,
+00:05:34,728 --> 00:05:37,036
+Koi documents ya tool results.
 
 91
-00:05:44,510 --> 00:05:50,387
-send your first message, and then take
-the response apart, because every field in it
+00:05:37,256 --> 00:05:38,684
+Aur naya message.
 
 92
-00:05:50,387 --> 00:05:52,486
-matters when you build agents.
+00:05:39,034 --> 00:05:41,616
+Aaj ke models ki window bahut badi hai.
 
 93
-00:05:53,786 --> 00:05:56,525
-You'll create and store an API key safely.
+00:05:41,836 --> 00:05:48,270
+Claude Opus 5.5, jo model hum iss course
+mein use karenge, ek million tokens tak le
 
 94
-00:05:56,875 --> 00:05:59,905
-Install the official Anthropic Python SDK.
+00:05:48,270 --> 00:05:49,045
+sakta hai.
 
 95
-00:06:00,255 --> 00:06:02,786
-Send a request with messages dot create.
+00:05:49,395 --> 00:05:55,231
+Reply ko bhi fit hona padta hai, aur
+uski apni limit hai: iss model par ek lakh
 
 96
-00:06:03,136 --> 00:06:08,413
-And read the response: its content
-blocks, its stop reason, and its token usage.
+00:05:55,231 --> 00:05:57,743
+atthaais hazaar output tokens tak.
 
 97
-00:06:09,713 --> 00:06:12,778
-First, create an API
-key in the Claude Console.
+00:05:58,093 --> 00:06:02,415
+Lekin badi window ka matlab
+yeh nahi ki usse poora bhar do.
 
 98
-00:06:12,998 --> 00:06:17,606
-Note that API usage is billed
-separately from a Claude chat subscription.
+00:06:02,635 --> 00:06:06,060
+Har request mein bheja
+gaya har token bill hota hai.
 
 99
-00:06:17,956 --> 00:06:22,807
-Store it in an environment
-variable called ANTHROPIC API KEY.
+00:06:06,280 --> 00:06:10,310
+Aur focused context se
+usually answers bhi better aate hain.
 
 100
-00:06:23,027 --> 00:06:28,518
-The SDK reads that variable
-automatically, so the key never appears in your code.
+00:06:10,530 --> 00:06:15,533
+Window mein kya jaaye, yeh decide
+karna ek core agent engineering skill hai.
 
 101
-00:06:28,868 --> 00:06:33,330
-Never paste a key into code, a
-chat, a screenshot, or a git commit.
+00:06:16,833 --> 00:06:18,709
+Ab ek aur crucial baat.
 
 102
-00:06:33,550 --> 00:06:38,485
-If a key ever leaks, delete it in the
-Console straight away and create a new one.
+00:06:18,929 --> 00:06:24,920
+Imagine karo ek doctor, jo har patient ko
+bhool jaata hai jaise hi woh room se bahar
 
 103
-00:06:38,835 --> 00:06:39,823
-No key yet?
+00:06:24,920 --> 00:06:25,634
+jaata hai.
 
 104
-00:06:40,043 --> 00:06:41,036
-No problem.
+00:06:25,854 --> 00:06:31,300
+Achhi advice chahiye, toh har visit
+par apni poori file saath le jaani padegi.
 
 105
-00:06:41,256 --> 00:06:46,953
-Everything in this module also runs in
-offline mode, which I'll explain in a moment.
+00:06:31,520 --> 00:06:33,291
+Model wahi doctor hai.
 
 106
-00:06:48,253 --> 00:06:51,435
-As always, start with a
-fresh virtual environment.
+00:06:33,511 --> 00:06:36,341
+Aur file le jaane ka
+kaam aapki app ka hai.
 
 107
-00:06:51,785 --> 00:06:54,092
-Then install the anthropic package.
+00:06:37,641 --> 00:06:43,440
+Jab aap kisi chatbot se baat karte ho,
+lagta hai ki usse yaad hai aapne pehle kya
 
 108
-00:06:54,312 --> 00:06:59,893
-I'm pinning version 2 point 3 point 0,
-the version this course was recorded with.
+00:06:43,440 --> 00:06:44,085
+bola tha.
 
 109
-00:07:00,113 --> 00:07:06,266
-It brings its own HTTP library and
-pydantic, which we'll use for structured output.
+00:06:44,435 --> 00:06:48,777
+Lekin model ke paas requests
+ke beech koi memory nahi hoti.
 
 110
-00:07:06,616 --> 00:07:07,734
-And set your key.
+00:06:48,997 --> 00:06:52,349
+Aapki app har baar
+poori conversation bhejti hai.
 
 111
-00:07:07,954 --> 00:07:13,775
-On Windows PowerShell, use dollar
-env colon ANTHROPIC API KEY instead.
+00:06:52,569 --> 00:06:55,875
+Chat karte waqt model ke
+weights change nahi hote.
 
 112
-00:07:13,995 --> 00:07:17,925
-Or keep it in a dot env
-file, as you learned in Module 1.
+00:06:56,095 --> 00:07:00,131
+Agar code history bhejna
+bhool gaya, toh conversation gayi.
 
 113
-00:07:19,225 --> 00:07:21,083
-An honest note about the demos.
+00:07:00,351 --> 00:07:03,595
+Lesson three mein aap
+yeh khud hote hue dekhoge.
 
 114
-00:07:21,303 --> 00:07:26,585
-So that every demo is free and
-repeatable, and so you can follow along without a
+00:07:04,895 --> 00:07:07,167
+Toh model ko control kaise karein?
 
 115
-00:07:26,585 --> 00:07:31,802
-key, the replies you'll see come from
-a small fake API built into this module's
+00:07:07,387 --> 00:07:09,535
+Pehla lever hai system prompt.
 
 116
-00:07:31,802 --> 00:07:32,330
-project.
+00:07:09,755 --> 00:07:12,855
+Isse aap role, rules
+aur style set karte ho.
 
 117
-00:07:32,550 --> 00:07:39,147
-It speaks the same protocol as the real
-API, so the real SDK code runs unchanged,
+00:07:13,205 --> 00:07:17,266
+Max tokens se aap reply ki
+maximum length set karte ho.
 
 118
-00:07:39,147 --> 00:07:42,486
-including streaming, errors, and retries.
+00:07:17,616 --> 00:07:22,643
+Effort se decide hota hai model
+kitna sochega, low se lekar max tak.
 
 119
-00:07:42,706 --> 00:07:47,301
-But the replies are placeholders,
-clearly marked offline demo reply.
+00:07:22,863 --> 00:07:28,420
+Zyada effort mein mushkil problems par
+better answers milte hain, lekin tokens bhi
 
 120
-00:07:47,521 --> 00:07:49,072
-They are not model output.
+00:07:28,420 --> 00:07:29,572
+zyada lagte hain.
 
 121
-00:07:49,292 --> 00:07:52,994
-With your key set, exactly
-the same code talks to Claude.
+00:07:29,922 --> 00:07:33,708
+Aur aap model choose karte
+ho: Opus, Sonnet, ya Haiku.
 
 122
-00:07:54,294 --> 00:07:59,737
-In your own projects, you create a
-client with anthropic dot Anthropic, which reads
+00:07:33,928 --> 00:07:37,175
+Yeh capability aur cost
+ke beech ka trade off hai.
 
 123
-00:07:59,737 --> 00:08:01,639
-the key from the environment.
+00:07:37,525 --> 00:07:38,555
+Ek note.
 
 124
-00:08:01,859 --> 00:08:06,872
-Our lesson helper does the same when a
-key is set, and uses the offline fake when it
+00:07:38,775 --> 00:07:43,985
+Purane tutorials mein aapne
+temperature aur top p ke baare mein padha hoga.
 
 125
-00:08:06,872 --> 00:08:07,230
-isn't.
+00:07:44,205 --> 00:07:48,646
+Current Claude models par yeh
+sampling settings ab accept nahi hoti.
 
 126
-00:08:07,580 --> 00:08:10,029
-Messages dot create sends a request.
+00:07:48,866 --> 00:07:53,756
+Aap model ko instructions, effort,
+aur model choice se steer karte ho.
 
 127
-00:08:10,249 --> 00:08:16,204
-Three arguments are required: the model
-ID, max tokens, the longest reply you'll
+00:07:55,056 --> 00:07:56,515
+Interview corner.
 
 128
-00:08:16,204 --> 00:08:18,661
-accept, and the list of messages.
+00:07:56,735 --> 00:08:01,890
+Yeh question bahut common hai: ek
+LLM text kaise generate karta hai?
 
 129
-00:08:18,881 --> 00:08:24,457
-Each message is a dictionary with a role
-and content, exactly the shape you built in
+00:08:02,110 --> 00:08:04,722
+Pause karke socho, aap kya bologe.
 
 130
-00:08:24,457 --> 00:08:25,055
-Module 1.
+00:08:07,072 --> 00:08:12,664
+Ek achha answer: model ab tak ke text
+se next token predict karta hai, usse add
 
 131
-00:08:25,405 --> 00:08:27,865
-The reply's content is a list of blocks.
+00:08:12,664 --> 00:08:17,053
+karta hai, aur repeat karta
+hai jab tak answer complete na ho.
 
 132
-00:08:28,085 --> 00:08:31,337
-Here there's a single text
-block, so we print its text.
+00:08:17,273 --> 00:08:21,878
+Aur trap se bachna: yeh mat
+bolna ki woh internet search karta hai.
 
 133
-00:08:31,687 --> 00:08:36,778
-And we print two more fields: why the
-model stopped, and how many tokens went in and
+00:08:22,098 --> 00:08:24,492
+Akele model aisa nahi karta.
 
 134
-00:08:36,778 --> 00:08:37,021
-out.
+00:08:24,842 --> 00:08:30,526
+Doosra question: agar model ki memory
+nahi hai, toh chatbot pichle messages kaise
 
 135
-00:08:38,321 --> 00:08:40,404
-Here's the run, in offline mode.
+00:08:30,526 --> 00:08:31,649
+yaad rakhta hai?
 
 136
-00:08:40,624 --> 00:08:46,054
-A placeholder reply, a stop reason of
-end turn, which means the model finished
+00:08:33,999 --> 00:08:39,636
+Answer: kyunki application har request
+ke saath poori history dobara bhejti hai.
 
 137
-00:08:46,054 --> 00:08:48,281
-naturally, and the token counts.
+00:08:39,856 --> 00:08:43,007
+API stateless hai, memory app ke paas hai.
 
 138
-00:08:48,501 --> 00:08:52,135
-With a real key you'd see a
-real one-sentence answer here.
+00:08:43,227 --> 00:08:46,399
+Trap: yeh mat bolna ki
+model chat se seekhta hai.
 
 139
-00:08:53,435 --> 00:08:57,001
-Let's explore the response
-object in the interactive prompt.
+00:08:46,619 --> 00:08:48,765
+Uske weights change nahi hote.
 
 140
-00:08:57,351 --> 00:09:02,752
-Every response has an ID, which you
-include when reporting problems, the model that
+00:08:50,065 --> 00:08:51,704
+Ab practice ka time.
 
 141
-00:09:02,752 --> 00:09:04,964
-answered, and the role, assistant.
+00:08:51,924 --> 00:08:54,676
+Yeh questions easy
+se hard order mein hain.
 
 142
-00:09:05,184 --> 00:09:07,380
-Content is a list of typed blocks.
+00:08:54,896 --> 00:08:57,132
+Video pause karo aur khud socho.
 
 143
-00:09:07,730 --> 00:09:09,786
-The stop reason and the usage.
+00:08:57,482 --> 00:09:01,197
+Pehla: ek LLM
+confidently galat kyun ho sakta hai?
 
 144
-00:09:10,006 --> 00:09:14,326
-Usage is what you are billed for,
-so production code always records it.
+00:09:01,547 --> 00:09:06,945
+Doosra: chaar sau characters ka English
+paragraph, roughly kitne tokens ka hoga?
 
 145
-00:09:14,546 --> 00:09:16,525
-We'll do exactly that in the project.
+00:09:07,295 --> 00:09:12,139
+Teesra: aapki chat app har turn
+mein pachaas purane messages bhejti hai.
 
 146
-00:09:17,825 --> 00:09:19,248
-Why is content a list?
+00:09:12,359 --> 00:09:13,945
+Do problems batao.
 
 147
-00:09:19,468 --> 00:09:22,463
-Because a reply can
-contain different kinds of block.
+00:09:14,295 --> 00:09:20,012
+Aur chautha, ek real world scenario: ek
+support bot ko teen sau page ke manual se
 
 148
-00:09:22,683 --> 00:09:24,682
-Text blocks hold the written answer.
+00:09:20,012 --> 00:09:21,141
+answer dena hai.
 
 149
-00:09:25,032 --> 00:09:27,485
-Thinking blocks can
-hold the model's reasoning.
+00:09:21,361 --> 00:09:25,298
+Har request mein poora manual
+paste kyun nahi karna chahiye?
 
 150
-00:09:27,705 --> 00:09:32,252
-On current models it's hidden by
-default, but the block may still be there.
+00:09:31,648 --> 00:09:36,615
+Hints: plausible text, chaar
+characters ka rule, cost aur context window.
 
 151
-00:09:32,602 --> 00:09:38,008
-And tool use blocks are requests to run
-one of your tools, which is how agents act.
+00:09:36,835 --> 00:09:39,319
+Answers quiz dot md file mein hain.
 
 152
-00:09:38,228 --> 00:09:40,406
-You'll handle those in Module 5.
+00:09:40,619 --> 00:09:41,547
+Quick check.
 
 153
-00:09:40,756 --> 00:09:44,398
-So robust code never
-assumes the first block is text.
+00:09:41,767 --> 00:09:46,243
+Aapki app ek nayi request
+bhejti hai, bina pichle messages ke.
 
 154
-00:09:44,618 --> 00:09:48,121
-It checks each block's
-type, as the next example does.
+00:09:46,463 --> 00:09:47,535
+Kya hoga?
 
 155
-00:09:49,421 --> 00:09:54,673
-The system parameter gives the model its
-role and rules for the whole conversation.
+00:09:53,235 --> 00:09:55,388
+Model ko pata hi nahi hoga.
 
 156
-00:09:54,893 --> 00:09:56,997
-It sits outside the messages list.
+00:09:55,608 --> 00:09:58,832
+Requests ke beech
+uski koi memory nahi hoti.
 
 157
-00:09:57,217 --> 00:10:01,216
-Here: be a patient tutor, and
-answer in at most two sentences.
+00:09:59,052 --> 00:10:03,014
+Woh sirf wahi dekhta hai jo
+uss request mein bheja gaya.
 
 158
-00:10:01,566 --> 00:10:06,556
-And here's the robust way to read the
-answer: loop over the blocks and only print
+00:10:04,314 --> 00:10:05,731
+Recap karte hain.
 
 159
-00:10:06,556 --> 00:10:07,295
-text blocks.
+00:10:05,951 --> 00:10:09,482
+LLM next token predict
+karta hai, ek loop mein.
 
 160
-00:10:08,595 --> 00:10:13,196
-In offline mode the placeholder
-can't follow the instructions, of course.
+00:10:09,832 --> 00:10:13,081
+Woh plausible text
+likhta hai, checked facts nahi.
 
 161
-00:10:13,416 --> 00:10:16,039
-A real model would
-answer in two sentences.
+00:10:13,301 --> 00:10:16,420
+Isliye important
+claims check karne padte hain.
 
 162
-00:10:16,259 --> 00:10:20,238
-Prompt design gets a whole
-module of its own, Module 3.
+00:10:16,770 --> 00:10:20,299
+Tokens se cost, limits
+aur speed decide hoti hai.
 
 163
-00:10:21,538 --> 00:10:22,346
-Quick check.
+00:10:20,649 --> 00:10:25,974
+Sab kuch context window mein fit hona
+chahiye, aur app har baar history dobara
 
 164
-00:10:22,566 --> 00:10:26,404
-Which three arguments does
-messages dot create require?
+00:10:25,974 --> 00:10:26,725
+bhejti hai.
 
 165
-00:10:32,104 --> 00:10:34,437
-Model, max tokens, and messages.
+00:10:27,075 --> 00:10:33,254
+Agle lesson mein aap apni pehli real API
+call karoge, aur uske response ka har hissa
 
 166
-00:10:34,657 --> 00:10:38,731
-The key comes from the
-environment, and the system prompt is optional.
+00:10:33,254 --> 00:10:33,916
+samjhoge.
 
 167
-00:10:40,031 --> 00:10:44,328
-API keys live in an
-environment variable, never in your code.
+00:10:35,217 --> 00:10:39,188
+Ab time hai Python se ek
+model ke saath baat karne ka.
 
 168
-00:10:44,678 --> 00:10:49,225
-Messages dot create needs a
-model, max tokens, and messages.
+00:10:39,408 --> 00:10:44,680
+Iss lesson mein hum pehle samjhenge
+ki API kya hoti hai aur kyun hoti hai.
 
 169
-00:10:49,575 --> 00:10:54,252
-The response gives you content
-blocks, a stop reason, and token usage.
+00:10:44,900 --> 00:10:51,042
+Phir API key ko safely set karenge,
+official Anthropic SDK install karenge, pehla
 
 170
-00:10:54,602 --> 00:10:57,267
-And the system prompt
-sets the role and the rules.
+00:10:51,042 --> 00:10:55,820
+message bhejenge, aur response
+ka har ek hissa kholke dekhenge.
 
 171
-00:10:57,617 --> 00:10:59,596
-Next lesson: conversations.
+00:10:57,120 --> 00:11:02,960
+Iss lesson ke baad aap API ko ek
+simple analogy ke saath explain kar paoge.
 
 172
-00:10:59,816 --> 00:11:04,631
-You'll see exactly why the model
-forgets, and how to manage message history
+00:11:03,310 --> 00:11:07,165
+API key ko safely create
+aur store karna seekhoge.
 
 173
-00:11:04,631 --> 00:11:05,209
-properly.
+00:11:07,515 --> 00:11:10,556
+Messages dot create se request bhejoge.
 
 174
-00:11:06,514 --> 00:11:12,479
-Every chat app and every agent is a
-conversation: a list of messages that grows over
+00:11:10,906 --> 00:11:15,500
+Aur response ko padhoge:
+content blocks, stop reason, aur usage.
 
 175
-00:11:12,479 --> 00:11:12,834
-time.
+00:11:16,800 --> 00:11:18,694
+Pehle what: API kya hai?
 
 176
-00:11:13,054 --> 00:11:18,123
-In this lesson you'll see that the API
-remembers nothing, that your code owns the
+00:11:18,914 --> 00:11:21,019
+Ek restaurant imagine karo.
 
 177
-00:11:18,123 --> 00:11:21,690
-history, and that a growing
-history means a growing bill.
+00:11:21,239 --> 00:11:23,598
+Aap seedhe kitchen mein nahi jaate.
 
 178
-00:11:22,990 --> 00:11:25,929
-You'll build a
-multi-turn conversation correctly.
+00:11:23,818 --> 00:11:29,444
+Aap waiter ko order dete ho, waiter
+kitchen tak order le jaata hai, aur khana wapas
 
 179
-00:11:26,279 --> 00:11:29,080
-Spot and fix the
-classic forgotten reply bug.
+00:11:29,444 --> 00:11:30,122
+laata hai.
 
 180
-00:11:29,430 --> 00:11:32,281
-Measure how input
-tokens grow with every turn.
+00:11:30,472 --> 00:11:32,656
+Aapka Python code customer hai.
 
 181
-00:11:32,631 --> 00:11:36,712
-And choose a strategy for
-keeping long conversations under control.
+00:11:32,876 --> 00:11:34,348
+Order hai request.
 
 182
-00:11:38,012 --> 00:11:40,291
-Here's how a conversation really works.
+00:11:34,698 --> 00:11:36,321
+API waiter hai.
 
 183
-00:11:40,641 --> 00:11:43,461
-The first request
-contains one user message.
+00:11:36,541 --> 00:11:40,995
+Waiter ke paas order lene ke
+fixed rules hote hain, jaise menu.
 
 184
-00:11:43,811 --> 00:11:46,873
-The API replies, and
-then forgets everything.
+00:11:41,345 --> 00:11:43,352
+Aur model ke servers kitchen hain.
 
 185
-00:11:47,093 --> 00:11:50,726
-Your app stores the user
-message and the reply in a list.
+00:11:43,572 --> 00:11:46,515
+Jo khana wapas aata hai, woh response hai.
 
 186
-00:11:51,076 --> 00:11:56,087
-The second request sends the whole
-list: the first question, the first reply, and
+00:11:46,865 --> 00:11:48,968
+Ab why: API kyun hoti hai?
 
 187
-00:11:56,087 --> 00:11:57,138
-the new question.
+00:11:49,188 --> 00:11:53,948
+Kyunki model bahut bade servers
+par chalta hai, aapke laptop par nahi.
 
 188
-00:11:57,488 --> 00:11:59,992
-And the third request sends five messages.
+00:11:54,168 --> 00:12:00,406
+API ek fixed, safe tareeka deti hai,
+taaki koi bhi program un servers se baat kar
 
 189
-00:12:00,212 --> 00:12:05,644
-Roles alternate between user and
-assistant, and the first message is always from the
+00:12:00,406 --> 00:12:00,791
+sake.
 
 190
-00:12:05,644 --> 00:12:05,967
-user.
+00:12:02,091 --> 00:12:03,562
+Ab API key.
 
 191
-00:12:07,267 --> 00:12:11,096
-The history is just a Python
-list of message dictionaries.
+00:12:03,782 --> 00:12:06,998
+Pehle Claude Console
+mein ek API key banao.
 
 192
-00:12:11,446 --> 00:12:16,446
-For each question, we append it to the
-history, and send the whole list as messages.
+00:12:07,218 --> 00:12:11,719
+Dhyan rahe, API ka billing
+chat subscription se alag hota hai.
 
 193
-00:12:16,796 --> 00:12:18,928
-Then we append the assistant's reply.
+00:12:12,069 --> 00:12:18,005
+Phir usse ek environment variable mein
+rakho, jiska naam hai ANTHROPIC API KEY.
 
 194
-00:12:19,148 --> 00:12:21,295
-This line is the one people forget.
+00:12:18,225 --> 00:12:23,789
+SDK isse automatically padh leta hai,
+toh key aapke code mein kabhi nahi dikhti.
 
 195
-00:12:21,645 --> 00:12:27,008
-Finally we print how many messages we
-sent, and how many input tokens that cost.
+00:12:24,139 --> 00:12:28,789
+Key ko kabhi code, chat,
+screenshot, ya git commit mein paste mat karo.
 
 196
-00:12:28,308 --> 00:12:29,451
-Look at the numbers.
+00:12:29,009 --> 00:12:33,603
+Agar key leak ho jaaye, toh turant
+Console mein delete karo aur nayi banao.
 
 197
-00:12:29,671 --> 00:12:31,876
-One message, then three, then five.
+00:12:33,953 --> 00:12:35,456
+Abhi key nahi hai?
 
 198
-00:12:32,096 --> 00:12:37,212
-And the input tokens grow every turn,
-because every request re-sends everything
+00:12:35,676 --> 00:12:37,039
+Koi baat nahi.
 
 199
-00:12:37,212 --> 00:12:37,860
-before it.
+00:12:37,259 --> 00:12:41,144
+Iss module ka sab kuch
+offline mode mein bhi chalta hai.
 
 200
-00:12:38,080 --> 00:12:43,733
-The offline fake even reports how many
-earlier messages it received, so you can see
+00:12:41,364 --> 00:12:43,219
+Woh abhi samjhati hoon.
 
 201
-00:12:43,733 --> 00:12:45,163
-the history arriving.
+00:12:44,519 --> 00:12:47,552
+API key ko ATM PIN ki tarah socho.
 
 202
-00:12:46,463 --> 00:12:47,789
-Here's the classic bug.
+00:12:47,772 --> 00:12:52,247
+Jiske paas aapka PIN hai, woh
+aapka paisa kharch kar sakta hai.
 
 203
-00:12:48,009 --> 00:12:51,258
-The loop appends each
-question, but never the reply.
+00:12:52,467 --> 00:12:58,159
+Jiske paas aapki API key hai, woh
+aapka API credit kharch kar sakta hai.
 
 204
-00:12:51,608 --> 00:12:54,756
-So the history contains
-two user messages in a row.
+00:12:58,379 --> 00:13:01,128
+Aap PIN card par likhkar nahi rakhte.
 
 205
-00:12:54,976 --> 00:12:59,336
-The API accepts that, and
-merges them into a single user turn.
+00:13:01,348 --> 00:13:03,584
+Toh key ko bhi code mein mat likho.
 
 206
-00:12:59,556 --> 00:13:04,777
-But the model never sees what it said
-before, so it can't refer to its own earlier
+00:13:04,884 --> 00:13:09,254
+Hamesha ki tarah, ek fresh
+virtual environment se shuru karo.
 
 207
-00:13:04,777 --> 00:13:05,287
-answers.
+00:13:09,604 --> 00:13:12,025
+Phir anthropic package install karo.
 
 208
-00:13:06,587 --> 00:13:07,652
-User, user.
+00:13:12,245 --> 00:13:17,479
+Mai version two point three point zero
+pin kar rahi hoon, jis version par yeh course
 
 209
-00:13:07,872 --> 00:13:09,147
-No assistant turn.
+00:13:17,479 --> 00:13:18,414
+record hua hai.
 
 210
-00:13:09,367 --> 00:13:13,724
-In a chat app, that shows up as an
-assistant that seems to have amnesia.
+00:13:18,634 --> 00:13:25,162
+SDK ka matlab hai software development
+kit, yaani ready made Python code jo API se
 
 211
-00:13:13,944 --> 00:13:16,952
-Always store the reply
-right after you receive it.
+00:13:25,162 --> 00:13:27,709
+baat karna aasaan bana deta hai.
 
 212
-00:13:18,252 --> 00:13:23,772
-Since every turn re-sends the whole
-history, long conversations get slower and more
+00:13:28,059 --> 00:13:29,802
+Aur apni key set karo.
 
 213
-00:13:23,772 --> 00:13:27,032
-expensive, and
-eventually hit the context window.
+00:13:30,022 --> 00:13:35,061
+Windows PowerShell par dollar
+env colon ANTHROPIC API KEY use karo.
 
 214
-00:13:27,252 --> 00:13:29,189
-There are a few standard strategies.
+00:13:35,281 --> 00:13:38,599
+Ya Module 1 ki tarah
+dot env file mein rakho.
 
 215
-00:13:29,539 --> 00:13:34,907
-The simplest is a sliding window: keep
-the most recent turns, and drop the oldest
+00:13:39,899 --> 00:13:42,425
+Ek honest note, demos ke baare mein.
 
 216
-00:13:34,907 --> 00:13:38,220
-user and assistant pair
-once you're over a budget.
+00:13:42,645 --> 00:13:48,460
+Taaki har demo free ho aur har baar same
+result de, aur aap bina key ke bhi follow
 
 217
-00:13:38,440 --> 00:13:39,886
-Our project does this.
+00:13:48,460 --> 00:13:54,417
+kar sako, aap jo replies dekhoge woh iss
+project ke ek chhote fake API se aate hain.
 
 218
-00:13:40,236 --> 00:13:45,341
-A smarter option replaces old turns
-with a short summary written by the model.
+00:13:54,637 --> 00:14:01,408
+Yeh fake API real API wala hi protocol
+bolta hai, isliye real SDK code bilkul waise
 
 219
-00:13:45,561 --> 00:13:47,698
-That's part of Module 6 on memory.
+00:14:01,408 --> 00:14:02,550
+hi chalta hai.
 
 220
-00:13:48,048 --> 00:13:53,432
-And agents often store key facts in a
-database, and add back only what's relevant to
+00:14:02,770 --> 00:14:08,036
+Lekin replies placeholders hain, jin
+par likha hota hai offline demo reply.
 
 221
-00:13:53,432 --> 00:13:54,778
-the current question.
+00:14:08,256 --> 00:14:10,448
+Yeh model ka output nahi hai.
 
 222
-00:13:55,128 --> 00:14:00,546
-Finally, prompt caching lets an
-unchanged prefix of the conversation be billed at a
+00:14:10,668 --> 00:14:14,483
+Key set karoge, toh yahi
+code seedhe Claude se baat karega.
 
 223
-00:14:00,546 --> 00:14:02,830
-large discount when you re-send it.
+00:14:15,783 --> 00:14:17,589
+Ab how: pehli request.
 
 224
-00:14:03,050 --> 00:14:04,881
-You'll use it later in the course.
+00:14:17,809 --> 00:14:21,805
+Left side par code hai,
+right side par uska real output.
 
 225
-00:14:06,181 --> 00:14:08,063
-One practical rule when trimming.
+00:14:22,025 --> 00:14:23,886
+Line by line chalte hain.
 
 226
-00:14:08,283 --> 00:14:13,699
-Drop messages in pairs, a user message
-and its reply together, so the roles keep
+00:14:24,236 --> 00:14:26,107
+Pehle client banta hai.
 
 227
-00:14:13,699 --> 00:14:17,626
-alternating and the history
-still starts with a user turn.
+00:14:26,327 --> 00:14:32,370
+Apne projects mein aap anthropic dot
+Anthropic likhoge, jo environment se key padh
 
 228
-00:14:18,926 --> 00:14:19,733
-Quick check.
+00:14:32,370 --> 00:14:33,033
+leta hai.
 
 229
-00:14:19,953 --> 00:14:22,740
-A conversation already has ten messages.
+00:14:33,253 --> 00:14:38,760
+Hamara lesson helper bhi wahi karta hai
+jab key set ho, aur key na ho toh offline
 
 230
-00:14:22,960 --> 00:14:25,746
-How many messages does
-your next request send?
+00:14:38,760 --> 00:14:40,051
+fake use karta hai.
 
 231
-00:14:31,446 --> 00:14:36,927
-Eleven: all ten earlier messages plus
-the new one, unless you deliberately trim the
+00:14:40,401 --> 00:14:43,400
+Messages dot create request bhejta hai.
 
 232
-00:14:36,927 --> 00:14:37,456
-history.
+00:14:43,620 --> 00:14:45,671
+Teen arguments zaroori hain.
 
 233
-00:14:38,756 --> 00:14:42,227
-The API is stateless, and
-your code keeps the history.
+00:14:45,891 --> 00:14:47,984
+Model, yaani kaunsa model.
 
 234
-00:14:42,577 --> 00:14:45,706
-Append both the question
-and the reply, every turn.
+00:14:48,204 --> 00:14:52,588
+Max tokens, yaani reply
+maximum kitna lamba ho sakta hai.
 
 235
-00:14:46,056 --> 00:14:49,168
-Input tokens, and
-cost, grow with every turn.
+00:14:52,808 --> 00:14:55,784
+Aur messages, yaani conversation ki list.
 
 236
-00:14:49,518 --> 00:14:54,223
-So trim in pairs, or summarise,
-to keep conversations under control.
+00:14:56,004 --> 00:15:00,355
+Har message ek dictionary hai,
+jisme role aur content hota hai.
 
 237
-00:14:54,573 --> 00:14:59,683
-Next, you'll control the output itself:
-length limits, streaming, and structured
+00:15:00,575 --> 00:15:04,177
+Bilkul wahi shape jo
+aapne Module 1 mein banayi thi.
 
 238
-00:14:59,683 --> 00:15:00,003
-JSON.
+00:15:04,527 --> 00:15:07,429
+Reply ka content ek list hai, blocks ki.
 
 239
-00:15:01,330 --> 00:15:02,924
-Getting a reply is easy.
+00:15:07,649 --> 00:15:12,263
+Yahan ek hi text block hai,
+isliye hum uska text print karte hain.
 
 240
-00:15:03,144 --> 00:15:06,775
-Getting a reply your
-program can rely on takes more care.
+00:15:12,483 --> 00:15:16,797
+Right side par pehli line yahi
+hai: offline placeholder reply.
 
 241
-00:15:06,995 --> 00:15:12,418
-In this lesson you'll control how long
-replies are, show them as they're generated,
+00:15:17,147 --> 00:15:19,736
+Yeh line stop reason print karti hai.
 
 242
-00:15:12,418 --> 00:15:17,906
-get structured JSON instead of free text,
-and handle the cases where the model stops
+00:15:19,956 --> 00:15:25,460
+Output mein end turn aaya, matlab
+model ne apna answer naturally khatam kiya.
 
 243
-00:15:17,906 --> 00:15:18,298
-early.
+00:15:25,810 --> 00:15:28,624
+Aur aakhri line tokens print karti hai.
 
 244
-00:15:19,598 --> 00:15:23,460
-You'll use max tokens, and
-check the stop reason every time.
+00:15:28,844 --> 00:15:32,049
+Nau tokens gaye,
+chausath tokens wapas aaye.
 
 245
-00:15:23,810 --> 00:15:26,443
-Stream replies for a responsive interface.
+00:15:32,269 --> 00:15:35,600
+Usage hi woh cheez hai
+jiska aapko bill aata hai.
 
 246
-00:15:26,793 --> 00:15:29,676
-Get validated JSON
-with structured outputs.
+00:15:36,900 --> 00:15:39,226
+Ab response ko kholke dekhte hain.
 
 247
-00:15:30,026 --> 00:15:31,771
-And handle refusals safely.
+00:15:39,446 --> 00:15:42,083
+ID har response ka unique number hai.
 
 248
-00:15:33,071 --> 00:15:35,383
-Every response tells you why it ended.
+00:15:42,303 --> 00:15:46,088
+Koi problem report karni
+ho, toh yeh ID batate hain.
 
 249
-00:15:35,603 --> 00:15:38,937
-End turn means the model
-finished its answer naturally.
+00:15:46,438 --> 00:15:50,335
+Model batata hai kaunse
+model ne actually answer diya.
 
 250
-00:15:39,287 --> 00:15:44,010
-Max tokens means it hit your limit
-and was cut off, possibly mid-sentence.
+00:15:50,685 --> 00:15:54,014
+Content mein answer hai,
+blocks ki list ki form mein.
 
 251
-00:15:44,360 --> 00:15:48,385
-Refusal means the model
-declined the request for safety reasons.
+00:15:54,364 --> 00:15:59,525
+Stop reason batata hai answer
+complete hua, cut off hua, ya refuse hua.
 
 252
-00:15:48,735 --> 00:15:53,426
-Stop sequence means it produced one
-of the custom stop strings you supplied.
+00:15:59,875 --> 00:16:03,252
+Aur usage batata hai
+kitne tokens gaye aur aaye.
 
 253
-00:15:53,776 --> 00:15:56,785
-Tool use means it wants
-to run one of your tools.
+00:16:03,472 --> 00:16:06,616
+Production code isse
+hamesha record karta hai.
 
 254
-00:15:57,005 --> 00:15:59,815
-That's the heart of agents, in Module 5.
+00:16:06,836 --> 00:16:08,968
+Project mein hum yahi karenge.
 
 255
-00:16:00,165 --> 00:16:05,041
-And pause turn means a long agentic
-turn paused, and you can continue it.
+00:16:10,268 --> 00:16:11,946
+Content list kyun hai?
 
 256
-00:16:06,341 --> 00:16:11,700
-We ask the same question twice, once
-with a generous limit and once with only
+00:16:12,166 --> 00:16:16,225
+Kyunki ek reply mein alag
+alag type ke blocks ho sakte hain.
 
 257
-00:16:11,700 --> 00:16:12,744
-fifteen tokens.
+00:16:16,445 --> 00:16:19,187
+Text block mein likha hua answer hota hai.
 
 258
-00:16:13,094 --> 00:16:14,711
-And we check the stop reason.
+00:16:19,537 --> 00:16:22,668
+Thinking block mein model
+ki reasoning ho sakti hai.
 
 259
-00:16:14,931 --> 00:16:20,545
-A cut-off reply looks like a normal
-string, so if you don't check, you'll silently
+00:16:22,888 --> 00:16:28,260
+Current models par yeh by default hidden
+hoti hai, lekin block wahan ho sakta hai.
 
 260
-00:16:20,545 --> 00:16:24,927
-show users half an answer, or
-try to parse half a JSON document.
+00:16:28,610 --> 00:16:33,066
+Aur tool use block ek request
+hai ki aapka koi tool chalaya jaaye.
 
 261
-00:16:26,227 --> 00:16:28,511
-With a thousand tokens, end turn.
+00:16:33,286 --> 00:16:35,761
+Agents isi tarah kaam karte hain.
 
 262
-00:16:28,731 --> 00:16:34,670
-With fifteen, the stop reason is max
-tokens, and exactly fifteen output tokens were
+00:16:35,981 --> 00:16:37,997
+Yeh Module 5 mein aayega.
 
 263
-00:16:34,670 --> 00:16:35,028
-used.
+00:16:38,347 --> 00:16:43,450
+Isliye achha code yeh assume nahi
+karta ki pehla block hamesha text hai.
 
 264
-00:16:35,248 --> 00:16:37,251
-The model doesn't plan to fit the limit.
+00:16:43,670 --> 00:16:46,098
+Woh har block ka type check karta hai.
 
 265
-00:16:37,471 --> 00:16:38,640
-It's simply stopped.
+00:16:46,318 --> 00:16:48,718
+Agla example yahi dikhata hai.
 
 266
-00:16:38,990 --> 00:16:44,443
-So set max tokens high enough for the
-job, and treat max tokens as the stop reason
+00:16:50,018 --> 00:16:51,515
+Ab system prompt.
 
 267
-00:16:44,443 --> 00:16:45,773
-that needs handling.
+00:16:51,735 --> 00:16:55,038
+Isse ek shift se pehle
+ki briefing ki tarah socho.
 
 268
-00:16:45,993 --> 00:16:47,827
-Don't lowball it to save money.
+00:16:55,258 --> 00:17:00,882
+Manager naye employee ko batata hai: tum
+kaun ho, rules kya hain, aur customers se
 
 269
-00:16:48,047 --> 00:16:51,190
-A truncated answer
-usually costs you a retry.
+00:17:00,882 --> 00:17:02,322
+kaise baat karni hai.
 
 270
-00:16:52,490 --> 00:16:55,772
-Remember that models
-generate one token at a time.
+00:17:02,542 --> 00:17:06,478
+System prompt wahi briefing
+hai, poori conversation ke liye.
 
 271
-00:16:55,992 --> 00:17:01,329
-Without streaming, your program waits
-for the entire reply, with nothing on screen.
+00:17:07,778 --> 00:17:11,340
+System parameter model
+ko role aur rules deta hai.
 
 272
-00:17:01,679 --> 00:17:07,398
-With streaming, the API sends pieces as
-they're generated, so text appears almost
+00:17:11,560 --> 00:17:14,326
+Yeh messages list ke bahar hota hai.
 
 273
-00:17:07,398 --> 00:17:08,246
-immediately.
+00:17:14,546 --> 00:17:19,752
+Yahan rule hai: patient tutor bano,
+aur maximum do sentences mein answer do.
 
 274
-00:17:08,466 --> 00:17:11,972
-The total time is the
-same, but it feels far faster.
+00:17:20,102 --> 00:17:25,457
+Aur yeh answer padhne ka safe tareeka
+hai: har block par loop karo, aur sirf text
 
 275
-00:17:12,192 --> 00:17:16,566
-Streaming also avoids request
-timeouts on very long replies.
+00:17:25,457 --> 00:17:26,647
+blocks print karo.
 
 276
-00:17:17,866 --> 00:17:23,402
-Messages dot stream takes exactly the
-same arguments as create, and is used as a
+00:17:26,867 --> 00:17:31,315
+Offline mode mein placeholder
+instructions follow nahi kar sakta.
 
 277
-00:17:23,402 --> 00:17:25,202
-context manager with with.
+00:17:31,535 --> 00:17:34,558
+Real model do sentences mein answer deta.
 
 278
-00:17:25,552 --> 00:17:28,866
-Text stream yields small
-pieces of text as they arrive.
+00:17:34,778 --> 00:17:37,360
+Prompt design par poora Module 3 hai.
 
 279
-00:17:29,086 --> 00:17:33,975
-We print each one immediately, with
-flush equals True so it isn't held in a buffer.
+00:17:38,660 --> 00:17:40,119
+Interview corner.
 
 280
-00:17:34,325 --> 00:17:39,691
-And when the stream ends, get final
-message gives you the complete message object,
+00:17:40,339 --> 00:17:44,697
+Sabse basic, lekin sabse
+common question: API kya hai?
 
 281
-00:17:39,691 --> 00:17:42,898
-with its stop reason
-and usage, just like create.
+00:17:47,047 --> 00:17:53,496
+Ek achha answer: API ek defined tareeka
+hai jisse ek program doosre program se kuch
 
 282
-00:17:44,198 --> 00:17:50,024
-In the video the pieces arrive
-instantly, because the fake API is local, but the
+00:17:53,496 --> 00:17:54,351
+maang sake.
 
 283
-00:17:50,024 --> 00:17:55,559
-code path is the real streaming code:
-server-sent events, parsed by the SDK.
+00:17:54,571 --> 00:17:59,823
+Aap ek agreed format mein request
+bhejte ho, aur response wapas aata hai.
 
 284
-00:17:56,859 --> 00:18:02,495
-Agents constantly need machine-readable
-output: a quiz, a plan, a tool decision.
+00:18:00,043 --> 00:18:02,920
+Waiter wali analogy bhi bol sakte ho.
 
 285
-00:18:02,715 --> 00:18:05,939
-Just asking for JSON
-in the prompt is fragile.
+00:18:03,140 --> 00:18:06,669
+Trap: API ko library ya website mat bolna.
 
 286
-00:18:06,159 --> 00:18:10,204
-Extra words, wrong keys, or
-broken JSON can slip through.
+00:18:06,889 --> 00:18:10,145
+API dono programs ke
+beech ka contract hai.
 
 287
-00:18:10,554 --> 00:18:12,321
-Structured outputs fix this.
+00:18:10,495 --> 00:18:14,961
+Doosra question: API keys ko
+code se bahar kaise rakhte ho?
 
 288
-00:18:12,541 --> 00:18:18,621
-You pass a JSON schema, and the API
-constrains the reply to valid JSON for that
+00:18:17,311 --> 00:18:21,927
+Answer: environment variables
+mein, ya kisi secrets manager mein.
 
 289
-00:18:18,621 --> 00:18:19,160
-schema.
+00:18:22,147 --> 00:18:24,017
+Source code mein kabhi nahi.
 
 290
-00:18:19,380 --> 00:18:25,605
-With a Pydantic class, the SDK builds
-the schema and parses the reply into a Python
+00:18:24,237 --> 00:18:27,694
+Har app ki alag key, aur
+leak hote hi key revoke karo.
 
 291
-00:18:25,605 --> 00:18:26,730
-object for you.
+00:18:27,914 --> 00:18:30,864
+Trap: config file
+mein repo ke andar rakhna.
 
 292
-00:18:28,030 --> 00:18:33,664
-First, describe the shape with Pydantic
-classes: a question has text, four options,
+00:18:31,084 --> 00:18:34,001
+Git mein jo bhi gaya, usse public samjho.
 
 293
-00:18:33,664 --> 00:18:37,058
-the index of the right
-answer, and an explanation.
+00:18:35,301 --> 00:18:36,558
+Practice time.
 
 294
-00:18:37,278 --> 00:18:40,093
-A quiz has a topic
-and a list of questions.
+00:18:36,778 --> 00:18:39,254
+Video pause karo aur khud try karo.
 
 295
-00:18:40,313 --> 00:18:43,296
-Pydantic gets a full lesson in Module 3.
+00:18:39,604 --> 00:18:44,250
+Pehla: messages dot create ke
+teen zaroori arguments kaun se hain?
 
 296
-00:18:43,516 --> 00:18:46,283
-For now, read these as typed dataclasses.
+00:18:44,600 --> 00:18:49,732
+Doosra: first call dot py ko badlo,
+taaki woh har block ka type print kare.
 
 297
-00:18:46,633 --> 00:18:52,060
-These Field constraints say exactly
-four options and an index from zero to three.
+00:18:50,082 --> 00:18:54,470
+Teesra: agent mein content
+zero dot text likhna risky kyun hai?
 
 298
-00:18:52,280 --> 00:18:57,756
-The API's schema support is limited, so
-the SDK moves those limits into the field
+00:18:54,820 --> 00:18:58,803
+Aur scenario: aapke teammate
+ne ek key GitHub par push kar di.
 
 299
-00:18:57,756 --> 00:19:02,150
-descriptions, and then checks
-them itself when the reply arrives.
+00:18:59,023 --> 00:19:01,381
+Aap kya karoge, order mein batao.
 
 300
-00:19:02,500 --> 00:19:07,922
-Then call messages dot parse instead of
-create, with output format set to the class.
+00:19:07,731 --> 00:19:11,961
+Hint for the last one: pehla
+step hai key ko turant revoke karna.
 
 301
-00:19:08,272 --> 00:19:13,763
-Parsed output is a real, validated Quiz
-object, so you use attributes instead of
+00:19:12,181 --> 00:19:15,156
+Git history se hata dena kaafi nahi hai.
 
 302
-00:19:13,763 --> 00:19:15,753
-digging through dictionaries.
+00:19:16,456 --> 00:19:17,384
+Quick check.
 
 303
-00:19:17,053 --> 00:19:23,170
-The offline fake returns schema-valid
-placeholder questions, and they come back as a
+00:19:17,604 --> 00:19:22,021
+Messages dot create ke liye
+kaun se teen arguments zaroori hain?
 
 304
-00:19:23,170 --> 00:19:24,408
-real Quiz object.
+00:19:27,721 --> 00:19:30,253
+Model, max tokens, aur messages.
 
 305
-00:19:24,628 --> 00:19:30,458
-If a reply doesn't fit the schema, the
-SDK raises a validation error instead of
+00:19:30,473 --> 00:19:34,484
+Key environment se aati hai,
+aur system prompt optional hai.
 
 306
-00:19:30,458 --> 00:19:32,008
-handing you bad data.
+00:19:35,784 --> 00:19:36,624
+Recap.
 
 307
-00:19:33,308 --> 00:19:34,885
-Last case: refusals.
+00:19:36,844 --> 00:19:40,472
+API aapke code aur
+model ke beech ka waiter hai.
 
 308
-00:19:35,105 --> 00:19:40,711
-If the stop reason is refusal, the
-model declined the request for safety reasons,
+00:19:40,822 --> 00:19:44,936
+Keys environment variable mein
+rehti hain, code mein kabhi nahi.
 
 309
-00:19:40,711 --> 00:19:42,718
-and the content may be empty.
+00:19:45,286 --> 00:19:50,265
+Messages dot create ko model,
+max tokens, aur messages chahiye.
 
 310
-00:19:42,938 --> 00:19:45,824
-So check the stop reason
-before you read the text.
+00:19:50,615 --> 00:19:55,089
+Response mein content blocks,
+stop reason, aur usage milta hai.
 
 311
-00:19:46,044 --> 00:19:51,671
-On current models, the API can also
-automatically re-run a declined request on
+00:19:55,439 --> 00:19:57,722
+Agle lesson mein conversations.
 
 312
-00:19:51,671 --> 00:19:54,700
-another model, a feature called fallbacks.
+00:19:57,942 --> 00:20:03,613
+Aap khud dekhoge ki model bhoolta kyun
+hai, aur message history ko sahi tareeke se
 
 313
-00:19:54,920 --> 00:19:58,729
-Our project turns it on, and
-you'll see the code in lesson six.
+00:20:03,613 --> 00:20:05,273
+kaise manage karte hain.
 
 314
-00:20:00,029 --> 00:20:00,837
-Quick check.
+00:20:06,588 --> 00:20:12,589
+Har chat app aur har agent asal mein ek
+conversation hai: messages ki ek list, jo
 
 315
-00:20:01,057 --> 00:20:05,924
-Your code parses the reply as
-JSON, and it fails on a long reply.
+00:20:12,589 --> 00:20:14,885
+time ke saath badhti jaati hai.
 
 316
-00:20:06,144 --> 00:20:07,503
-What should you check first?
+00:20:15,105 --> 00:20:20,996
+Iss lesson mein aap dekhoge ki API kuch
+bhi yaad nahi rakhti, history aapke code ki
 
 317
-00:20:13,203 --> 00:20:15,669
-Whether the stop reason is max tokens.
+00:20:20,996 --> 00:20:25,255
+zimmedari hai, aur badhti
+history ka matlab hai badhta bill.
 
 318
-00:20:15,889 --> 00:20:18,927
-A cut-off reply ends
-in the middle of the JSON.
+00:20:26,555 --> 00:20:31,431
+Iss lesson ke baad aap explain kar
+paoge ki stateless ka matlab kya hai.
 
 319
-00:20:20,227 --> 00:20:23,595
-The stop reason tells you
-whether the reply is complete.
+00:20:31,781 --> 00:20:35,571
+Multi turn conversation
+sahi tareeke se banaoge.
 
 320
-00:20:23,815 --> 00:20:24,791
-Always check it.
+00:20:35,921 --> 00:20:40,115
+Forgotten reply wala
+classic bug pakdoge aur fix karoge.
 
 321
-00:20:25,141 --> 00:20:26,969
-Stream for responsive output.
+00:20:40,465 --> 00:20:44,486
+Aur lambi conversations ko
+control mein rakhna seekhoge.
 
 322
-00:20:27,319 --> 00:20:31,944
-Use structured outputs, with
-messages dot parse, for validated JSON.
+00:20:45,786 --> 00:20:48,375
+Pehle what: stateless ka matlab kya hai?
 
 323
-00:20:32,294 --> 00:20:35,217
-And handle refusals
-before reading the content.
+00:20:48,595 --> 00:20:53,308
+Ek call centre socho, jiske paas
+customers ka koi record nahi hai.
 
 324
-00:20:35,567 --> 00:20:37,709
-Next lesson: production basics.
+00:20:53,528 --> 00:20:59,041
+Har baar call karo, toh ek naya agent
+phone uthata hai, jo aapke baare mein kuch
 
 325
-00:20:37,929 --> 00:20:42,102
-API keys, errors, rate limits,
-retries, and what it all costs.
+00:20:59,041 --> 00:20:59,868
+nahi jaanta.
 
 326
-00:20:43,410 --> 00:20:45,379
-A demo that works once is easy.
+00:21:00,088 --> 00:21:04,928
+Purani problem par help chahiye,
+toh poori kahani phirse sunani padegi.
 
 327
-00:20:45,599 --> 00:20:50,925
-A program that keeps working when the
-network drops, when you hit a rate limit, or
+00:21:05,148 --> 00:21:07,948
+API bilkul aise hi kaam karti hai.
 
 328
-00:20:50,925 --> 00:20:54,238
-when costs start to
-climb, takes deliberate design.
+00:21:08,168 --> 00:21:10,029
+Har request akeli hai.
 
 329
-00:20:54,458 --> 00:20:59,233
-This lesson covers the production
-basics every AI application needs.
+00:21:10,379 --> 00:21:12,568
+Why aisa design kiya gaya?
 
 330
-00:21:00,533 --> 00:21:05,160
-You'll recognise the API's error
-types, and know what to do about each one.
+00:21:12,788 --> 00:21:17,728
+Kyunki stateless servers simple hote
+hain aur scale karna aasaan hota hai.
 
 331
-00:21:05,510 --> 00:21:07,244
-Catch errors in the right order.
+00:21:17,948 --> 00:21:21,919
+Koi bhi server kisi bhi
+request ko handle kar sakta hai.
 
 332
-00:21:07,594 --> 00:21:11,775
-Understand rate limits, and
-the SDK's automatic retries.
+00:21:22,139 --> 00:21:26,858
+Lekin iska matlab hai ki memory
+ka kaam aapke code ko karna hai.
 
 333
-00:21:12,125 --> 00:21:15,201
-And calculate and
-control what each call costs.
+00:21:28,158 --> 00:21:31,643
+Ab how: ek conversation
+actually kaise chalti hai.
 
 334
-00:21:16,501 --> 00:21:18,014
-Errors fall into groups.
+00:21:31,993 --> 00:21:35,148
+Pehli request mein ek
+user message hota hai.
 
 335
-00:21:18,234 --> 00:21:24,132
-A four hundred or four oh four means
-your request is wrong: a bad parameter, or a
+00:21:35,498 --> 00:21:39,319
+API reply karti hai, aur
+phir sab bhool jaati hai.
 
 336
-00:21:24,132 --> 00:21:26,316
-model name that doesn't exist.
+00:21:39,539 --> 00:21:44,618
+Aapki app user message aur reply,
+dono ko ek list mein store karti hai.
 
 337
-00:21:26,536 --> 00:21:27,856
-Retrying won't help.
+00:21:44,968 --> 00:21:50,490
+Doosri request poori list bhejti
+hai: pehla question, pehla reply, aur naya
 
 338
-00:21:28,076 --> 00:21:29,255
-Fix the request.
+00:21:50,490 --> 00:21:51,153
+question.
 
 339
-00:21:29,605 --> 00:21:34,498
-Four oh one and four oh three are
-about your key: missing, wrong, or without
+00:21:51,503 --> 00:21:54,682
+Aur teesri request
+paanch messages bhejti hai.
 
 340
-00:21:34,498 --> 00:21:35,206
-permission.
+00:21:54,902 --> 00:21:58,500
+Roles alternate hote
+hain, user, assistant, user.
 
 341
-00:21:35,426 --> 00:21:36,737
-Again, don't retry.
+00:21:58,720 --> 00:22:01,908
+Aur pehla message
+hamesha user ka hota hai.
 
 342
-00:21:36,957 --> 00:21:37,969
-Fix the key.
+00:22:03,208 --> 00:22:04,166
+Ab code.
 
 343
-00:21:38,319 --> 00:21:41,043
-Four twenty-nine means
-you've hit a rate limit.
+00:22:04,386 --> 00:22:08,417
+History bas ek Python list
+hai, message dictionaries ki.
 
 344
-00:21:41,263 --> 00:21:43,823
-Waiting and retrying is exactly right.
+00:22:08,767 --> 00:22:14,284
+Har question ke liye, pehle usse history
+mein append karo, phir poori list messages
 
 345
-00:21:44,173 --> 00:21:49,734
-Five hundreds, including five
-twenty-nine for overloaded, are server-side problems
+00:22:14,284 --> 00:22:15,015
+mein bhejo.
 
 346
-00:21:49,734 --> 00:21:51,429
-that are often temporary.
+00:22:15,365 --> 00:22:18,076
+Phir assistant ka reply bhi append karo.
 
 347
-00:21:51,649 --> 00:21:53,480
-Retry after a short wait.
+00:22:18,296 --> 00:22:21,459
+Yahi woh line hai jo
+log aksar bhool jaate hain.
 
 348
-00:21:53,830 --> 00:21:58,736
-And connection errors and timeouts
-mean no proper response came back at all.
+00:22:21,809 --> 00:22:27,218
+Phir hum print karte hain kitne
+messages bheje, aur kitne input tokens lage.
 
 349
-00:21:58,956 --> 00:22:00,796
-Those are also worth a retry.
+00:22:27,438 --> 00:22:32,802
+Right side dekho: pehle turn mein ek
+message gaya, aur paanch input tokens.
 
 350
-00:22:01,146 --> 00:22:06,034
-The rule is simple: retry rate
-limits, server errors, and network problems.
+00:22:33,152 --> 00:22:37,597
+Doosre turn mein teen messages
+gaye, aur input tokens badh gaye.
 
 351
-00:22:06,254 --> 00:22:09,245
-Never blindly retry
-the other four hundreds.
+00:22:37,817 --> 00:22:43,506
+Offline fake bhi bata raha hai ki iss
+request ke saath kitne purane messages aaye.
 
 352
-00:22:10,545 --> 00:22:16,492
-For this demo only, we turn off
-automatic retries, so every error reaches our code.
+00:22:43,856 --> 00:22:46,396
+Aur teesre turn mein paanch messages.
 
 353
-00:22:16,842 --> 00:22:19,019
-The call goes inside a try block.
+00:22:46,616 --> 00:22:52,358
+Har request apne se pehle ka sab kuch
+dobara bhejti hai, isliye input tokens har
 
 354
-00:22:19,369 --> 00:22:24,445
-Then we catch specific exception
-classes, most specific first: an authentication
+00:22:52,358 --> 00:22:53,579
+turn badhte hain.
 
 355
-00:22:24,445 --> 00:22:26,413
-error, then a rate limit error.
+00:22:54,879 --> 00:22:57,467
+Isko ek table mein dry run karte hain.
 
 356
-00:22:26,763 --> 00:22:33,002
-API status error is the parent class of
-every HTTP error, so it catches anything we
+00:22:57,687 --> 00:23:01,023
+Turn one: history mein
+sirf ek user message hai.
 
 357
-00:22:33,002 --> 00:22:36,460
-haven't handled, and
-gives us the status code.
+00:23:01,243 --> 00:23:03,471
+Ek message gaya, paanch tokens.
 
 358
-00:22:36,680 --> 00:22:41,819
-Connection errors aren't HTTP errors
-at all, so they have their own class.
+00:23:03,821 --> 00:23:07,798
+Turn two: pehla question,
+pehla reply, aur naya question.
 
 359
-00:22:42,039 --> 00:22:45,770
-If you catch the parent first,
-the specific handlers never run.
+00:23:08,018 --> 00:23:10,536
+Teen messages, unhattar tokens.
 
 360
-00:22:47,070 --> 00:22:52,563
-To demonstrate errors without breaking
-anything, the fake API reads an environment
+00:23:10,886 --> 00:23:14,230
+Turn three: paanch
+messages, ek sau chaar tokens.
 
 361
-00:22:52,563 --> 00:22:54,707
-variable telling it how to fail.
+00:23:15,530 --> 00:23:17,147
+Ab ek classic bug.
 
 362
-00:22:55,057 --> 00:22:58,200
-With no failure, a
-normal placeholder reply.
+00:23:17,367 --> 00:23:21,870
+Yeh loop har question append
+karta hai, lekin reply kabhi nahi.
 
 363
-00:22:58,550 --> 00:23:01,437
-A four oh one becomes, check your API key.
+00:23:22,220 --> 00:23:24,355
+Output dekho: user, user.
 
 364
-00:23:01,787 --> 00:23:04,558
-A four twenty-nine becomes, rate limited.
+00:23:24,575 --> 00:23:26,708
+Koi assistant turn hi nahi hai.
 
 365
-00:23:04,908 --> 00:23:10,213
-And a five twenty-nine, an overloaded
-server, falls through to the general status
+00:23:26,928 --> 00:23:33,308
+API isse accept kar leti hai aur dono
+user messages ko ek turn mein merge kar deti
 
 366
-00:23:10,213 --> 00:23:10,737
-handler.
+00:23:33,308 --> 00:23:33,619
+hai.
 
 367
-00:23:12,037 --> 00:23:17,240
-Every API account has rate limits: how
-many requests and tokens you may use per
+00:23:33,839 --> 00:23:38,697
+Lekin model ko kabhi pata nahi
+chalta ki usne pehle kya bola tha.
 
 368
-00:23:17,240 --> 00:23:17,701
-minute.
+00:23:38,917 --> 00:23:43,856
+Chat app mein yeh aisa lagta hai
+jaise assistant ki memory chali gayi ho.
 
 369
-00:23:17,921 --> 00:23:20,640
-When you exceed them,
-you get a four twenty-nine.
+00:23:44,076 --> 00:23:46,939
+Isliye reply milte hi usse store karo.
 
 370
-00:23:20,990 --> 00:23:24,909
-The standard response is to
-retry with exponential backoff.
+00:23:48,239 --> 00:23:53,629
+Har turn poori history dobara bhejta
+hai, toh lambi conversations slow aur mehengi
 
 371
-00:23:25,259 --> 00:23:30,667
-Wait a short time, plus a little
-randomness so that many clients don't all retry at
+00:23:53,629 --> 00:23:57,639
+ho jaati hain, aur aakhir
+mein context window bhar jaati hai.
 
 372
-00:23:30,667 --> 00:23:32,686
-the same moment, and try again.
+00:23:57,859 --> 00:24:00,187
+Iske kuch standard solutions hain.
 
 373
-00:23:33,036 --> 00:23:36,001
-If it fails again,
-wait roughly twice as long.
+00:24:00,537 --> 00:24:06,466
+Sabse simple hai sliding window: sirf
+latest turns rakho, aur budget cross hone par
 
 374
-00:23:36,221 --> 00:23:40,578
-Good news: the Anthropic SDK
-already does all of this for you.
+00:24:06,466 --> 00:24:09,681
+sabse purana user aur
+assistant pair hata do.
 
 375
-00:23:40,798 --> 00:23:46,597
-It retries rate limits, server errors,
-and connection errors twice by default, with
+00:24:09,901 --> 00:24:12,218
+Hamara project yahi karta hai.
 
 376
-00:23:46,597 --> 00:23:50,928
-backoff, and it respects the
-retry after header the API sends.
+00:24:12,568 --> 00:24:17,779
+Doosra option: purane turns ko
+model se ek chhoti summary mein badal do.
 
 377
-00:23:52,228 --> 00:23:56,439
-You control this with max
-retries, on the client or per request.
+00:24:17,999 --> 00:24:20,092
+Yeh Module 6 mein aayega.
 
 378
-00:23:56,659 --> 00:23:59,418
-Two is the default, and zero turns it off.
+00:24:20,442 --> 00:24:26,185
+Teesra: important facts ek database
+mein save karo, aur sirf relevant facts wapas
 
 379
-00:24:00,718 --> 00:24:05,411
-Here the fake API fails with a four
-twenty-nine and then a five hundred.
+00:24:26,185 --> 00:24:26,823
+add karo.
 
 380
-00:24:05,631 --> 00:24:12,103
-Setting ANTHROPIC LOG to info shows what
-the SDK does: it waits about half a second,
+00:24:27,173 --> 00:24:32,988
+Aur prompt caching: conversation ka jo
+starting hissa change nahi hua, usse dobara
 
 381
-00:24:12,103 --> 00:24:16,650
-retries, waits about a
-second, retries again, and succeeds.
+00:24:32,988 --> 00:24:35,541
+bhejne par bahut kam bill lagta hai.
 
 382
-00:24:16,870 --> 00:24:19,208
-Our code didn't need a single extra line.
+00:24:35,761 --> 00:24:37,890
+Course mein aage yeh use karenge.
 
 383
-00:24:20,508 --> 00:24:22,479
-Set a timeout you're comfortable with.
+00:24:39,190 --> 00:24:40,946
+Trimming ka ek dry run.
 
 384
-00:24:22,699 --> 00:24:24,973
-The SDK default is ten minutes.
+00:24:41,166 --> 00:24:47,249
+Maan lo history hai user one, assistant
+one, user two, assistant two, user three,
 
 385
-00:24:25,193 --> 00:24:27,757
-For long replies,
-stream instead of waiting.
+00:24:47,249 --> 00:24:49,127
+aur budget cross ho gaya.
 
 386
-00:24:28,107 --> 00:24:30,966
-When something fails, log the request ID.
+00:24:49,347 --> 00:24:53,654
+Toh pehla pair hatao: user
+one aur assistant one, saath mein.
 
 387
-00:24:31,186 --> 00:24:34,270
-It identifies exactly
-which request went wrong.
+00:24:54,004 --> 00:24:57,607
+Ab history hai user two,
+assistant two, user three.
 
 388
-00:24:34,620 --> 00:24:39,741
-Use separate keys for separate apps and
-environments, so you can revoke one without
+00:24:57,827 --> 00:25:00,227
+Budget ke andar hai, toh bhej do.
 
 389
-00:24:39,741 --> 00:24:40,974
-breaking the others.
+00:25:00,577 --> 00:25:06,154
+Aur yeh galat tareeka hai: sirf user
+one hataya, toh history assistant se shuru
 
 390
-00:24:41,324 --> 00:24:44,881
-And never send keys to the
-model, or print them in logs.
+00:25:06,154 --> 00:25:06,507
+hogi.
 
 391
-00:24:45,101 --> 00:24:47,911
-Logs are often far less
-protected than you think.
+00:25:06,727 --> 00:25:08,899
+Roles ka order toot jaata hai.
 
 392
-00:24:49,211 --> 00:24:50,062
-Now, money.
+00:25:10,199 --> 00:25:11,658
+Interview corner.
 
 393
-00:24:50,282 --> 00:24:55,727
-You pay per token, with separate prices
-for input and output, quoted per million
+00:25:11,878 --> 00:25:15,728
+Messages API stateless
+hai, iska kya matlab hai?
 
 394
-00:24:55,727 --> 00:24:56,204
-tokens.
+00:25:18,078 --> 00:25:21,947
+Answer: server requests ke
+beech koi memory nahi rakhta.
 
 395
-00:24:56,554 --> 00:25:02,665
-Claude Opus 5.5, the most capable of the
-three and our default, costs four dollars
+00:25:22,167 --> 00:25:27,700
+Har request mein woh sab hona chahiye
+jo model ko chahiye, history ke saath, jo
 
 396
-00:25:02,665 --> 00:25:07,361
-per million input tokens, and
-twenty per million output tokens.
+00:25:27,700 --> 00:25:30,851
+client store karta
+hai aur dobara bhejta hai.
 
 397
-00:25:07,711 --> 00:25:10,095
-Sonnet 5.5 costs half that.
+00:25:31,071 --> 00:25:35,685
+Trap: stateless ka matlab yeh
+nahi ki conversation possible nahi.
 
 398
-00:25:10,445 --> 00:25:15,271
-And Haiku 5.5 is far
-cheaper, for simple, high-volume work.
+00:25:35,905 --> 00:25:39,534
+Conversation chalti hai,
+bas state client ke paas hai.
 
 399
-00:25:15,621 --> 00:25:19,168
-These are list prices in October 2026.
+00:25:39,884 --> 00:25:44,918
+Doosra, scenario based question: ek
+lambi chat slow aur mehengi ho rahi hai.
 
 400
-00:25:19,388 --> 00:25:23,209
-Prices change, so always
-check the official pricing page.
+00:25:45,138 --> 00:25:46,536
+Aap kya karoge?
 
 401
-00:25:23,429 --> 00:25:27,942
-And notice that output tokens
-cost five times more than input tokens.
+00:25:48,886 --> 00:25:51,986
+Answer: pehle har turn
+ke tokens measure karo.
 
 402
-00:25:29,242 --> 00:25:30,991
-Here's the cost calculation.
+00:25:52,206 --> 00:25:57,816
+Phir purane turns ko pairs mein trim
+karo, purana context summarise karo, ya facts
 
 403
-00:25:31,211 --> 00:25:33,177
-Prices are per million tokens.
+00:25:57,816 --> 00:26:01,373
+ek store mein rakho aur
+sirf relevant wale add karo.
 
 404
-00:25:33,527 --> 00:25:39,033
-Count tokens measures a request before
-you send it, so you can warn about, or block,
+00:26:01,593 --> 00:26:05,294
+Prompt caching unchanged
+hisse ki cost kam karti hai.
 
 405
-00:25:39,033 --> 00:25:42,245
-a request that would be
-too big or too expensive.
+00:26:05,514 --> 00:26:08,887
+Trap: bas badi context
+window wala model le lo.
 
 406
-00:25:42,595 --> 00:25:45,880
-After the call, usage
-gives the actual tokens.
+00:26:09,107 --> 00:26:12,915
+Isse problem sirf aage
+khisakti hai, aur bill badhta hai.
 
 407
-00:25:46,100 --> 00:25:49,729
-Multiply each by its
-price, and divide by a million.
+00:26:14,215 --> 00:26:15,472
+Practice time.
 
 408
-00:25:50,079 --> 00:25:54,300
-And then the important habit:
-multiply by your expected traffic.
+00:26:15,822 --> 00:26:18,601
+Pehla: conversation
+mein das messages hain.
 
 409
-00:25:55,600 --> 00:25:57,419
-A fraction of a cent per call.
+00:26:18,821 --> 00:26:21,598
+Agli request kitne messages bhejegi?
 
 410
-00:25:57,639 --> 00:26:02,308
-But the same call ten thousand
-times a day costs real money every day.
+00:26:21,948 --> 00:26:27,686
+Doosra: forgetful dot py ko fix karo,
+aur batao fix ke baad kaun se roles print
 
 411
-00:26:02,528 --> 00:26:06,239
-In offline mode these
-token counts are rough estimates.
+00:26:27,686 --> 00:26:28,122
+honge.
 
 412
-00:26:06,459 --> 00:26:08,290
-With a real key, they're exact.
+00:26:28,472 --> 00:26:32,681
+Teesra: ek trim function
+likho, jo sabse purane pairs hataye.
 
 413
-00:26:09,590 --> 00:26:11,475
-Five ways to control cost.
+00:26:33,031 --> 00:26:38,439
+Aur scenario: users complain karte hain
+ki error ke baad bot sab bhool jaata hai.
 
 414
-00:26:11,695 --> 00:26:16,500
-First, send less: trim history,
-and include only relevant documents.
+00:26:38,659 --> 00:26:41,212
+Aapka code kya galti kar raha hoga?
 
 415
-00:26:16,850 --> 00:26:20,937
-Second, ask for concise
-answers, with a sensible max tokens.
-
-416
-00:26:21,287 --> 00:26:23,846
-Third, use lower effort for simple tasks.
-
-417
-00:26:24,196 --> 00:26:29,584
-Fourth, pick the smallest model that
-does the job well, measured on real examples,
-
-418
-00:26:29,584 --> 00:26:30,372
-not guessed.
-
-419
-00:26:30,722 --> 00:26:35,429
-And fifth, track spending in code,
-with a budget that stops runaway loops.
-
-420
-00:26:35,649 --> 00:26:37,602
-Our project does exactly this.
-
-421
-00:26:38,902 --> 00:26:39,710
+00:26:48,512 --> 00:26:49,441
 Quick check.
 
+416
+00:26:49,661 --> 00:26:52,638
+Conversation mein
+pehle se das messages hain.
+
+417
+00:26:52,858 --> 00:26:55,635
+Agli request kitne messages bhejegi?
+
+418
+00:27:01,335 --> 00:27:02,276
+Gyaarah.
+
+419
+00:27:02,496 --> 00:27:05,405
+Saare das purane messages, aur ek naya.
+
+420
+00:27:05,625 --> 00:27:09,207
+Jab tak aap jaan
+boojhkar history trim nahi karte.
+
+421
+00:27:10,507 --> 00:27:11,347
+Recap.
+
 422
-00:26:39,930 --> 00:26:42,159
-Which of these errors
-should your code retry?
+00:27:11,567 --> 00:27:15,538
+API stateless hai, aur
+history aapka code rakhta hai.
 
 423
-00:26:47,859 --> 00:26:49,258
-The four twenty-nine.
+00:27:15,888 --> 00:27:19,173
+Har turn question aur
+reply, dono append karo.
 
 424
-00:26:49,478 --> 00:26:51,645
-A rate limit recovers after waiting.
+00:27:19,523 --> 00:27:23,114
+Har turn ke saath input
+tokens aur cost badhte hain.
 
 425
-00:26:51,865 --> 00:26:56,667
-The others fail the same way every
-time, until you fix the request or the key.
+00:27:23,464 --> 00:27:26,747
+Isliye pairs mein trim
+karo, ya summarise karo.
 
 426
-00:26:57,967 --> 00:27:02,099
-Four hundreds, except four
-twenty-nine, need a fix, not a retry.
+00:27:27,097 --> 00:27:32,334
+Agle lesson mein aap output ko
+control karoge: length limits, streaming, aur
 
 427
-00:27:02,449 --> 00:27:08,145
-Rate limits, server errors, and network
-errors are retried with backoff, and the SDK
+00:27:32,334 --> 00:27:33,436
+structured JSON.
 
 428
-00:27:08,145 --> 00:27:09,365
-does that for you.
+00:27:34,759 --> 00:27:36,708
+Reply lena aasaan hai.
 
 429
-00:27:09,715 --> 00:27:13,002
-Catch specific exception
-classes before the general one.
+00:27:36,928 --> 00:27:43,328
+Lekin aisa reply lena jis par aapka
+program bharosa kar sake, uske liye thodi care
 
 430
-00:27:13,352 --> 00:27:17,473
-And cost is tokens times
-price, so count, track, and budget.
+00:27:43,328 --> 00:27:43,952
+chahiye.
 
 431
-00:27:17,823 --> 00:27:20,358
-You now know everything the project needs.
+00:27:44,172 --> 00:27:49,865
+Iss lesson mein aap reply ki length
+control karoge, reply ko banate banate screen
 
 432
-00:27:20,578 --> 00:27:24,140
-Next lesson, we start
-building the AI Study Assistant.
+00:27:49,865 --> 00:27:55,769
+par dikhaoge, free text ki jagah
+structured JSON loge, aur un cases ko handle karoge
 
 433
-00:27:25,437 --> 00:27:26,512
-Project time.
+00:27:55,769 --> 00:27:58,018
+jahan model jaldi ruk jaata hai.
 
 434
-00:27:26,732 --> 00:27:32,176
-Over two lessons you'll build the AI
-Study Assistant: a command line tool that
+00:27:59,318 --> 00:28:03,927
+Aap max tokens use karoge, aur
+har baar stop reason check karoge.
 
 435
-00:27:32,176 --> 00:27:37,690
-explains programming concepts, writes
-quizzes as validated JSON, and chats with
+00:28:04,277 --> 00:28:08,153
+Replies ko stream karoge,
+taaki interface fast lage.
 
 436
-00:27:37,690 --> 00:27:40,761
-memory, while
-tracking every cent it spends.
+00:28:08,503 --> 00:28:11,973
+Structured outputs se validated JSON loge.
 
 437
-00:27:40,981 --> 00:27:43,358
-Everything from this module appears in it.
+00:28:12,323 --> 00:28:15,079
+Aur refusals ko safely handle karoge.
 
 438
-00:27:44,658 --> 00:27:49,454
-The explain command streams an
-explanation of any topic, at a beginner,
+00:28:16,379 --> 00:28:19,024
+Har response batata hai ki woh kyun ruka.
 
 439
-00:27:49,454 --> 00:27:51,616
-intermediate, or advanced level.
+00:28:19,244 --> 00:28:21,065
+Yeh field hai stop reason.
 
 440
-00:27:51,966 --> 00:27:57,671
-The quiz command generates
-multiple-choice questions as validated JSON, which you
+00:28:21,415 --> 00:28:26,078
+End turn ka matlab: model ne
+apna answer naturally poora kiya.
 
 441
-00:27:57,671 --> 00:27:59,009
-can save and grade.
+00:28:26,428 --> 00:28:31,969
+Max tokens ka matlab: aapki limit aa
+gayi aur reply beech mein kat gaya, shayad
 
 442
-00:27:59,359 --> 00:28:04,073
-The chat command holds a conversation
-with history, trimmed to a token budget.
+00:28:31,969 --> 00:28:33,302
+aadhe sentence par.
 
 443
-00:28:04,423 --> 00:28:09,654
-Every call reports its tokens and
-cost, and a budget stops runaway spending.
+00:28:33,652 --> 00:28:38,645
+Refusal ka matlab: model ne
+safety reasons se request mana kar di.
 
 444
-00:28:10,004 --> 00:28:15,617
-And it has clear errors, automatic
-retries, and an offline mode, so the tests never
+00:28:38,995 --> 00:28:44,011
+Stop sequence: model ne aapka diya
+hua koi custom stop text likh diya.
 
 445
-00:28:15,617 --> 00:28:17,375
-need a key or the network.
+00:28:44,361 --> 00:28:47,875
+Tool use: model aapka
+koi tool chalana chahta hai.
 
 446
-00:28:18,675 --> 00:28:23,736
-The command line handles arguments and
-printing, and calls the assistant, which
+00:28:48,095 --> 00:28:51,068
+Yeh agents ka dil hai, Module 5 mein.
 
 447
-00:28:23,736 --> 00:28:27,260
-holds the logic for
-explaining, quizzing, and chatting.
+00:28:51,418 --> 00:28:57,249
+Aur pause turn: ek lamba agentic turn
+ruka hai, aur aap usse continue kar sakte ho.
 
 448
-00:28:27,610 --> 00:28:32,433
-Prompts live in their own module, so you
-can improve them without touching the code.
+00:28:58,549 --> 00:29:04,699
+Max tokens ko exam ki word limit ki
+tarah socho, ek strict invigilator ke saath.
 
 449
-00:28:32,653 --> 00:28:34,479
-And models holds the quiz schema.
+00:29:04,919 --> 00:29:09,488
+Time khatam, aur invigilator paper
+beech sentence mein hi le leta hai.
 
 450
-00:28:34,829 --> 00:28:38,136
-Pricing calculates
-costs and enforces the budget.
+00:29:09,708 --> 00:29:13,756
+Model apna answer limit
+ke hisaab se plan nahi karta.
 
 451
-00:28:38,486 --> 00:28:44,844
-And client builds the SDK client: a real
-one when your key is set, or the same SDK
+00:29:13,976 --> 00:29:16,066
+Usse bas rok diya jaata hai.
 
 452
-00:28:44,844 --> 00:28:48,411
-pointed at the offline
-fake API when it isn't.
+00:29:16,286 --> 00:29:19,523
+Aur stop reason batata
+hai ki aisa hua ya nahi.
 
 453
-00:28:48,631 --> 00:28:51,580
-Nothing else in the
-program knows the difference.
+00:29:20,823 --> 00:29:23,444
+Hum ek hi question do baar puchte hain.
 
 454
-00:28:52,880 --> 00:28:57,309
-Let's start with the piece that
-makes testing possible: the fake API.
+00:29:23,664 --> 00:29:28,455
+Ek baar badi limit ke saath, ek
+baar sirf pandrah tokens ke saath.
 
 455
-00:28:57,659 --> 00:29:03,327
-It's a class whose objects can be
-called like a function, once per HTTP request.
+00:29:28,805 --> 00:29:31,303
+Pehli run: hazaar tokens ki limit.
 
 456
-00:29:03,547 --> 00:29:09,081
-A list of planned failures lets tests and
-demos make it return a four twenty-nine or
+00:29:31,523 --> 00:29:35,027
+Stop reason end turn,
+matlab answer complete hai.
 
 457
-00:29:09,081 --> 00:29:10,794
-a five hundred on purpose.
+00:29:35,377 --> 00:29:37,531
+Doosri run: pandrah tokens.
 
 458
-00:29:11,144 --> 00:29:18,311
-Each call receives the real HTTP
-request the SDK built, and parses its JSON body.
+00:29:37,751 --> 00:29:42,469
+Stop reason max tokens, aur
+theek pandrah output tokens use hue.
 
 459
-00:29:18,531 --> 00:29:23,882
-It records the body, so tests can check
-exactly what was sent, and it answers token
+00:29:42,689 --> 00:29:44,620
+Answer beech mein kat gaya.
 
 460
-00:29:23,882 --> 00:29:26,462
-counting requests with a rough estimate.
+00:29:44,970 --> 00:29:47,309
+Aur yeh check sabse important hai.
 
 461
-00:29:26,812 --> 00:29:32,986
-Then it prepares a placeholder reply,
-applies any planned failure or refusal, cuts
+00:29:47,529 --> 00:29:51,034
+Kata hua reply ek normal
+string jaisa hi dikhta hai.
 
 462
-00:29:32,986 --> 00:29:39,010
-the reply at max tokens just like the
-real API, and returns either a normal JSON
+00:29:51,254 --> 00:29:57,016
+Check nahi kiya, toh aap users ko aadha
+answer dikha doge, ya aadhe JSON ko parse
 
 463
-00:29:39,010 --> 00:29:42,172
-message or a stream of server-sent events.
+00:29:57,016 --> 00:29:58,723
+karne ki koshish karoge.
 
 464
-00:29:42,392 --> 00:29:48,077
-Because the responses have the same
-shape as the real API's, the SDK can't tell the
+00:29:59,073 --> 00:30:02,201
+Toh max tokens kaam
+ke hisaab se kaafi rakho.
 
 465
-00:29:48,077 --> 00:29:48,830
-difference.
+00:30:02,421 --> 00:30:08,249
+Paise bachane ke liye bahut kam mat
+rakho, kyunki kata hua answer usually ek retry
 
 466
-00:29:49,050 --> 00:29:52,689
-That means our tests
-exercise the real SDK code.
+00:30:08,249 --> 00:30:09,884
+ka kharcha karwata hai.
 
 467
-00:29:53,989 --> 00:29:56,525
-With a key, we create a normal client.
+00:30:11,184 --> 00:30:12,283
+Ab streaming.
 
 468
-00:29:56,745 --> 00:30:01,785
-The SDK reads the key from the
-environment, so it never appears in our code.
+00:30:12,503 --> 00:30:14,944
+Isse online video ki tarah socho.
 
 469
-00:30:02,005 --> 00:30:05,340
-We pass the retry count
-and a sixty-second timeout.
+00:30:15,164 --> 00:30:19,983
+Bina streaming ke, aap poori movie
+download karte ho, phir play karte ho.
 
 470
-00:30:05,690 --> 00:30:12,034
-Without a key, we print a clear offline
-notice, and give the same SDK an HTTP client
+00:30:20,203 --> 00:30:25,827
+Streaming ke saath, video kuch seconds
+mein chal padti hai, aur baaki hissa peeche
 
 471
-00:30:12,034 --> 00:30:16,188
-whose transport is our
-fake API instead of the network.
+00:30:25,827 --> 00:30:27,062
+se aata rehta hai.
 
 472
-00:30:17,488 --> 00:30:21,340
-Settings come from
-environment variables, as in Module 1.
+00:30:27,282 --> 00:30:31,826
+Total data utna hi hai, lekin
+intezaar bahut achha lagta hai.
 
 473
-00:30:21,560 --> 00:30:25,320
-If there's no key, we switch
-to offline mode automatically.
+00:30:33,126 --> 00:30:36,129
+Yaad hai, model ek ek
+token karke likhta hai.
 
 474
-00:30:25,540 --> 00:30:31,011
-The model defaults to Claude Opus
-5.5, and the budget to fifty cents.
+00:30:36,349 --> 00:30:41,784
+Bina streaming ke, aapka program poore
+reply ka intezaar karta hai, aur screen
 
 475
-00:30:32,311 --> 00:30:37,820
-The price table holds dollars per
-million input and output tokens, for each model.
+00:30:41,784 --> 00:30:42,969
+khaali rehti hai.
 
 476
-00:30:38,170 --> 00:30:41,475
-Cost u s d is the
-formula from lesson five.
+00:30:43,319 --> 00:30:48,969
+Streaming mein API pieces bhejti rehti
+hai jaise jaise woh bante hain, toh text
 
 477
-00:30:41,695 --> 00:30:46,444
-An unknown model raises an error
-rather than silently costing zero.
+00:30:48,969 --> 00:30:51,258
+lagbhag turant dikhne lagta hai.
 
 478
-00:30:46,794 --> 00:30:48,692
-The cost tracker adds up spending.
+00:30:51,478 --> 00:30:55,405
+Total time same, lekin
+experience kaafi fast lagta hai.
 
 479
-00:30:48,912 --> 00:30:54,520
-Its check method runs before every call,
-and raises budget exceeded once the budget
+00:30:55,625 --> 00:31:00,304
+Bahut lambe replies par streaming
+request timeout se bhi bachata hai.
 
 480
-00:30:54,520 --> 00:30:55,264
-is used up.
+00:31:01,604 --> 00:31:07,499
+Messages dot stream bilkul create jaise
+hi arguments leta hai, aur with ke saath
 
 481
-00:30:55,484 --> 00:30:58,171
-That's your protection
-against a runaway loop.
+00:31:07,499 --> 00:31:10,299
+context manager ki tarah use hota hai.
 
 482
-00:30:58,521 --> 00:31:01,197
-And add records the
-cost of each finished call.
+00:31:10,649 --> 00:31:15,604
+Text stream text ke chhote pieces
+deta hai, jaise jaise woh aate hain.
 
 483
-00:31:02,497 --> 00:31:07,863
-An Answer bundles everything we learn
-from a call: the text, the stop reason, the
+00:31:15,824 --> 00:31:21,252
+Hum har piece turant print karte hain,
+flush equals True ke saath, taaki woh buffer
 
 484
-00:31:07,863 --> 00:31:09,254
-tokens, and the cost.
+00:31:21,252 --> 00:31:22,233
+mein ruke nahi.
 
 485
-00:31:09,474 --> 00:31:12,884
-Truncated is true when
-the reply hit max tokens.
+00:31:22,583 --> 00:31:28,424
+Aur stream khatam hone par get final
+message poora message object deta hai, stop
 
 486
-00:31:13,234 --> 00:31:19,102
-Friendly errors is a context manager
-that catches SDK exceptions, most specific
+00:31:28,424 --> 00:31:32,074
+reason aur usage ke
+saath, bilkul create ki tarah.
 
 487
-00:31:19,102 --> 00:31:22,444
-first, and turns each
-into one clear message.
+00:31:32,294 --> 00:31:36,475
+Video mein pieces turant aa
+gaye kyunki fake API local hai.
 
 488
-00:31:22,664 --> 00:31:27,240
-It's lesson five's error table,
-written once and reused by every call.
+00:31:36,695 --> 00:31:39,622
+Lekin code path real
+streaming wala hi hai.
 
 489
-00:31:27,590 --> 00:31:28,740
-Next, fallbacks.
+00:31:40,922 --> 00:31:42,594
+Ab structured output.
 
 490
-00:31:28,960 --> 00:31:33,861
-If the model declines a request,
-the API can re-run it on another model
+00:31:42,814 --> 00:31:45,969
+Ek letter aur ek
+government form mein fark socho.
 
 491
-00:31:33,861 --> 00:31:34,827
-automatically.
+00:31:46,189 --> 00:31:50,101
+Letter mein kuch bhi, kisi
+bhi order mein likha ja sakta hai.
 
 492
-00:31:35,047 --> 00:31:36,937
-We opt in with this beta flag.
+00:31:50,321 --> 00:31:53,934
+Form mein fixed boxes hote
+hain: naam yahan, date wahan.
 
 493
-00:31:37,287 --> 00:31:43,035
-And base builds the arguments every
-request shares: the model, the beta flag, and
+00:31:54,154 --> 00:31:57,204
+Form ko program bina
+guess kiye padh sakta hai.
 
 494
-00:31:43,035 --> 00:31:48,570
-fallbacks set to default, so the API
-chooses a suitable fallback model for us.
+00:31:57,424 --> 00:32:00,911
+Structured outputs model
+se ek form bharwaate hain.
 
 495
-00:31:48,920 --> 00:31:51,163
-Answer turns a response into an Answer.
+00:32:02,211 --> 00:32:08,108
+Agents ko baar baar machine readable
+output chahiye: ek quiz, ek plan, ek tool
 
 496
-00:31:51,383 --> 00:31:57,034
-It records the cost first, because even
-a declined request is billed, then checks
+00:32:08,108 --> 00:32:08,788
+decision.
 
 497
-00:31:57,034 --> 00:32:00,593
-for a refusal, and only
-then joins the text blocks.
+00:32:09,008 --> 00:32:11,813
+Prompt mein sirf JSON maangna fragile hai.
 
 498
-00:32:01,893 --> 00:32:07,318
-Explain checks the budget first, then
-fills in the request template from prompts dot
+00:32:12,033 --> 00:32:15,978
+Extra words, galat keys,
+ya toota JSON aa sakta hai.
 
 499
-00:32:07,318 --> 00:32:07,512
-py.
+00:32:16,328 --> 00:32:19,094
+Structured outputs isse fix karte hain.
 
 500
-00:32:07,862 --> 00:32:13,475
-It opens a stream, inside friendly
-errors, using the shared arguments, the tutor
+00:32:19,314 --> 00:32:25,695
+Aap ek JSON schema dete ho, aur API
+reply ko uss schema ke valid JSON tak hi limit
 
 501
-00:32:13,475 --> 00:32:17,965
-system prompt, and low effort,
-which is plenty for explanations.
+00:32:25,695 --> 00:32:26,474
+karti hai.
 
 502
-00:32:18,315 --> 00:32:23,946
-Each piece of text is passed to an on
-text callback as it arrives, so the assistant
+00:32:26,694 --> 00:32:32,786
+Pydantic class doge, toh SDK schema bhi
+banata hai aur reply ko Python object mein
 
 503
-00:32:23,946 --> 00:32:29,441
-doesn't know or care whether it's
-printed, shown in a web page, or collected by a
+00:32:32,786 --> 00:32:34,272
+parse bhi karta hai.
 
 504
-00:32:29,441 --> 00:32:29,781
-test.
+00:32:35,572 --> 00:32:38,893
+Pehle Pydantic classes
+se shape describe karo.
 
 505
-00:32:30,001 --> 00:32:32,516
-Then the final message becomes an Answer.
+00:32:39,113 --> 00:32:44,608
+Ek question mein text, chaar options,
+sahi answer ka index, aur explanation.
 
 506
-00:32:33,816 --> 00:32:34,732
-Let's run it.
+00:32:44,828 --> 00:32:47,454
+Ek quiz mein topic aur questions ki list.
 
 507
-00:32:34,952 --> 00:32:40,253
-The offline notice comes first, then
-the streamed placeholder, then a footer with
+00:32:47,674 --> 00:32:50,934
+Pydantic par Module 3
+mein poora lesson hai.
 
 508
-00:32:40,253 --> 00:32:45,685
-the model, tokens, cost, and stop
-reason, and finally the session total against the
+00:32:51,154 --> 00:32:54,045
+Abhi inhe typed
+dataclasses ki tarah padho.
 
 509
-00:32:45,685 --> 00:32:46,143
-budget.
+00:32:54,395 --> 00:33:00,431
+Yeh Field constraints kehte hain: exactly
+chaar options, aur index zero se teen tak.
 
 510
-00:32:46,493 --> 00:32:51,818
-With a tiny max tokens, the reply is
-cut off, and the tool warns you instead of
+00:33:00,651 --> 00:33:06,465
+API ka schema support limited hai, toh
+SDK yeh limits field descriptions mein daal
 
 511
-00:32:51,818 --> 00:32:53,840
-pretending everything is fine.
+00:33:06,465 --> 00:33:10,010
+deta hai, aur reply aane
+par khud check karta hai.
 
 512
-00:32:54,190 --> 00:32:59,604
-And with a budget of zero, it refuses
-before sending anything, with a one-line
+00:33:10,360 --> 00:33:15,776
+Phir create ki jagah messages dot
+parse call karo, output format mein class do.
 
 513
-00:32:59,604 --> 00:33:00,437
-explanation.
+00:33:16,126 --> 00:33:19,751
+Parsed output ek real,
+validated Quiz object hai.
 
 514
-00:33:01,737 --> 00:33:06,575
-A fake API that speaks the real
-protocol makes tests free and repeatable.
+00:33:19,971 --> 00:33:24,929
+Right side dekho: type hai
+Quiz, topic HTTP, aur do questions.
 
 515
-00:33:06,925 --> 00:33:11,025
-One function decides between
-the real and the offline client.
+00:33:25,149 --> 00:33:29,402
+Dictionaries mein khodne ki
+jagah aap attributes use karte ho.
 
 516
-00:33:11,375 --> 00:33:15,484
-Every call is costed, and a
-budget check runs before each one.
+00:33:29,622 --> 00:33:33,331
+Offline fake schema valid
+placeholder questions deta hai.
 
 517
-00:33:15,834 --> 00:33:20,181
-Errors are mapped once, in one
-place, and fallbacks handle refusals.
+00:33:33,551 --> 00:33:39,577
+Agar reply schema mein fit na ho, toh
+SDK validation error raise karta hai, kharab
 
 518
-00:33:20,531 --> 00:33:25,831
-In part two: quizzes as structured
-output, chat with history, the full demo, the
+00:33:39,577 --> 00:33:40,680
+data nahi deta.
 
 519
-00:33:25,831 --> 00:33:27,619
-tests, and the module quiz.
+00:33:41,980 --> 00:33:43,953
+Aakhri case: refusals.
 
 520
-00:33:28,936 --> 00:33:29,961
-Welcome back.
+00:33:44,173 --> 00:33:50,020
+Agar stop reason refusal hai, toh model
+ne safety reasons se mana kiya, aur content
 
 521
-00:33:30,181 --> 00:33:31,540
-Explanations work.
+00:33:50,020 --> 00:33:51,428
+khaali ho sakta hai.
 
 522
-00:33:31,760 --> 00:33:37,109
-Now we add quizzes as structured output,
-a chat mode with trimmed history, and the
+00:33:51,648 --> 00:33:55,240
+Isliye text padhne se
+pehle stop reason check karo.
 
 523
-00:33:37,109 --> 00:33:39,392
-command line that ties it together.
+00:33:55,460 --> 00:34:01,731
+Current models par API ek declined
+request ko automatically doosre model par chala
 
 524
-00:33:39,612 --> 00:33:43,806
-Then we'll run the full demo, look
-at the tests, and finish the module.
+00:34:01,731 --> 00:34:02,495
+sakti hai.
 
 525
-00:33:45,106 --> 00:33:50,804
-A question has its text, exactly four
-options, the index of the correct option, and
+00:34:02,715 --> 00:34:05,006
+Iss feature ko fallbacks kehte hain.
 
 526
-00:33:50,804 --> 00:33:53,070
-an explanation of why it's right.
+00:34:05,226 --> 00:34:09,861
+Hamara project isse on karta
+hai, lesson six mein code dekhoge.
 
 527
-00:33:53,420 --> 00:33:56,256
-A quiz is a topic
-plus a list of questions.
+00:34:11,161 --> 00:34:12,620
+Interview corner.
 
 528
-00:33:56,476 --> 00:34:00,612
-This one class becomes the
-JSON schema the model must follow.
+00:34:12,840 --> 00:34:15,596
+LLM response ko stream kyun karte hain?
 
 529
-00:34:01,912 --> 00:34:07,164
-Make quiz fills in the request: write N
-multiple-choice questions about a topic.
+00:34:17,946 --> 00:34:23,904
+Answer: generation token by token hoti
+hai, toh streaming text ko bante hue dikhati
 
 530
-00:34:07,514 --> 00:34:12,783
-It calls parse with output format set
-to Quiz, so the reply is constrained to the
+00:34:23,904 --> 00:34:24,191
+hai.
 
 531
-00:34:12,783 --> 00:34:13,239
-schema.
+00:34:24,411 --> 00:34:29,848
+User ko turant progress dikhta hai,
+total time same rehta hai, aur bahut lambe
 
 532
-00:34:13,459 --> 00:34:19,158
-Quizzes need more care than
-explanations, so we use medium effort, and a generous
+00:34:29,848 --> 00:34:32,008
+replies timeout se bachte hain.
 
 533
-00:34:19,158 --> 00:34:19,932
-max tokens.
+00:34:32,228 --> 00:34:36,143
+Trap: yeh mat bolna ki
+streaming se model fast ho jaata hai.
 
 534
-00:34:20,282 --> 00:34:26,065
-If the reply somehow doesn't fit the
-schema, for example three options instead of
+00:34:36,363 --> 00:34:39,755
+Woh sirf intezaar ko
+chhota mehsoos karwati hai.
 
 535
-00:34:26,065 --> 00:34:31,919
-four, the SDK's validation raises a
-pydantic validation error, and we turn it into
+00:34:40,105 --> 00:34:44,810
+Doosra question: ek LLM se
+reliable JSON kaise lete ho?
 
 536
-00:34:31,919 --> 00:34:33,204
-one clear message.
+00:34:47,160 --> 00:34:49,673
+Answer: structured outputs use karo.
 
 537
-00:34:33,554 --> 00:34:39,431
-Finally, if the quiz was cut off by max
-tokens, we refuse to return a half-finished
+00:34:49,893 --> 00:34:55,816
+JSON schema ya Pydantic model do, taaki
+reply usi shape mein aaye, object mein parse
 
 538
-00:34:39,431 --> 00:34:42,618
-quiz, and suggest
-asking for fewer questions.
+00:34:55,816 --> 00:35:00,116
+karo, aur phir bhi stop
+reason aur business rules check karo.
 
 539
-00:34:43,918 --> 00:34:48,726
-For trimming, a quick local estimate
-is good enough: about four characters per
+00:35:00,336 --> 00:35:04,148
+Trap: prompt mein JSON
+maango aur regex se theek karo.
 
 540
-00:34:48,726 --> 00:34:49,095
-token.
+00:35:04,368 --> 00:35:07,655
+Yeh pehle unusual
+reply par toot jaata hai.
 
 541
-00:34:49,315 --> 00:34:53,660
-When you need an exact number, use
-the token counting endpoint instead.
+00:35:08,955 --> 00:35:10,212
+Practice time.
 
 542
-00:34:54,010 --> 00:34:57,958
-A chat session holds the
-history list and a token budget for it.
+00:35:10,562 --> 00:35:15,644
+Pehla: do sabse common stop reasons
+kaun se hain, aur dono ka matlab kya hai?
 
 543
-00:34:58,308 --> 00:35:03,570
-Trim drops the oldest user and
-assistant pair while the history is over budget,
+00:35:15,994 --> 00:35:20,412
+Doosra: stream dot py mein flush
+equals True hata do, toh kya hoga?
 
 544
-00:35:03,570 --> 00:35:05,901
-exactly the rule from lesson three.
+00:35:20,762 --> 00:35:26,043
+Teesra: Quiz schema mein ek
+difficulty field add karo, easy, medium, ya hard.
 
 545
-00:35:06,121 --> 00:35:08,817
-It always keeps at
-least the latest exchange.
+00:35:26,393 --> 00:35:31,032
+Aur scenario: JSON parsing sirf
+lambe replies par fail hoti hai.
 
 546
-00:35:09,167 --> 00:35:14,071
-Send appends the question, trims, and
-calls the model with the whole history.
+00:35:31,252 --> 00:35:34,236
+Pehle kya check karoge, aur fix kya hoga?
 
 547
-00:35:14,291 --> 00:35:19,888
-If the call fails, it removes the
-unanswered question, so the history never ends up
+00:35:41,536 --> 00:35:42,464
+Quick check.
 
 548
-00:35:19,888 --> 00:35:21,844
-with two user turns in a row.
+00:35:42,684 --> 00:35:48,674
+Aapka code reply ko JSON ki tarah parse
+karta hai, aur lambe reply par fail ho jaata
 
 549
-00:35:22,064 --> 00:35:23,524
-Then the reply is stored.
+00:35:48,674 --> 00:35:48,959
+hai.
 
 550
-00:35:24,824 --> 00:35:28,477
-For explain, the on text
-callback prints each piece immediately.
+00:35:49,179 --> 00:35:51,380
+Sabse pehle kya check karoge?
 
 551
-00:35:28,697 --> 00:35:33,812
-The footer with tokens and cost goes
-to standard error, so it never mixes into
+00:35:57,080 --> 00:35:59,696
+Ki stop reason max tokens hai ya nahi.
 
 552
-00:35:33,812 --> 00:35:35,386
-output you save or pipe.
+00:35:59,916 --> 00:36:03,540
+Kata hua reply JSON ke
+beech mein khatam hota hai.
 
 553
-00:35:35,736 --> 00:35:40,911
-Quiz prints the questions with letters,
-optionally saves the JSON, and grades your
+00:36:04,840 --> 00:36:05,680
+Recap.
 
 554
-00:35:40,911 --> 00:35:42,489
-answers if you pass them.
+00:36:05,900 --> 00:36:09,425
+Stop reason batata hai ki
+reply complete hai ya nahi.
 
 555
-00:35:42,839 --> 00:35:48,409
-Chat reads one message per line from
-standard input, so it works interactively, and
+00:36:09,645 --> 00:36:11,281
+Hamesha check karo.
 
 556
-00:35:48,409 --> 00:35:50,556
-from a file for demos and tests.
+00:36:11,631 --> 00:36:14,361
+Responsive output ke liye stream karo.
 
 557
-00:35:50,906 --> 00:35:56,386
-And main builds the settings, the
-client, and the assistant, and turns any study
+00:36:14,711 --> 00:36:20,164
+Validated JSON ke liye messages
+dot parse ke saath structured outputs.
 
 558
-00:35:56,386 --> 00:36:01,455
-error into one clean line and exit
-code one, just like Module 1's toolkit.
+00:36:20,514 --> 00:36:24,205
+Aur content padhne se
+pehle refusal handle karo.
 
 559
-00:36:02,755 --> 00:36:04,570
-A two-question quiz, graded.
+00:36:24,555 --> 00:36:26,840
+Agla lesson: production basics.
 
 560
-00:36:04,790 --> 00:36:10,276
-These are the fake API's placeholder
-questions, but they went through exactly the
+00:36:27,060 --> 00:36:31,199
+Errors, rate limits, retries,
+aur yeh sab kitne ka padta hai.
 
 561
-00:36:10,276 --> 00:36:14,407
-same structured output path:
-schema, parsing, and validation.
+00:36:32,530 --> 00:36:35,685
+Ek demo jo ek baar
+chal jaaye, woh aasaan hai.
 
 562
-00:36:14,757 --> 00:36:16,976
-And a chat with two messages piped in.
+00:36:35,905 --> 00:36:41,801
+Lekin ek program jo network girne par,
+rate limit aane par, ya cost badhne par bhi
 
 563
-00:36:17,196 --> 00:36:21,415
-Look at the second reply: the
-request carried two earlier messages.
+00:36:41,801 --> 00:36:46,188
+chalta rahe, uske liye soch
+samajhkar design karna padta hai.
 
 564
-00:36:21,635 --> 00:36:23,162
-That's our history at work.
+00:36:46,408 --> 00:36:51,991
+Yeh lesson woh production basics
+sikhata hai jo har AI application ko chahiye.
 
 565
-00:36:23,512 --> 00:36:26,756
-The tokens command
-uses the counting endpoint.
+00:36:53,291 --> 00:36:58,309
+Aap API ke error types
+pehchanoge, aur har ek ke liye kya karna hai.
 
 566
-00:36:26,976 --> 00:36:29,084
-Offline, it's labelled as an estimate.
+00:36:58,659 --> 00:37:01,392
+Errors ko sahi order mein catch karoge.
 
 567
-00:36:30,384 --> 00:36:31,792
-Now the failure paths.
+00:37:01,742 --> 00:37:04,889
+Rate limits aur
+automatic retries samjhoge.
 
 568
-00:36:32,012 --> 00:36:37,608
-A single rate limit: the SDK retries
-automatically and the explanation still
+00:37:05,239 --> 00:37:08,796
+Aur har call ki cost
+calculate aur control karoge.
 
 569
-00:36:37,608 --> 00:36:38,197
-arrives.
+00:37:10,096 --> 00:37:12,789
+Pehle what: kaun kaun se errors aate hain.
 
 570
-00:36:38,547 --> 00:36:43,838
-Three rate limits in a row exhausts
-the two retries, and we get one clear error
+00:37:13,009 --> 00:37:17,035
+HTTP status code batata
+hai ki problem kis taraf hai.
 
 571
-00:36:43,838 --> 00:36:45,312
-line, not a traceback.
+00:37:17,385 --> 00:37:21,073
+Four hundred ya four oh
+four: aapki request galat hai.
 
 572
-00:36:45,662 --> 00:36:48,317
-And a refusal is reported plainly too.
+00:37:21,293 --> 00:37:25,868
+Koi galat parameter, ya model
+ka naam jo exist hi nahi karta.
 
 573
-00:36:49,617 --> 00:36:52,501
-The tests use the
-fake API as a test double.
+00:37:26,088 --> 00:37:29,400
+Retry se kuch nahi
+hoga, request theek karo.
 
 574
-00:36:52,721 --> 00:36:57,856
-This one checks that the explanation
-arrived in pieces, that the pieces add up to
+00:37:29,750 --> 00:37:32,804
+Four oh one aur four
+oh three: key ki problem.
 
 575
-00:36:57,856 --> 00:37:03,055
-the final text, and, by inspecting what
-the fake received, that the request really
+00:37:33,024 --> 00:37:35,922
+Key missing hai, galat
+hai, ya permission nahi hai.
 
 576
-00:37:03,055 --> 00:37:06,605
-was streamed, with
-fallbacks, and with the right prompt.
+00:37:36,142 --> 00:37:38,445
+Retry mat karo, key theek karo.
 
 577
-00:37:06,955 --> 00:37:10,313
-This test proves max
-tokens truncation is detected.
+00:37:38,795 --> 00:37:42,140
+Four twenty nine: aapne
+rate limit cross kar di.
 
 578
-00:37:10,663 --> 00:37:16,317
-And these two test the SDK's real retry
-behaviour: two failures then success makes
+00:37:42,360 --> 00:37:45,504
+Yahan rukna aur retry
+karna bilkul sahi hai.
 
 579
-00:37:16,317 --> 00:37:21,213
-three requests, and three rate
-limits in a row becomes our clean error.
+00:37:45,854 --> 00:37:51,705
+Five hundred wale errors, five twenty
+nine overloaded bhi, server side problems
 
 580
-00:37:22,513 --> 00:37:26,172
-Twenty-three tests, all
-passing, with no key and no network.
+00:37:51,705 --> 00:37:53,334
+hain, aksar temporary.
 
 581
-00:37:26,392 --> 00:37:31,815
-A conftest fixture also removes any real
-key from the environment during tests, so
+00:37:53,554 --> 00:37:55,645
+Thoda rukkar retry karo.
 
 582
-00:37:31,815 --> 00:37:33,799
-they can never cost you money.
+00:37:55,995 --> 00:38:00,418
+Aur network errors ya timeouts:
+koi proper response aaya hi nahi.
 
 583
-00:37:34,149 --> 00:37:39,254
-And mypy is happy with every type
-hint, including the SDK's own types.
+00:38:00,638 --> 00:38:02,872
+Yeh bhi retry karne layak hain.
 
 584
-00:37:40,554 --> 00:37:46,153
-If your key is rejected, check the
-environment variable: no stray quotes or spaces,
+00:38:04,172 --> 00:38:05,068
+Ab how.
 
 585
-00:37:46,153 --> 00:37:48,986
-not revoked, and from the right workspace.
+00:38:05,288 --> 00:38:11,017
+Sirf iss demo ke liye hum automatic
+retries band karte hain, taaki har error hamare
 
 586
-00:37:49,336 --> 00:37:54,464
-If you expected real answers but see
-offline mode, Python can't see the key.
+00:38:11,017 --> 00:38:12,259
+code tak pahunche.
 
 587
-00:37:54,684 --> 00:37:56,765
-Set it in the same terminal session.
+00:38:12,609 --> 00:38:14,639
+Call ek try block ke andar hai.
 
 588
-00:37:57,115 --> 00:38:01,436
-Repeated rate limits mean you're
-sending too fast for your account's limits.
+00:38:14,989 --> 00:38:20,116
+Phir hum specific exception classes
+catch karte hain, sabse specific pehle.
 
 589
-00:38:01,656 --> 00:38:03,883
-Slow down, or allow more retries.
+00:38:20,336 --> 00:38:23,812
+Pehle authentication
+error, phir rate limit error.
 
 590
-00:38:04,233 --> 00:38:08,162
-And for cut-off answers,
-raise max tokens, or ask for less.
+00:38:24,162 --> 00:38:30,331
+API status error har HTTP error ki
+parent class hai, toh jo bacha hai woh yeh pakad
 
 591
-00:38:09,462 --> 00:38:14,441
-Language models predict tokens, and
-tokens drive cost, limits, and speed.
+00:38:30,331 --> 00:38:32,636
+leti hai, status code ke saath.
 
 592
-00:38:14,791 --> 00:38:19,555
-You called the API and read
-content blocks, stop reasons, and usage.
+00:38:32,856 --> 00:38:37,795
+Connection errors HTTP errors hain
+hi nahi, isliye unki alag class hai.
 
 593
-00:38:19,905 --> 00:38:23,464
-You managed stateless
-conversations, with trimmed history.
+00:38:38,015 --> 00:38:43,481
+Agar parent class pehle catch karoge,
+toh specific handlers kabhi chalenge hi nahi.
 
 594
-00:38:23,814 --> 00:38:27,561
-You streamed replies, and
-got validated structured output.
+00:38:43,831 --> 00:38:48,092
+Bina kisi failure ke, ek
+normal placeholder reply aata hai.
 
 595
-00:38:27,911 --> 00:38:33,487
-And you handled errors, retries,
-refusals, costs, and budgets, in a fully tested
+00:38:48,312 --> 00:38:49,985
+Right side par wahi hai.
 
 596
-00:38:33,487 --> 00:38:34,044
-project.
+00:38:51,285 --> 00:38:57,343
+Bina kuch tode errors dikhane ke liye,
+fake API ek environment variable padhti hai,
 
 597
-00:38:35,344 --> 00:38:37,173
-Module quiz, question one.
+00:38:57,343 --> 00:39:00,117
+jo batata hai ki kaise fail karna hai.
 
 598
-00:38:37,393 --> 00:38:40,292
-Why do output tokens
-matter so much for cost?
+00:39:00,467 --> 00:39:04,278
+Four oh one ka message
+banta hai: check your API key.
 
 599
-00:38:45,992 --> 00:38:49,507
-They usually cost several
-times more than input tokens.
+00:39:04,628 --> 00:39:07,134
+Four twenty nine ka: rate limited.
 
 600
-00:38:49,727 --> 00:38:52,848
-Five times more, on Claude Opus 5.5.
+00:39:07,484 --> 00:39:13,224
+Aur five twenty nine, overloaded server,
+general status handler tak pahunchta hai.
 
 601
-00:38:54,148 --> 00:38:55,184
-Question two.
+00:39:14,524 --> 00:39:19,786
+Rate limit ka matlab: har account ke
+liye ek limit hai ki ek minute mein kitni
 
 602
-00:38:55,404 --> 00:38:58,146
-What does a stop
-reason of max tokens tell you?
+00:39:19,786 --> 00:39:22,485
+requests aur kitne tokens bhej sakte ho.
 
 603
-00:39:03,846 --> 00:39:07,470
-The reply was cut off at
-your limit, and may be incomplete.
+00:39:22,705 --> 00:39:25,827
+Limit cross hui, toh
+four twenty nine aata hai.
 
 604
-00:39:08,770 --> 00:39:09,832
-Question three.
+00:39:26,047 --> 00:39:29,968
+Iska solution samjho ek
+busy dost ko call karne se.
 
 605
-00:39:10,052 --> 00:39:12,664
-A chat bot forgets
-everything said earlier.
+00:39:30,188 --> 00:39:31,550
+Line busy hai.
 
 606
-00:39:12,884 --> 00:39:14,424
-What's the most likely bug?
+00:39:31,770 --> 00:39:34,395
+Aap har second redial nahi karte.
 
 607
-00:39:20,124 --> 00:39:23,748
-The app isn't sending the
-earlier messages with each request.
+00:39:34,615 --> 00:39:38,075
+Thoda rukte ho, aur har
+baar thoda zyada rukte ho.
 
 608
-00:39:23,968 --> 00:39:25,519
-The API is stateless.
+00:39:38,295 --> 00:39:43,831
+Aur agar hazaar log yahi kar rahe hain,
+toh thodi randomness unhe ek hi second par
 
 609
-00:39:26,819 --> 00:39:27,882
-Question four.
+00:39:43,831 --> 00:39:45,856
+wapas call karne se rokti hai.
 
 610
-00:39:28,102 --> 00:39:30,680
-Which errors are worth
-retrying automatically?
+00:39:47,156 --> 00:39:48,605
+Dry run dekho.
 
 611
-00:39:36,380 --> 00:39:39,413
-Rate limits, server
-errors, and connection errors.
+00:39:48,825 --> 00:39:50,751
+Try one: four twenty nine.
 
 612
-00:39:39,633 --> 00:39:42,489
-And the SDK already retries them for you.
+00:39:50,971 --> 00:39:54,995
+Lagbhag aadha second
+ruko, thodi randomness ke saath.
 
 613
-00:39:43,789 --> 00:39:45,051
-And question five.
+00:39:55,345 --> 00:39:57,824
+Try two: five hundred, server error.
 
 614
-00:39:45,271 --> 00:39:48,737
-What does parse with output
-format equals Quiz give you?
+00:39:58,044 --> 00:40:00,237
+Ab lagbhag ek second ruko.
 
 615
-00:39:54,437 --> 00:39:56,284
-A validated Quiz object.
+00:40:00,457 --> 00:40:02,122
+Wait dugna ho gaya.
 
 616
-00:39:56,504 --> 00:39:59,577
-The structure is
-guaranteed, but the facts are not.
+00:40:02,472 --> 00:40:03,966
+Try three: success.
 
 617
-00:39:59,797 --> 00:40:02,510
-A valid quiz can still
-contain a wrong answer.
+00:40:04,186 --> 00:40:05,730
+Reply use karo.
 
 618
-00:40:03,810 --> 00:40:05,316
-Your extension challenge.
+00:40:07,030 --> 00:40:11,642
+Achhi khabar yeh hai ki
+Anthropic SDK yeh sab already karta hai.
 
 619
-00:40:05,536 --> 00:40:09,769
-Pick one or more, and write a
-test for each, using the fake API.
+00:40:11,862 --> 00:40:15,035
+Max retries se aap isse control karte ho.
 
 620
-00:40:10,119 --> 00:40:14,761
-Add a model option, and compare
-costs between Opus, Sonnet, and Haiku.
+00:40:15,255 --> 00:40:18,222
+Default do hai, aur zero se band hota hai.
 
 621
-00:40:15,111 --> 00:40:18,141
-Show the exact token
-count before each chat turn.
+00:40:18,572 --> 00:40:21,177
+Normal case mein call succeed hoti hai.
 
 622
-00:40:18,491 --> 00:40:22,787
-Add an interactive quiz mode that
-shows the explanations at the end.
+00:40:21,397 --> 00:40:24,749
+Ab dekhte hain jab
+fake API pehle fail kare.
 
 623
-00:40:23,137 --> 00:40:29,021
-Or save chat history to a file and
-reload it next time, a first step towards Module
+00:40:26,049 --> 00:40:30,951
+Yahan fake API pehle four twenty
+nine deti hai, phir five hundred.
 
 624
-00:40:29,021 --> 00:40:29,163
-6.
+00:40:31,171 --> 00:40:36,802
+ANTHROPIC LOG ko info karne se dikhta
+hai SDK kya kar raha hai: thoda rukta hai,
 
 625
-00:40:30,463 --> 00:40:35,336
-These are the official
-documentation pages for everything in this module.
+00:40:36,802 --> 00:40:41,659
+retry karta hai, phir thoda zyada
+rukta hai, phir retry, aur success.
 
 626
-00:40:35,556 --> 00:40:38,945
-Links are in the description,
-along with the full source code.
+00:40:41,879 --> 00:40:45,036
+Hamare code mein ek
+bhi extra line nahi lagi.
 
 627
-00:40:43,045 --> 00:40:44,784
-That's Module 2 complete.
+00:40:46,336 --> 00:40:48,390
+Production ke kuch aur rules.
 
 628
-00:40:45,004 --> 00:40:50,700
-You can now call a language model from
-Python reliably, affordably, and testably.
+00:40:48,610 --> 00:40:51,472
+Ek timeout set karo
+jo aapke liye theek ho.
 
 629
-00:40:50,920 --> 00:40:56,698
-In Module 3, you'll learn to write
-prompts that work consistently, validate every
+00:40:51,692 --> 00:40:54,174
+SDK ka default das minute hai.
 
 630
-00:40:56,698 --> 00:41:02,619
-output with Pydantic, version your
-prompts, and evaluate them, while building an AI
+00:40:54,394 --> 00:40:56,792
+Lambe replies ke liye stream karo.
 
 631
-00:41:02,619 --> 00:41:03,760
-Resume Analyzer.
+00:40:57,142 --> 00:41:00,017
+Kuch fail ho, toh request ID log karo.
 
 632
-00:41:03,980 --> 00:41:04,843
-See you there.
+00:41:00,237 --> 00:41:04,264
+Isse pata chalta hai
+exactly kaunsi request fail hui.
+
+633
+00:41:04,614 --> 00:41:10,155
+Har app aur environment ki alag key
+rakho, taaki ek ko revoke karne se baaki na
+
+634
+00:41:10,155 --> 00:41:10,716
+tootein.
+
+635
+00:41:11,066 --> 00:41:15,293
+Aur keys ko kabhi model ko mat
+bhejo, na logs mein print karo.
+
+636
+00:41:15,513 --> 00:41:19,918
+Logs aksar utne protected
+nahi hote jitna aap sochte ho.
+
+637
+00:41:21,218 --> 00:41:22,297
+Ab paisa.
+
+638
+00:41:22,517 --> 00:41:25,072
+Cost ko bijli ke bill ki tarah socho.
+
+639
+00:41:25,292 --> 00:41:29,232
+Kitne units use kiye, guna
+price per unit, barabar bill.
+
+640
+00:41:29,452 --> 00:41:32,608
+API mein: tokens guna price per token.
+
+641
+00:41:32,828 --> 00:41:35,243
+Input aur output ke price alag hain.
+
+642
+00:41:35,463 --> 00:41:39,116
+Ek call mein bahut thoda,
+lekin scale par bahut zyada.
+
+643
+00:41:40,416 --> 00:41:46,506
+Claude Opus 5.5, sabse capable aur
+hamara default: chaar dollar per million input
+
+644
+00:41:46,506 --> 00:41:50,266
+tokens, aur bees dollar
+per million output tokens.
+
+645
+00:41:50,616 --> 00:41:53,011
+Sonnet 5.5 iska aadha.
+
+646
+00:41:53,361 --> 00:41:58,607
+Aur Haiku 5.5 bahut sasta hai,
+simple aur high volume kaam ke liye.
+
+647
+00:41:59,907 --> 00:42:01,971
+Yeh raha cost calculation.
+
+648
+00:42:02,191 --> 00:42:04,197
+Prices per million tokens hain.
+
+649
+00:42:04,547 --> 00:42:09,230
+Count tokens request bhejne
+se pehle uska size naap leta hai.
+
+650
+00:42:09,450 --> 00:42:14,113
+Toh aap bahut badi ya mehengi
+request ko pehle hi rok sakte ho.
+
+651
+00:42:14,333 --> 00:42:16,484
+Output mein: nau input tokens.
+
+652
+00:42:16,834 --> 00:42:20,033
+Call ke baad usage actual tokens deta hai.
+
+653
+00:42:20,253 --> 00:42:24,784
+Har ek ko uske price se guna
+karo, aur ek million se divide karo.
+
+654
+00:42:25,134 --> 00:42:29,672
+Aur phir important habit:
+apne expected traffic se guna karo.
+
+655
+00:42:29,892 --> 00:42:35,789
+Ek call ek cent se bhi kam, lekin roz
+das hazaar calls, toh har din real paisa.
+
+656
+00:42:36,009 --> 00:42:39,387
+Offline mode mein yeh token
+counts rough estimates hain.
+
+657
+00:42:39,607 --> 00:42:42,007
+Real key ke saath exact hote hain.
+
+658
+00:42:43,307 --> 00:42:45,457
+Haath se calculate karte hain.
+
+659
+00:42:45,677 --> 00:42:49,296
+Input: nau guna chaar
+dollar, divided by ek million.
+
+660
+00:42:49,646 --> 00:42:53,740
+Output: chausath guna bees
+dollar, divided by ek million.
+
+661
+00:42:53,960 --> 00:42:57,351
+Dekho, output ka hissa
+input se kaafi bada hai.
+
+662
+00:42:57,701 --> 00:43:00,619
+Total: lagbhag zero point one three cents.
+
+663
+00:43:00,839 --> 00:43:02,697
+Ek cent se bhi bahut kam.
+
+664
+00:43:03,047 --> 00:43:07,168
+Aur das hazaar calls roz:
+tera dollar solah cents har din.
+
+665
+00:43:07,388 --> 00:43:09,179
+Yahi scale ka asar hai.
+
+666
+00:43:10,479 --> 00:43:12,703
+Cost control ke paanch tareeke.
+
+667
+00:43:12,923 --> 00:43:14,462
+Pehla: kam bhejo.
+
+668
+00:43:14,682 --> 00:43:18,265
+History trim karo, sirf
+relevant documents daalo.
+
+669
+00:43:18,615 --> 00:43:23,281
+Doosra: concise answers
+maango, sensible max tokens ke saath.
+
+670
+00:43:23,631 --> 00:43:26,371
+Teesra: simple tasks ke liye low effort.
+
+671
+00:43:26,721 --> 00:43:30,736
+Chautha: sabse chhota model
+chuno jo kaam achhe se kare.
+
+672
+00:43:30,956 --> 00:43:34,441
+Real examples par
+measure karke, guess karke nahi.
+
+673
+00:43:34,791 --> 00:43:40,050
+Aur paanchva: code mein kharcha track
+karo, ek budget ke saath jo runaway loops ko
+
+674
+00:43:40,050 --> 00:43:40,499
+rok de.
+
+675
+00:43:40,719 --> 00:43:43,035
+Hamara project yahi karta hai.
+
+676
+00:43:44,335 --> 00:43:45,794
+Interview corner.
+
+677
+00:43:46,014 --> 00:43:49,868
+Kaun se API errors retry
+karne chahiye, aur kaise?
+
+678
+00:43:52,218 --> 00:43:58,092
+Answer: four twenty nine, five hundred
+wale, aur network errors, exponential backoff
+
+679
+00:43:58,092 --> 00:44:03,827
+aur thodi randomness ke saath, jise
+jitter kehte hain, aur attempts ki ek limit ke
+
+680
+00:44:03,827 --> 00:44:04,246
+saath.
+
+681
+00:44:04,466 --> 00:44:07,415
+Baaki four hundred wale retry mat karo.
+
+682
+00:44:07,635 --> 00:44:10,962
+Trap: har error ko ek
+tight loop mein retry karna.
+
+683
+00:44:11,182 --> 00:44:13,577
+Isse server par aur load padta hai.
+
+684
+00:44:13,927 --> 00:44:19,476
+Doosra question: specific exceptions
+ko general se pehle kyun catch karte hain?
+
+685
+00:44:21,826 --> 00:44:25,475
+Answer: Python pehla
+matching except block chalata hai.
+
+686
+00:44:25,695 --> 00:44:31,345
+API status error jaisi parent
+class har HTTP error match karti hai.
+
+687
+00:44:31,565 --> 00:44:35,336
+Woh pehle aayi, toh specific
+handlers kabhi nahi chalenge.
+
+688
+00:44:35,556 --> 00:44:39,404
+Trap: ek bare except
+Exception, jo bugs chhupa deta hai.
+
+689
+00:44:40,704 --> 00:44:41,961
+Practice time.
+
+690
+00:44:42,311 --> 00:44:43,987
+Pehla: four oh one aaya.
+
+691
+00:44:44,207 --> 00:44:46,115
+Retry karoge ya fix?
+
+692
+00:44:46,335 --> 00:44:47,050
+Kyun?
+
+693
+00:44:47,400 --> 00:44:54,047
+Doosra: Opus 5.5 par do hazaar input
+aur paanch sau output tokens ki cost kitni
+
+694
+00:44:54,047 --> 00:44:54,467
+hogi?
+
+695
+00:44:54,817 --> 00:44:59,745
+Teesra: ek loop likho jo teen baar
+retry kare, har baar dugna wait karke.
+
+696
+00:45:00,095 --> 00:45:03,678
+Aur scenario: raat bhar
+mein aapka bill double ho gaya.
+
+697
+00:45:03,898 --> 00:45:06,511
+Teen cheezein batao jo aap check karoge.
+
+698
+00:45:13,811 --> 00:45:14,740
+Quick check.
+
+699
+00:45:14,960 --> 00:45:18,116
+Inn mein se kaunsa
+error retry karna chahiye?
+
+700
+00:45:23,816 --> 00:45:25,331
+Four twenty nine.
+
+701
+00:45:25,551 --> 00:45:28,403
+Rate limit rukne ke
+baad theek ho jaati hai.
+
+702
+00:45:28,623 --> 00:45:34,038
+Baaki har baar same tareeke se fail
+honge, jab tak request ya key theek na ho.
+
+703
+00:45:35,338 --> 00:45:36,177
+Recap.
+
+704
+00:45:36,397 --> 00:45:41,889
+Four hundred wale errors, four twenty
+nine ko chhodkar, fix maangte hain, retry
+
+705
+00:45:41,889 --> 00:45:42,237
+nahi.
+
+706
+00:45:42,587 --> 00:45:48,466
+Rate limits, server errors, aur network
+errors backoff ke saath retry hote hain, aur
+
+707
+00:45:48,466 --> 00:45:50,076
+SDK yeh khud karta hai.
+
+708
+00:45:50,426 --> 00:45:54,557
+Specific exception classes
+ko general se pehle catch karo.
+
+709
+00:45:54,907 --> 00:45:57,206
+Aur cost hai tokens guna price.
+
+710
+00:45:57,426 --> 00:46:00,260
+Toh count karo, track
+karo, aur budget rakho.
+
+711
+00:46:00,610 --> 00:46:03,584
+Ab project ke liye
+sab kuch aapko pata hai.
+
+712
+00:46:03,804 --> 00:46:07,913
+Agle lesson mein AI Study
+Assistant banana shuru karenge.
+
+713
+00:46:09,234 --> 00:46:10,537
+Project time!
+
+714
+00:46:10,757 --> 00:46:14,233
+Do lessons mein hum AI
+Study Assistant banayenge.
+
+715
+00:46:14,453 --> 00:46:20,372
+Ek command line tool, jo programming
+concepts explain karta hai, validated JSON mein
+
+716
+00:46:20,372 --> 00:46:24,248
+quizzes banata hai, aur
+memory ke saath chat karta hai.
+
+717
+00:46:24,468 --> 00:46:27,473
+Aur saath mein har ek
+cent ka hisaab rakhta hai.
+
+718
+00:46:27,693 --> 00:46:30,174
+Iss module ki har cheez isme aayegi.
+
+719
+00:46:30,394 --> 00:46:33,136
+Ek ek file karke, aaram se chalenge.
+
+720
+00:46:34,436 --> 00:46:40,532
+Explain command kisi bhi topic ko stream
+karke samjhata hai, beginner, intermediate,
+
+721
+00:46:40,532 --> 00:46:42,129
+ya advanced level par.
+
+722
+00:46:42,479 --> 00:46:47,996
+Quiz command validated JSON mein
+multiple choice questions banata hai, jinhe aap
+
+723
+00:46:47,996 --> 00:46:49,927
+save aur grade kar sakte ho.
+
+724
+00:46:50,277 --> 00:46:56,090
+Chat command history ke saath
+conversation karta hai, ek token budget ke andar trim
+
+725
+00:46:56,090 --> 00:46:56,510
+karke.
+
+726
+00:46:56,860 --> 00:47:02,659
+Har call apne tokens aur cost batati
+hai, aur ek budget faltu kharche ko rokta hai.
+
+727
+00:47:03,009 --> 00:47:08,842
+Aur clear errors, automatic retries, aur
+ek offline mode, taaki tests ko kabhi key
+
+728
+00:47:08,842 --> 00:47:10,407
+ya network na chahiye.
+
+729
+00:47:11,707 --> 00:47:13,831
+Code se pehle architecture.
+
+730
+00:47:14,051 --> 00:47:15,965
+Har file ka ek hi kaam hai.
+
+731
+00:47:16,185 --> 00:47:19,132
+Isse separation of concerns kehte hain.
+
+732
+00:47:19,482 --> 00:47:25,124
+Command line arguments aur printing
+sambhalti hai, aur assistant ko call karti hai.
+
+733
+00:47:25,344 --> 00:47:29,292
+Assistant mein asli logic
+hai: explain, quiz, aur chat.
+
+734
+00:47:29,642 --> 00:47:35,043
+Prompts ki apni alag file hai, taaki aap
+code chhue bina prompts improve kar sako.
+
+735
+00:47:35,263 --> 00:47:37,420
+Aur models mein quiz ka schema hai.
+
+736
+00:47:37,770 --> 00:47:42,198
+Pricing cost calculate karti
+hai aur budget enforce karti hai.
+
+737
+00:47:42,548 --> 00:47:45,227
+Aur client SDK client banata hai.
+
+738
+00:47:45,447 --> 00:47:51,084
+Key set hai toh real client, nahi
+toh wahi SDK offline fake API ki taraf.
+
+739
+00:47:51,304 --> 00:47:55,068
+Program ke baaki hisse ko
+yeh fark pata hi nahi chalta.
+
+740
+00:47:56,368 --> 00:48:01,354
+Sabse pehle woh cheez jo testing
+ko possible banati hai: fake API.
+
+741
+00:48:01,574 --> 00:48:04,302
+Isse flight simulator ki tarah socho.
+
+742
+00:48:04,522 --> 00:48:09,403
+Pilots simulator mein real cockpit
+controls ke saath train karte hain.
+
+743
+00:48:09,623 --> 00:48:12,624
+Sirf bahar ki duniya simulated hoti hai.
+
+744
+00:48:12,844 --> 00:48:15,792
+Hamare tests real SDK use karte hain.
+
+745
+00:48:16,012 --> 00:48:17,950
+Sirf server simulated hai.
+
+746
+00:48:18,170 --> 00:48:22,972
+Crash free mein hota hai, aur
+failures jaan boojhkar practice kar sakte ho.
+
+747
+00:48:24,272 --> 00:48:30,395
+Yeh ek class hai jiske objects ko
+function ki tarah call kar sakte ho, har HTTP
+
+748
+00:48:30,395 --> 00:48:31,945
+request par ek baar.
+
+749
+00:48:32,165 --> 00:48:37,648
+Planned failures ki ek list se tests
+aur demos jaan boojhkar four twenty nine ya
+
+750
+00:48:37,648 --> 00:48:39,772
+five hundred mangwa sakte hain.
+
+751
+00:48:40,122 --> 00:48:46,612
+Har call ko SDK ki banayi hui real HTTP
+request milti hai, aur woh uska JSON body
+
+752
+00:48:46,612 --> 00:48:47,894
+parse karti hai.
+
+753
+00:48:48,114 --> 00:48:53,463
+Body record hoti hai, taaki tests
+check kar sakein ki exactly kya bheja gaya.
+
+754
+00:48:53,813 --> 00:48:59,574
+Phir woh placeholder reply banati hai,
+planned failure ya refusal lagati hai, real
+
+755
+00:48:59,574 --> 00:49:05,405
+API ki tarah max tokens par reply kaatti
+hai, aur normal JSON ya server sent events
+
+756
+00:49:05,405 --> 00:49:07,161
+ki stream wapas deti hai.
+
+757
+00:49:07,381 --> 00:49:13,473
+Responses ki shape real API jaisi
+hai, isliye SDK ko fark pata nahi chalta.
+
+758
+00:49:13,693 --> 00:49:17,865
+Matlab hamare tests real
+SDK code ko test karte hain.
+
+759
+00:49:19,165 --> 00:49:21,492
+Key hai, toh normal client banta hai.
+
+760
+00:49:21,712 --> 00:49:27,246
+SDK key environment se khud padhta hai,
+toh key hamare code mein kabhi nahi aati.
+
+761
+00:49:27,466 --> 00:49:31,049
+Hum retry count aur saath
+second ka timeout dete hain.
+
+762
+00:49:31,399 --> 00:49:37,455
+Key nahi hai, toh ek clear offline
+notice print hota hai, aur wahi SDK ek aise HTTP
+
+763
+00:49:37,455 --> 00:49:43,219
+client ke saath banta hai jiska
+transport network ki jagah hamari fake API hai.
+
+764
+00:49:44,519 --> 00:49:48,989
+Settings environment variables
+se aati hain, Module 1 ki tarah.
+
+765
+00:49:49,209 --> 00:49:51,949
+Key nahi, toh automatically offline mode.
+
+766
+00:49:52,169 --> 00:49:57,594
+Model ka default Claude Opus 5.5
+hai, aur budget ka pachaas cents.
+
+767
+00:49:58,894 --> 00:50:04,122
+Price table mein har model ke liye per
+million input aur output tokens ke dollars
+
+768
+00:50:04,122 --> 00:50:04,445
+hain.
+
+769
+00:50:04,795 --> 00:50:07,803
+Cost USD lesson five wala formula hai.
+
+770
+00:50:08,023 --> 00:50:11,922
+Unknown model par error aata
+hai, chupchaap zero cost nahi.
+
+771
+00:50:12,272 --> 00:50:14,571
+Cost tracker kharcha jodta hai.
+
+772
+00:50:14,791 --> 00:50:20,258
+Iska check method har call se pehle
+chalta hai, aur budget khatam hote hi budget
+
+773
+00:50:20,258 --> 00:50:21,967
+exceeded raise karta hai.
+
+774
+00:50:22,187 --> 00:50:24,906
+Yahi runaway loop se aapki suraksha hai.
+
+775
+00:50:25,256 --> 00:50:28,539
+Aur add har poori hui
+call ki cost record karta hai.
+
+776
+00:50:29,839 --> 00:50:32,426
+Ek chhote budget ke saath dry run.
+
+777
+00:50:32,646 --> 00:50:34,925
+Teen tenth of a cent ka budget.
+
+778
+00:50:35,145 --> 00:50:37,593
+Call one: check,
+spent zero hai, theek hai.
+
+779
+00:50:37,813 --> 00:50:41,752
+Call ki cost point zero
+zero one three, spent ab utna hi.
+
+780
+00:50:42,102 --> 00:50:44,759
+Call two: check, abhi bhi budget ke andar.
+
+781
+00:50:44,979 --> 00:50:48,131
+Call hui, spent ab
+point zero zero two six.
+
+782
+00:50:48,481 --> 00:50:53,856
+Call three: check pass, kyunki point
+zero zero two six abhi bhi budget se kam hai.
+
+783
+00:50:54,076 --> 00:50:57,469
+Call ke baad spent
+budget se thoda upar chala gaya.
+
+784
+00:50:57,819 --> 00:50:59,325
+Call four: check fail.
+
+785
+00:50:59,545 --> 00:51:03,246
+BudgetExceeded, aur
+request bheji hi nahi jaati.
+
+786
+00:51:04,546 --> 00:51:10,304
+Answer ek call se mili har jaankari ko
+ek saath rakhta hai: text, stop reason,
+
+787
+00:51:10,304 --> 00:51:11,559
+tokens, aur cost.
+
+788
+00:51:11,779 --> 00:51:15,795
+Truncated true hota hai
+jab reply max tokens par kata.
+
+789
+00:51:16,145 --> 00:51:21,756
+Friendly errors ek context manager hai
+jo SDK exceptions ko pakadta hai, sabse
+
+790
+00:51:21,756 --> 00:51:26,359
+specific pehle, aur har ek ko
+ek clear message mein badalta hai.
+
+791
+00:51:26,579 --> 00:51:31,888
+Yeh lesson five wali error table hai,
+ek baar likhi, aur har call mein reuse.
+
+792
+00:51:32,238 --> 00:51:33,393
+Ab fallbacks.
+
+793
+00:51:33,613 --> 00:51:39,647
+Agar model request mana kar de, toh API
+usse automatically doosre model par chala
+
+794
+00:51:39,647 --> 00:51:40,391
+sakti hai.
+
+795
+00:51:40,611 --> 00:51:43,325
+Hum iss beta flag se opt in karte hain.
+
+796
+00:51:43,675 --> 00:51:49,644
+Base woh arguments banata hai jo har
+request mein common hain: model, beta flag, aur
+
+797
+00:51:49,644 --> 00:51:54,689
+fallbacks equals default, taaki
+API khud suitable fallback model chune.
+
+798
+00:51:55,039 --> 00:51:58,707
+Answer function ek
+response ko Answer mein badalta hai.
+
+799
+00:51:58,927 --> 00:52:04,181
+Pehle cost record karta hai, kyunki
+mana ki gayi request ka bhi bill aata hai.
+
+800
+00:52:04,401 --> 00:52:08,475
+Phir refusal check, aur uske
+baad hi text blocks jodta hai.
+
+801
+00:52:09,775 --> 00:52:15,545
+Explain pehle budget check karta hai,
+phir prompts dot py se request template bharta
+
+802
+00:52:15,545 --> 00:52:15,819
+hai.
+
+803
+00:52:16,169 --> 00:52:21,684
+Friendly errors ke andar ek stream
+kholta hai, shared arguments, tutor system
+
+804
+00:52:21,684 --> 00:52:23,976
+prompt, aur low effort ke saath.
+
+805
+00:52:24,196 --> 00:52:26,921
+Explanations ke liye low effort kaafi hai.
+
+806
+00:52:27,271 --> 00:52:31,012
+Har text piece aate hi on
+text callback ko diya jaata hai.
+
+807
+00:52:31,232 --> 00:52:36,676
+Toh assistant ko farak nahi padta ki
+text print ho raha hai, web page par dikh raha
+
+808
+00:52:36,676 --> 00:52:38,907
+hai, ya test collect kar raha hai.
+
+809
+00:52:39,127 --> 00:52:41,940
+Phir final message ek Answer banta hai.
+
+810
+00:52:43,240 --> 00:52:44,753
+Chalo run karte hain.
+
+811
+00:52:44,973 --> 00:52:50,781
+Pehle offline notice, phir streamed
+placeholder, phir ek footer jisme model, tokens,
+
+812
+00:52:50,781 --> 00:52:52,579
+cost, aur stop reason hai.
+
+813
+00:52:52,799 --> 00:52:56,042
+Aur aakhir mein budget
+ke against session ka total.
+
+814
+00:52:56,392 --> 00:53:02,268
+Bahut chhote max tokens ke saath reply
+kat jaata hai, aur tool aapko warning deta
+
+815
+00:53:02,268 --> 00:53:05,170
+hai, sab theek hone ka natak nahi karta.
+
+816
+00:53:05,520 --> 00:53:11,581
+Aur zero budget ke saath, kuch bhi
+bhejne se pehle hi mana kar deta hai, ek line ke
+
+817
+00:53:11,581 --> 00:53:13,114
+explanation ke saath.
+
+818
+00:53:14,414 --> 00:53:16,412
+Video pause karo aur socho.
+
+819
+00:53:16,632 --> 00:53:22,333
+Budget hai point zero zero two dollars,
+aur har call point zero zero one three ki.
+
+820
+00:53:22,683 --> 00:53:26,009
+BudgetExceeded se
+pehle kitni calls chalengi?
+
+821
+00:53:32,359 --> 00:53:33,363
+Do calls.
+
+822
+00:53:33,583 --> 00:53:39,029
+Pehli ke baad spent point zero zero
+one three, jo budget se kam hai, toh doosri
+
+823
+00:53:39,029 --> 00:53:39,787
+chalti hai.
+
+824
+00:53:40,007 --> 00:53:45,210
+Uske baad spent point zero zero two
+six, toh teesri ka check fail hota hai.
+
+825
+00:53:46,510 --> 00:53:47,350
+Recap.
+
+826
+00:53:47,570 --> 00:53:53,437
+Real protocol bolne wali fake API
+tests ko free aur repeatable banati hai.
+
+827
+00:53:53,787 --> 00:53:58,463
+Ek function decide karta hai:
+real client ya offline client.
+
+828
+00:53:58,813 --> 00:54:03,526
+Har call ki cost lagti hai, aur har
+call se pehle budget check hota hai.
+
+829
+00:54:03,876 --> 00:54:08,569
+Errors ek hi jagah map hote hain,
+aur fallbacks refusals sambhalte hain.
+
+830
+00:54:08,919 --> 00:54:14,495
+Part two mein: structured output se
+quizzes, history ke saath chat, poora demo,
+
+831
+00:54:14,495 --> 00:54:17,389
+tests, interview corner, aur module quiz.
+
+832
+00:54:18,706 --> 00:54:19,931
+Welcome back.
+
+833
+00:54:20,151 --> 00:54:22,242
+Explanations kaam kar rahe hain.
+
+834
+00:54:22,462 --> 00:54:28,352
+Ab hum structured output se quizzes,
+trimmed history ke saath chat, aur sabko jodne
+
+835
+00:54:28,352 --> 00:54:30,340
+wali command line banayenge.
+
+836
+00:54:30,560 --> 00:54:36,178
+Phir poora demo chalayenge, tests
+dekhenge, interview questions practice karenge,
+
+837
+00:54:36,178 --> 00:54:38,120
+aur module complete karenge.
+
+838
+00:54:39,420 --> 00:54:45,078
+Ek question mein uska text, exactly
+chaar options, sahi option ka index, aur
+
+839
+00:54:45,078 --> 00:54:47,535
+explanation ki woh sahi kyun hai.
+
+840
+00:54:47,885 --> 00:54:50,861
+Ek quiz matlab topic
+aur questions ki list.
+
+841
+00:54:51,081 --> 00:54:56,284
+Yahi ek class woh JSON schema
+banti hai jise model ko follow karna hai.
+
+842
+00:54:56,504 --> 00:54:59,200
+Yaad hai, government form wali analogy.
+
+843
+00:55:00,500 --> 00:55:05,877
+Make quiz request bharta hai: iss
+topic par N multiple choice questions likho.
+
+844
+00:55:06,227 --> 00:55:12,017
+Yeh parse call karta hai, output format
+Quiz ke saath, toh reply schema ke andar hi
+
+845
+00:55:12,017 --> 00:55:12,714
+rehta hai.
+
+846
+00:55:12,934 --> 00:55:18,943
+Quizzes ko explanations se zyada care
+chahiye, isliye medium effort, aur generous
+
+847
+00:55:18,943 --> 00:55:19,759
+max tokens.
+
+848
+00:55:20,109 --> 00:55:25,677
+Agar reply phir bhi schema mein fit na
+ho, jaise chaar ki jagah teen options, toh
+
+849
+00:55:25,677 --> 00:55:31,107
+SDK ki validation ek pydantic
+validation error raise karti hai, aur hum usse ek
+
+850
+00:55:31,107 --> 00:55:33,307
+clear message mein badalte hain.
+
+851
+00:55:33,657 --> 00:55:38,904
+Aur agar quiz max tokens par kat
+gaya, toh hum aadha quiz return nahi karte.
+
+852
+00:55:39,124 --> 00:55:42,235
+Kam questions maangne
+ka suggestion dete hain.
+
+853
+00:55:43,535 --> 00:55:49,060
+Trimming ke liye ek quick local estimate
+kaafi hai: lagbhag chaar characters ka ek
+
+854
+00:55:49,060 --> 00:55:49,465
+token.
+
+855
+00:55:49,685 --> 00:55:54,042
+Exact number chahiye, toh
+token counting endpoint use karo.
+
+856
+00:55:54,392 --> 00:55:58,455
+Chat session history list
+aur uska token budget rakhta hai.
+
+857
+00:55:58,805 --> 00:56:04,565
+Trim sabse purana user aur assistant
+pair hatata hai jab tak history budget mein na
+
+858
+00:56:04,565 --> 00:56:05,189
+aa jaaye.
+
+859
+00:56:05,409 --> 00:56:07,632
+Bilkul lesson three wala rule.
+
+860
+00:56:07,852 --> 00:56:10,672
+Aur latest exchange hamesha rakhta hai.
+
+861
+00:56:11,022 --> 00:56:16,680
+Send question append karta hai, trim
+karta hai, aur poori history ke saath model ko
+
+862
+00:56:16,680 --> 00:56:17,702
+call karta hai.
+
+863
+00:56:17,922 --> 00:56:23,685
+Call fail hui, toh bina jawab wala
+question hata deta hai, taaki history mein kabhi
+
+864
+00:56:23,685 --> 00:56:25,699
+do user turns lagatar na hon.
+
+865
+00:56:25,919 --> 00:56:27,778
+Phir reply store hota hai.
+
+866
+00:56:29,078 --> 00:56:32,458
+Ek dry run, sau tokens ke budget ke saath.
+
+867
+00:56:32,678 --> 00:56:36,926
+Teesra question append hua,
+history ab ek sau tees tokens.
+
+868
+00:56:37,146 --> 00:56:39,154
+Budget se zyada, toh trim.
+
+869
+00:56:39,504 --> 00:56:43,320
+Sabse purana pair, user
+one aur assistant one, hata.
+
+870
+00:56:43,540 --> 00:56:45,910
+Ab pachaasi tokens, budget mein.
+
+871
+00:56:46,130 --> 00:56:47,743
+Model ko call karo.
+
+872
+00:56:48,093 --> 00:56:51,780
+Call successful, toh reply
+assistant three store hota hai.
+
+873
+00:56:52,130 --> 00:56:57,701
+Aur agar call fail hoti, toh user three
+hata diya jaata, aur error upar raise hota.
+
+874
+00:56:57,921 --> 00:56:59,781
+History valid rehti.
+
+875
+00:57:01,081 --> 00:57:05,443
+Explain ke liye on text callback
+har piece turant print karta hai.
+
+876
+00:57:05,663 --> 00:57:11,033
+Tokens aur cost wala footer standard
+error mein jaata hai, taaki woh save ya pipe
+
+877
+00:57:11,033 --> 00:57:13,154
+kiye gaye output mein mix na ho.
+
+878
+00:57:13,504 --> 00:57:19,003
+Quiz questions ko letters ke saath print
+karta hai, chahe toh JSON save karta hai,
+
+879
+00:57:19,003 --> 00:57:21,752
+aur answers doge toh grade bhi karta hai.
+
+880
+00:57:22,102 --> 00:57:26,294
+Chat standard input se har
+line ek message ki tarah padhta hai.
+
+881
+00:57:26,514 --> 00:57:31,621
+Toh yeh interactively bhi chalta hai,
+aur demos aur tests ke liye file se bhi.
+
+882
+00:57:31,971 --> 00:57:37,737
+Aur main settings, client, aur assistant
+banata hai, aur har study error ko ek saaf
+
+883
+00:57:37,737 --> 00:57:42,601
+line aur exit code one mein
+badalta hai, Module 1 ke toolkit ki tarah.
+
+884
+00:57:43,901 --> 00:57:46,891
+Do questions ka quiz, grading ke saath.
+
+885
+00:57:47,111 --> 00:57:53,206
+Yeh fake API ke placeholder questions
+hain, lekin bilkul same structured output path
+
+886
+00:57:53,206 --> 00:57:56,254
+se guzre: schema, parsing, aur validation.
+
+887
+00:57:56,604 --> 00:57:58,836
+Aur do messages ke saath chat.
+
+888
+00:57:59,056 --> 00:58:03,827
+Doosra reply dekho: request
+ke saath do purane messages gaye.
+
+889
+00:58:04,047 --> 00:58:06,661
+Yahi hamari history kaam kar rahi hai.
+
+890
+00:58:07,011 --> 00:58:10,302
+Tokens command
+counting endpoint use karta hai.
+
+891
+00:58:10,522 --> 00:58:13,304
+Offline mein isse
+estimate likha jaata hai.
+
+892
+00:58:14,604 --> 00:58:16,078
+Ab failure paths.
+
+893
+00:58:16,298 --> 00:58:22,509
+Ek rate limit: SDK automatically retry
+karta hai aur explanation phir bhi aata hai.
+
+894
+00:58:22,859 --> 00:58:28,351
+Lagatar teen rate limits do retries
+khatam kar dete hain, aur hamein ek clear error
+
+895
+00:58:28,351 --> 00:58:30,402
+line milti hai, traceback nahi.
+
+896
+00:58:30,752 --> 00:58:33,659
+Aur refusal bhi saaf saaf report hota hai.
+
+897
+00:58:34,959 --> 00:58:38,793
+Tests fake API ko test
+double ki tarah use karte hain.
+
+898
+00:58:39,013 --> 00:58:44,370
+Yeh test check karta hai ki explanation
+pieces mein aaya, pieces milkar final text
+
+899
+00:58:44,370 --> 00:58:49,597
+bante hain, aur fake ko kya mila yeh
+dekhkar, ki request sach mein streamed thi,
+
+900
+00:58:49,597 --> 00:58:52,536
+fallbacks ke saath,
+aur sahi prompt ke saath.
+
+901
+00:58:52,886 --> 00:58:57,946
+Yeh test prove karta hai ki max
+tokens wala truncation pakda jaata hai.
+
+902
+00:58:58,296 --> 00:59:02,853
+Aur yeh do tests SDK ka real
+retry behaviour test karte hain.
+
+903
+00:59:03,073 --> 00:59:06,571
+Do failures phir
+success, matlab teen requests.
+
+904
+00:59:06,791 --> 00:59:10,165
+Aur lagatar teen rate
+limits, hamara clean error.
+
+905
+00:59:11,465 --> 00:59:14,851
+Teyees tests, sab pass,
+bina key aur bina network.
+
+906
+00:59:15,071 --> 00:59:20,881
+Ek conftest fixture tests ke dauraan
+environment se real key hata deta hai, taaki
+
+907
+00:59:20,881 --> 00:59:23,821
+tests kabhi aapka paisa kharch na karein.
+
+908
+00:59:24,171 --> 00:59:29,164
+Aur mypy har type hint se khush
+hai, SDK ke apne types ke saath bhi.
+
+909
+00:59:30,464 --> 00:59:32,171
+Key reject ho rahi hai?
+
+910
+00:59:32,391 --> 00:59:37,993
+Environment variable check karo: extra
+quotes ya spaces nahi, revoke nahi hui, aur
+
+911
+00:59:37,993 --> 00:59:39,495
+sahi workspace ki hai.
+
+912
+00:59:39,845 --> 00:59:43,616
+Real answers chahiye,
+lekin offline mode aa raha hai?
+
+913
+00:59:43,836 --> 00:59:45,869
+Python ko key dikh nahi rahi.
+
+914
+00:59:46,089 --> 00:59:48,487
+Usi terminal session mein set karo.
+
+915
+00:59:48,837 --> 00:59:50,427
+Baar baar rate limit?
+
+916
+00:59:50,647 --> 00:59:53,776
+Aap apne account ki
+limit se tez bhej rahe ho.
+
+917
+00:59:53,996 --> 00:59:57,083
+Dheere karo, ya zyada retries allow karo.
+
+918
+00:59:57,433 --> 01:00:01,931
+Aur kate hue answers ke liye,
+max tokens badhao, ya kam maango.
+
+919
+01:00:03,231 --> 01:00:05,451
+Module ka interview corner.
+
+920
+01:00:05,671 --> 01:00:12,098
+Pehla question: LLM API call karne wale
+code ko bina paisa kharch kiye kaise test
+
+921
+01:00:12,098 --> 01:00:12,653
+karoge?
+
+922
+01:00:15,003 --> 01:00:18,759
+Answer: real SDK ke
+peeche ek test double lagao.
+
+923
+01:00:18,979 --> 01:00:23,926
+Ek fake server, jaise yahan
+MockTransport, jo same protocol bolta hai.
+
+924
+01:00:24,146 --> 01:00:29,782
+Tests real client code chalate hain, aur
+errors, refusals, aur truncation script kar
+
+925
+01:00:29,782 --> 01:00:30,520
+sakte hain.
+
+926
+01:00:30,740 --> 01:00:35,849
+Trap: apne function ko mock kar
+dena, jisse SDK kabhi chalta hi nahi.
+
+927
+01:00:36,069 --> 01:00:39,735
+Tab retries, streaming,
+aur parsing test hi nahi hote.
+
+928
+01:00:40,085 --> 01:00:45,088
+Doosra: ek AI feature ko bahut
+bada bill banane se kaise rokoge?
+
+929
+01:00:47,438 --> 01:00:53,090
+Answer: har call ke tokens measure karo,
+unhe cost mein badlo, aur har call se pehle
+
+930
+01:00:53,090 --> 01:00:54,301
+budget check karo.
+
+931
+01:00:54,521 --> 01:00:59,374
+Saath mein max tokens, loops ke
+liye step limits, aur kharche par alerts.
+
+932
+01:00:59,594 --> 01:01:01,879
+Trap: hum dashboard dekhte rahenge.
+
+933
+01:01:02,099 --> 01:01:06,279
+Jab tak aap dekhoge, ek
+loop paisa kharch kar chuka hoga.
+
+934
+01:01:06,629 --> 01:01:10,014
+Teesra: structured output
+ne validation pass kar li.
+
+935
+01:01:10,234 --> 01:01:11,852
+Kya content sahi hai?
+
+936
+01:01:14,202 --> 01:01:15,834
+Answer: zaroori nahi.
+
+937
+01:01:16,054 --> 01:01:18,928
+Schema shape
+guarantee karta hai, truth nahi.
+
+938
+01:01:19,148 --> 01:01:24,539
+Facts aur business rules phir bhi check
+karne padte hain, aur evals se test karna
+
+939
+01:01:24,539 --> 01:01:25,204
+padta hai.
+
+940
+01:01:25,424 --> 01:01:28,021
+Trap: schema valid ko sahi maan lena.
+
+941
+01:01:29,321 --> 01:01:30,747
+Module recap.
+
+942
+01:01:30,967 --> 01:01:37,114
+Language models tokens predict karte
+hain, aur tokens cost, limits, aur speed decide
+
+943
+01:01:37,114 --> 01:01:37,919
+karte hain.
+
+944
+01:01:38,269 --> 01:01:43,467
+Aapne API call ki aur content
+blocks, stop reasons, aur usage padhe.
+
+945
+01:01:43,817 --> 01:01:48,055
+Stateless conversations
+manage ki, trimmed history ke saath.
+
+946
+01:01:48,405 --> 01:01:52,502
+Replies stream kiye, aur
+validated structured output liya.
+
+947
+01:01:52,852 --> 01:01:58,718
+Aur errors, retries, refusals, costs,
+aur budgets handle kiye, ek fully tested
+
+948
+01:01:58,718 --> 01:01:59,696
+project mein.
+
+949
+01:02:00,996 --> 01:02:03,003
+Module quiz, question one.
+
+950
+01:02:03,223 --> 01:02:06,835
+Output tokens cost ke
+liye itne important kyun hain?
+
+951
+01:02:12,535 --> 01:02:16,715
+Kyunki woh usually input
+tokens se kai guna mehenge hote hain.
+
+952
+01:02:16,935 --> 01:02:19,774
+Claude Opus 5.5 par paanch guna.
+
+953
+01:02:21,074 --> 01:02:22,206
+Question two.
+
+954
+01:02:22,426 --> 01:02:25,263
+Stop reason max tokens kya batata hai?
+
+955
+01:02:30,963 --> 01:02:35,005
+Reply aapki limit par kat
+gaya, aur adhoora ho sakta hai.
+
+956
+01:02:36,305 --> 01:02:37,613
+Question three.
+
+957
+01:02:37,833 --> 01:02:41,327
+Ek chat bot pehle kahi
+gayi har baat bhool jaata hai.
+
+958
+01:02:41,547 --> 01:02:43,515
+Sabse likely bug kya hai?
+
+959
+01:02:49,215 --> 01:02:53,420
+App har request ke saath
+purane messages nahi bhej rahi.
+
+960
+01:02:53,640 --> 01:02:55,426
+API stateless hai.
+
+961
+01:02:56,726 --> 01:02:57,961
+Question four.
+
+962
+01:02:58,181 --> 01:03:01,661
+Kaun se errors
+automatically retry karne layak hain?
+
+963
+01:03:07,361 --> 01:03:10,493
+Rate limits, server
+errors, aur connection errors.
+
+964
+01:03:10,713 --> 01:03:14,372
+Aur SDK yeh already
+aapke liye retry karta hai.
+
+965
+01:03:15,672 --> 01:03:17,127
+Aur question five.
+
+966
+01:03:17,347 --> 01:03:21,181
+Parse, output format Quiz
+ke saath, aapko kya deta hai?
+
+967
+01:03:26,881 --> 01:03:29,043
+Ek validated Quiz object.
+
+968
+01:03:29,263 --> 01:03:31,631
+Structure guaranteed hai, facts nahi.
+
+969
+01:03:31,851 --> 01:03:35,243
+Ek valid quiz mein bhi
+galat answer ho sakta hai.
+
+970
+01:03:36,543 --> 01:03:40,648
+Ab ek real world scenario,
+poore module ko jodne ke liye.
+
+971
+01:03:40,868 --> 01:03:46,412
+Aapke college ko ek bot chahiye jo
+admissions FAQ se students ke questions answer
+
+972
+01:03:46,412 --> 01:03:51,957
+kare, conversation yaad rakhe, aur ek
+din mein paanch sau rupaye se zyada kharcha
+
+973
+01:03:51,957 --> 01:03:52,915
+kabhi na kare.
+
+974
+01:03:53,265 --> 01:03:57,569
+Socho: conversation ki memory
+kahan rahegi, aur trim kaise hogi?
+
+975
+01:03:57,919 --> 01:04:00,618
+Daily budget kaise enforce karoge?
+
+976
+01:04:00,968 --> 01:04:05,301
+Four twenty nine, four oh one,
+aur refusal par bot kya karega?
+
+977
+01:04:11,651 --> 01:04:17,352
+Is module ki har cheez yahan kaam aati
+hai: history list aur pair trimming, budget
+
+978
+01:04:17,352 --> 01:04:18,951
+check, aur error table.
+
+979
+01:04:19,171 --> 01:04:21,260
+Answers quiz dot md mein hain.
+
+980
+01:04:22,560 --> 01:04:24,501
+Aapka extension challenge.
+
+981
+01:04:24,721 --> 01:04:29,729
+Ek ya zyada chuno, aur har ek ke
+liye fake API ke saath test likho.
+
+982
+01:04:30,079 --> 01:04:35,537
+Ek model option add karo, aur Opus,
+Sonnet, aur Haiku ki cost compare karo.
+
+983
+01:04:35,887 --> 01:04:39,555
+Har chat turn se pehle
+exact token count dikhao.
+
+984
+01:04:39,905 --> 01:04:44,806
+Ek interactive quiz mode banao
+jo aakhir mein explanations dikhaye.
+
+985
+01:04:45,156 --> 01:04:49,621
+Ya chat history ko file mein
+save karo aur agli baar reload karo.
+
+986
+01:04:49,841 --> 01:04:52,664
+Yeh Module 6 ki taraf pehla kadam hai.
+
+987
+01:04:53,964 --> 01:04:57,854
+Yeh iss module ke
+official documentation pages hain.
+
+988
+01:04:58,074 --> 01:05:02,884
+Links description mein hain, poore
+source code aur course glossary ke saath.
+
+989
+01:05:06,984 --> 01:05:08,767
+Module 2 complete!
+
+990
+01:05:08,987 --> 01:05:15,075
+Ab aap Python se ek language model ko
+reliably, sasta, aur testable tareeke se call
+
+991
+01:05:15,075 --> 01:05:16,029
+kar sakte ho.
+
+992
+01:05:16,249 --> 01:05:22,188
+Module 3 mein aap aise prompts likhna
+seekhoge jo consistently kaam karein, Pydantic
+
+993
+01:05:22,188 --> 01:05:28,127
+se har output validate karoge, prompts ko
+version karoge, aur evaluate karoge, ek AI
+
+994
+01:05:28,127 --> 01:05:30,036
+Resume Analyzer banate hue.
+
+995
+01:05:30,256 --> 01:05:32,417
+Milte hain agle module mein!

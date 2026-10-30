@@ -1,318 +1,319 @@
 {
-  "course": "AI Agents with Python — Beginner to Production (2026)",
-  "language": "en",
-  "video": {
-    "width": 1920,
-    "height": 1080,
-    "fps": 60,
-    "codec": "h264",
-    "audio": "aac"
+ "course": "AI Agents with Python — Beginner to Production (2026)",
+ "language": "en",
+ "video": {
+  "width": 1920,
+  "height": 1080,
+  "fps": 60,
+  "codec": "h264",
+  "audio": "aac"
+ },
+ "design_system": "COURSE_DESIGN_SYSTEM.md",
+ "next_module": 5,
+ "modules": [
+  {
+   "number": 1,
+   "title": "Python for AI Engineering",
+   "part": "I — Foundations",
+   "project": "Python AI Toolkit",
+   "status": "COMPLETED",
+   "lessons": [
+    "Welcome, the Agent Loop, and Your Python Setup",
+    "Python Core Data: Variables, Lists, Dictionaries and Sets",
+    "Functions, Classes and Exceptions",
+    "Modules, Packages, Files, JSON and Environment Variables",
+    "Type Hints, HTTP Requests and Async",
+    "Project, Part 1: Plan, Data Model and Validation",
+    "Project, Part 2: Reports, CLI, Tests and Wrap-up"
+   ],
+   "paths": {
+    "module": "modules/module-01-python-ai-engineering",
+    "project": "modules/module-01-python-ai-engineering/project/python-ai-toolkit"
+   },
+   "validation": {
+    "report": "modules/module-01-python-ai-engineering/validation-report.md",
+    "checks_passed": 69,
+    "checks_total": 69
+   },
+   "render": {
+    "lessons": 7,
+    "full_module": "renders/module-01-full.mp4",
+    "duration": "56:58",
+    "format": "1920x1080 60fps H.264 + AAC"
+   },
+   "blockers": []
   },
-  "design_system": "COURSE_DESIGN_SYSTEM.md",
-  "next_module": 5,
-  "modules": [
-    {
-      "number": 1,
-      "title": "Python for AI Engineering",
-      "part": "I — Foundations",
-      "project": "Python AI Toolkit",
-      "status": "COMPLETED",
-      "lessons": [
-        "Welcome, the Agent Loop, and Your Python Setup",
-        "Python Core Data: Variables, Lists, Dictionaries and Sets",
-        "Functions, Classes and Exceptions",
-        "Modules, Packages, Files, JSON and Environment Variables",
-        "Type Hints, HTTP Requests and Async",
-        "Project, Part 1: Plan, Data Model and Validation",
-        "Project, Part 2: Reports, CLI, Tests and Wrap-up"
-      ],
-      "paths": {
-        "module": "modules/module-01-python-ai-engineering",
-        "project": "modules/module-01-python-ai-engineering/project/python-ai-toolkit"
-      },
-      "validation": {
-        "report": "modules/module-01-python-ai-engineering/validation-report.md",
-        "checks_passed": 69,
-        "checks_total": 69
-      },
-      "render": {
-        "lessons": 7,
-        "full_module": "renders/module-01-full.mp4",
-        "duration": "56:58",
-        "format": "1920x1080 60fps H.264 + AAC"
-      },
-      "blockers": []
-    },
-    {
-      "number": 2,
-      "title": "LLM Fundamentals and API Integration",
-      "part": "I — Foundations",
-      "project": "AI Study Assistant",
-      "status": "COMPLETED",
-      "lessons": [
-        "How LLMs Work: Tokens, Context Windows and Generation",
-        "Your First API Call: Keys, Requests and Responses",
-        "Conversations: Message History and the Growing Context",
-        "Controlling Output: Limits, Streaming and Structured JSON",
-        "Production Basics: Errors, Rate Limits, Retries and Costs",
-        "Project, Part 1: AI Study Assistant, Client, Costs and Explanations",
-        "Project, Part 2: Quizzes, Chat, Tests and Wrap-up"
-      ],
-      "paths": {
-        "module": "modules/module-02-llm-fundamentals",
-        "project": "modules/module-02-llm-fundamentals/project/ai-study-assistant"
-      },
-      "validation": {
-        "report": "modules/module-02-llm-fundamentals/validation-report.md",
-        "checks_passed": 70,
-        "checks_total": 70
-      },
-      "render": {
-        "lessons": 7,
-        "full_module": "renders/module-02-full.mp4",
-        "duration": "41:05",
-        "format": "1920x1080 60fps H.264 + AAC"
-      },
-      "blockers": []
-    },
-    {
-      "number": 3,
-      "title": "Prompt Engineering and Structured Outputs",
-      "part": "I — Foundations",
-      "project": "AI Resume Analyzer",
-      "status": "COMPLETED",
-      "lessons": [
-        "Prompt Anatomy: Instructions, Context and Constraints",
-        "Examples, XML Tags and Task Decomposition",
-        "Structured Outputs: Pydantic Schemas and Parsing Failures",
-        "Prompt Versioning and Evaluations",
-        "Project, Part 1: AI Resume Analyzer, Extraction and Comparison",
-        "Project, Part 2: Reports, Demo, Tests and Wrap-up"
-      ],
-      "paths": {
-        "module": "modules/module-03-prompt-engineering",
-        "project": "modules/module-03-prompt-engineering/project/ai-resume-analyzer"
-      },
-      "validation": {
-        "report": "modules/module-03-prompt-engineering/validation-report.md",
-        "checks_passed": 62,
-        "checks_total": 62
-      },
-      "render": {
-        "lessons": 6,
-        "full_module": "renders/module-03-full.mp4",
-        "duration": "30:32",
-        "format": "1920x1080 60fps H.264 + AAC",
-        "delivery": "single full-module video"
-      },
-      "blockers": []
-    },
-    {
-      "number": 4,
-      "title": "AI Agent Architecture",
-      "part": "II — Build Agents from Scratch",
-      "project": "Smart Calculator Agent",
-      "status": "COMPLETED",
-      "lessons": [
-        "Chatbots, Workflows and Agents: What Makes an AI Agent",
-        "Inside an Agent: Model, Instructions, Tools and State",
-        "The Agent Loop: Decide, Act, Observe, Repeat",
-        "Stopping Safely: Step Limits, Tool Errors and Safe Tools",
-        "Project, Part 1: Smart Calculator Agent, Tools and the Loop",
-        "Project, Part 2: Traces, Demo, Tests and Wrap-up"
-      ],
-      "paths": {
-        "module": "modules/module-04-agent-architecture",
-        "project": "modules/module-04-agent-architecture/project/smart-calculator-agent"
-      },
-      "validation": {
-        "report": "modules/module-04-agent-architecture/validation-report.md",
-        "checks_passed": 62,
-        "checks_total": 62
-      },
-      "render": {
-        "lessons": 6,
-        "full_module": "renders/module-04-full.mp4",
-        "duration": "36:45",
-        "format": "1920x1080 60fps H.264 + AAC",
-        "delivery": "single full-module video",
-        "pacing": "beginner (voice 0.92, longer pauses)"
-      },
-      "blockers": []
-    },
-    {
-      "number": 5,
-      "title": "Tool Calling and Function Execution",
-      "part": "II — Build Agents from Scratch",
-      "project": "Personal Productivity Agent",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 6,
-      "title": "Agent Memory and Conversation State",
-      "part": "II — Build Agents from Scratch",
-      "project": "Persistent AI Study Companion",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 7,
-      "title": "Reliable and Efficient Agents",
-      "part": "II — Build Agents from Scratch",
-      "project": "Resilient API Agent",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 8,
-      "title": "Model Context Protocol (MCP)",
-      "part": "III — Knowledge and Tool Connectivity",
-      "project": "Restricted File Assistant MCP Server",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 9,
-      "title": "Embeddings and Vector Search",
-      "part": "III — Knowledge and Tool Connectivity",
-      "project": "Semantic Search Engine",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 10,
-      "title": "Retrieval-Augmented Generation (RAG)",
-      "part": "III — Knowledge and Tool Connectivity",
-      "project": "Chat With Your PDFs",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 11,
-      "title": "LangGraph Fundamentals",
-      "part": "IV — Advanced Orchestration",
-      "project": "AI Content Workflow",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 12,
-      "title": "Multi-Agent Systems",
-      "part": "IV — Advanced Orchestration",
-      "project": "AI Research Team",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 13,
-      "title": "Web Research and Automation Agents",
-      "part": "IV — Advanced Orchestration",
-      "project": "Research Assistant",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 14,
-      "title": "Testing and Evaluation of AI Agents",
-      "part": "V — Quality and Security",
-      "project": "AI Agent Evaluation Suite",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 15,
-      "title": "AI Agent Security",
-      "part": "V — Quality and Security",
-      "project": "Secure Document Agent",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 16,
-      "title": "FastAPI for AI Applications",
-      "part": "VI — Production",
-      "project": "Authenticated AI Agent API",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 17,
-      "title": "Docker, Deployment, and Monitoring",
-      "part": "VI — Production",
-      "project": "Deployed AI Agent API",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    },
-    {
-      "number": 18,
-      "title": "Full-Stack AI Agent Application",
-      "part": "VI — Production",
-      "project": "Production AI Workspace",
-      "status": "NOT_STARTED",
-      "lessons": [],
-      "paths": {},
-      "validation": null,
-      "render": null,
-      "blockers": []
-    }
-  ],
-  "optional_capstones": [
-    "AI Research Assistant",
-    "Enterprise Knowledge Assistant",
-    "AI Workflow Automation Platform"
-  ],
-  "updated": "2026-10-30T07:25:11Z"
+  {
+   "number": 2,
+   "title": "LLM Fundamentals and API Integration",
+   "part": "I — Foundations",
+   "project": "AI Study Assistant",
+   "status": "COMPLETED",
+   "lessons": [
+    "How LLMs Work: Tokens, Context Windows and Generation",
+    "Your First API Call: Keys, Requests and Responses",
+    "Conversations: Message History and the Growing Context",
+    "Controlling Output: Limits, Streaming and Structured JSON",
+    "Production Basics: Errors, Rate Limits, Retries and Costs",
+    "Project, Part 1: AI Study Assistant, Client, Costs and Explanations",
+    "Project, Part 2: Quizzes, Chat, Tests and Wrap-up"
+   ],
+   "paths": {
+    "module": "modules/module-02-llm-fundamentals",
+    "project": "modules/module-02-llm-fundamentals/project/ai-study-assistant"
+   },
+   "validation": {
+    "report": "modules/module-02-llm-fundamentals/validation-report.md",
+    "checks_passed": 70,
+    "checks_total": 70
+   },
+   "render": {
+    "lessons": 7,
+    "full_module": "renders/module-02-full.mp4",
+    "duration": "1:05:33",
+    "format": "1920x1080 60fps H.264 + AAC",
+    "language": "Hinglish (remake, 2026-10-30)"
+   },
+   "blockers": []
+  },
+  {
+   "number": 3,
+   "title": "Prompt Engineering and Structured Outputs",
+   "part": "I — Foundations",
+   "project": "AI Resume Analyzer",
+   "status": "COMPLETED",
+   "lessons": [
+    "Prompt Anatomy: Instructions, Context and Constraints",
+    "Examples, XML Tags and Task Decomposition",
+    "Structured Outputs: Pydantic Schemas and Parsing Failures",
+    "Prompt Versioning and Evaluations",
+    "Project, Part 1: AI Resume Analyzer, Extraction and Comparison",
+    "Project, Part 2: Reports, Demo, Tests and Wrap-up"
+   ],
+   "paths": {
+    "module": "modules/module-03-prompt-engineering",
+    "project": "modules/module-03-prompt-engineering/project/ai-resume-analyzer"
+   },
+   "validation": {
+    "report": "modules/module-03-prompt-engineering/validation-report.md",
+    "checks_passed": 62,
+    "checks_total": 62
+   },
+   "render": {
+    "lessons": 6,
+    "full_module": "renders/module-03-full.mp4",
+    "duration": "30:32",
+    "format": "1920x1080 60fps H.264 + AAC",
+    "delivery": "single full-module video"
+   },
+   "blockers": []
+  },
+  {
+   "number": 4,
+   "title": "AI Agent Architecture",
+   "part": "II — Build Agents from Scratch",
+   "project": "Smart Calculator Agent",
+   "status": "COMPLETED",
+   "lessons": [
+    "Chatbots, Workflows and Agents: What Makes an AI Agent",
+    "Inside an Agent: Model, Instructions, Tools and State",
+    "The Agent Loop: Decide, Act, Observe, Repeat",
+    "Stopping Safely: Step Limits, Tool Errors and Safe Tools",
+    "Project, Part 1: Smart Calculator Agent, Tools and the Loop",
+    "Project, Part 2: Traces, Demo, Tests and Wrap-up"
+   ],
+   "paths": {
+    "module": "modules/module-04-agent-architecture",
+    "project": "modules/module-04-agent-architecture/project/smart-calculator-agent"
+   },
+   "validation": {
+    "report": "modules/module-04-agent-architecture/validation-report.md",
+    "checks_passed": 62,
+    "checks_total": 62
+   },
+   "render": {
+    "lessons": 6,
+    "full_module": "renders/module-04-full.mp4",
+    "duration": "36:45",
+    "format": "1920x1080 60fps H.264 + AAC",
+    "delivery": "single full-module video",
+    "pacing": "beginner (voice 0.92, longer pauses)"
+   },
+   "blockers": []
+  },
+  {
+   "number": 5,
+   "title": "Tool Calling and Function Execution",
+   "part": "II — Build Agents from Scratch",
+   "project": "Personal Productivity Agent",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 6,
+   "title": "Agent Memory and Conversation State",
+   "part": "II — Build Agents from Scratch",
+   "project": "Persistent AI Study Companion",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 7,
+   "title": "Reliable and Efficient Agents",
+   "part": "II — Build Agents from Scratch",
+   "project": "Resilient API Agent",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 8,
+   "title": "Model Context Protocol (MCP)",
+   "part": "III — Knowledge and Tool Connectivity",
+   "project": "Restricted File Assistant MCP Server",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 9,
+   "title": "Embeddings and Vector Search",
+   "part": "III — Knowledge and Tool Connectivity",
+   "project": "Semantic Search Engine",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 10,
+   "title": "Retrieval-Augmented Generation (RAG)",
+   "part": "III — Knowledge and Tool Connectivity",
+   "project": "Chat With Your PDFs",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 11,
+   "title": "LangGraph Fundamentals",
+   "part": "IV — Advanced Orchestration",
+   "project": "AI Content Workflow",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 12,
+   "title": "Multi-Agent Systems",
+   "part": "IV — Advanced Orchestration",
+   "project": "AI Research Team",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 13,
+   "title": "Web Research and Automation Agents",
+   "part": "IV — Advanced Orchestration",
+   "project": "Research Assistant",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 14,
+   "title": "Testing and Evaluation of AI Agents",
+   "part": "V — Quality and Security",
+   "project": "AI Agent Evaluation Suite",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 15,
+   "title": "AI Agent Security",
+   "part": "V — Quality and Security",
+   "project": "Secure Document Agent",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 16,
+   "title": "FastAPI for AI Applications",
+   "part": "VI — Production",
+   "project": "Authenticated AI Agent API",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 17,
+   "title": "Docker, Deployment, and Monitoring",
+   "part": "VI — Production",
+   "project": "Deployed AI Agent API",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  },
+  {
+   "number": 18,
+   "title": "Full-Stack AI Agent Application",
+   "part": "VI — Production",
+   "project": "Production AI Workspace",
+   "status": "NOT_STARTED",
+   "lessons": [],
+   "paths": {},
+   "validation": null,
+   "render": null,
+   "blockers": []
+  }
+ ],
+ "optional_capstones": [
+  "AI Research Assistant",
+  "Enterprise Knowledge Assistant",
+  "AI Workflow Automation Platform"
+ ],
+ "updated": "2026-10-30T23:34:46Z"
 }
