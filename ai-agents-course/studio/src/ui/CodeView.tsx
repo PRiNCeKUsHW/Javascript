@@ -9,7 +9,7 @@ export type CodeState = { hl: number[]; upto?: number; scroll: number };
 const lineOpacity = (s: CodeState, i: number) => {
   if (s.upto !== undefined && i > s.upto) return 0;
   if (!s.hl.length) return 1;
-  return s.hl.includes(i) ? 1 : 0.34;
+  return s.hl.includes(i) ? 1 : 0.5; // dimmed lines stay readable on the light theme
 };
 
 /** Pick a font size so the longest line fits the panel width, within readable bounds. */

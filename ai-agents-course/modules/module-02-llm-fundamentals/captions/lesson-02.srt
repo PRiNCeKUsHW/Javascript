@@ -1,389 +1,666 @@
 1
-00:00:00,700 --> 00:00:02,888
-Time to talk to a model from Python.
+00:00:00,700 --> 00:00:04,646
+Ab time hai Python se ek
+model ke saath baat karne ka.
 
 2
-00:00:03,109 --> 00:00:08,915
-In this lesson you'll set up an API key
-safely, install the official Anthropic SDK,
+00:00:04,866 --> 00:00:10,060
+Iss lesson mein hum pehle samjhenge
+ki API kya hoti hai aur kyun hoti hai.
 
 3
-00:00:08,915 --> 00:00:14,792
-send your first message, and then take
-the response apart, because every field in it
+00:00:10,280 --> 00:00:16,382
+Phir API key ko safely set karenge,
+official Anthropic SDK install karenge, pehla
 
 4
-00:00:14,792 --> 00:00:16,891
-matters when you build agents.
+00:00:16,382 --> 00:00:21,129
+message bhejenge, aur response
+ka har ek hissa kholke dekhenge.
 
 5
-00:00:18,191 --> 00:00:20,930
-You'll create and store an API key safely.
+00:00:22,429 --> 00:00:28,187
+Iss lesson ke baad aap API ko ek
+simple analogy ke saath explain kar paoge.
 
 6
-00:00:21,280 --> 00:00:24,310
-Install the official Anthropic Python SDK.
+00:00:28,537 --> 00:00:32,296
+API key ko safely create
+aur store karna seekhoge.
 
 7
-00:00:24,660 --> 00:00:27,191
-Send a request with messages dot create.
+00:00:32,646 --> 00:00:35,687
+Messages dot create se request bhejoge.
 
 8
-00:00:27,541 --> 00:00:32,818
-And read the response: its content
-blocks, its stop reason, and its token usage.
+00:00:36,037 --> 00:00:40,631
+Aur response ko padhoge:
+content blocks, stop reason, aur usage.
 
 9
-00:00:34,118 --> 00:00:37,183
-First, create an API
-key in the Claude Console.
+00:00:41,931 --> 00:00:43,776
+Pehle what: API kya hai?
 
 10
-00:00:37,403 --> 00:00:42,011
-Note that API usage is billed
-separately from a Claude chat subscription.
+00:00:43,996 --> 00:00:46,100
+Ek restaurant imagine karo.
 
 11
-00:00:42,361 --> 00:00:47,212
-Store it in an environment
-variable called ANTHROPIC API KEY.
+00:00:46,320 --> 00:00:48,680
+Aap seedhe kitchen mein nahi jaate.
 
 12
-00:00:47,432 --> 00:00:52,923
-The SDK reads that variable
-automatically, so the key never appears in your code.
+00:00:48,900 --> 00:00:54,525
+Aap waiter ko order dete ho, waiter
+kitchen tak order le jaata hai, aur khana wapas
 
 13
-00:00:53,273 --> 00:00:57,735
-Never paste a key into code, a
-chat, a screenshot, or a git commit.
+00:00:54,525 --> 00:00:55,203
+laata hai.
 
 14
-00:00:57,955 --> 00:01:02,890
-If a key ever leaks, delete it in the
-Console straight away and create a new one.
+00:00:55,553 --> 00:00:57,737
+Aapka Python code customer hai.
 
 15
-00:01:03,240 --> 00:01:04,228
-No key yet?
+00:00:57,957 --> 00:00:59,430
+Order hai request.
 
 16
-00:01:04,448 --> 00:01:05,441
-No problem.
+00:00:59,780 --> 00:01:01,354
+API waiter hai.
 
 17
-00:01:05,661 --> 00:01:11,358
-Everything in this module also runs in
-offline mode, which I'll explain in a moment.
+00:01:01,574 --> 00:01:06,028
+Waiter ke paas order lene ke
+fixed rules hote hain, jaise menu.
 
 18
-00:01:12,658 --> 00:01:15,840
-As always, start with a
-fresh virtual environment.
+00:01:06,378 --> 00:01:08,456
+Aur model ke servers kitchen hain.
 
 19
-00:01:16,190 --> 00:01:18,497
-Then install the anthropic package.
+00:01:08,676 --> 00:01:11,619
+Jo khana wapas aata hai, woh response hai.
 
 20
-00:01:18,717 --> 00:01:24,298
-I'm pinning version 2 point 3 point 0,
-the version this course was recorded with.
+00:01:11,969 --> 00:01:13,987
+Ab why: API kyun hoti hai?
 
 21
-00:01:24,518 --> 00:01:30,671
-It brings its own HTTP library and
-pydantic, which we'll use for structured output.
+00:01:14,207 --> 00:01:18,961
+Kyunki model bahut bade servers
+par chalta hai, aapke laptop par nahi.
 
 22
-00:01:31,021 --> 00:01:32,139
-And set your key.
+00:01:19,181 --> 00:01:25,329
+API ek fixed, safe tareeka deti hai,
+taaki koi bhi program un servers se baat kar
 
 23
-00:01:32,359 --> 00:01:38,180
-On Windows PowerShell, use dollar
-env colon ANTHROPIC API KEY instead.
+00:01:25,329 --> 00:01:25,708
+sake.
 
 24
-00:01:38,400 --> 00:01:42,330
-Or keep it in a dot env
-file, as you learned in Module 1.
+00:01:27,008 --> 00:01:28,448
+Ab API key.
 
 25
-00:01:43,630 --> 00:01:45,488
-An honest note about the demos.
+00:01:28,668 --> 00:01:31,848
+Pehle Claude Console
+mein ek API key banao.
 
 26
-00:01:45,708 --> 00:01:50,990
-So that every demo is free and
-repeatable, and so you can follow along without a
+00:01:32,068 --> 00:01:36,470
+Dhyan rahe, API ka billing
+chat subscription se alag hota hai.
 
 27
-00:01:50,990 --> 00:01:56,207
-key, the replies you'll see come from
-a small fake API built into this module's
+00:01:36,820 --> 00:01:42,611
+Phir usse ek environment variable mein
+rakho, jiska naam hai ANTHROPIC API KEY.
 
 28
-00:01:56,207 --> 00:01:56,735
-project.
+00:01:42,831 --> 00:01:48,345
+SDK isse automatically padh leta hai,
+toh key aapke code mein kabhi nahi dikhti.
 
 29
-00:01:56,955 --> 00:02:03,552
-It speaks the same protocol as the real
-API, so the real SDK code runs unchanged,
+00:01:48,695 --> 00:01:53,346
+Key ko kabhi code, chat,
+screenshot, ya git commit mein paste mat karo.
 
 30
-00:02:03,552 --> 00:02:06,891
-including streaming, errors, and retries.
+00:01:53,566 --> 00:01:58,159
+Agar key leak ho jaaye, toh turant
+Console mein delete karo aur nayi banao.
 
 31
-00:02:07,111 --> 00:02:11,706
-But the replies are placeholders,
-clearly marked offline demo reply.
+00:01:58,509 --> 00:02:00,012
+Abhi key nahi hai?
 
 32
-00:02:11,926 --> 00:02:13,477
-They are not model output.
+00:02:00,232 --> 00:02:01,595
+Koi baat nahi.
 
 33
-00:02:13,697 --> 00:02:17,399
-With your key set, exactly
-the same code talks to Claude.
+00:02:01,815 --> 00:02:05,700
+Iss module ka sab kuch
+offline mode mein bhi chalta hai.
 
 34
-00:02:18,699 --> 00:02:24,142
-In your own projects, you create a
-client with anthropic dot Anthropic, which reads
+00:02:05,920 --> 00:02:07,776
+Woh abhi samjhati hoon.
 
 35
-00:02:24,142 --> 00:02:26,044
-the key from the environment.
+00:02:09,076 --> 00:02:12,034
+API key ko ATM PIN ki tarah socho.
 
 36
-00:02:26,264 --> 00:02:31,277
-Our lesson helper does the same when a
-key is set, and uses the offline fake when it
+00:02:12,254 --> 00:02:16,729
+Jiske paas aapka PIN hai, woh
+aapka paisa kharch kar sakta hai.
 
 37
-00:02:31,277 --> 00:02:31,635
-isn't.
+00:02:16,949 --> 00:02:22,416
+Jiske paas aapki API key hai, woh
+aapka API credit kharch kar sakta hai.
 
 38
-00:02:31,985 --> 00:02:34,434
-Messages dot create sends a request.
+00:02:22,636 --> 00:02:25,386
+Aap PIN card par likhkar nahi rakhte.
 
 39
-00:02:34,654 --> 00:02:40,609
-Three arguments are required: the model
-ID, max tokens, the longest reply you'll
+00:02:25,606 --> 00:02:27,841
+Toh key ko bhi code mein mat likho.
 
 40
-00:02:40,609 --> 00:02:43,066
-accept, and the list of messages.
+00:02:29,141 --> 00:02:33,511
+Hamesha ki tarah, ek fresh
+virtual environment se shuru karo.
 
 41
-00:02:43,286 --> 00:02:48,862
-Each message is a dictionary with a role
-and content, exactly the shape you built in
+00:02:33,861 --> 00:02:36,282
+Phir anthropic package install karo.
 
 42
-00:02:48,862 --> 00:02:49,460
-Module 1.
+00:02:36,502 --> 00:02:41,736
+Mai version two point three point zero
+pin kar rahi hoon, jis version par yeh course
 
 43
-00:02:49,810 --> 00:02:52,270
-The reply's content is a list of blocks.
+00:02:41,736 --> 00:02:42,671
+record hua hai.
 
 44
-00:02:52,490 --> 00:02:55,742
-Here there's a single text
-block, so we print its text.
+00:02:42,891 --> 00:02:49,255
+SDK ka matlab hai software development
+kit, yaani ready made Python code jo API se
 
 45
-00:02:56,092 --> 00:03:01,183
-And we print two more fields: why the
-model stopped, and how many tokens went in and
+00:02:49,255 --> 00:02:51,738
+baat karna aasaan bana deta hai.
 
 46
-00:03:01,183 --> 00:03:01,426
-out.
+00:02:52,088 --> 00:02:53,831
+Aur apni key set karo.
 
 47
-00:03:02,726 --> 00:03:04,809
-Here's the run, in offline mode.
+00:02:54,051 --> 00:02:59,314
+Windows PowerShell par dollar
+env colon ANTHROPIC API KEY use karo.
 
 48
-00:03:05,029 --> 00:03:10,459
-A placeholder reply, a stop reason of
-end turn, which means the model finished
+00:02:59,534 --> 00:03:02,853
+Ya Module 1 ki tarah
+dot env file mein rakho.
 
 49
-00:03:10,459 --> 00:03:12,686
-naturally, and the token counts.
+00:03:04,153 --> 00:03:06,678
+Ek honest note, demos ke baare mein.
 
 50
-00:03:12,906 --> 00:03:16,540
-With a real key you'd see a
-real one-sentence answer here.
+00:03:06,898 --> 00:03:12,717
+Taaki har demo free ho aur har baar same
+result de, aur aap bina key ke bhi follow
 
 51
-00:03:17,840 --> 00:03:21,406
-Let's explore the response
-object in the interactive prompt.
+00:03:12,717 --> 00:03:18,678
+kar sako, aap jo replies dekhoge woh iss
+project ke ek chhote fake API se aate hain.
 
 52
-00:03:21,756 --> 00:03:27,157
-Every response has an ID, which you
-include when reporting problems, the model that
+00:03:18,898 --> 00:03:25,521
+Yeh fake API real API wala hi protocol
+bolta hai, isliye real SDK code bilkul waise
 
 53
-00:03:27,157 --> 00:03:29,369
-answered, and the role, assistant.
+00:03:25,521 --> 00:03:26,638
+hi chalta hai.
 
 54
-00:03:29,589 --> 00:03:31,785
-Content is a list of typed blocks.
+00:03:26,858 --> 00:03:32,125
+Lekin replies placeholders hain, jin
+par likha hota hai offline demo reply.
 
 55
-00:03:32,135 --> 00:03:34,191
-The stop reason and the usage.
+00:03:32,345 --> 00:03:34,456
+Yeh model ka output nahi hai.
 
 56
-00:03:34,411 --> 00:03:38,731
-Usage is what you are billed for,
-so production code always records it.
+00:03:34,676 --> 00:03:38,492
+Key set karoge, toh yahi
+code seedhe Claude se baat karega.
 
 57
-00:03:38,951 --> 00:03:40,930
-We'll do exactly that in the project.
+00:03:39,792 --> 00:03:41,598
+Ab how: pehli request.
 
 58
-00:03:42,230 --> 00:03:43,653
-Why is content a list?
+00:03:41,818 --> 00:03:45,814
+Left side par code hai,
+right side par uska real output.
 
 59
-00:03:43,873 --> 00:03:46,868
-Because a reply can
-contain different kinds of block.
+00:03:46,034 --> 00:03:47,895
+Line by line chalte hain.
 
 60
-00:03:47,088 --> 00:03:49,087
-Text blocks hold the written answer.
+00:03:48,245 --> 00:03:50,116
+Pehle client banta hai.
 
 61
-00:03:49,437 --> 00:03:51,890
-Thinking blocks can
-hold the model's reasoning.
+00:03:50,336 --> 00:03:56,379
+Apne projects mein aap anthropic dot
+Anthropic likhoge, jo environment se key padh
 
 62
-00:03:52,110 --> 00:03:56,657
-On current models it's hidden by
-default, but the block may still be there.
+00:03:56,379 --> 00:03:57,042
+leta hai.
 
 63
-00:03:57,007 --> 00:04:02,413
-And tool use blocks are requests to run
-one of your tools, which is how agents act.
+00:03:57,262 --> 00:04:02,769
+Hamara lesson helper bhi wahi karta hai
+jab key set ho, aur key na ho toh offline
 
 64
-00:04:02,633 --> 00:04:04,811
-You'll handle those in Module 5.
+00:04:02,769 --> 00:04:04,060
+fake use karta hai.
 
 65
-00:04:05,161 --> 00:04:08,803
-So robust code never
-assumes the first block is text.
+00:04:04,410 --> 00:04:07,408
+Messages dot create request bhejta hai.
 
 66
-00:04:09,023 --> 00:04:12,526
-It checks each block's
-type, as the next example does.
+00:04:07,628 --> 00:04:09,680
+Teen arguments zaroori hain.
 
 67
-00:04:13,826 --> 00:04:19,078
-The system parameter gives the model its
-role and rules for the whole conversation.
+00:04:09,900 --> 00:04:11,991
+Model, yaani kaunsa model.
 
 68
-00:04:19,298 --> 00:04:21,402
-It sits outside the messages list.
+00:04:12,211 --> 00:04:16,594
+Max tokens, yaani reply
+maximum kitna lamba ho sakta hai.
 
 69
-00:04:21,622 --> 00:04:25,621
-Here: be a patient tutor, and
-answer in at most two sentences.
+00:04:16,814 --> 00:04:19,790
+Aur messages, yaani conversation ki list.
 
 70
-00:04:25,971 --> 00:04:30,961
-And here's the robust way to read the
-answer: loop over the blocks and only print
+00:04:20,010 --> 00:04:24,361
+Har message ek dictionary hai,
+jisme role aur content hota hai.
 
 71
-00:04:30,961 --> 00:04:31,700
-text blocks.
+00:04:24,581 --> 00:04:28,183
+Bilkul wahi shape jo
+aapne Module 1 mein banayi thi.
 
 72
-00:04:33,000 --> 00:04:37,601
-In offline mode the placeholder
-can't follow the instructions, of course.
+00:04:28,533 --> 00:04:31,436
+Reply ka content ek list hai, blocks ki.
 
 73
-00:04:37,821 --> 00:04:40,444
-A real model would
-answer in two sentences.
+00:04:31,656 --> 00:04:36,270
+Yahan ek hi text block hai,
+isliye hum uska text print karte hain.
 
 74
-00:04:40,664 --> 00:04:44,643
-Prompt design gets a whole
-module of its own, Module 3.
+00:04:36,490 --> 00:04:40,803
+Right side par pehli line yahi
+hai: offline placeholder reply.
 
 75
-00:04:45,943 --> 00:04:46,751
-Quick check.
+00:04:41,153 --> 00:04:43,743
+Yeh line stop reason print karti hai.
 
 76
-00:04:46,971 --> 00:04:50,809
-Which three arguments does
-messages dot create require?
+00:04:43,963 --> 00:04:49,417
+Output mein end turn aaya, matlab
+model ne apna answer naturally khatam kiya.
 
 77
-00:04:56,509 --> 00:04:58,842
-Model, max tokens, and messages.
+00:04:49,767 --> 00:04:52,581
+Aur aakhri line tokens print karti hai.
 
 78
-00:04:59,062 --> 00:05:03,136
-The key comes from the
-environment, and the system prompt is optional.
+00:04:52,801 --> 00:04:56,006
+Nau tokens gaye,
+chausath tokens wapas aaye.
 
 79
-00:05:04,436 --> 00:05:08,733
-API keys live in an
-environment variable, never in your code.
+00:04:56,226 --> 00:04:59,557
+Usage hi woh cheez hai
+jiska aapko bill aata hai.
 
 80
-00:05:09,083 --> 00:05:13,630
-Messages dot create needs a
-model, max tokens, and messages.
+00:05:00,857 --> 00:05:03,182
+Ab response ko kholke dekhte hain.
 
 81
-00:05:13,980 --> 00:05:18,657
-The response gives you content
-blocks, a stop reason, and token usage.
+00:05:03,402 --> 00:05:05,955
+ID har response ka unique number hai.
 
 82
-00:05:19,007 --> 00:05:21,672
-And the system prompt
-sets the role and the rules.
+00:05:06,175 --> 00:05:09,860
+Koi problem report karni
+ho, toh yeh ID batate hain.
 
 83
-00:05:22,022 --> 00:05:24,001
-Next lesson: conversations.
+00:05:10,210 --> 00:05:14,054
+Model batata hai kaunse
+model ne actually answer diya.
 
 84
-00:05:24,221 --> 00:05:29,036
-You'll see exactly why the model
-forgets, and how to manage message history
+00:05:14,404 --> 00:05:17,732
+Content mein answer hai,
+blocks ki list ki form mein.
 
 85
-00:05:29,036 --> 00:05:29,614
-properly.
+00:05:18,082 --> 00:05:23,244
+Stop reason batata hai answer
+complete hua, cut off hua, ya refuse hua.
+
+86
+00:05:23,594 --> 00:05:26,971
+Aur usage batata hai
+kitne tokens gaye aur aaye.
+
+87
+00:05:27,191 --> 00:05:30,334
+Production code isse
+hamesha record karta hai.
+
+88
+00:05:30,554 --> 00:05:32,686
+Project mein hum yahi karenge.
+
+89
+00:05:33,986 --> 00:05:35,665
+Content list kyun hai?
+
+90
+00:05:35,885 --> 00:05:39,943
+Kyunki ek reply mein alag
+alag type ke blocks ho sakte hain.
+
+91
+00:05:40,163 --> 00:05:42,906
+Text block mein likha hua answer hota hai.
+
+92
+00:05:43,256 --> 00:05:46,483
+Thinking block mein model
+ki reasoning ho sakti hai.
+
+93
+00:05:46,703 --> 00:05:52,003
+Current models par yeh by default hidden
+hoti hai, lekin block wahan ho sakta hai.
+
+94
+00:05:52,353 --> 00:05:56,809
+Aur tool use block ek request
+hai ki aapka koi tool chalaya jaaye.
+
+95
+00:05:57,029 --> 00:05:59,504
+Agents isi tarah kaam karte hain.
+
+96
+00:05:59,724 --> 00:06:01,739
+Yeh Module 5 mein aayega.
+
+97
+00:06:02,089 --> 00:06:07,193
+Isliye achha code yeh assume nahi
+karta ki pehla block hamesha text hai.
+
+98
+00:06:07,413 --> 00:06:09,840
+Woh har block ka type check karta hai.
+
+99
+00:06:10,060 --> 00:06:12,460
+Agla example yahi dikhata hai.
+
+100
+00:06:13,760 --> 00:06:15,258
+Ab system prompt.
+
+101
+00:06:15,478 --> 00:06:18,780
+Isse ek shift se pehle
+ki briefing ki tarah socho.
+
+102
+00:06:19,000 --> 00:06:24,625
+Manager naye employee ko batata hai: tum
+kaun ho, rules kya hain, aur customers se
+
+103
+00:06:24,625 --> 00:06:26,065
+kaise baat karni hai.
+
+104
+00:06:26,285 --> 00:06:30,220
+System prompt wahi briefing
+hai, poori conversation ke liye.
+
+105
+00:06:31,520 --> 00:06:35,006
+System parameter model
+ko role aur rules deta hai.
+
+106
+00:06:35,226 --> 00:06:37,991
+Yeh messages list ke bahar hota hai.
+
+107
+00:06:38,211 --> 00:06:43,417
+Yahan rule hai: patient tutor bano,
+aur maximum do sentences mein answer do.
+
+108
+00:06:43,767 --> 00:06:49,123
+Aur yeh answer padhne ka safe tareeka
+hai: har block par loop karo, aur sirf text
+
+109
+00:06:49,123 --> 00:06:50,313
+blocks print karo.
+
+110
+00:06:50,533 --> 00:06:54,981
+Offline mode mein placeholder
+instructions follow nahi kar sakta.
+
+111
+00:06:55,201 --> 00:06:58,265
+Real model do sentences mein answer deta.
+
+112
+00:06:58,485 --> 00:07:01,068
+Prompt design par poora Module 3 hai.
+
+113
+00:07:02,368 --> 00:07:03,827
+Interview corner.
+
+114
+00:07:04,047 --> 00:07:08,285
+Sabse basic, lekin sabse
+common question: API kya hai?
+
+115
+00:07:10,635 --> 00:07:17,020
+Ek achha answer: API ek defined tareeka
+hai jisse ek program doosre program se kuch
+
+116
+00:07:17,020 --> 00:07:17,866
+maang sake.
+
+117
+00:07:18,086 --> 00:07:23,338
+Aap ek agreed format mein request
+bhejte ho, aur response wapas aata hai.
+
+118
+00:07:23,558 --> 00:07:26,435
+Waiter wali analogy bhi bol sakte ho.
+
+119
+00:07:26,655 --> 00:07:30,009
+Trap: API ko library ya website mat bolna.
+
+120
+00:07:30,229 --> 00:07:33,396
+API dono programs ke
+beech ka contract hai.
+
+121
+00:07:33,746 --> 00:07:38,068
+Doosra question: API keys ko
+code se bahar kaise rakhte ho?
+
+122
+00:07:40,418 --> 00:07:45,034
+Answer: environment variables
+mein, ya kisi secrets manager mein.
+
+123
+00:07:45,254 --> 00:07:47,123
+Source code mein kabhi nahi.
+
+124
+00:07:47,343 --> 00:07:50,801
+Har app ki alag key, aur
+leak hote hi key revoke karo.
+
+125
+00:07:51,021 --> 00:07:53,971
+Trap: config file
+mein repo ke andar rakhna.
+
+126
+00:07:54,191 --> 00:07:57,108
+Git mein jo bhi gaya, usse public samjho.
+
+127
+00:07:58,408 --> 00:07:59,665
+Practice time.
+
+128
+00:07:59,885 --> 00:08:02,361
+Video pause karo aur khud try karo.
+
+129
+00:08:02,711 --> 00:08:07,357
+Pehla: messages dot create ke
+teen zaroori arguments kaun se hain?
+
+130
+00:08:07,707 --> 00:08:12,839
+Doosra: first call dot py ko badlo,
+taaki woh har block ka type print kare.
+
+131
+00:08:13,189 --> 00:08:17,576
+Teesra: agent mein content
+zero dot text likhna risky kyun hai?
+
+132
+00:08:17,926 --> 00:08:21,910
+Aur scenario: aapke teammate
+ne ek key GitHub par push kar di.
+
+133
+00:08:22,130 --> 00:08:24,488
+Aap kya karoge, order mein batao.
+
+134
+00:08:30,838 --> 00:08:35,068
+Hint for the last one: pehla
+step hai key ko turant revoke karna.
+
+135
+00:08:35,288 --> 00:08:38,263
+Git history se hata dena kaafi nahi hai.
+
+136
+00:08:39,563 --> 00:08:40,491
+Quick check.
+
+137
+00:08:40,711 --> 00:08:45,128
+Messages dot create ke liye
+kaun se teen arguments zaroori hain?
+
+138
+00:08:50,828 --> 00:08:53,292
+Model, max tokens, aur messages.
+
+139
+00:08:53,512 --> 00:08:57,523
+Key environment se aati hai,
+aur system prompt optional hai.
+
+140
+00:08:58,823 --> 00:08:59,663
+Recap.
+
+141
+00:08:59,883 --> 00:09:03,347
+API aapke code aur
+model ke beech ka waiter hai.
+
+142
+00:09:03,697 --> 00:09:07,810
+Keys environment variable mein
+rehti hain, code mein kabhi nahi.
+
+143
+00:09:08,160 --> 00:09:13,079
+Messages dot create ko model,
+max tokens, aur messages chahiye.
+
+144
+00:09:13,429 --> 00:09:17,903
+Response mein content blocks,
+stop reason, aur usage milta hai.
+
+145
+00:09:18,253 --> 00:09:20,536
+Agle lesson mein conversations.
+
+146
+00:09:20,756 --> 00:09:26,369
+Aap khud dekhoge ki model bhoolta kyun
+hai, aur message history ko sahi tareeke se
+
+147
+00:09:26,369 --> 00:09:28,012
+kaise manage karte hain.
