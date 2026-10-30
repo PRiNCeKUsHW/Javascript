@@ -41,6 +41,14 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
 
 ## Next: Module 4: AI Agent Architecture (project: Smart Calculator Agent)
 
+Beginner-friendliness rules from Module 4 on (user request, 2026-10-30):
+- Slower pacing: `tools/build_lesson.py` applies `BEGINNER_PACING` for module >= 4 (voice speed 0.92,
+  longer pauses between beats and sentences). Modules 1-3 keep the original pacing.
+- More explanation time: explain every new term the first time it's used (and add it to
+  `GLOSSARY.md`), say why before how, and recap the previous step before a new one.
+- One "Pause and try" moment per lesson: a `callout` (kind: tip) with a short task and a 5 s pause beat.
+- Update `GLOSSARY.md` with the module's new terms.
+
 Notes carried over from Module 1:
 
 Notes for the next modules, learned in Module 1:

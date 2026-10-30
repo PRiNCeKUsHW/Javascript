@@ -5,6 +5,7 @@ captions, a fully implemented and tested practical project, a quiz, an extension
 YouTube packaging.
 
 - Syllabus: [COURSE_SYLLABUS.md](COURSE_SYLLABUS.md)
+- Glossary of every term: [GLOSSARY.md](GLOSSARY.md)
 - Visual identity: [COURSE_DESIGN_SYSTEM.md](COURSE_DESIGN_SYSTEM.md)
 - Progress (machine-readable): [COURSE_MANIFEST.json](COURSE_MANIFEST.json) · human-readable: [progress.md](progress.md)
 

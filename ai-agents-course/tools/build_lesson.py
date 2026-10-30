@@ -40,6 +40,18 @@ VOICE, LANG, SPEED = "am_michael", "en-us", 1.0
 
 LEAD, TAIL, GAP = 0.7, 0.6, 0.35       # seconds before the first beat, after the last, between beats
 SENTENCE_GAP = 0.22
+
+# Beginner pacing from Module 4 on: slightly slower voice and longer pauses between ideas.
+# Modules 1-3 keep the original pacing, so rebuilding them reproduces the published videos.
+BEGINNER_PACING = {"SPEED": 0.92, "LEAD": 0.9, "TAIL": 0.9, "GAP": 0.6, "SENTENCE_GAP": 0.35}
+
+
+def set_pacing(module):
+    global SPEED, LEAD, TAIL, GAP, SENTENCE_GAP
+    SPEED, LEAD, TAIL, GAP, SENTENCE_GAP = 1.0, 0.7, 0.6, 0.35, 0.22
+    if module >= 4:
+        p = BEGINNER_PACING
+        SPEED, LEAD, TAIL, GAP, SENTENCE_GAP = p["SPEED"], p["LEAD"], p["TAIL"], p["GAP"], p["SENTENCE_GAP"]
 ENVELOPE_HZ = 30
 
 # words the phonemiser gets wrong, spelled the way they are said (display text is untouched)
@@ -389,6 +401,7 @@ def module_dir_for(module):
 
 
 def build(module, lesson, allow_new=True):
+    set_pacing(module)
     mdir = module_dir_for(module)
     spec = yaml.safe_load((mdir / f"scripts/lesson-{lesson:02d}.yaml").read_text(encoding="utf-8"))
     env = dict(os.environ, PATH=f"{VENV_BIN}{os.pathsep}{os.environ['PATH']}", PYTHONDONTWRITEBYTECODE="1",
