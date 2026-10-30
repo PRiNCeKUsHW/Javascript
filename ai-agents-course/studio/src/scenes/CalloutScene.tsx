@@ -1,6 +1,6 @@
 import React from "react";
 import { useCurrentFrame } from "remotion";
-import { C, FONT, MONO, tone } from "../theme";
+import { C, FONT, MONO, tone, alpha } from "../theme";
 import { appear, itemProgress, SceneBase } from "../ui/anim";
 import { Rich } from "../ui/Rich";
 
@@ -11,6 +11,9 @@ const KINDS: Record<string, { color: string; label: string; icon: string }> = {
   try: { color: "amber", label: "Pause and try", icon: "⏸" },
   info: { color: "blue", label: "Good to know", icon: "i" },
   challenge: { color: "violet", label: "Extension challenge", icon: "★" },
+  analogy: { color: "violet", label: "Real-life analogy", icon: "≈" },
+  scenario: { color: "blue", label: "Real-world scenario", icon: "◆" },
+  practice: { color: "teal", label: "Practice questions", icon: "?" },
 };
 
 export const CalloutScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
@@ -32,7 +35,7 @@ export const CalloutScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
           borderTop: `6px solid ${col}`,
           borderRadius: 28,
           padding: "52px 64px",
-          boxShadow: "0 40px 100px rgba(0,0,0,0.45)",
+          boxShadow: `0 24px 60px ${C.shadow}`,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 26 }}>
@@ -44,7 +47,7 @@ export const CalloutScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
         </div>
         {s.body ? <div style={{ fontFamily: FONT, fontSize: 36, color: C.muted, lineHeight: 1.45, marginTop: 22 }}><Rich text={s.body} /></div> : null}
         {s.error ? (
-          <div style={{ marginTop: 30, fontFamily: MONO, fontSize: 28, color: "#FFB3BB", background: "#1A0F16", border: `1px solid ${C.coral}55`, borderRadius: 16, padding: "20px 26px", whiteSpace: "pre-wrap", lineHeight: 1.45 }}>{s.error}</div>
+          <div style={{ marginTop: 30, fontFamily: MONO, fontSize: 28, color: C.coral, background: alpha(C.coral, 0.06), border: `1px solid ${C.coral}55`, borderRadius: 16, padding: "20px 26px", whiteSpace: "pre-wrap", lineHeight: 1.45 }}>{s.error}</div>
         ) : null}
         {s.fix ? (
           <div style={{ marginTop: 22, opacity: appear(frame, s.beats[s.beats.length - 1].from, 20), fontFamily: FONT, fontSize: 34, color: C.text, display: "flex", gap: 16, lineHeight: 1.4 }}>

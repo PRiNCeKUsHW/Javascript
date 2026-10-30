@@ -1,5 +1,5 @@
 import React from "react";
-import { C, MONO } from "../theme";
+import { C, MONO, alpha } from "../theme";
 
 /** Inline markup used in every text field: `code` and **emphasis**. */
 export const Rich: React.FC<{ text: string; accent?: string }> = ({ text, accent = C.amber }) => {
@@ -17,9 +17,9 @@ export const Rich: React.FC<{ text: string; accent?: string }> = ({ text, accent
           style={{
             fontFamily: MONO,
             fontSize: "0.86em",
-            color: "#BFF5DF",
-            background: "rgba(46,230,168,0.10)",
-            border: "1px solid rgba(46,230,168,0.22)",
+            color: C.teal,
+            background: alpha(C.teal, 0.08),
+            border: `1px solid ${alpha(C.teal, 0.25)}`,
             borderRadius: 8,
             padding: "0.04em 0.28em",
           }}

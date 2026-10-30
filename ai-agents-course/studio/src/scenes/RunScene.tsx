@@ -1,6 +1,6 @@
 import React from "react";
 import { interpolate, useCurrentFrame } from "remotion";
-import { C, CONTENT_W, FONT, MONO, SAFE, tone } from "../theme";
+import { C, CONTENT_W, FONT, MONO, SAFE, tone, alpha } from "../theme";
 import { appear, itemProgress, lerp, SceneBase } from "../ui/anim";
 import { Heading } from "../ui/Heading";
 import { Rich } from "../ui/Rich";
@@ -14,7 +14,7 @@ type Step = { hl: number[]; ohl?: number[]; note?: string; tone?: string };
 const outColor = (line: string) => {
   if (/^\s*(x |error|Error|Traceback|E |FAILED)/.test(line) || /Error:/.test(line)) return C.coral;
   if (/passed|^# /.test(line)) return C.teal;
-  return "#D5DCEA";
+  return C.codeText;
 };
 
 export const RunScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
@@ -126,7 +126,7 @@ export const RunScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
                     opacity: (frame >= at ? appear(frame, at, 6) : 0) * (isHl ? 1 : lerp(1, dim, t)),
                   }}
                 >
-                  <div style={{ position: "absolute", inset: "0 -28px", background: `rgba(108,168,255,${0.12 * bg})`, borderLeft: `4px solid rgba(108,168,255,${bg})` }} />
+                  <div style={{ position: "absolute", inset: "0 -28px", background: alpha(C.blue, 0.10 * bg), borderLeft: `4px solid ${alpha(C.blue, bg)}` }} />
                   <span style={{ position: "relative" }}>{r.text}</span>
                 </div>
               );

@@ -12,7 +12,7 @@ const colorFor = (line: string) => {
   if (/^\s*(x |error|Error|Traceback|E |FAILED)/.test(line) || /Error:/.test(line)) return C.coral;
   if (/^\s*(warning|WARNING)/.test(line)) return C.amber;
   if (/passed|^# |valid, 0 invalid|written to|saved \d+/.test(line)) return C.teal;
-  return "#D5DCEA";
+  return C.codeText;
 };
 
 export const TerminalScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {

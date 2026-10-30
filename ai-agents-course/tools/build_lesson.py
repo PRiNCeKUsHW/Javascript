@@ -28,6 +28,8 @@ from pygments import lex
 from pygments.lexers import get_lexer_by_name
 from pygments.token import Comment, Keyword, Name, Number, Operator, String, Token
 
+import hinglish  # tools/: Hinglish phonemes for the Indian female voice
+
 ROOT = Path(__file__).resolve().parent.parent
 STUDIO = ROOT / "studio"
 VENV_BIN = ROOT / ".venv" / ("Scripts" if os.name == "nt" else "bin")  # Windows venvs use Scripts/
@@ -37,6 +39,9 @@ KOKORO = Path(os.environ.get("KOKORO_DIR", Path.home() / ".cache/hyperframes/tts
 SR = 24000
 FPS = 60
 VOICE, LANG, SPEED = "am_michael", "en-us", 1.0
+# Hinglish narration (Module 2 remake on): a lesson script with `narration: hinglish` is spoken by an
+# Indian female voice; tools/hinglish.py gives its English words an Indian-English accent.
+HINGLISH_VOICE = os.environ.get("HINGLISH_VOICE", "hf_alpha")
 
 LEAD, TAIL, GAP = 0.7, 0.6, 0.35       # seconds before the first beat, after the last, between beats
 SENTENCE_GAP = 0.22
@@ -106,7 +111,7 @@ def display(text):
 
 def sentences(text):
     text = " ".join(text.split())
-    return [s for s in re.split(r"(?<=[.!?])\s+(?=[A-Z0-9\"'(`])", text) if s.strip()]
+    return [s for s in re.split(r"(?<=[.!?।])\s+(?=[A-Z0-9\"'(`\u0900-\u097F])", text) if s.strip()]
 
 
 def trim(x, thresh=0.008):
@@ -124,7 +129,11 @@ def tts(sentence, allow_new):
         return sf.read(path, dtype="float32")[0]
     if not allow_new:
         raise SystemExit(f"narration not cached: {sentence[:70]}")
-    audio, sr = kokoro().create(spoken, voice=VOICE, speed=SPEED, lang=LANG)
+    if LANG == "hinglish":
+        audio, sr = kokoro().create(hinglish.phonemes(kokoro().tokenizer, spoken), voice=VOICE, speed=SPEED,
+                                    is_phonemes=True)
+    else:
+        audio, sr = kokoro().create(spoken, voice=VOICE, speed=SPEED, lang=LANG)
     assert sr == SR
     audio = trim(np.asarray(audio, dtype=np.float32))
     TTS_CACHE.mkdir(parents=True, exist_ok=True)
@@ -422,6 +431,8 @@ def build(module, lesson, allow_new=True):
     set_pacing(module)
     mdir = module_dir_for(module)
     spec = yaml.safe_load((mdir / f"scripts/lesson-{lesson:02d}.yaml").read_text(encoding="utf-8"))
+    global VOICE, LANG
+    VOICE, LANG = ("am_michael", "en-us") if spec.get("narration") != "hinglish" else (HINGLISH_VOICE, "hinglish")
     env = dict(os.environ, PATH=f"{VENV_BIN}{os.pathsep}{os.environ['PATH']}", PYTHONDONTWRITEBYTECODE="1",
                VIRTUAL_ENV=str(ROOT / ".venv"), COLUMNS="88", NO_COLOR="1")
     env = shell_env(env)

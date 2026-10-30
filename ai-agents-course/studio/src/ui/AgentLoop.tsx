@@ -14,8 +14,8 @@ export const AgentLoop: React.FC<{ size: number; labels?: string[]; dim?: boolea
     <svg width={size} height={size} style={{ overflow: "visible", opacity: dim ? 0.35 : 1 }}>
       <defs>
         <radialGradient id="core" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#2EE6A8" stopOpacity={0.35} />
-          <stop offset="100%" stopColor="#2EE6A8" stopOpacity={0} />
+          <stop offset="0%" stopColor={C.teal} stopOpacity={0.18} />
+          <stop offset="100%" stopColor={C.teal} stopOpacity={0} />
         </radialGradient>
       </defs>
       <circle cx={cx} cy={cx} r={r * 0.62} fill="url(#core)" />

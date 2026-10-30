@@ -1,6 +1,6 @@
 import React from "react";
 import { interpolate, useCurrentFrame } from "remotion";
-import { C, FONT, MONO } from "../theme";
+import { C, FONT, MONO, alpha } from "../theme";
 import { appear, beatStart, SceneBase } from "../ui/anim";
 import { Rich } from "../ui/Rich";
 
@@ -37,7 +37,7 @@ export const QuizScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
         <Rich text={s.question} />
       </div>
       {s.code ? (
-        <div style={{ marginTop: 24, fontFamily: MONO, fontSize: 30, color: "#D5E6FF", background: C.ink2, border: `1px solid ${C.line}`, borderRadius: 16, padding: "20px 28px", whiteSpace: "pre", opacity: appear(frame, 12, 22) }}>{s.code}</div>
+        <div style={{ marginTop: 24, fontFamily: MONO, fontSize: 30, color: C.codeText, background: C.code, border: `1px solid ${C.line}`, borderRadius: 16, padding: "20px 28px", whiteSpace: "pre", opacity: appear(frame, 12, 22) }}>{s.code}</div>
       ) : null}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 34 }}>
         {s.options.map((opt, i) => {
@@ -52,7 +52,7 @@ export const QuizScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
                 display: "flex",
                 alignItems: "center",
                 gap: 22,
-                background: revealed && correct ? `rgba(46,230,168,${0.12 * r})` : C.surface,
+                background: revealed && correct ? alpha(C.teal, 0.12 * r) : C.surface,
                 border: `2px solid ${col}`,
                 borderRadius: 20,
                 padding: "22px 28px",

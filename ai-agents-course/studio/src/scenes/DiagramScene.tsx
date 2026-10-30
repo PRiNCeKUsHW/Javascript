@@ -117,7 +117,7 @@ export const DiagramScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
                 borderRadius: n.shape === "pill" ? h / 2 : n.shape === "db" ? "24px 24px 50% 50% / 24px 24px 18% 18%" : 22,
                 background: on ? `${col}22` : C.surface,
                 border: `${on ? 3 : 2}px solid ${col}`,
-                boxShadow: on ? `0 0 0 8px ${col}14, 0 20px 50px rgba(0,0,0,0.35)` : "0 16px 40px rgba(0,0,0,0.3)",
+                boxShadow: on ? `0 0 0 8px ${col}14, 0 20px 50px ${C.shadow}` : `0 12px 30px ${C.shadow}`,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",

@@ -17,6 +17,8 @@ import { CalloutScene } from "./scenes/CalloutScene";
 import { QuizScene } from "./scenes/QuizScene";
 import { LinksScene } from "./scenes/LinksScene";
 import { RunScene } from "./scenes/RunScene";
+import { TableScene } from "./scenes/TableScene";
+import { InterviewScene } from "./scenes/InterviewScene";
 
 loadFonts();
 
@@ -51,6 +53,8 @@ const SCENES: Record<string, React.FC<{ scene: SceneBase }>> = {
   quiz: QuizScene,
   links: LinksScene,
   run: RunScene,
+  table: TableScene,
+  interview: InterviewScene,
 };
 
 

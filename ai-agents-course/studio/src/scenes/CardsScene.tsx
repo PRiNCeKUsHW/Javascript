@@ -54,7 +54,7 @@ export const CardsScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
                 </div>
               ) : null}
               {card.code ? (
-                <div style={{ marginTop: "auto", fontFamily: MONO, fontSize: compact ? 25 : 28, color: "#CFE9FF", background: C.ink, border: `1px solid ${C.line}`, borderRadius: 14, padding: "14px 18px", whiteSpace: "pre" }}>
+                <div style={{ marginTop: "auto", fontFamily: MONO, fontSize: compact ? 25 : 28, color: C.codeText, background: C.code, border: `1px solid ${C.line}`, borderRadius: 14, padding: "14px 18px", whiteSpace: "pre" }}>
                   {card.code}
                 </div>
               ) : null}

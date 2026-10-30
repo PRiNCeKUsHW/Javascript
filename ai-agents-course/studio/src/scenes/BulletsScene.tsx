@@ -67,7 +67,7 @@ export const BulletsScene: React.FC<{ scene: SceneBase }> = ({ scene }) => {
                   alignItems: "flex-start",
                   padding: "14px 24px",
                   borderRadius: 18,
-                  background: on ? "rgba(255,255,255,0.035)" : "transparent",
+                  background: on ? C.surface : "transparent",
                   border: `1px solid ${on ? C.line : "transparent"}`,
                 }}
               >
