@@ -1,298 +1,526 @@
 1
-00:00:00,700 --> 00:00:06,665
-Every chat app and every agent is a
-conversation: a list of messages that grows over
+00:00:00,700 --> 00:00:06,701
+Har chat app aur har agent asal mein ek
+conversation hai: messages ki ek list, jo
 
 2
-00:00:06,665 --> 00:00:07,020
-time.
+00:00:06,701 --> 00:00:08,997
+time ke saath badhti jaati hai.
 
 3
-00:00:07,240 --> 00:00:12,309
-In this lesson you'll see that the API
-remembers nothing, that your code owns the
+00:00:09,217 --> 00:00:15,094
+Iss lesson mein aap dekhoge ki API kuch
+bhi yaad nahi rakhti, history aapke code ki
 
 4
-00:00:12,309 --> 00:00:15,876
-history, and that a growing
-history means a growing bill.
+00:00:15,094 --> 00:00:19,342
+zimmedari hai, aur badhti
+history ka matlab hai badhta bill.
 
 5
-00:00:17,176 --> 00:00:20,115
-You'll build a
-multi-turn conversation correctly.
+00:00:20,642 --> 00:00:25,518
+Iss lesson ke baad aap explain kar
+paoge ki stateless ka matlab kya hai.
 
 6
-00:00:20,465 --> 00:00:23,266
-Spot and fix the
-classic forgotten reply bug.
+00:00:25,868 --> 00:00:29,658
+Multi turn conversation
+sahi tareeke se banaoge.
 
 7
-00:00:23,616 --> 00:00:26,467
-Measure how input
-tokens grow with every turn.
+00:00:30,008 --> 00:00:34,202
+Forgotten reply wala
+classic bug pakdoge aur fix karoge.
 
 8
-00:00:26,817 --> 00:00:30,898
-And choose a strategy for
-keeping long conversations under control.
+00:00:34,552 --> 00:00:38,574
+Aur lambi conversations ko
+control mein rakhna seekhoge.
 
 9
-00:00:32,198 --> 00:00:34,477
-Here's how a conversation really works.
+00:00:39,874 --> 00:00:42,462
+Pehle what: stateless ka matlab kya hai?
 
 10
-00:00:34,827 --> 00:00:37,647
-The first request
-contains one user message.
+00:00:42,682 --> 00:00:47,395
+Ek call centre socho, jiske paas
+customers ka koi record nahi hai.
 
 11
-00:00:37,997 --> 00:00:41,059
-The API replies, and
-then forgets everything.
+00:00:47,615 --> 00:00:53,128
+Har baar call karo, toh ek naya agent
+phone uthata hai, jo aapke baare mein kuch
 
 12
-00:00:41,279 --> 00:00:44,912
-Your app stores the user
-message and the reply in a list.
+00:00:53,128 --> 00:00:53,955
+nahi jaanta.
 
 13
-00:00:45,262 --> 00:00:50,273
-The second request sends the whole
-list: the first question, the first reply, and
+00:00:54,175 --> 00:00:59,015
+Purani problem par help chahiye,
+toh poori kahani phirse sunani padegi.
 
 14
-00:00:50,273 --> 00:00:51,324
-the new question.
+00:00:59,235 --> 00:01:01,997
+API bilkul aise hi kaam karti hai.
 
 15
-00:00:51,674 --> 00:00:54,178
-And the third request sends five messages.
+00:01:02,217 --> 00:01:04,077
+Har request akeli hai.
 
 16
-00:00:54,398 --> 00:00:59,830
-Roles alternate between user and
-assistant, and the first message is always from the
+00:01:04,427 --> 00:01:06,616
+Why aisa design kiya gaya?
 
 17
-00:00:59,830 --> 00:01:00,153
-user.
+00:01:06,836 --> 00:01:11,776
+Kyunki stateless servers simple hote
+hain aur scale karna aasaan hota hai.
 
 18
-00:01:01,453 --> 00:01:05,282
-The history is just a Python
-list of message dictionaries.
+00:01:11,996 --> 00:01:15,967
+Koi bhi server kisi bhi
+request ko handle kar sakta hai.
 
 19
-00:01:05,632 --> 00:01:10,632
-For each question, we append it to the
-history, and send the whole list as messages.
+00:01:16,187 --> 00:01:20,907
+Lekin iska matlab hai ki memory
+ka kaam aapke code ko karna hai.
 
 20
-00:01:10,982 --> 00:01:13,114
-Then we append the assistant's reply.
+00:01:22,207 --> 00:01:25,692
+Ab how: ek conversation
+actually kaise chalti hai.
 
 21
-00:01:13,334 --> 00:01:15,481
-This line is the one people forget.
+00:01:26,042 --> 00:01:29,197
+Pehli request mein ek
+user message hota hai.
 
 22
-00:01:15,831 --> 00:01:21,194
-Finally we print how many messages we
-sent, and how many input tokens that cost.
+00:01:29,547 --> 00:01:33,223
+API reply karti hai, aur
+phir sab bhool jaati hai.
 
 23
-00:01:22,494 --> 00:01:23,637
-Look at the numbers.
+00:01:33,443 --> 00:01:38,522
+Aapki app user message aur reply,
+dono ko ek list mein store karti hai.
 
 24
-00:01:23,857 --> 00:01:26,062
-One message, then three, then five.
+00:01:38,872 --> 00:01:44,394
+Doosri request poori list bhejti
+hai: pehla question, pehla reply, aur naya
 
 25
-00:01:26,282 --> 00:01:31,398
-And the input tokens grow every turn,
-because every request re-sends everything
+00:01:44,394 --> 00:01:45,057
+question.
 
 26
-00:01:31,398 --> 00:01:32,046
-before it.
+00:01:45,407 --> 00:01:48,586
+Aur teesri request
+paanch messages bhejti hai.
 
 27
-00:01:32,266 --> 00:01:37,919
-The offline fake even reports how many
-earlier messages it received, so you can see
+00:01:48,806 --> 00:01:52,404
+Roles alternate hote
+hain, user, assistant, user.
 
 28
-00:01:37,919 --> 00:01:39,349
-the history arriving.
+00:01:52,624 --> 00:01:55,812
+Aur pehla message
+hamesha user ka hota hai.
 
 29
-00:01:40,649 --> 00:01:41,975
-Here's the classic bug.
+00:01:57,112 --> 00:01:58,069
+Ab code.
 
 30
-00:01:42,195 --> 00:01:45,444
-The loop appends each
-question, but never the reply.
+00:01:58,289 --> 00:02:02,321
+History bas ek Python list
+hai, message dictionaries ki.
 
 31
-00:01:45,794 --> 00:01:48,942
-So the history contains
-two user messages in a row.
+00:02:02,671 --> 00:02:08,188
+Har question ke liye, pehle usse history
+mein append karo, phir poori list messages
 
 32
-00:01:49,162 --> 00:01:53,522
-The API accepts that, and
-merges them into a single user turn.
+00:02:08,188 --> 00:02:08,919
+mein bhejo.
 
 33
-00:01:53,742 --> 00:01:58,963
-But the model never sees what it said
-before, so it can't refer to its own earlier
+00:02:09,269 --> 00:02:11,979
+Phir assistant ka reply bhi append karo.
 
 34
-00:01:58,963 --> 00:01:59,473
-answers.
+00:02:12,199 --> 00:02:15,363
+Yahi woh line hai jo
+log aksar bhool jaate hain.
 
 35
-00:02:00,773 --> 00:02:01,838
-User, user.
+00:02:15,713 --> 00:02:21,121
+Phir hum print karte hain kitne
+messages bheje, aur kitne input tokens lage.
 
 36
-00:02:02,058 --> 00:02:03,333
-No assistant turn.
+00:02:21,341 --> 00:02:26,706
+Right side dekho: pehle turn mein ek
+message gaya, aur paanch input tokens.
 
 37
-00:02:03,553 --> 00:02:07,910
-In a chat app, that shows up as an
-assistant that seems to have amnesia.
+00:02:27,056 --> 00:02:31,501
+Doosre turn mein teen messages
+gaye, aur input tokens badh gaye.
 
 38
-00:02:08,130 --> 00:02:11,138
-Always store the reply
-right after you receive it.
+00:02:31,721 --> 00:02:37,410
+Offline fake bhi bata raha hai ki iss
+request ke saath kitne purane messages aaye.
 
 39
-00:02:12,438 --> 00:02:17,958
-Since every turn re-sends the whole
-history, long conversations get slower and more
+00:02:37,760 --> 00:02:40,299
+Aur teesre turn mein paanch messages.
 
 40
-00:02:17,958 --> 00:02:21,218
-expensive, and
-eventually hit the context window.
+00:02:40,519 --> 00:02:46,262
+Har request apne se pehle ka sab kuch
+dobara bhejti hai, isliye input tokens har
 
 41
-00:02:21,438 --> 00:02:23,375
-There are a few standard strategies.
+00:02:46,262 --> 00:02:47,483
+turn badhte hain.
 
 42
-00:02:23,725 --> 00:02:29,093
-The simplest is a sliding window: keep
-the most recent turns, and drop the oldest
+00:02:48,783 --> 00:02:51,370
+Isko ek table mein dry run karte hain.
 
 43
-00:02:29,093 --> 00:02:32,406
-user and assistant pair
-once you're over a budget.
+00:02:51,590 --> 00:02:54,927
+Turn one: history mein
+sirf ek user message hai.
 
 44
-00:02:32,626 --> 00:02:34,072
-Our project does this.
+00:02:55,147 --> 00:02:57,375
+Ek message gaya, paanch tokens.
 
 45
-00:02:34,422 --> 00:02:39,527
-A smarter option replaces old turns
-with a short summary written by the model.
+00:02:57,725 --> 00:03:01,702
+Turn two: pehla question,
+pehla reply, aur naya question.
 
 46
-00:02:39,747 --> 00:02:41,884
-That's part of Module 6 on memory.
+00:03:01,922 --> 00:03:04,440
+Teen messages, unhattar tokens.
 
 47
-00:02:42,234 --> 00:02:47,618
-And agents often store key facts in a
-database, and add back only what's relevant to
+00:03:04,790 --> 00:03:08,133
+Turn three: paanch
+messages, ek sau chaar tokens.
 
 48
-00:02:47,618 --> 00:02:48,964
-the current question.
+00:03:09,433 --> 00:03:11,050
+Ab ek classic bug.
 
 49
-00:02:49,314 --> 00:02:54,732
-Finally, prompt caching lets an
-unchanged prefix of the conversation be billed at a
+00:03:11,270 --> 00:03:15,774
+Yeh loop har question append
+karta hai, lekin reply kabhi nahi.
 
 50
-00:02:54,732 --> 00:02:57,016
-large discount when you re-send it.
+00:03:16,124 --> 00:03:18,259
+Output dekho: user, user.
 
 51
-00:02:57,236 --> 00:02:59,067
-You'll use it later in the course.
+00:03:18,479 --> 00:03:20,612
+Koi assistant turn hi nahi hai.
 
 52
-00:03:00,367 --> 00:03:02,249
-One practical rule when trimming.
+00:03:20,832 --> 00:03:27,258
+API isse accept kar leti hai aur dono
+user messages ko ek turn mein merge kar deti
 
 53
-00:03:02,469 --> 00:03:07,885
-Drop messages in pairs, a user message
-and its reply together, so the roles keep
+00:03:27,258 --> 00:03:27,572
+hai.
 
 54
-00:03:07,885 --> 00:03:11,812
-alternating and the history
-still starts with a user turn.
+00:03:27,792 --> 00:03:32,752
+Lekin model ko kabhi pata nahi
+chalta ki usne pehle kya bola tha.
 
 55
-00:03:13,112 --> 00:03:13,919
-Quick check.
+00:03:32,972 --> 00:03:37,910
+Chat app mein yeh aisa lagta hai
+jaise assistant ki memory chali gayi ho.
 
 56
-00:03:14,139 --> 00:03:16,926
-A conversation already has ten messages.
+00:03:38,130 --> 00:03:40,993
+Isliye reply milte hi usse store karo.
 
 57
-00:03:17,146 --> 00:03:19,932
-How many messages does
-your next request send?
+00:03:42,293 --> 00:03:47,683
+Har turn poori history dobara bhejta
+hai, toh lambi conversations slow aur mehengi
 
 58
-00:03:25,632 --> 00:03:31,113
-Eleven: all ten earlier messages plus
-the new one, unless you deliberately trim the
+00:03:47,683 --> 00:03:51,693
+ho jaati hain, aur aakhir
+mein context window bhar jaati hai.
 
 59
-00:03:31,113 --> 00:03:31,642
-history.
+00:03:51,913 --> 00:03:54,241
+Iske kuch standard solutions hain.
 
 60
-00:03:32,942 --> 00:03:36,413
-The API is stateless, and
-your code keeps the history.
+00:03:54,591 --> 00:04:00,520
+Sabse simple hai sliding window: sirf
+latest turns rakho, aur budget cross hone par
 
 61
-00:03:36,763 --> 00:03:39,892
-Append both the question
-and the reply, every turn.
+00:04:00,520 --> 00:04:03,735
+sabse purana user aur
+assistant pair hata do.
 
 62
-00:03:40,242 --> 00:03:43,354
-Input tokens, and
-cost, grow with every turn.
+00:04:03,955 --> 00:04:06,272
+Hamara project yahi karta hai.
 
 63
-00:03:43,704 --> 00:03:48,409
-So trim in pairs, or summarise,
-to keep conversations under control.
+00:04:06,622 --> 00:04:11,873
+Doosra option: purane turns ko
+model se ek chhoti summary mein badal do.
 
 64
-00:03:48,759 --> 00:03:53,869
-Next, you'll control the output itself:
-length limits, streaming, and structured
+00:04:12,093 --> 00:04:14,185
+Yeh Module 6 mein aayega.
 
 65
-00:03:53,869 --> 00:03:54,189
-JSON.
+00:04:14,535 --> 00:04:20,278
+Teesra: important facts ek database
+mein save karo, aur sirf relevant facts wapas
+
+66
+00:04:20,278 --> 00:04:20,916
+add karo.
+
+67
+00:04:21,266 --> 00:04:27,081
+Aur prompt caching: conversation ka jo
+starting hissa change nahi hua, usse dobara
+
+68
+00:04:27,081 --> 00:04:29,634
+bhejne par bahut kam bill lagta hai.
+
+69
+00:04:29,855 --> 00:04:31,984
+Course mein aage yeh use karenge.
+
+70
+00:04:33,284 --> 00:04:35,040
+Trimming ka ek dry run.
+
+71
+00:04:35,260 --> 00:04:41,342
+Maan lo history hai user one, assistant
+one, user two, assistant two, user three,
+
+72
+00:04:41,342 --> 00:04:43,220
+aur budget cross ho gaya.
+
+73
+00:04:43,440 --> 00:04:47,747
+Toh pehla pair hatao: user
+one aur assistant one, saath mein.
+
+74
+00:04:48,097 --> 00:04:51,701
+Ab history hai user two,
+assistant two, user three.
+
+75
+00:04:51,921 --> 00:04:54,320
+Budget ke andar hai, toh bhej do.
+
+76
+00:04:54,670 --> 00:05:00,247
+Aur yeh galat tareeka hai: sirf user
+one hataya, toh history assistant se shuru
+
+77
+00:05:00,247 --> 00:05:00,600
+hogi.
+
+78
+00:05:00,820 --> 00:05:02,992
+Roles ka order toot jaata hai.
+
+79
+00:05:04,292 --> 00:05:05,751
+Interview corner.
+
+80
+00:05:05,971 --> 00:05:09,684
+Messages API stateless
+hai, iska kya matlab hai?
+
+81
+00:05:12,034 --> 00:05:15,902
+Answer: server requests ke
+beech koi memory nahi rakhta.
+
+82
+00:05:16,122 --> 00:05:21,639
+Har request mein woh sab hona chahiye
+jo model ko chahiye, history ke saath, jo
+
+83
+00:05:21,639 --> 00:05:24,782
+client store karta
+hai aur dobara bhejta hai.
+
+84
+00:05:25,002 --> 00:05:29,615
+Trap: stateless ka matlab yeh
+nahi ki conversation possible nahi.
+
+85
+00:05:29,835 --> 00:05:33,464
+Conversation chalti hai,
+bas state client ke paas hai.
+
+86
+00:05:33,814 --> 00:05:38,848
+Doosra, scenario based question: ek
+lambi chat slow aur mehengi ho rahi hai.
+
+87
+00:05:39,068 --> 00:05:40,466
+Aap kya karoge?
+
+88
+00:05:42,816 --> 00:05:45,917
+Answer: pehle har turn
+ke tokens measure karo.
+
+89
+00:05:46,137 --> 00:05:51,746
+Phir purane turns ko pairs mein trim
+karo, purana context summarise karo, ya facts
+
+90
+00:05:51,746 --> 00:05:55,303
+ek store mein rakho aur
+sirf relevant wale add karo.
+
+91
+00:05:55,523 --> 00:05:59,225
+Prompt caching unchanged
+hisse ki cost kam karti hai.
+
+92
+00:05:59,445 --> 00:06:02,747
+Trap: bas badi context
+window wala model le lo.
+
+93
+00:06:02,967 --> 00:06:06,775
+Isse problem sirf aage
+khisakti hai, aur bill badhta hai.
+
+94
+00:06:08,075 --> 00:06:09,332
+Practice time.
+
+95
+00:06:09,682 --> 00:06:12,461
+Pehla: conversation
+mein das messages hain.
+
+96
+00:06:12,681 --> 00:06:15,458
+Agli request kitne messages bhejegi?
+
+97
+00:06:15,808 --> 00:06:21,546
+Doosra: forgetful dot py ko fix karo,
+aur batao fix ke baad kaun se roles print
+
+98
+00:06:21,546 --> 00:06:21,982
+honge.
+
+99
+00:06:22,332 --> 00:06:26,541
+Teesra: ek trim function
+likho, jo sabse purane pairs hataye.
+
+100
+00:06:26,891 --> 00:06:32,299
+Aur scenario: users complain karte hain
+ki error ke baad bot sab bhool jaata hai.
+
+101
+00:06:32,519 --> 00:06:35,072
+Aapka code kya galti kar raha hoga?
+
+102
+00:06:42,372 --> 00:06:43,301
+Quick check.
+
+103
+00:06:43,521 --> 00:06:46,498
+Conversation mein
+pehle se das messages hain.
+
+104
+00:06:46,718 --> 00:06:49,495
+Agli request kitne messages bhejegi?
+
+105
+00:06:55,195 --> 00:06:56,136
+Gyaarah.
+
+106
+00:06:56,356 --> 00:06:59,265
+Saare das purane messages, aur ek naya.
+
+107
+00:06:59,485 --> 00:07:03,067
+Jab tak aap jaan
+boojhkar history trim nahi karte.
+
+108
+00:07:04,367 --> 00:07:05,207
+Recap.
+
+109
+00:07:05,427 --> 00:07:09,320
+API stateless hai, aur
+history aapka code rakhta hai.
+
+110
+00:07:09,670 --> 00:07:12,955
+Har turn question aur
+reply, dono append karo.
+
+111
+00:07:13,305 --> 00:07:16,896
+Har turn ke saath input
+tokens aur cost badhte hain.
+
+112
+00:07:17,246 --> 00:07:20,529
+Isliye pairs mein trim
+karo, ya summarise karo.
+
+113
+00:07:20,879 --> 00:07:26,116
+Agle lesson mein aap output ko
+control karoge: length limits, streaming, aur
+
+114
+00:07:26,116 --> 00:07:27,218
+structured JSON.
