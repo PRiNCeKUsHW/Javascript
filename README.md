@@ -32,6 +32,8 @@ a quiz and an extension challenge.
 
 Full syllabus: [ai-agents-course/COURSE_SYLLABUS.md](ai-agents-course/COURSE_SYLLABUS.md)
 
+New to a term? The [glossary](ai-agents-course/GLOSSARY.md) explains every technical word in plain language.
+
 ## Run a project
 
 You need Python 3.11 or newer. For example, the Module 2 project:
