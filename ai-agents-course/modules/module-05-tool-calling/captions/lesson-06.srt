@@ -1,0 +1,437 @@
+1
+00:00:00,900 --> 00:00:02,058
+Project time.
+
+2
+00:00:02,408 --> 00:00:08,128
+Over two lessons we'll build a personal
+productivity agent: you tell it, in plain
+
+3
+00:00:08,128 --> 00:00:14,060
+words, what to do with your tasks and
+notes, and it uses six tools to do it, safely.
+
+4
+00:00:14,410 --> 00:00:17,299
+Everything from this
+module comes together here.
+
+5
+00:00:17,649 --> 00:00:19,443
+We'll go one file at a time.
+
+6
+00:00:21,243 --> 00:00:22,656
+Here's what we're building.
+
+7
+00:00:23,006 --> 00:00:28,301
+You ask in plain words, at the command
+line, like: add task pay rent, and list
+
+8
+00:00:28,301 --> 00:00:28,709
+tasks.
+
+9
+00:00:29,309 --> 00:00:35,183
+The agent has six tools, for tasks and
+notes, defined once in a registry, with
+
+10
+00:00:35,183 --> 00:00:36,839
+schemas from Pydantic.
+
+11
+00:00:37,439 --> 00:00:41,486
+Every input is validated,
+and every tool has a timeout.
+
+12
+00:00:42,086 --> 00:00:48,027
+Tools have permission levels, there's a
+read-only mode, and deleting needs a human
+
+13
+00:00:48,027 --> 00:00:48,317
+yes.
+
+14
+00:00:48,917 --> 00:00:54,697
+And the data is saved safely in a JSON
+file, with forty-three tests and an offline
+
+15
+00:00:54,697 --> 00:00:55,050
+mode.
+
+16
+00:00:56,850 --> 00:00:57,979
+Here's the plan.
+
+17
+00:00:58,329 --> 00:01:03,941
+The command line passes your request to
+the agent, which runs the loop from Module
+
+18
+00:01:03,941 --> 00:01:04,078
+4.
+
+19
+00:01:04,678 --> 00:01:10,834
+Every tool call goes through tools dot
+py: the registry, validation, and timeouts.
+
+20
+00:01:11,184 --> 00:01:15,983
+It asks the policy for permission,
+and the tools read and write the store.
+
+21
+00:01:16,583 --> 00:01:22,612
+And the agent talks to the model through
+the client: the real Claude API with a key,
+
+22
+00:01:22,612 --> 00:01:24,909
+or the offline fake without one.
+
+23
+00:01:26,709 --> 00:01:31,440
+First, so you know exactly what you're
+seeing in this video: the offline fake.
+
+24
+00:01:31,790 --> 00:01:38,590
+It speaks the same protocol as the real
+API, so the SDK and the loop run unchanged.
+
+25
+00:01:38,940 --> 00:01:44,558
+It splits your request on the word and,
+matches each part against a few patterns,
+
+26
+00:01:44,558 --> 00:01:47,888
+and asks for all the
+matching tools in one turn.
+
+27
+00:01:48,488 --> 00:01:49,742
+That's not a model.
+
+28
+00:01:50,092 --> 00:01:55,238
+It can't understand free-form
+requests, so the demos use simple phrases.
+
+29
+00:01:55,588 --> 00:01:58,425
+No API key was used in this recording.
+
+30
+00:01:58,775 --> 00:02:04,356
+The tools, the validation, the
+timeouts, and the policy are all completely real.
+
+31
+00:02:06,156 --> 00:02:08,890
+Now the store, where tasks and notes live.
+
+32
+00:02:09,240 --> 00:02:11,213
+Imagine editing a notebook.
+
+33
+00:02:11,563 --> 00:02:16,955
+If you tear out a page, and then get
+interrupted before writing the new one, the
+
+34
+00:02:16,955 --> 00:02:18,168
+page is just gone.
+
+35
+00:02:18,518 --> 00:02:22,689
+The safe way is to write the
+new page first, and then swap it in.
+
+36
+00:02:23,039 --> 00:02:24,855
+That's called an atomic save.
+
+37
+00:02:25,205 --> 00:02:30,540
+At any moment, you have either the old
+file or the new file, never half of one.
+
+38
+00:02:32,340 --> 00:02:34,370
+Load reads the JSON file.
+
+39
+00:02:34,720 --> 00:02:39,253
+If there's no file yet, we start
+with empty lists of tasks and notes.
+
+40
+00:02:39,853 --> 00:02:45,940
+Save writes everything to a temporary
+file, then os dot replace swaps it in, in one
+
+41
+00:02:45,940 --> 00:02:46,306
+step.
+
+42
+00:02:46,656 --> 00:02:51,557
+If the program crashes halfway
+through writing, the real file is untouched.
+
+43
+00:02:52,157 --> 00:02:57,060
+New items get the next ID: one
+more than the biggest ID so far.
+
+44
+00:02:57,660 --> 00:03:02,657
+And every change follows the
+same three steps: load, modify, save.
+
+45
+00:03:03,007 --> 00:03:07,564
+Add task creates a task with
+the next ID, appends it, and saves.
+
+46
+00:03:09,364 --> 00:03:10,781
+Let's look at the tools.
+
+47
+00:03:11,131 --> 00:03:12,914
+List tasks is a read tool.
+
+48
+00:03:13,264 --> 00:03:18,786
+Its description tells the model to use it
+before completing or deleting, to find the
+
+49
+00:03:18,786 --> 00:03:19,707
+task's number.
+
+50
+00:03:20,307 --> 00:03:22,309
+Complete task is a write tool.
+
+51
+00:03:22,659 --> 00:03:24,780
+It needs the number from list tasks.
+
+52
+00:03:25,380 --> 00:03:27,060
+Delete task is danger.
+
+53
+00:03:27,410 --> 00:03:32,958
+Its description warns the model to use
+it only when the user clearly asks, and to
+
+54
+00:03:32,958 --> 00:03:35,355
+prefer complete task for finishing.
+
+55
+00:03:35,705 --> 00:03:40,409
+And it has a confirm function,
+which builds the question the human sees.
+
+56
+00:03:41,009 --> 00:03:45,367
+Add note is a write tool, that
+saves an idea or meeting notes.
+
+57
+00:03:45,967 --> 00:03:51,527
+And search notes is read, with a
+shorter, two-second timeout, because in a real app
+
+58
+00:03:51,527 --> 00:03:54,072
+it would call a remote search service.
+
+59
+00:03:55,872 --> 00:03:58,624
+Here's how the command
+line wires it together.
+
+60
+00:03:58,974 --> 00:04:04,812
+Ask human prints the question, with y
+slash capital N, so no is the default, and
+
+61
+00:04:04,812 --> 00:04:05,906
+reads one line.
+
+62
+00:04:06,256 --> 00:04:09,930
+Piped input works too,
+which is how the demos answer.
+
+63
+00:04:10,530 --> 00:04:13,991
+For each request, we build
+the context, and the policy.
+
+64
+00:04:14,341 --> 00:04:17,055
+The read-only flag sets read-only mode.
+
+65
+00:04:17,405 --> 00:04:22,706
+And the yes flag approves dangerous
+actions automatically, which is useful for
+
+66
+00:04:22,706 --> 00:04:25,901
+scripts you trust, and
+dangerous anywhere else.
+
+67
+00:04:26,501 --> 00:04:32,215
+Then the agent gets the client, the cost
+tracker, the context, and the policy, and
+
+68
+00:04:32,215 --> 00:04:35,769
+runs the request,
+printing each step as it happens.
+
+69
+00:04:36,369 --> 00:04:40,869
+Finally, a footer with turns,
+tool calls and cost, and the answer.
+
+70
+00:04:41,219 --> 00:04:46,862
+Any ending other than answered becomes
+one clear error, exactly like Module 4.
+
+71
+00:04:48,662 --> 00:04:49,600
+Let's run it.
+
+72
+00:04:49,950 --> 00:04:54,251
+The tools command shows every
+tool, with its permission and timeout.
+
+73
+00:04:54,851 --> 00:04:57,015
+Reset gives us an empty store.
+
+74
+00:04:57,365 --> 00:05:01,348
+It deletes data, so it asks
+first too, unless we pass yes.
+
+75
+00:05:01,948 --> 00:05:04,220
+And a first request with three parts.
+
+76
+00:05:04,570 --> 00:05:07,953
+Look at the trace: three
+tool calls, all in turn one.
+
+77
+00:05:08,303 --> 00:05:10,009
+That's a parallel tool call.
+
+78
+00:05:10,359 --> 00:05:14,038
+Two tasks and a note,
+saved, in two turns in total.
+
+79
+00:05:15,838 --> 00:05:17,147
+Pause and predict.
+
+80
+00:05:17,497 --> 00:05:19,440
+The store has tasks one and two.
+
+81
+00:05:19,790 --> 00:05:23,950
+The request is: complete
+task two, and delete task seven.
+
+82
+00:05:24,300 --> 00:05:26,347
+The human would say yes if asked.
+
+83
+00:05:26,947 --> 00:05:28,655
+How many tool calls are there?
+
+84
+00:05:29,005 --> 00:05:30,369
+Is the human asked?
+
+85
+00:05:30,719 --> 00:05:32,574
+And what does each call return?
+
+86
+00:05:39,174 --> 00:05:41,402
+Two tool calls, both in turn one.
+
+87
+00:05:41,752 --> 00:05:43,520
+Complete task two succeeds.
+
+88
+00:05:43,870 --> 00:05:49,310
+Delete task seven fails before anyone
+is asked, with: there is no task seven.
+
+89
+00:05:49,660 --> 00:05:53,394
+The human is never asked
+about a task that doesn't exist.
+
+90
+00:05:55,194 --> 00:05:56,001
+Recap.
+
+91
+00:05:56,351 --> 00:06:00,214
+An honest fake: a script
+that speaks the real protocol.
+
+92
+00:06:00,814 --> 00:06:04,633
+An atomic store: write a
+temporary file, then replace.
+
+93
+00:06:05,233 --> 00:06:09,168
+Six tools, with clear
+descriptions and three permission levels.
+
+94
+00:06:09,768 --> 00:06:13,954
+And the command line builds
+the policy from read-only and yes.
+
+95
+00:06:14,554 --> 00:06:20,770
+In part two: the agent loop with parallel
+calls, the full demo, failures on purpose,
+
+96
+00:06:20,770 --> 00:06:23,063
+the tests, and the module quiz.
