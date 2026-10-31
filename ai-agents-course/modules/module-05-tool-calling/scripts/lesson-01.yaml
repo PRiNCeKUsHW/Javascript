@@ -1,0 +1,201 @@
+module_title: Tool Calling and Function Execution
+title: "Tool Calling: How a Model Uses Your Functions"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 5 · Lesson 1
+    title: How a model uses your functions
+    subtitle: What a tool is, the request and response cycle, and how to describe a tool well.
+    say: >
+      Welcome to Module 5. In Module 4 you built an agent loop with two small tools. Now we go deeper into the tools themselves.
+      By the end of this module, you'll build a personal productivity agent that manages real tasks and notes, checks every input, stops slow tools, and asks you before it deletes anything.
+
+  - type: objectives
+    items:
+      - {text: "Explain what tool calling is, and why it exists", say: "In this lesson, you'll learn what tool calling is, and why it exists."}
+      - {text: "Follow one tool call from request to result", say: "You'll follow one tool call from the request to the result."}
+      - {text: "Read every part of a tool definition", say: "You'll read every part of a tool definition."}
+      - {text: "Write tool descriptions that a model uses correctly", say: "And you'll write tool descriptions that a model uses correctly."}
+
+  - type: callout
+    chapter: What is a tool?
+    kind: analogy
+    title: "A tool is like an app on a phone you lend to an assistant"
+    body: "Your assistant can't reach into your bank or calendar directly. But you can hand them a phone with a few **apps**, each with a clear **label** and a clear **form** to fill in. The model is the assistant. A tool is one app: a name, a description, and a form for its inputs."
+    say: >
+      Let's start with what a tool is, using an everyday picture. Imagine you hire an assistant. They're smart, but they can't reach into your calendar or your files directly.
+      So you lend them a phone with a few apps. Each app has a clear label, saying what it does, and a form to fill in.
+    items:
+      - {text: "The model = the assistant: it decides which app to use", say: "The model is the assistant. It decides which app to open, and what to type in the form."}
+      - {text: "A tool = one app: a name, a description, an input form", say: "A tool is one app: a name, a description of what it does, and a form for its inputs."}
+      - {text: "Your code = the phone: it actually runs the app", say: "And your code is the phone. It's the part that actually runs the app, and shows the result."}
+    outro: >
+      So why does tool calling exist? Because a language model on its own can only write text. It can't read your to-do list, save a note, or check today's date. Tools let it ask your code to do those things, safely, through doors you choose.
+
+  - type: diagram
+    chapter: One tool call, step by step
+    heading: One tool call, from request to result
+    nodes:
+      - {id: app, label: Your code, sub: "sends tools + the request", x: 260, y: 140, w: 360, h: 120, tone: teal}
+      - {id: model, label: Claude, sub: decides what to do, x: 1100, y: 140, w: 360, h: 120, tone: violet}
+      - {id: use, label: "tool_use block", sub: "name + input + id", x: 1100, y: 450, w: 360, h: 120, tone: amber, mono: true}
+      - {id: run, label: "Your function runs", sub: "add_task(...)", x: 260, y: 450, w: 360, h: 120, tone: blue, mono: true}
+      - {id: result, label: "tool_result", sub: "same id + the output", x: 680, y: 660, w: 360, h: 110, tone: teal, mono: true}
+    edges:
+      - {from: app, to: model, label: request}
+      - {from: model, to: use, label: "stop_reason: tool_use"}
+      - {from: use, to: run}
+      - {from: run, to: result}
+      - {from: result, to: model, label: next request, bend: -0.2}
+    say: >
+      Now how does it work? Let's follow one tool call, step by step.
+    steps:
+      - show: [app, model, "app->model"]
+        flow: ["app->model"]
+        say: >
+          Step one. Your code sends a request with two things: the user's message, and the list of tools the model may use.
+      - show: [use, "model->use"]
+        flow: ["model->use"]
+        focus: [model, use]
+        say: >
+          Step two. The model decides a tool would help. Instead of a final answer, it replies with a tool use block: the tool's name, the input it wants, and an ID. The stop reason is tool use.
+      - show: [run, "use->run"]
+        flow: ["use->run"]
+        focus: [run]
+        say: >
+          Step three. Your code runs the real function with that input. This is important: the model never runs anything itself. It only asks.
+      - show: [result, "run->result", "result->model"]
+        flow: ["run->result", "result->model"]
+        focus: [result, model]
+        say: >
+          Step four. Your code sends the output back as a tool result, with the same ID, in the next request. Then the model continues, and either asks for another tool, or answers.
+
+  - type: run
+    heading: "first_tool.py: a definition, and the tool_use block that comes back"
+    title: first_tool.py
+    file: source/lesson-01/first_tool.py
+    cwd: source/lesson-01
+    cmd: python first_tool.py
+    say: >
+      Let's see that in real code. The code is on the left, and what it printed is on the right.
+    steps:
+      - lines: "8-11"
+        note: "A **name** and a **description**: how the model knows what the tool is for."
+        say: >
+          A tool definition is a Python dictionary. First, a name, and a description written for the model. The description is how the model decides when to use this tool.
+      - lines: "12-21"
+        note: "`input_schema`: a JSON Schema for the inputs, like a form with fields."
+        say: >
+          Next, the input schema. It's a JSON Schema: a standard way to describe data. Here the form has three fields: a title, a due date that can be empty, and a priority that must be low, normal or high.
+      - lines: "22"
+        note: "`strict: true`: the input will always match the schema."
+        say: >
+          And strict, true. With strict mode, the API guarantees that the input the model sends matches this schema: the right fields, and the right types.
+      - lines: "25-28"
+        out: "1"
+        note: "Pass the tools with `tools=[...]`, next to the messages."
+        say: >
+          Then we pass the tool in the tools list, next to the messages. The first output line is the offline notice: as in every module, a scripted fake plays the model, so no key is needed.
+      - lines: "30"
+        out: "2"
+        note: "`tool_use`: the model is asking your code to run a tool."
+        say: >
+          The stop reason is tool use. The model didn't answer. It's asking our code to run a tool.
+      - lines: "31-34"
+        out: "3-4"
+        note: "The block holds the tool's name and the input, already shaped by the schema."
+        say: >
+          And here's the tool use block: the name, add task, and the input, title pay rent, no due date, priority high. Notice that nothing has been added yet. Our code would run the function next. We'll do that in lesson two.
+
+  - type: table
+    chapter: Anatomy of a definition
+    heading: "Every part of a tool definition"
+    columns: [Part, What it is, Why it matters]
+    widths: [1.1, 1.7, 2.2]
+    rows:
+      - {cells: ["`name`", "add_task", "Short, unique, a verb: what it does"], say: "Let's put every part in one table. The name: short, unique, and usually a verb, like add task."}
+      - {cells: ["`description`", "When and how to use it", "The model's only guide: the most important part"], tone: amber, say: "The description: when to use the tool, and what it returns. This is the model's only guide, so it's the most important part."}
+      - {cells: ["`input_schema`", "JSON Schema object", "The fields, their types and allowed values"], say: "The input schema: the fields, their types, and the allowed values."}
+      - {cells: ["`strict`", "true", "Inputs always match the schema"], tone: teal, say: "And strict: when it's true, the inputs always match the schema.", note: "Strict mode checks shape and types. It can't check your business rules, like \"the due date isn't in the past\": lesson 3."}
+
+  - type: compare
+    chapter: Writing good descriptions
+    heading: "The description decides how well the tool is used"
+    left:
+      title: "Vague"
+      tone: coral
+      label: Avoid
+      code: |
+        "name": "task",
+        "description": "Task tool."
+    right:
+      title: "Clear"
+      tone: teal
+      label: Prefer
+      code: |
+        "name": "add_task",
+        "description": "Adds a task to the user's
+          to-do list and returns it with its number.
+          Use it when the user asks to remember or
+          plan something. The due date must be today
+          or later."
+    steps:
+      - show: left
+        say: >
+          Now, where do developers go wrong? Mostly in the description. A name like task, and a description like task tool, tells the model almost nothing. Does it add a task? Delete one? List them?
+      - show: right
+        say: >
+          A clear description says three things. What the tool does: adds a task and returns its number. When to use it: when the user asks to remember or plan something. And any rules: the due date must be today or later. Write it as if for a new colleague who has never seen your app.
+
+  - type: callout
+    kind: try
+    chapter: Pause and try
+    title: "Pause and try: improve a description"
+    body: "Rewrite this one: `\"name\": \"notes\", \"description\": \"Notes.\"`"
+    say: >
+      Pause the video and try it. Here's a tool called notes, with the description: notes. Rewrite the name and the description.
+    items:
+      - {text: "What does it do? When should the model use it? What does it return?", say: "Ask yourself: what does it do, when should the model use it, and what does it return?", pause: 6}
+    outro: >
+      One good answer: name it search notes. Description: searches the user's notes for words in the title or text, and returns the matching notes. Use it when the user asks about something they saved earlier.
+
+  - type: interview
+    chapter: Interview corner
+    items:
+      - q: "Does the model run the tool itself?"
+        a: "No. The model only **requests** a call: it returns a `tool_use` block with a name and input. **Your code** runs the function and sends the output back as a `tool_result` with the same id."
+        trap: "Saying \"Claude executes my function\". It never touches your code; you decide whether and how to run it."
+        say_q: "Interview corner. Here's a common question. Does the model run the tool itself?"
+        say_a: "A good answer: no. The model only requests a call, by returning a tool use block with a name and an input. Your code runs the function, and sends the output back as a tool result with the same ID. The trap is saying the model executes your function. It never touches your code. You decide whether to run it."
+      - q: "What makes a good tool definition?"
+        a: "A clear verb **name**, a **description** that says what it does, when to use it and what it returns, and a tight **schema** (enums, required fields, `strict: true`)."
+        trap: "Focusing only on the schema. The description is what the model reads to choose the tool."
+        say_q: "And a follow-up: what makes a good tool definition?"
+        say_a: "A clear verb for the name, a description that says what the tool does, when to use it, and what it returns, and a tight schema, with enums, required fields, and strict mode. The trap: focusing only on the schema. The description is what the model reads to choose the tool."
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "The response's stop_reason is \"tool_use\". What should your code do?"
+    options:
+      - "Show the reply to the user"
+      - "Run the requested tool and send back a tool_result with the same id"
+      - "Send the same request again"
+      - "Nothing: the API already ran the tool"
+    answer: 1
+    explain: "tool_use means the model is asking your code to run a tool. Run it, then send the output back as a tool_result with the matching tool_use_id."
+    say_question: >
+      Quick check. The stop reason is tool use. What should your code do?
+    say_answer: >
+      Run the requested tool, and send the output back as a tool result with the same ID.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 1 recap
+    items:
+      - {text: "Tools let a model ask your code to act", say: "Let's recap. Tools let a model ask your code to act in the world."}
+      - {text: "The model requests; your code runs; the result goes back with the same id", say: "The model requests, your code runs the function, and the result goes back with the same ID."}
+      - {text: "A definition: name, description, input_schema, strict", say: "A definition has a name, a description, an input schema, and strict mode."}
+      - {text: "The description is the model's guide: what, when, returns, rules", say: "And the description is the model's guide: what it does, when to use it, what it returns, and the rules."}
+    outro: >
+      Next lesson: many tools in one place. You'll build a tool registry, generate schemas from Pydantic, and handle several tool calls in a single turn.

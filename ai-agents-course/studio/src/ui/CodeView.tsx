@@ -1,5 +1,5 @@
 import React from "react";
-import { C, MONO, SYNTAX } from "../theme";
+import { C, MONO, SYNTAX, alpha } from "../theme";
 import { lerp } from "./anim";
 
 export type Tokens = [string, string][][];
@@ -9,7 +9,7 @@ export type CodeState = { hl: number[]; upto?: number; scroll: number };
 const lineOpacity = (s: CodeState, i: number) => {
   if (s.upto !== undefined && i > s.upto) return 0;
   if (!s.hl.length) return 1;
-  return s.hl.includes(i) ? 1 : 0.34;
+  return s.hl.includes(i) ? 1 : 0.5; // dimmed lines stay readable on the light theme
 };
 
 /** Pick a font size so the longest line fits the panel width, within readable bounds. */
@@ -78,8 +78,8 @@ export const CodeView: React.FC<{
                 style={{
                   position: "absolute",
                   inset: "0 0 0 0",
-                  background: mark === "add" ? "rgba(46,230,168,0.10)" : mark === "del" ? "rgba(255,107,122,0.12)" : `rgba(255,181,71,${0.09 * bg})`,
-                  borderLeft: `4px solid ${mark === "add" ? C.teal : mark === "del" ? C.coral : `rgba(255,181,71,${bg})`}`,
+                  background: mark === "add" ? alpha(C.teal, 0.10) : mark === "del" ? alpha(C.coral, 0.10) : alpha(C.amber, 0.12 * bg),
+                  borderLeft: `4px solid ${mark === "add" ? C.teal : mark === "del" ? C.coral : alpha(C.amber, bg)}`,
                 }}
               />
               {lineNumbers ? (
@@ -113,16 +113,16 @@ export const Window: React.FC<{ title?: string; children: React.ReactNode; style
 }) => (
   <div
     style={{
-      background: "linear-gradient(180deg, #121A2A 0%, #0E1522 100%)",
+      background: C.code,
       border: `1px solid ${C.line}`,
       borderRadius: 22,
-      boxShadow: "0 30px 80px rgba(0,0,0,0.45)",
+      boxShadow: `0 18px 50px ${C.shadow}`,
       overflow: "hidden",
       ...style,
     }}
   >
-    <div style={{ height: 58, display: "flex", alignItems: "center", gap: 10, padding: "0 22px", borderBottom: `1px solid ${C.line}`, background: "rgba(255,255,255,0.02)" }}>
-      {["#FF6B7A", "#FFB547", "#2EE6A8"].map((c) => (
+    <div style={{ height: 58, display: "flex", alignItems: "center", gap: 10, padding: "0 22px", borderBottom: `1px solid ${C.line}`, background: C.codeHead }}>
+      {["#FF5F57", "#FEBC2E", "#28C840"].map((c) => (
         <div key={c} style={{ width: 14, height: 14, borderRadius: 7, background: c, opacity: 0.85 }} />
       ))}
       <div style={{ marginLeft: 16, fontFamily: MONO, fontSize: 22, color: C.muted, display: "flex", alignItems: "center", gap: 10 }}>

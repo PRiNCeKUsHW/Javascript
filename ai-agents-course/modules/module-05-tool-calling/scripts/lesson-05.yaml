@@ -1,0 +1,188 @@
+module_title: Tool Calling and Function Execution
+title: "Permissions and Human Confirmation: Ask Before You Act"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 5 · Lesson 5
+    title: Ask before you act
+    subtitle: Least privilege, read, write and danger levels, read-only mode, and human approval.
+    say: >
+      So far, every valid tool call simply runs. That's fine for listing tasks. It's not fine for deleting your data, sending an email, or paying a bill.
+      In this lesson you'll give every tool a permission level, add a read-only mode, and make the agent ask a human before anything dangerous happens.
+
+  - type: objectives
+    items:
+      - {text: "Explain least privilege for agents", say: "You'll explain the principle of least privilege for agents."}
+      - {text: "Sort tools into read, write and danger", say: "Sort tools into read, write, and danger."}
+      - {text: "Block writes in read-only mode", say: "Block writes in a read-only mode."}
+      - {text: "Ask a human before every dangerous action", say: "And ask a human before every dangerous action."}
+
+  - type: callout
+    chapter: Least privilege
+    kind: analogy
+    title: "A hotel key card opens only your room"
+    body: "A hotel key card doesn't open every door. It opens **your room**, for **your stay**. If you lose it, the damage is small. Give an agent the same: **only the tools and powers it needs** for the job, and nothing more."
+    say: >
+      Let's start with an idea security engineers use everywhere: least privilege. Think of a hotel key card. It doesn't open every door in the building. It opens your room, for your stay. If you lose it, the damage is small.
+      For agents, least privilege means: give the agent only the tools and powers it needs for this job, and nothing more.
+    outro: >
+      Why does this matter so much for agents? Because a model can misunderstand a request, and a user, or text inside a document, can try to trick it into doing something harmful. Permissions limit the damage, even when the model gets it wrong.
+
+  - type: table
+    chapter: Three permission levels
+    heading: "Three permission levels"
+    columns: [Level, Our tools, Rule]
+    widths: [0.8, 2, 2.4]
+    rows:
+      - {cells: ["read", "list_tasks · search_notes", "Always allowed: looking never changes anything"], tone: teal, say: "Our project uses three levels. Read: list tasks and search notes. These are always allowed, because looking never changes anything."}
+      - {cells: ["write", "add_task · complete_task · add_note", "Allowed, unless the agent is in read-only mode"], tone: amber, say: "Write: add task, complete task, and add note. These change data, so they're allowed, unless the agent runs in read-only mode."}
+      - {cells: ["danger", "delete_task", "A human must approve every single call"], tone: coral, say: "And danger: delete task. Deleting can't be undone, so a human must approve every single call.", note: "In real apps, danger includes deleting, sending messages, spending money and changing permissions."}
+
+  - type: code
+    chapter: The policy in code
+    heading: "Policy: one check before every tool call"
+    title: productivity/policy.py
+    file: project/productivity-agent/productivity/policy.py
+    lines: "16-39"
+    steps:
+      - lines: "17-21"
+        note: "Settings: read-only mode, and a function that asks a human."
+        say: >
+          Here's the policy. It holds the context, a read-only flag, and ask human: a function that asks a person a yes or no question. If there's nobody to ask, it's None, and dangerous calls are denied. It also keeps a log of every decision.
+      - lines: "23-25"
+        note: "Read tools: always allowed."
+        say: >
+          The check runs before every call. Read tools return straight away: allowed.
+      - lines: "26-29"
+        note: "Read-only mode: every write is blocked, with a clear reason."
+        say: >
+          In read-only mode, any other tool is blocked, with a clear reason the model can pass on to the user.
+      - lines: "30-34"
+        note: "Danger: build a clear question, e.g. \"Delete task 1. Pay rent?\""
+        say: >
+          For danger tools, we build a clear question, using the tool's confirm function. For delete task, it says which task, by number and title, so the human knows exactly what they're approving.
+      - lines: "35-39"
+        note: "No \"yes\", no action. The model is told not to retry."
+        say: >
+          Then we ask. Anything other than yes means no. The decision is logged, and if it's declined, the model gets a tool error that says: the user declined, don't retry it.
+
+  - type: run
+    heading: "permissions.py: the policy in action"
+    title: permissions.py
+    file: source/lesson-05/permissions.py
+    cwd: source/lesson-05
+    cmd: python permissions.py
+    font: 20
+    steps:
+      - lines: "24-25"
+        out: "1"
+        note: "Read-only mode, read tool: allowed."
+        say: >
+          Let's try four calls. In read-only mode, listing tasks is allowed.
+      - lines: "26"
+        out: "2"
+        tone: coral
+        note: "Read-only mode, write tool: blocked, and nothing changes."
+        say: >
+          But completing a task is blocked, and nothing changes.
+      - lines: "28-29"
+        out: "3-4"
+        tone: coral
+        note: "Danger: the human is asked, says no, the task stays."
+        say: >
+          Now a dangerous call. The policy asks the human: delete task one, pay rent? This human says no, so the call is declined, and the task stays.
+      - lines: "31-32"
+        out: "5"
+        note: "The human says yes: only now does the delete run."
+        say: >
+          And when the human says yes, only then does the delete actually run.
+
+  - type: table
+    heading: "Dry run: the order of the checks"
+    columns: [Check, If it fails, "Asks the human?"]
+    widths: [1.6, 2.4, 1.2]
+    rows:
+      - {cells: ["1. The tool exists", "unknown tool 'send_email'", "no"], say: "The order of these checks matters. First, does the tool exist? If not, error."}
+      - {cells: ["2. The input is valid", "invalid input for delete_task: task_id ...", "no"], say: "Second, is the input valid? We never ask a human to approve nonsense."}
+      - {cells: ["3. The item exists", "there is no task 4", "no"], say: "Third, for a delete, does the task exist? We need it to write a clear question."}
+      - {cells: ["4. Permission", "blocked (read-only) or declined", "danger only"], tone: amber, say: "Fourth, the permission check, which asks the human only for danger tools."}
+      - {cells: ["5. Run with a timeout", "timed out after N s", "—"], tone: teal, say: "And fifth, run the tool with its timeout.", note: "Validate before you ask: a human should only ever approve a real, well-formed action."}
+
+  - type: terminal
+    chapter: In the real agent
+    title: terminal — productivity-agent
+    cwd: project/productivity-agent
+    font: 22
+    steps:
+      - cmd: python -m productivity reset --yes && python -m productivity ask "add task Pay rent high priority and add task Buy milk"
+        say: >
+          Now in the real agent. An empty store, and two tasks added, in one turn.
+      - cmd: printf 'n\n' | python -m productivity ask "delete task 1"
+        say: >
+          Delete task one. The agent stops and asks. Here I pipe in the answer no, so you can see it in the recording. The delete is declined, and the task is safe.
+      - cmd: python -m productivity ask "add task Call mom" --read-only
+        say: >
+          And in read-only mode, even adding a task is blocked. That's a good default for an agent that should only answer questions about your data.
+
+  - type: callout
+    kind: warn
+    chapter: Good confirmations
+    title: "A confirmation is only as good as its question"
+    body: "\"Allow delete_task(task_id=1)?\" makes people click yes without reading. \"Delete task 1. Pay rent (high, due 2026-11-05)?\" shows **exactly** what will happen. Ask for every dangerous call, describe it in plain words, and treat silence as **no**."
+    say: >
+      One warning about confirmations. A question like, allow delete task, task ID one, teaches people to click yes without reading. A good question shows exactly what will happen, in plain words: delete task one, pay rent, high priority. Ask for every dangerous call, not just the first, and treat no answer as a no.
+
+  - type: callout
+    kind: try
+    chapter: Pause and try
+    title: "Pause and try: choose the level"
+    body: "Read, write or danger?"
+    say: >
+      Pause and choose a permission level for each of these tools.
+    items:
+      - {text: "get_weather(city)", say: "One. Get weather, for a city."}
+      - {text: "rename_task(task_id, title)", say: "Two. Rename task."}
+      - {text: "send_email(to, subject, body)", say: "Three. Send email.", pause: 6}
+    outro: >
+      Get weather is read: it only looks. Rename task is write: it changes data, but it's easy to undo. Send email is danger: once it's sent, you can't take it back, so a human should approve every one.
+
+  - type: interview
+    chapter: Interview corner
+    items:
+      - q: "How do you make a tool-using agent safe?"
+        a: "**Least privilege** (only the tools it needs), permission levels, **validate every input**, timeouts, and **human approval** for irreversible actions, with clear confirmation text and a log of decisions."
+        trap: "\"Tell the model in the prompt to be careful.\" Prompts guide; only code enforces."
+        say_q: "Interview corner. How do you make a tool-using agent safe?"
+        say_a: "Least privilege, so only the tools it needs. Permission levels. Validate every input. Timeouts. And human approval for actions that can't be undone, with a clear confirmation and a log of every decision. The trap: saying, tell the model in the prompt to be careful. Prompts guide the model. Only code enforces the rules."
+      - q: "Where should the human-approval check live?"
+        a: "In **your code**, between validation and execution, so it runs no matter what the model says. The model can be told about it, but never relied on to enforce it."
+        trap: "Asking the model to ask the user for permission in its reply."
+        say_q: "Follow-up: where should the approval check live?"
+        say_a: "In your code, between validation and execution, so it runs no matter what the model says. You can tell the model about it, but never rely on the model to enforce it. The trap: asking the model to ask the user for permission in its reply."
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "Why does the policy validate the input before asking the human?"
+    options:
+      - "Validation is faster than asking"
+      - "So a human only approves a real, well-formed action"
+      - "The API requires it"
+      - "Validation can't run after approval"
+    answer: 1
+    explain: "Asking a person to approve an invalid or impossible call wastes their attention and teaches them to click yes."
+    say_question: >
+      Quick check. Why does the policy validate the input before asking the human?
+    say_answer: >
+      So a human only ever approves a real, well-formed action. Asking about nonsense wastes their attention, and teaches them to click yes without reading.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 5 recap
+    items:
+      - {text: "Least privilege: only the tools and powers the job needs", say: "Recap. Least privilege: only the tools and powers the job needs."}
+      - {text: "read always; write unless read-only; danger needs a human yes", say: "Read is always allowed, write unless read-only, and danger needs a human yes."}
+      - {text: "Validate first, then ask, with a clear question", say: "Validate first, then ask, with a clear question."}
+      - {text: "Enforce in code, never only in the prompt", say: "And enforce it in code, never only in the prompt."}
+    outro: >
+      You now know every idea in this module. Next lesson, we put them together, and build the personal productivity agent.

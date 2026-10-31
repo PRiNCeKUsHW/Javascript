@@ -53,6 +53,7 @@ limit, a budget and one clear message for every ending. 34 pytest tests, mypy cl
 | Narration scripts / audio | `scripts/*.yaml` / `audio/` (audio not committed) |
 | Captions | `captions/module-04-full.srt` (and per part: `captions/lesson-NN.srt`) |
 | Quiz, pause-and-try answers, challenge | [quiz.md](quiz.md) |
+| Question bank: every question from the videos, answers hidden (21) | [QUESTIONS.md](QUESTIONS.md) |
 | Thumbnail | `assets/thumbnail-module-04.png` |
 | YouTube packaging | [youtube.md](youtube.md), [youtube-uploads.md](youtube-uploads.md) |
 | Validation report | [validation-report.md](validation-report.md) |

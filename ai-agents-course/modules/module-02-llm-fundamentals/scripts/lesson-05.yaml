@@ -1,5 +1,6 @@
 module_title: LLM Fundamentals and API Integration
 title: "Production Basics: Errors, Rate Limits, Retries and Costs"
+narration: hinglish
 scenes:
   - type: title
     chapter: Introduction
@@ -7,107 +8,109 @@ scenes:
     title: Errors, rate limits, retries and costs
     subtitle: What happens when the API says no, and what every call really costs.
     say: >
-      A demo that works once is easy. A program that keeps working when the network drops, when you hit a rate limit, or when costs start to climb, takes deliberate design.
-      This lesson covers the production basics every AI application needs.
+      Ek demo jo ek baar chal jaaye, woh aasaan hai. Lekin ek program jo network girne par, rate limit aane par, ya cost badhne par bhi chalta rahe, uske liye soch samajhkar design karna padta hai.
+      Yeh lesson woh production basics sikhata hai jo har AI application ko chahiye.
 
   - type: objectives
     items:
-      - {text: "Recognise the API's error types and what to do about each", say: "You'll recognise the API's error types, and know what to do about each one."}
-      - {text: "Catch errors in the right order", say: "Catch errors in the right order."}
-      - {text: "Understand rate limits and the SDK's automatic retries", say: "Understand rate limits, and the SDK's automatic retries."}
-      - {text: "Calculate and control what each call costs", say: "And calculate and control what each call costs."}
+      - {text: "Know the API's error types, and what to do about each", say: "Aap API ke error types pehchanoge, aur har ek ke liye kya karna hai."}
+      - {text: "Catch errors in the right order", say: "Errors ko sahi order mein catch karoge."}
+      - {text: "Understand rate limits and automatic retries", say: "Rate limits aur automatic retries samjhoge."}
+      - {text: "Calculate and control what each call costs", say: "Aur har call ki cost calculate aur control karoge."}
 
-  - type: cards
+  - type: table
     chapter: Error types
     heading: Errors you will meet, and what to do
-    cards:
-      - {tag: "400 · 404", title: Fix the request, body: "Bad parameters or an unknown model. Retrying won't help.", code: "BadRequestError", tone: amber, say: "Errors fall into groups. A four hundred or four oh four means your request is wrong: a bad parameter, or a model name that doesn't exist. Retrying won't help. Fix the request."}
-      - {tag: "401 · 403", title: Fix the key, body: "Missing, wrong or under-privileged API key.", code: "AuthenticationError", tone: coral, say: "Four oh one and four oh three are about your key: missing, wrong, or without permission. Again, don't retry. Fix the key."}
-      - {tag: "429", title: Slow down, body: "Rate limit reached. Wait, then retry.", code: "RateLimitError", tone: violet, say: "Four twenty-nine means you've hit a rate limit. Waiting and retrying is exactly right."}
-      - {tag: "5xx · 529", title: Retry later, body: "A server problem or overload, often temporary.", code: "InternalServerError", tone: blue, say: "Five hundreds, including five twenty-nine for overloaded, are server-side problems that are often temporary. Retry after a short wait."}
-      - {tag: network, title: Check the connection, body: "No response at all, or a timeout.", code: "APIConnectionError", tone: teal, say: "And connection errors and timeouts mean no proper response came back at all. Those are also worth a retry."}
-      - {tag: rule, title: "Retry only what can recover", body: "429, 5xx and network errors: yes. 4xx: no.", tone: muted, say: "The rule is simple: retry rate limits, server errors, and network problems. Never blindly retry the other four hundreds."}
+    columns: [Status, Meaning, What to do, "Retry?"]
+    widths: [0.9, 1.6, 2, 0.7]
+    say: >
+      Pehle what: kaun kaun se errors aate hain. HTTP status code batata hai ki problem kis taraf hai.
+    rows:
+      - {cells: ["400 · 404", "Bad request, unknown model", "Fix the request", "no"], tone: amber, say: "Four hundred ya four oh four: aapki request galat hai. Koi galat parameter, ya model ka naam jo exist hi nahi karta. Retry se kuch nahi hoga, request theek karo."}
+      - {cells: ["401 · 403", "Missing or wrong key", "Fix the key", "no"], tone: coral, say: "Four oh one aur four oh three: key ki problem. Key missing hai, galat hai, ya permission nahi hai. Retry mat karo, key theek karo."}
+      - {cells: ["429", "Rate limit reached", "Wait, then retry", "yes"], tone: teal, say: "Four twenty nine: aapne rate limit cross kar di. Yahan rukna aur retry karna bilkul sahi hai."}
+      - {cells: ["5xx · 529", "Server error or overload", "Retry after a short wait", "yes"], tone: teal, say: "Five hundred wale errors, five twenty nine overloaded bhi, server side problems hain, aksar temporary. Thoda rukkar retry karo."}
+      - {cells: ["network", "No response, or a timeout", "Check the connection, retry", "yes"], tone: teal, say: "Aur network errors ya timeouts: koi proper response aaya hi nahi. Yeh bhi retry karne layak hain.", note: "Rule: retry 429, 5xx and network errors. Never blindly retry other 4xx errors."}
 
-  - type: code
+  - type: run
     chapter: Catching errors
-    heading: Catch specific errors, most specific first
+    heading: "errors.py: catch specific errors, most specific first"
     title: errors.py
     file: source/lesson-05/errors.py
+    cwd: source/lesson-05
+    cmd: python errors.py
     steps:
       - lines: "6"
-        note: "`max_retries=0` only for this demo, so each error surfaces."
+        note: "`max_retries=0` only for this demo, so each error reaches our code."
         say: >
-          For this demo only, we turn off automatic retries, so every error reaches our code.
+          Ab how. Sirf iss demo ke liye hum automatic retries band karte hain, taaki har error hamare code tak pahunche.
       - lines: "10-13"
         say: >
-          The call goes inside a try block.
+          Call ek try block ke andar hai.
       - lines: "14-17"
         note: "Specific classes first: key problems, then rate limits."
         say: >
-          Then we catch specific exception classes, most specific first: an authentication error, then a rate limit error.
+          Phir hum specific exception classes catch karte hain, sabse specific pehle. Pehle authentication error, phir rate limit error.
       - lines: "18-21"
-        note: "`APIStatusError` is the parent of all HTTP errors; connection errors are separate."
+        note: "`APIStatusError` is the parent of every HTTP error; connection errors are separate."
         say: >
-          API status error is the parent class of every HTTP error, so it catches anything we haven't handled, and gives us the status code. Connection errors aren't HTTP errors at all, so they have their own class.
-          If you catch the parent first, the specific handlers never run.
+          API status error har HTTP error ki parent class hai, toh jo bacha hai woh yeh pakad leti hai, status code ke saath. Connection errors HTTP errors hain hi nahi, isliye unki alag class hai.
+          Agar parent class pehle catch karoge, toh specific handlers kabhi chalenge hi nahi.
+      - lines: "22-25"
+        out: "1"
+        note: "No failure: a normal placeholder reply."
+        say: >
+          Bina kisi failure ke, ek normal placeholder reply aata hai. Right side par wahi hai.
 
   - type: terminal
     title: terminal — lesson-05
     cwd: source/lesson-05
     say: >
-      To demonstrate errors without breaking anything, the fake API reads an environment variable telling it how to fail.
+      Bina kuch tode errors dikhane ke liye, fake API ek environment variable padhti hai, jo batata hai ki kaise fail karna hai.
     steps:
-      - cmd: python errors.py
-        say: >
-          With no failure, a normal placeholder reply.
       - cmd: STUDY_FAKE_FAIL=401 python errors.py
         say: >
-          A four oh one becomes, check your API key.
+          Four oh one ka message banta hai: check your API key.
       - cmd: STUDY_FAKE_FAIL=429 python errors.py
         say: >
-          A four twenty-nine becomes, rate limited.
+          Four twenty nine ka: rate limited.
       - cmd: STUDY_FAKE_FAIL=529 python errors.py
         say: >
-          And a five twenty-nine, an overloaded server, falls through to the general status handler.
+          Aur five twenty nine, overloaded server, general status handler tak pahunchta hai.
 
-  - type: diagram
+  - type: callout
     chapter: Rate limits and retries
-    heading: Retries with exponential backoff
-    nodes:
-      - {id: call1, label: "Try 1", sub: "429: too many requests", x: 220, y: 300, w: 280, h: 120, tone: coral}
-      - {id: wait1, label: "wait ≈ 0.5 s", sub: "plus a little randomness", x: 640, y: 120, w: 300, h: 100, tone: muted}
-      - {id: call2, label: "Try 2", sub: "500: server error", x: 860, y: 300, w: 280, h: 120, tone: coral}
-      - {id: wait2, label: "wait ≈ 1 s", sub: "doubles each time", x: 1100, y: 480, w: 300, h: 100, tone: muted}
-      - {id: call3, label: "Try 3", sub: "200: success", x: 1480, y: 300, w: 280, h: 120, tone: teal}
-    edges:
-      - {from: call1, to: wait1}
-      - {from: wait1, to: call2}
-      - {from: call2, to: wait2}
-      - {from: wait2, to: call3}
+    kind: analogy
+    title: "Backoff is calling a busy friend"
+    body: "Their line is busy. You don't redial every second; you wait a little, then **a bit longer each time**. If a thousand people do the same, a little **randomness** stops them all calling back at the same moment."
     say: >
-      Every API account has rate limits: how many requests and tokens you may use per minute. When you exceed them, you get a four twenty-nine.
-    steps:
-      - show: [call1]
-        say: >
-          The standard response is to retry with exponential backoff.
-      - show: [wait1, call2, "call1->wait1", "wait1->call2"]
-        flow: ["call1->wait1", "wait1->call2"]
-        say: >
-          Wait a short time, plus a little randomness so that many clients don't all retry at the same moment, and try again.
-      - show: [wait2, call3, "call2->wait2", "wait2->call3"]
-        flow: ["call2->wait2", "wait2->call3"]
-        caption: "The Anthropic SDK does this for you: 2 retries by default"
-        say: >
-          If it fails again, wait roughly twice as long. Good news: the Anthropic SDK already does all of this for you. It retries rate limits, server errors, and connection errors twice by default, with backoff, and it respects the retry after header the API sends.
+      Rate limit ka matlab: har account ke liye ek limit hai ki ek minute mein kitni requests aur kitne tokens bhej sakte ho. Limit cross hui, toh four twenty nine aata hai.
+      Iska solution samjho ek busy dost ko call karne se. Line busy hai. Aap har second redial nahi karte. Thoda rukte ho, aur har baar thoda zyada rukte ho. Aur agar hazaar log yahi kar rahe hain, toh thodi randomness unhe ek hi second par wapas call karne se rokti hai.
 
-  - type: code
+  - type: table
+    heading: "Dry run: retries with exponential backoff"
+    columns: [Try, Result, Then]
+    widths: [0.6, 1.6, 2.2]
+    rows:
+      - {cells: ["1", "429 rate limited", "wait ≈ 0.5 s (plus a little randomness)"], tone: coral, say: "Dry run dekho. Try one: four twenty nine. Lagbhag aadha second ruko, thodi randomness ke saath."}
+      - {cells: ["2", "500 server error", "wait ≈ 1 s (doubled)"], tone: coral, say: "Try two: five hundred, server error. Ab lagbhag ek second ruko. Wait dugna ho gaya."}
+      - {cells: ["3", "200 success", "use the reply"], tone: teal, say: "Try three: success. Reply use karo.", note: "The Anthropic SDK does this for you: 2 retries by default, and it respects the API's retry-after header."}
+
+  - type: run
+    heading: "retries.py: the SDK retries for you"
     title: retries.py
     file: source/lesson-05/retries.py
+    cwd: source/lesson-05
+    cmd: python retries.py
     steps:
       - lines: "4"
-        note: "`max_retries` controls the SDK's automatic retries (default 2)."
+        note: "`max_retries` controls the SDK's automatic retries (default 2; 0 turns it off)."
         say: >
-          You control this with max retries, on the client or per request. Two is the default, and zero turns it off.
+          Achhi khabar yeh hai ki Anthropic SDK yeh sab already karta hai. Max retries se aap isse control karte ho. Default do hai, aur zero se band hota hai.
+      - lines: "6-9"
+        out: "1"
+        say: >
+          Normal case mein call succeed hoti hai. Ab dekhte hain jab fake API pehle fail kare.
 
   - type: terminal
     title: terminal — lesson-05
@@ -115,66 +118,108 @@ scenes:
     steps:
       - cmd: ANTHROPIC_LOG=info STUDY_FAKE_FAIL=429,500 python retries.py
         say: >
-          Here the fake API fails with a four twenty-nine and then a five hundred. Setting ANTHROPIC LOG to info shows what the SDK does: it waits about half a second, retries, waits about a second, retries again, and succeeds.
-          Our code didn't need a single extra line.
+          Yahan fake API pehle four twenty nine deti hai, phir five hundred. ANTHROPIC LOG ko info karne se dikhta hai SDK kya kar raha hai: thoda rukta hai, retry karta hai, phir thoda zyada rukta hai, phir retry, aur success.
+          Hamare code mein ek bhi extra line nahi lagi.
 
   - type: bullets
     heading: Timeouts and keys in production
     items:
-      - {text: "Set a timeout you can live with: `Anthropic(timeout=60.0)`", sub: "the SDK default is 10 minutes; stream long replies instead", say: "Set a timeout you're comfortable with. The SDK default is ten minutes. For long replies, stream instead of waiting."}
-      - {text: "Log `response._request_id` when something fails", sub: "it identifies the request if you need support", say: "When something fails, log the request ID. It identifies exactly which request went wrong."}
-      - {text: "One key per app and environment; rotate keys you suspect", say: "Use separate keys for separate apps and environments, so you can revoke one without breaking the others."}
-      - {text: "Never send keys to the model or print them in logs", tone: coral, say: "And never send keys to the model, or print them in logs. Logs are often far less protected than you think."}
+      - {text: "Set a timeout you can live with: `Anthropic(timeout=60.0)`", sub: "the SDK default is 10 minutes; stream long replies instead", say: "Production ke kuch aur rules. Ek timeout set karo jo aapke liye theek ho. SDK ka default das minute hai. Lambe replies ke liye stream karo."}
+      - {text: "Log `response._request_id` when something fails", sub: "it identifies the request if you need support", say: "Kuch fail ho, toh request ID log karo. Isse pata chalta hai exactly kaunsi request fail hui."}
+      - {text: "One key per app and environment; rotate keys you suspect", say: "Har app aur environment ki alag key rakho, taaki ek ko revoke karne se baaki na tootein."}
+      - {text: "Never send keys to the model or print them in logs", tone: coral, say: "Aur keys ko kabhi model ko mat bhejo, na logs mein print karo. Logs aksar utne protected nahi hote jitna aap sochte ho."}
 
-  - type: cards
+  - type: callout
     chapter: Costs
-    heading: "What it costs: price per million tokens"
+    kind: analogy
+    title: "Cost works like an electricity bill"
+    body: "Units used × price per unit = your bill. For the API: **tokens × price per token**, with separate prices for input and output. Small per call, big at scale."
     say: >
-      Now, money. You pay per token, with separate prices for input and output, quoted per million tokens.
-    cards:
-      - {tag: Opus 5.5, title: "$4 in · $20 out", body: "Most capable; this course's default", code: "claude-opus-5-5", tone: violet, say: "Claude Opus 5.5, the most capable of the three and our default, costs four dollars per million input tokens, and twenty per million output tokens."}
-      - {tag: Sonnet 5.5, title: "$2 in · $10 out", body: "Fast and strong for everyday work", code: "claude-sonnet-5-5", tone: blue, say: "Sonnet 5.5 costs half that."}
-      - {tag: Haiku 5.5, title: "$0.10 in · $0.50 out", body: "Cheapest, for simple high-volume tasks", code: "claude-haiku-5-5", tone: teal, say: "And Haiku 5.5 is far cheaper, for simple, high-volume work."}
-    outro: >
-      These are list prices in October 2026. Prices change, so always check the official pricing page. And notice that output tokens cost five times more than input tokens.
+      Ab paisa. Cost ko bijli ke bill ki tarah socho. Kitne units use kiye, guna price per unit, barabar bill. API mein: tokens guna price per token. Input aur output ke price alag hain.
+      Ek call mein bahut thoda, lekin scale par bahut zyada.
 
-  - type: code
+  - type: table
+    heading: "List prices per million tokens (October 2026)"
+    columns: [Model, Input, Output, Good for]
+    widths: [1.2, 0.8, 0.8, 2]
+    rows:
+      - {cells: ["Claude Opus 5.5", "$4", "$20", "Most capable; this course's default"], tone: violet, say: "Claude Opus 5.5, sabse capable aur hamara default: chaar dollar per million input tokens, aur bees dollar per million output tokens."}
+      - {cells: ["Claude Sonnet 5.5", "$2", "$10", "Fast and strong for everyday work"], tone: blue, say: "Sonnet 5.5 iska aadha."}
+      - {cells: ["Claude Haiku 5.5", "$0.10", "$0.50", "Cheapest, for simple high-volume tasks"], tone: teal, say: "Aur Haiku 5.5 bahut sasta hai, simple aur high volume kaam ke liye.", note: "Prices change: always check the official pricing page. Output costs 5× input here."}
+
+  - type: run
+    heading: "costs.py: count, call, calculate"
     title: costs.py
     file: source/lesson-05/costs.py
+    cwd: source/lesson-05
+    cmd: python costs.py
     steps:
       - lines: "4"
         note: "Prices in dollars per **million** tokens."
         say: >
-          Here's the cost calculation. Prices are per million tokens.
+          Yeh raha cost calculation. Prices per million tokens hain.
       - lines: "9-10"
+        out: "1"
         note: "`count_tokens` measures a request before you send it."
         say: >
-          Count tokens measures a request before you send it, so you can warn about, or block, a request that would be too big or too expensive.
-      - lines: "14-17"
+          Count tokens request bhejne se pehle uska size naap leta hai. Toh aap bahut badi ya mehengi request ko pehle hi rok sakte ho. Output mein: nau input tokens.
+      - lines: "12-17"
+        out: "2"
         note: "Cost = in × input price + out × output price, ÷ 1,000,000."
         say: >
-          After the call, usage gives the actual tokens. Multiply each by its price, and divide by a million.
+          Call ke baad usage actual tokens deta hai. Har ek ko uske price se guna karo, aur ek million se divide karo.
       - lines: "18"
+        out: "3"
         note: "Small per call, big at scale."
         say: >
-          And then the important habit: multiply by your expected traffic.
+          Aur phir important habit: apne expected traffic se guna karo. Ek call ek cent se bhi kam, lekin roz das hazaar calls, toh har din real paisa. Offline mode mein yeh token counts rough estimates hain. Real key ke saath exact hote hain.
 
-  - type: terminal
-    title: terminal — lesson-05
-    cwd: source/lesson-05
-    steps:
-      - cmd: python costs.py
-        say: >
-          A fraction of a cent per call. But the same call ten thousand times a day costs real money every day. In offline mode these token counts are rough estimates. With a real key, they're exact.
+  - type: table
+    heading: "Dry run: the cost formula, by hand"
+    columns: [Part, Calculation, Result]
+    widths: [1, 2.2, 1]
+    mono: true
+    rows:
+      - {cells: ["input", "9 × $4 ÷ 1,000,000", "$0.000036"], say: "Haath se calculate karte hain. Input: nau guna chaar dollar, divided by ek million."}
+      - {cells: ["output", "64 × $20 ÷ 1,000,000", "$0.001280"], say: "Output: chausath guna bees dollar, divided by ek million. Dekho, output ka hissa input se kaafi bada hai."}
+      - {cells: ["total", "0.000036 + 0.001280", "$0.001316"], tone: teal, say: "Total: lagbhag zero point one three cents. Ek cent se bhi bahut kam."}
+      - {cells: ["× 10,000 a day", "0.001316 × 10,000", "$13.16 / day"], tone: amber, say: "Aur das hazaar calls roz: tera dollar solah cents har din. Yahi scale ka asar hai."}
 
   - type: steps
     heading: Five ways to keep costs under control
     items:
-      - {text: "Send less: trim history, include only relevant documents", say: "Five ways to control cost. First, send less: trim history, and include only relevant documents."}
-      - {text: "Cap the output with `max_tokens`, and ask for concise answers", say: "Second, ask for concise answers, with a sensible max tokens."}
-      - {text: "Use lower `effort` for simple tasks", say: "Third, use lower effort for simple tasks."}
-      - {text: "Pick the smallest model that does the job well, measured on real examples", say: "Fourth, pick the smallest model that does the job well, measured on real examples, not guessed."}
-      - {text: "Track spending in code, with a budget that stops runaway loops", say: "And fifth, track spending in code, with a budget that stops runaway loops. Our project does exactly this."}
+      - {text: "Send less: trim history, include only relevant documents", say: "Cost control ke paanch tareeke. Pehla: kam bhejo. History trim karo, sirf relevant documents daalo."}
+      - {text: "Cap the output with `max_tokens`, and ask for concise answers", say: "Doosra: concise answers maango, sensible max tokens ke saath."}
+      - {text: "Use lower `effort` for simple tasks", say: "Teesra: simple tasks ke liye low effort."}
+      - {text: "Pick the smallest model that does the job well, measured on real examples", say: "Chautha: sabse chhota model chuno jo kaam achhe se kare. Real examples par measure karke, guess karke nahi."}
+      - {text: "Track spending in code, with a budget that stops runaway loops", say: "Aur paanchva: code mein kharcha track karo, ek budget ke saath jo runaway loops ko rok de. Hamara project yahi karta hai."}
+
+  - type: interview
+    chapter: Interview corner
+    items:
+      - q: "Which API errors should you retry, and how?"
+        a: "Retry **429, 5xx and network errors** with exponential backoff plus jitter, and a cap on attempts. Don't retry other 4xx errors: they fail the same way until you fix the request or the key."
+        trap: "Retrying every error in a tight loop. That hammers the server and burns rate limit."
+        say_q: "Interview corner. Kaun se API errors retry karne chahiye, aur kaise?"
+        say_a: "Answer: four twenty nine, five hundred wale, aur network errors, exponential backoff aur thodi randomness ke saath, jise jitter kehte hain, aur attempts ki ek limit ke saath. Baaki four hundred wale retry mat karo. Trap: har error ko ek tight loop mein retry karna. Isse server par aur load padta hai."
+      - q: "Why catch specific exceptions before general ones?"
+        a: "Python runs the **first matching `except`**. A parent class like `APIStatusError` matches every HTTP error, so if it comes first, the specific handlers never run."
+        trap: "A bare `except Exception:` that hides bugs and swallows the error details."
+        say_q: "Doosra question: specific exceptions ko general se pehle kyun catch karte hain?"
+        say_a: "Answer: Python pehla matching except block chalata hai. API status error jaisi parent class har HTTP error match karti hai. Woh pehle aayi, toh specific handlers kabhi nahi chalenge. Trap: ek bare except Exception, jo bugs chhupa deta hai."
+
+  - type: callout
+    chapter: Practice
+    kind: practice
+    title: "Try these before the project"
+    body: "Easy to hard. Answers are in the module's quiz.md."
+    say: >
+      Practice time.
+    items:
+      - {text: "A 401 error: retry or fix? Why?", say: "Pehla: four oh one aaya. Retry karoge ya fix? Kyun?"}
+      - {text: "Cost of 2,000 input + 500 output tokens on Opus 5.5?", say: "Doosra: Opus 5.5 par do hazaar input aur paanch sau output tokens ki cost kitni hogi?"}
+      - {text: "Write a loop that retries 3 times with doubling waits (no SDK retries).", say: "Teesra: ek loop likho jo teen baar retry kare, har baar dugna wait karke."}
+      - {text: "Scenario: your bill doubled overnight. List three things you'd check.", say: "Aur scenario: raat bhar mein aapka bill double ho gaya. Teen cheezein batao jo aap check karoge.", pause: 6}
 
   - type: quiz
     chapter: Quick check
@@ -188,17 +233,17 @@ scenes:
     answer: 2
     explain: "A 429 recovers after waiting. 400, 401 and 404 fail the same way every time until you fix the request or the key."
     say_question: >
-      Quick check. Which of these errors should your code retry?
+      Quick check. Inn mein se kaunsa error retry karna chahiye?
     say_answer: >
-      The four twenty-nine. A rate limit recovers after waiting. The others fail the same way every time, until you fix the request or the key.
+      Four twenty nine. Rate limit rukne ke baad theek ho jaati hai. Baaki har baar same tareeke se fail honge, jab tak request ya key theek na ho.
 
   - type: recap
     chapter: Recap
     heading: Lesson 5 recap
     items:
-      - {text: "4xx (except 429): fix the request or the key; don't retry", say: "Four hundreds, except four twenty-nine, need a fix, not a retry."}
-      - {text: "429, 5xx, network: retry with backoff; the SDK does it for you", say: "Rate limits, server errors, and network errors are retried with backoff, and the SDK does that for you."}
-      - {text: "Catch specific exception classes before `APIStatusError`", say: "Catch specific exception classes before the general one."}
-      - {text: "Cost = tokens × price; count, track and budget", say: "And cost is tokens times price, so count, track, and budget."}
+      - {text: "4xx (except 429): fix the request or the key; don't retry", say: "Recap. Four hundred wale errors, four twenty nine ko chhodkar, fix maangte hain, retry nahi."}
+      - {text: "429, 5xx, network: retry with backoff; the SDK does it for you", say: "Rate limits, server errors, aur network errors backoff ke saath retry hote hain, aur SDK yeh khud karta hai."}
+      - {text: "Catch specific exception classes before `APIStatusError`", say: "Specific exception classes ko general se pehle catch karo."}
+      - {text: "Cost = tokens × price; count, track and budget", say: "Aur cost hai tokens guna price. Toh count karo, track karo, aur budget rakho."}
     outro: >
-      You now know everything the project needs. Next lesson, we start building the AI Study Assistant.
+      Ab project ke liye sab kuch aapko pata hai. Agle lesson mein AI Study Assistant banana shuru karenge.

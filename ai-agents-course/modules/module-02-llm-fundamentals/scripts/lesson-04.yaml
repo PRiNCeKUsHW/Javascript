@@ -1,5 +1,6 @@
 module_title: LLM Fundamentals and API Integration
 title: "Controlling Output: Limits, Streaming and Structured JSON"
+narration: hinglish
 scenes:
   - type: title
     chapter: Introduction
@@ -7,55 +8,79 @@ scenes:
     title: Controlling the output
     subtitle: Output limits and stop reasons, streaming, structured JSON, and refusals.
     say: >
-      Getting a reply is easy. Getting a reply your program can rely on takes more care.
-      In this lesson you'll control how long replies are, show them as they're generated, get structured JSON instead of free text, and handle the cases where the model stops early.
+      Reply lena aasaan hai. Lekin aisa reply lena jis par aapka program bharosa kar sake, uske liye thodi care chahiye.
+      Iss lesson mein aap reply ki length control karoge, reply ko banate banate screen par dikhaoge, free text ki jagah structured JSON loge, aur un cases ko handle karoge jahan model jaldi ruk jaata hai.
 
   - type: objectives
     items:
-      - {text: "Use `max_tokens` and check `stop_reason` every time", say: "You'll use max tokens, and check the stop reason every time."}
-      - {text: "Stream replies for a responsive interface", say: "Stream replies for a responsive interface."}
-      - {text: "Get validated JSON with structured outputs", say: "Get validated JSON with structured outputs."}
-      - {text: "Handle refusals safely", say: "And handle refusals safely."}
+      - {text: "Use `max_tokens` and check `stop_reason` every time", say: "Aap max tokens use karoge, aur har baar stop reason check karoge."}
+      - {text: "Stream replies for a responsive interface", say: "Replies ko stream karoge, taaki interface fast lage."}
+      - {text: "Get validated JSON with structured outputs", say: "Structured outputs se validated JSON loge."}
+      - {text: "Handle refusals safely", say: "Aur refusals ko safely handle karoge."}
 
   - type: cards
     chapter: Stop reasons
     heading: "stop_reason: why did the reply end?"
     columns: 3
+    say: >
+      Har response batata hai ki woh kyun ruka. Yeh field hai stop reason.
     cards:
-      - {tag: end_turn, title: Finished, body: "The model completed its answer", tone: teal, say: "Every response tells you why it ended. End turn means the model finished its answer naturally."}
-      - {tag: max_tokens, title: Cut off, body: "It hit your `max_tokens` limit", tone: amber, say: "Max tokens means it hit your limit and was cut off, possibly mid-sentence."}
-      - {tag: refusal, title: Declined, body: "It declined, for safety reasons", tone: coral, say: "Refusal means the model declined the request for safety reasons."}
-      - {tag: stop_sequence, title: Stop text, body: "It produced one of your stop sequences", tone: blue, say: "Stop sequence means it produced one of the custom stop strings you supplied."}
-      - {tag: tool_use, title: Wants a tool, body: "It is asking to run a tool (Module 5)", tone: violet, say: "Tool use means it wants to run one of your tools. That's the heart of agents, in Module 5."}
-      - {tag: pause_turn, title: Paused, body: "A long agentic turn paused; continue it", tone: muted, say: "And pause turn means a long agentic turn paused, and you can continue it."}
+      - {tag: end_turn, title: Finished, body: "The model completed its answer", tone: teal, say: "End turn ka matlab: model ne apna answer naturally poora kiya."}
+      - {tag: max_tokens, title: Cut off, body: "It hit your `max_tokens` limit", tone: amber, say: "Max tokens ka matlab: aapki limit aa gayi aur reply beech mein kat gaya, shayad aadhe sentence par."}
+      - {tag: refusal, title: Declined, body: "It declined, for safety reasons", tone: coral, say: "Refusal ka matlab: model ne safety reasons se request mana kar di."}
+      - {tag: stop_sequence, title: Stop text, body: "It produced one of your stop sequences", tone: blue, say: "Stop sequence: model ne aapka diya hua koi custom stop text likh diya."}
+      - {tag: tool_use, title: Wants a tool, body: "It is asking to run a tool (Module 5)", tone: violet, say: "Tool use: model aapka koi tool chalana chahta hai. Yeh agents ka dil hai, Module 5 mein."}
+      - {tag: pause_turn, title: Paused, body: "A long agentic turn paused; continue it", tone: muted, say: "Aur pause turn: ek lamba agentic turn ruka hai, aur aap usse continue kar sakte ho."}
 
-  - type: code
+  - type: callout
     chapter: Output limits
-    heading: max_tokens is a hard cap, so check stop_reason
+    kind: analogy
+    title: "max_tokens is an exam's word limit, with a strict invigilator"
+    body: "When time is up, the invigilator **takes the paper mid-sentence**. The model doesn't plan its answer to fit `max_tokens`; it is simply **stopped**. `stop_reason` tells you if that happened."
+    say: >
+      Max tokens ko exam ki word limit ki tarah socho, ek strict invigilator ke saath. Time khatam, aur invigilator paper beech sentence mein hi le leta hai.
+      Model apna answer limit ke hisaab se plan nahi karta. Usse bas rok diya jaata hai. Aur stop reason batata hai ki aisa hua ya nahi.
+
+  - type: run
+    heading: "limits.py: the same question, two limits"
     title: limits.py
     file: source/lesson-04/limits.py
+    cwd: source/lesson-04
+    cmd: python limits.py
     steps:
       - lines: "6-9"
-        note: "Same question, two limits: 1,000 tokens and 15 tokens."
+        note: "Same question: once with 1,000 tokens, once with 15."
         say: >
-          We ask the same question twice, once with a generous limit and once with only fifteen tokens.
-      - lines: "10-13"
+          Hum ek hi question do baar puchte hain. Ek baar badi limit ke saath, ek baar sirf pandrah tokens ke saath.
+      - lines: "10-11"
+        out: "1"
+        note: "1,000 tokens: `end_turn`, the answer is complete."
+        say: >
+          Pehli run: hazaar tokens ki limit. Stop reason end turn, matlab answer complete hai.
+      - lines: "10-11"
+        out: "2"
+        tone: coral
+        note: "15 tokens: `max_tokens`, cut off after exactly 15."
+        say: >
+          Doosri run: pandrah tokens. Stop reason max tokens, aur theek pandrah output tokens use hue. Answer beech mein kat gaya.
+      - lines: "12-13"
+        out: "3"
         note: "**Always** check `stop_reason` before trusting the text."
         say: >
-          And we check the stop reason. A cut-off reply looks like a normal string, so if you don't check, you'll silently show users half an answer, or try to parse half a JSON document.
-
-  - type: terminal
-    title: terminal — lesson-04
-    cwd: source/lesson-04
-    steps:
-      - cmd: python limits.py
-        say: >
-          With a thousand tokens, end turn. With fifteen, the stop reason is max tokens, and exactly fifteen output tokens were used. The model doesn't plan to fit the limit. It's simply stopped.
+          Aur yeh check sabse important hai. Kata hua reply ek normal string jaisa hi dikhta hai. Check nahi kiya, toh aap users ko aadha answer dikha doge, ya aadhe JSON ko parse karne ki koshish karoge.
     outro: >
-      So set max tokens high enough for the job, and treat max tokens as the stop reason that needs handling. Don't lowball it to save money. A truncated answer usually costs you a retry.
+      Toh max tokens kaam ke hisaab se kaafi rakho. Paise bachane ke liye bahut kam mat rakho, kyunki kata hua answer usually ek retry ka kharcha karwata hai.
+
+  - type: callout
+    chapter: Streaming
+    kind: analogy
+    title: "Streaming is watching a video while it loads"
+    body: "Without streaming, you **download the whole movie** before pressing play. With streaming, it **starts playing in seconds** while the rest arrives. Same total data, a much better wait."
+    say: >
+      Ab streaming. Isse online video ki tarah socho. Bina streaming ke, aap poori movie download karte ho, phir play karte ho. Streaming ke saath, video kuch seconds mein chal padti hai, aur baaki hissa peeche se aata rehta hai.
+      Total data utna hi hai, lekin intezaar bahut achha lagta hai.
 
   - type: compare
-    chapter: Streaming
     heading: Streaming makes waiting feel shorter
     left:
       title: "Without streaming"
@@ -74,38 +99,44 @@ scenes:
     steps:
       - show: left
         say: >
-          Remember that models generate one token at a time. Without streaming, your program waits for the entire reply, with nothing on screen.
+          Yaad hai, model ek ek token karke likhta hai. Bina streaming ke, aapka program poore reply ka intezaar karta hai, aur screen khaali rehti hai.
       - show: right
         say: >
-          With streaming, the API sends pieces as they're generated, so text appears almost immediately. The total time is the same, but it feels far faster. Streaming also avoids request timeouts on very long replies.
+          Streaming mein API pieces bhejti rehti hai jaise jaise woh bante hain, toh text lagbhag turant dikhne lagta hai. Total time same, lekin experience kaafi fast lagta hai. Bahut lambe replies par streaming request timeout se bhi bachata hai.
 
-  - type: code
+  - type: run
+    heading: "stream.py: printing pieces as they arrive"
     title: stream.py
     file: source/lesson-04/stream.py
+    cwd: source/lesson-04
+    cmd: python stream.py
     steps:
       - lines: "6-10"
         note: "`messages.stream(...)` takes the same arguments as `create`."
         say: >
-          Messages dot stream takes exactly the same arguments as create, and is used as a context manager with with.
+          Messages dot stream bilkul create jaise hi arguments leta hai, aur with ke saath context manager ki tarah use hota hai.
       - lines: "11-12"
+        out: "1"
         note: "`text_stream` yields text pieces as they arrive."
         say: >
-          Text stream yields small pieces of text as they arrive. We print each one immediately, with flush equals True so it isn't held in a buffer.
-      - lines: "13"
+          Text stream text ke chhote pieces deta hai, jaise jaise woh aate hain. Hum har piece turant print karte hain, flush equals True ke saath, taaki woh buffer mein ruke nahi.
+      - lines: "13-15"
+        out: "2"
         note: "`get_final_message()`: the full message, with `stop_reason` and `usage`."
         say: >
-          And when the stream ends, get final message gives you the complete message object, with its stop reason and usage, just like create.
+          Aur stream khatam hone par get final message poora message object deta hai, stop reason aur usage ke saath, bilkul create ki tarah.
+          Video mein pieces turant aa gaye kyunki fake API local hai. Lekin code path real streaming wala hi hai.
 
-  - type: terminal
-    title: terminal — lesson-04
-    cwd: source/lesson-04
-    steps:
-      - cmd: python stream.py
-        say: >
-          In the video the pieces arrive instantly, because the fake API is local, but the code path is the real streaming code: server-sent events, parsed by the SDK.
+  - type: callout
+    chapter: Structured output
+    kind: analogy
+    title: "Structured output is a government form, not a letter"
+    body: "A letter can say anything, in any order. A form has **fixed boxes**: name here, date there. A program can read a form without guessing. Structured outputs make the model fill in a form."
+    say: >
+      Ab structured output. Ek letter aur ek government form mein fark socho. Letter mein kuch bhi, kisi bhi order mein likha ja sakta hai. Form mein fixed boxes hote hain: naam yahan, date wahan.
+      Form ko program bina guess kiye padh sakta hai. Structured outputs model se ek form bharwaate hain.
 
   - type: compare
-    chapter: Structured output
     heading: "Structured output: JSON your code can trust"
     left:
       title: "Asking nicely for JSON"
@@ -126,54 +157,78 @@ scenes:
     steps:
       - show: left
         say: >
-          Agents constantly need machine-readable output: a quiz, a plan, a tool decision. Just asking for JSON in the prompt is fragile. Extra words, wrong keys, or broken JSON can slip through.
+          Agents ko baar baar machine readable output chahiye: ek quiz, ek plan, ek tool decision. Prompt mein sirf JSON maangna fragile hai. Extra words, galat keys, ya toota JSON aa sakta hai.
       - show: right
         say: >
-          Structured outputs fix this. You pass a JSON schema, and the API constrains the reply to valid JSON for that schema. With a Pydantic class, the SDK builds the schema and parses the reply into a Python object for you.
+          Structured outputs isse fix karte hain. Aap ek JSON schema dete ho, aur API reply ko uss schema ke valid JSON tak hi limit karti hai. Pydantic class doge, toh SDK schema bhi banata hai aur reply ko Python object mein parse bhi karta hai.
 
-  - type: code
+  - type: run
+    heading: "structured.py: a Quiz object, not a string"
     title: structured.py
     file: source/lesson-04/structured.py
+    cwd: source/lesson-04
+    cmd: python structured.py
     steps:
       - lines: "7-16"
-        note: "A Pydantic `BaseModel` describes the shape. Module 3 goes deeper."
+        note: "A Pydantic `BaseModel` describes the shape (Module 3 goes deeper)."
         say: >
-          First, describe the shape with Pydantic classes: a question has text, four options, the index of the right answer, and an explanation. A quiz has a topic and a list of questions.
-          Pydantic gets a full lesson in Module 3. For now, read these as typed dataclasses.
+          Pehle Pydantic classes se shape describe karo. Ek question mein text, chaar options, sahi answer ka index, aur explanation. Ek quiz mein topic aur questions ki list.
+          Pydantic par Module 3 mein poora lesson hai. Abhi inhe typed dataclasses ki tarah padho.
       - lines: "9-10"
-        note: "Limits the API can't enforce move into the schema's description; the SDK checks them afterwards."
+        note: "Limits the API can't enforce move into descriptions; the SDK checks them afterwards."
         say: >
-          These Field constraints say exactly four options and an index from zero to three. The API's schema support is limited, so the SDK moves those limits into the field descriptions, and then checks them itself when the reply arrives.
+          Yeh Field constraints kehte hain: exactly chaar options, aur index zero se teen tak. API ka schema support limited hai, toh SDK yeh limits field descriptions mein daal deta hai, aur reply aane par khud check karta hai.
       - lines: "19-26"
         note: "`messages.parse(..., output_format=Quiz)`"
         say: >
-          Then call messages dot parse instead of create, with output format set to the class.
+          Phir create ki jagah messages dot parse call karo, output format mein class do.
       - lines: "27-30"
+        out: "1-3"
         note: "`parsed_output` is a validated `Quiz` object."
         say: >
-          Parsed output is a real, validated Quiz object, so you use attributes instead of digging through dictionaries.
-
-  - type: terminal
-    title: terminal — lesson-04
-    cwd: source/lesson-04
-    steps:
-      - cmd: python structured.py
-        say: >
-          The offline fake returns schema-valid placeholder questions, and they come back as a real Quiz object. If a reply doesn't fit the schema, the SDK raises a validation error instead of handing you bad data.
+          Parsed output ek real, validated Quiz object hai. Right side dekho: type hai Quiz, topic HTTP, aur do questions. Dictionaries mein khodne ki jagah aap attributes use karte ho.
+          Offline fake schema valid placeholder questions deta hai. Agar reply schema mein fit na ho, toh SDK validation error raise karta hai, kharab data nahi deta.
 
   - type: callout
     chapter: Refusals
     kind: warn
     title: "Refusals: check before you read"
-    body: "If `stop_reason` is `\"refusal\"`, the model declined and the content may be empty. Check it **before** reading the text. Optionally, the API can automatically retry a declined request on another model (`fallbacks`), which our project turns on."
+    body: "If `stop_reason` is `\"refusal\"`, the model declined and the content may be empty. Check it **before** reading the text. The API can also retry a declined request on another model automatically (`fallbacks`), which our project turns on."
     say: >
-      Last case: refusals. If the stop reason is refusal, the model declined the request for safety reasons, and the content may be empty. So check the stop reason before you read the text.
-      On current models, the API can also automatically re-run a declined request on another model, a feature called fallbacks. Our project turns it on, and you'll see the code in lesson six.
+      Aakhri case: refusals. Agar stop reason refusal hai, toh model ne safety reasons se mana kiya, aur content khaali ho sakta hai. Isliye text padhne se pehle stop reason check karo.
+      Current models par API ek declined request ko automatically doosre model par chala sakti hai. Iss feature ko fallbacks kehte hain. Hamara project isse on karta hai, lesson six mein code dekhoge.
+
+  - type: interview
+    chapter: Interview corner
+    items:
+      - q: "Why would you stream an LLM response?"
+        a: "Generation happens token by token, so streaming shows text **as it is produced**: the user sees progress in moments, total time is the same, and very long replies avoid request timeouts."
+        trap: "Saying streaming makes the model faster. It doesn't; it makes the wait feel shorter."
+        say_q: "Interview corner. LLM response ko stream kyun karte hain?"
+        say_a: "Answer: generation token by token hoti hai, toh streaming text ko bante hue dikhati hai. User ko turant progress dikhta hai, total time same rehta hai, aur bahut lambe replies timeout se bachte hain. Trap: yeh mat bolna ki streaming se model fast ho jaata hai. Woh sirf intezaar ko chhota mehsoos karwati hai."
+      - q: "How do you get reliable JSON from an LLM?"
+        a: "Use **structured outputs**: pass a JSON schema (or a Pydantic model) so the reply is constrained to it, parse into an object, and still check `stop_reason` and validate business rules."
+        trap: "\"Ask for JSON in the prompt and fix it with regex.\" That breaks on the first unusual reply."
+        say_q: "Doosra question: ek LLM se reliable JSON kaise lete ho?"
+        say_a: "Answer: structured outputs use karo. JSON schema ya Pydantic model do, taaki reply usi shape mein aaye, object mein parse karo, aur phir bhi stop reason aur business rules check karo. Trap: prompt mein JSON maango aur regex se theek karo. Yeh pehle unusual reply par toot jaata hai."
+
+  - type: callout
+    chapter: Practice
+    kind: practice
+    title: "Try these before the next lesson"
+    body: "Easy to hard. Answers are in the module's quiz.md."
+    say: >
+      Practice time.
+    items:
+      - {text: "What are the two most common stop reasons, and what does each mean?", say: "Pehla: do sabse common stop reasons kaun se hain, aur dono ka matlab kya hai?"}
+      - {text: "In `stream.py`, what happens without `flush=True`?", say: "Doosra: stream dot py mein flush equals True hata do, toh kya hoga?"}
+      - {text: "Add a `difficulty` field (easy, medium or hard) to the Quiz schema.", say: "Teesra: Quiz schema mein ek difficulty field add karo, easy, medium, ya hard."}
+      - {text: "Scenario: JSON parsing fails only on long replies. What do you check first, and how do you fix it?", say: "Aur scenario: JSON parsing sirf lambe replies par fail hoti hai. Pehle kya check karoge, aur fix kya hoga?", pause: 6}
 
   - type: quiz
     chapter: Quick check
     number: 1
-    question: "Your code parses `response.content[0].text` as JSON and it fails on a long reply. What should you check first?"
+    question: "Your code parses the reply as JSON and it fails on a long reply. What should you check first?"
     options:
       - "The API key"
       - "Whether `stop_reason` is `max_tokens`"
@@ -182,17 +237,17 @@ scenes:
     answer: 1
     explain: "A reply cut off at `max_tokens` ends mid-JSON. Check `stop_reason`, raise the limit, or ask for less."
     say_question: >
-      Quick check. Your code parses the reply as JSON, and it fails on a long reply. What should you check first?
+      Quick check. Aapka code reply ko JSON ki tarah parse karta hai, aur lambe reply par fail ho jaata hai. Sabse pehle kya check karoge?
     say_answer: >
-      Whether the stop reason is max tokens. A cut-off reply ends in the middle of the JSON.
+      Ki stop reason max tokens hai ya nahi. Kata hua reply JSON ke beech mein khatam hota hai.
 
   - type: recap
     chapter: Recap
     heading: Lesson 4 recap
     items:
-      - {text: "`stop_reason` tells you if the reply is complete. Check it.", say: "The stop reason tells you whether the reply is complete. Always check it."}
-      - {text: "`messages.stream` + `text_stream` for responsive output", say: "Stream for responsive output."}
-      - {text: "`messages.parse(output_format=Model)` for validated JSON", say: "Use structured outputs, with messages dot parse, for validated JSON."}
-      - {text: "Handle `refusal` before reading content", say: "And handle refusals before reading the content."}
+      - {text: "`stop_reason` tells you if the reply is complete. Check it.", say: "Recap. Stop reason batata hai ki reply complete hai ya nahi. Hamesha check karo."}
+      - {text: "`messages.stream` + `text_stream` for responsive output", say: "Responsive output ke liye stream karo."}
+      - {text: "`messages.parse(output_format=Model)` for validated JSON", say: "Validated JSON ke liye messages dot parse ke saath structured outputs."}
+      - {text: "Handle `refusal` before reading content", say: "Aur content padhne se pehle refusal handle karo."}
     outro: >
-      Next lesson: production basics. API keys, errors, rate limits, retries, and what it all costs.
+      Agla lesson: production basics. Errors, rate limits, retries, aur yeh sab kitne ka padta hai.

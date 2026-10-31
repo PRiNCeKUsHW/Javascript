@@ -1,0 +1,487 @@
+1
+00:00:00,900 --> 00:00:03,501
+Your tool now receives input from a model.
+
+2
+00:00:03,851 --> 00:00:09,218
+And here's a habit that separates hobby
+projects from production code: never trust
+
+3
+00:00:09,218 --> 00:00:09,938
+that input.
+
+4
+00:00:10,288 --> 00:00:11,780
+Always check it first.
+
+5
+00:00:12,130 --> 00:00:17,810
+In this lesson, you'll see what can go
+wrong with tool input, what strict mode does
+
+6
+00:00:17,810 --> 00:00:23,558
+and doesn't protect you from, and how to
+turn every mistake into a message the model
+
+7
+00:00:23,558 --> 00:00:24,106
+can fix.
+
+8
+00:00:25,906 --> 00:00:28,629
+You'll explain why
+tool input is untrusted.
+
+9
+00:00:29,229 --> 00:00:32,421
+Know what strict mode
+guarantees, and what it doesn't.
+
+10
+00:00:33,021 --> 00:00:36,801
+Validate input with
+Pydantic, before running a tool.
+
+11
+00:00:37,401 --> 00:00:41,336
+And return clear errors, so
+the model can correct itself.
+
+12
+00:00:43,136 --> 00:00:44,617
+Why validate at all?
+
+13
+00:00:44,967 --> 00:00:46,452
+Think of a bank clerk.
+
+14
+00:00:46,802 --> 00:00:48,791
+You hand them a form to send money.
+
+15
+00:00:49,141 --> 00:00:51,110
+Before anything moves, they check it.
+
+16
+00:00:51,460 --> 00:00:53,703
+Is the account number the right length?
+
+17
+00:00:54,053 --> 00:00:55,366
+Is the date real?
+
+18
+00:00:55,716 --> 00:00:57,407
+Is the amount positive?
+
+19
+00:00:57,757 --> 00:01:00,957
+If something's wrong, they
+don't crash, and they don't guess.
+
+20
+00:01:01,307 --> 00:01:05,123
+They hand the form back, and
+tell you exactly what to fix.
+
+21
+00:01:05,473 --> 00:01:07,716
+Your tools should behave the same way.
+
+22
+00:01:08,316 --> 00:01:13,741
+Tool input comes from a model, and the
+model's input comes, partly, from users.
+
+23
+00:01:14,091 --> 00:01:18,993
+A model can misread a date,
+invent a value, or be tricked by a user.
+
+24
+00:01:19,343 --> 00:01:23,661
+So treat tool input like any
+untrusted input from the internet.
+
+25
+00:01:25,462 --> 00:01:30,098
+There are two layers of protection,
+and it's important to know which does what.
+
+26
+00:01:30,448 --> 00:01:35,314
+Strict mode makes sure the right
+fields are there, with no unknown fields.
+
+27
+00:01:35,914 --> 00:01:40,320
+It makes sure the types are right,
+and that enum values are from the list.
+
+28
+00:01:40,920 --> 00:01:45,901
+But limits, like a maximum length or
+a minimum number, aren't part of strict
+
+29
+00:01:45,901 --> 00:01:46,426
+schemas.
+
+30
+00:01:46,776 --> 00:01:48,840
+Pydantic checks those in your code.
+
+31
+00:01:49,440 --> 00:01:55,297
+And business rules, like the due date not
+being in the past, or task seven existing,
+
+32
+00:01:55,297 --> 00:01:57,040
+only your code can check.
+
+33
+00:01:58,840 --> 00:02:01,009
+Here's how the project validates.
+
+34
+00:02:01,359 --> 00:02:06,897
+Pydantic's model validate takes the
+raw dictionary from the model, and either
+
+35
+00:02:06,897 --> 00:02:10,852
+returns a checked object,
+or raises a validation error.
+
+36
+00:02:11,452 --> 00:02:13,274
+If it fails, we don't crash.
+
+37
+00:02:13,624 --> 00:02:19,249
+We turn every problem into one short
+line, the field name and what's wrong, and
+
+38
+00:02:19,249 --> 00:02:20,602
+raise a tool error.
+
+39
+00:02:20,952 --> 00:02:26,778
+Remember from Module 4: a tool error
+becomes an observation the model can read.
+
+40
+00:02:28,578 --> 00:02:31,741
+Some rules need context
+that a schema can't know.
+
+41
+00:02:32,091 --> 00:02:33,917
+Is the due date in the past?
+
+42
+00:02:34,267 --> 00:02:35,775
+That depends on today.
+
+43
+00:02:36,125 --> 00:02:42,045
+So that check lives inside the tool, and
+it raises a tool error with both dates, so
+
+44
+00:02:42,045 --> 00:02:44,898
+the model knows exactly what went wrong.
+
+45
+00:02:46,698 --> 00:02:51,823
+Let's send five inputs through the real
+run tool function, and see what happens to
+
+46
+00:02:51,823 --> 00:02:52,385
+each one.
+
+47
+00:02:52,985 --> 00:02:57,084
+The first input is valid, so
+the task is added, as task one.
+
+48
+00:02:57,684 --> 00:03:00,370
+The second has a due date of next friday.
+
+49
+00:03:00,720 --> 00:03:05,885
+That's not a date in the right format,
+so we get a clear message about the due
+
+50
+00:03:05,885 --> 00:03:06,282
+field.
+
+51
+00:03:06,882 --> 00:03:12,257
+The third says urgent, which isn't one
+of the allowed priorities, and the message
+
+52
+00:03:12,257 --> 00:03:13,915
+lists the three that are.
+
+53
+00:03:14,515 --> 00:03:18,514
+The fourth has an empty title,
+which breaks the minimum length.
+
+54
+00:03:19,114 --> 00:03:24,766
+And the fifth has a perfectly valid
+shape, but the date is in January, already in
+
+55
+00:03:24,766 --> 00:03:25,394
+the past.
+
+56
+00:03:25,744 --> 00:03:27,775
+Only the business rule catches it.
+
+57
+00:03:29,575 --> 00:03:32,154
+Now the most useful part: recovery.
+
+58
+00:03:32,504 --> 00:03:35,117
+Turn one: the model sends a bad call.
+
+59
+00:03:35,467 --> 00:03:40,902
+Our code returns an error result,
+marked is error, that names both problems.
+
+60
+00:03:41,502 --> 00:03:47,181
+Turn two: the model reads the message,
+fixes both fields, and the call succeeds.
+
+61
+00:03:47,781 --> 00:03:50,423
+Turn three: the model answers the user.
+
+62
+00:03:52,223 --> 00:03:55,339
+Let's watch that
+recovery in the real agent.
+
+63
+00:03:55,689 --> 00:03:57,355
+First, an empty store.
+
+64
+00:03:57,955 --> 00:04:02,052
+Here the offline fake is
+scripted to send a bad call first.
+
+65
+00:04:02,402 --> 00:04:05,070
+Turn one: the error, with both problems.
+
+66
+00:04:05,420 --> 00:04:08,612
+Turn two: the corrected
+call, and the task is added.
+
+67
+00:04:08,962 --> 00:04:14,803
+With a real model, this recovery isn't
+scripted: the model reads your message and
+
+68
+00:04:14,803 --> 00:04:16,462
+fixes the input itself.
+
+69
+00:04:16,812 --> 00:04:19,386
+That's why clear messages matter so much.
+
+70
+00:04:21,186 --> 00:04:22,503
+Pause and decide.
+
+71
+00:04:22,853 --> 00:04:27,379
+For each problem, which layer
+catches it: strict mode, or your code?
+
+72
+00:04:27,979 --> 00:04:28,618
+One.
+
+73
+00:04:28,968 --> 00:04:33,187
+The model sends a field called
+deadline, that isn't in the schema.
+
+74
+00:04:33,787 --> 00:04:34,409
+Two.
+
+75
+00:04:34,759 --> 00:04:39,700
+The model asks to complete task
+forty-two, but there are only three tasks.
+
+76
+00:04:40,300 --> 00:04:40,997
+Three.
+
+77
+00:04:41,347 --> 00:04:46,049
+A note's text is five thousand
+characters, and the limit is two thousand.
+
+78
+00:04:52,649 --> 00:04:56,394
+One: strict mode, because
+additional properties is false.
+
+79
+00:04:56,744 --> 00:05:01,264
+Two: your code, because only
+the store knows which tasks exist.
+
+80
+00:05:01,614 --> 00:05:06,732
+Three: your code too, because length
+limits aren't part of strict schemas, so
+
+81
+00:05:06,732 --> 00:05:08,128
+Pydantic checks them.
+
+82
+00:05:09,928 --> 00:05:11,069
+Interview corner.
+
+83
+00:05:11,419 --> 00:05:16,164
+If you use strict tool schemas, do
+you still need to validate tool inputs?
+
+84
+00:05:18,764 --> 00:05:19,449
+Yes.
+
+85
+00:05:19,799 --> 00:05:22,561
+Strict mode guarantees
+the shape and the types.
+
+86
+00:05:22,911 --> 00:05:28,647
+It can't check limits that strict schemas
+leave out, or business rules, like the due
+
+87
+00:05:28,647 --> 00:05:32,267
+date being in the future,
+or task forty-two existing.
+
+88
+00:05:32,617 --> 00:05:34,899
+The trap is saying strict means correct.
+
+89
+00:05:35,249 --> 00:05:36,869
+Strict means well-formed.
+
+90
+00:05:37,469 --> 00:05:41,673
+Follow-up: what should a tool
+return when its input is invalid?
+
+91
+00:05:44,273 --> 00:05:49,803
+A tool result marked is error, with a
+short, specific message: which field is wrong,
+
+92
+00:05:49,803 --> 00:05:51,054
+and what's allowed.
+
+93
+00:05:51,404 --> 00:05:53,433
+Then the model can fix the call.
+
+94
+00:05:53,783 --> 00:05:59,296
+The trap: crashing the loop with an
+exception, or a vague message like invalid
+
+95
+00:05:59,296 --> 00:06:01,840
+input, which the model can't act on.
+
+96
+00:06:03,640 --> 00:06:04,499
+Quick check.
+
+97
+00:06:04,849 --> 00:06:08,436
+Which of these can only
+your code catch, not strict mode?
+
+98
+00:06:14,636 --> 00:06:16,832
+A due date that's already in the past.
+
+99
+00:06:17,182 --> 00:06:19,241
+It's a perfectly well-formed date.
+
+100
+00:06:19,591 --> 00:06:22,268
+Only your code knows today, and the rule.
+
+101
+00:06:24,068 --> 00:06:24,876
+Recap.
+
+102
+00:06:25,226 --> 00:06:29,612
+Tool input is untrusted, so
+check it before running anything.
+
+103
+00:06:30,212 --> 00:06:32,376
+Strict mode covers shape and types.
+
+104
+00:06:32,726 --> 00:06:35,523
+Your code covers
+limits and business rules.
+
+105
+00:06:36,123 --> 00:06:40,969
+Pydantic's model validate turns
+raw input into a checked object.
+
+106
+00:06:41,569 --> 00:06:46,441
+And error messages name the field and
+what's allowed, so the model can fix it.
+
+107
+00:06:47,041 --> 00:06:50,536
+Next lesson: tools that
+are slow, or never answer.
+
+108
+00:06:50,886 --> 00:06:54,931
+You'll add timeouts, so one
+stuck tool can't freeze your agent.

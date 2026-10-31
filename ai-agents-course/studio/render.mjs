@@ -13,6 +13,11 @@ const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts") });
 try {
   for (const id of ids) {
     const out = path.join(outDir, `lesson-${id.slice(-2)}.mp4`);
+    // resumable: skip lessons already rendered from the current data (a restarted container re-runs this)
+    if (fs.existsSync(out) && fs.statSync(out).mtimeMs > fs.statSync(`src/data/${id}.json`).mtimeMs) {
+      console.log(`lesson ${Number(id.slice(-2))}: up to date`);
+      continue;
+    }
     const partial = out.replace(/\.mp4$/, ".partial.mp4");
     const start = Date.now();
     const composition = await selectComposition({ serveUrl, id, browserExecutable });

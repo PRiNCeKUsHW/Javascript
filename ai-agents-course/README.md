@@ -6,6 +6,7 @@ YouTube packaging.
 
 - Syllabus: [COURSE_SYLLABUS.md](COURSE_SYLLABUS.md)
 - Glossary of every term: [GLOSSARY.md](GLOSSARY.md)
+- Question bank, every question asked in the videos with hidden answers: [QUESTION_BANK.md](QUESTION_BANK.md)
 - Visual identity: [COURSE_DESIGN_SYSTEM.md](COURSE_DESIGN_SYSTEM.md)
 - Progress (machine-readable): [COURSE_MANIFEST.json](COURSE_MANIFEST.json) · human-readable: [progress.md](progress.md)
 

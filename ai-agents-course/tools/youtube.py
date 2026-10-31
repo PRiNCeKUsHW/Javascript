@@ -38,8 +38,10 @@ MODULES = {
                   "optional: every demo also runs in an offline mode with a built-in fake API.",
         "terms": ["llm api python", "anthropic api tutorial", "claude api python", "tokens and context window",
                   "llm streaming python", "structured output json", "api rate limits retries",
-                  "llm api cost", "ai study assistant project"],
-        "tags": "#Python #LLM #ClaudeAPI #AIAgents #AIEngineering",
+                  "llm api cost", "ai study assistant project", "llm in hindi", "claude api hindi",
+                  "ai agents course hindi", "python ai hinglish"],
+        "tags": "#Python #LLM #ClaudeAPI #AIAgents #Hinglish #PythonInHindi",
+        "language": "hinglish",
         "docs": "platform.claude.com/docs/en/build-with-claude/structured-outputs · "
                 "platform.claude.com/docs/en/api/errors · platform.claude.com/docs/en/about-claude/pricing",
     },
@@ -78,6 +80,23 @@ MODULES = {
                 "platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use · "
                 "platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
     },
+    5: {
+        "title": "Tool Calling and Function Execution",
+        "project": "Personal Productivity Agent",
+        "project_dir": "productivity-agent",
+        "project_blurb": "an agent that manages tasks and notes with six tools in a registry, schemas "
+                         "generated from Pydantic, input validation, per-tool timeouts, read/write/danger "
+                         "permissions with human approval for deletes, parallel tool calls, and 43 tests.",
+        "prereq": "Module 4 (AI Agent Architecture), or equivalent. An Anthropic API key is optional: every "
+                  "demo also runs offline with a built-in scripted fake API (not a model).",
+        "terms": ["tool calling python", "function calling claude", "claude tool use tutorial",
+                  "parallel tool calls", "pydantic json schema", "ai agent safety", "human in the loop ai",
+                  "tool input validation", "ai agent permissions", "productivity agent python"],
+        "tags": "#AIAgents #Python #ClaudeAPI #ToolCalling #AIEngineering",
+        "docs": "platform.claude.com/docs/en/agents-and-tools/tool-use/overview · "
+                "platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use · "
+                "platform.claude.com/docs/en/build-with-claude/structured-outputs",
+    },
 }
 
 
@@ -90,6 +109,7 @@ def stamp(t):
 
 def main(m):
     info = MODULES[m]
+    hinglish = info.get("language") == "hinglish"
     mdir = next((ROOT / "modules").glob(f"module-{m:02d}-*"))
     lessons = sorted(int(p.stem.split("-")[1]) for p in (mdir / "scripts").glob("lesson-*.yaml"))
     datas = {n: json.loads((ROOT / f"studio/src/data/m{m:02d}-l{n:02d}.json").read_text()) for n in lessons}
@@ -112,7 +132,8 @@ def main(m):
             yt.append(f"{stamp(t)} {title}")
             last = t
     out += [f"## Full module video (`renders/module-{m:02d}-full.mp4`)", "",
-            "**Title**", "", f"AI Agents with Python 2026 · Module {m}: {info['title']} (Full Module + Project)", "",
+            "**Title**", "", f"AI Agents with Python 2026 · Module {m}: {info['title']} (Full Module + Project)"
+            + (" | Hinglish" if hinglish else ""), "",
             "**Description**", "", "```text",
             f"Module {m} of \"AI Agents with Python: Beginner to Production (2026)\": {info['title']}.",
             "",
@@ -120,6 +141,9 @@ def main(m):
             "",
             f"Prerequisites: {info['prereq']} You need Python 3.11+ and a code editor.",
             "",
+            *(["Explained in Hinglish (Hindi + English) with Hinglish captions. Every concept goes What → Why → How "
+                "→ Where → Practice, with real-life analogies, code on the left and its real output on the right, "
+                "dry-run tables, an interview corner and practice questions (answers in quiz.md).", ""] if hinglish else []),
             "Every lesson explains the concept, shows real code with real output, covers common errors, "
             "and ends with a quick check. The module closes with a recap, a 5-question quiz and an extension challenge.",
             "",

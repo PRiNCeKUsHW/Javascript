@@ -28,6 +28,8 @@ from pygments import lex
 from pygments.lexers import get_lexer_by_name
 from pygments.token import Comment, Keyword, Name, Number, Operator, String, Token
 
+import hinglish  # tools/: Hinglish phonemes for the Indian female voice
+
 ROOT = Path(__file__).resolve().parent.parent
 STUDIO = ROOT / "studio"
 VENV_BIN = ROOT / ".venv" / ("Scripts" if os.name == "nt" else "bin")  # Windows venvs use Scripts/
@@ -37,6 +39,10 @@ KOKORO = Path(os.environ.get("KOKORO_DIR", Path.home() / ".cache/hyperframes/tts
 SR = 24000
 FPS = 60
 VOICE, LANG, SPEED = "am_michael", "en-us", 1.0
+# Hinglish narration (Module 2 remake on): a lesson script with `narration: hinglish` is spoken by an
+# Indian female voice; tools/hinglish.py gives its English words an Indian-English accent.
+HINGLISH_VOICE = os.environ.get("HINGLISH_VOICE", "hf_beta")  # the learner chose voice B
+HINGLISH_SPEED = 0.85  # "a little slower" than the 0.95 sample
 
 LEAD, TAIL, GAP = 0.7, 0.6, 0.35       # seconds before the first beat, after the last, between beats
 SENTENCE_GAP = 0.22
@@ -106,7 +112,7 @@ def display(text):
 
 def sentences(text):
     text = " ".join(text.split())
-    return [s for s in re.split(r"(?<=[.!?])\s+(?=[A-Z0-9\"'(`])", text) if s.strip()]
+    return [s for s in re.split(r"(?<=[.!?।])\s+(?=[A-Z0-9\"'(`\u0900-\u097F])", text) if s.strip()]
 
 
 def trim(x, thresh=0.008):
@@ -118,13 +124,18 @@ def trim(x, thresh=0.008):
 
 def tts(sentence, allow_new):
     spoken = say_as(sentence)
-    key = hashlib.sha1(f"{VOICE}|{LANG}|{SPEED}|{spoken}".encode()).hexdigest()[:16]
+    # Hinglish: key on the exact phonemes, so a pronunciation fix re-synthesises the sentences it changes
+    phonemes = hinglish.phonemes(kokoro().tokenizer, hinglish.to_speech(spoken)) if LANG == "hinglish" else ""
+    key = hashlib.sha1(f"{VOICE}|{LANG}|{SPEED}|{phonemes or spoken}".encode()).hexdigest()[:16]
     path = TTS_CACHE / f"{key}.wav"
     if path.exists():
         return sf.read(path, dtype="float32")[0]
     if not allow_new:
         raise SystemExit(f"narration not cached: {sentence[:70]}")
-    audio, sr = kokoro().create(spoken, voice=VOICE, speed=SPEED, lang=LANG)
+    if LANG == "hinglish":
+        audio, sr = kokoro().create(phonemes, voice=VOICE, speed=SPEED, is_phonemes=True)
+    else:
+        audio, sr = kokoro().create(spoken, voice=VOICE, speed=SPEED, lang=LANG)
     assert sr == SR
     audio = trim(np.asarray(audio, dtype=np.float32))
     TTS_CACHE.mkdir(parents=True, exist_ok=True)
@@ -247,13 +258,19 @@ def run_repl(steps, cwd, env):
 def scene_beats(scene):
     """Every scene becomes an ordered list of beats; beat i drives the i-th visual step."""
     kind = scene["type"]
-    lists = {"bullets": "items", "recap": "items", "cards": "cards", "code": "steps", "terminal": "steps",
+    lists = {"bullets": "items", "recap": "items", "cards": "cards", "code": "steps", "terminal": "steps", "run": "steps",
              "diagram": "steps", "compare": "steps", "links": "items", "objectives": "items", "steps": "items",
-             "callout": "items"}
+             "callout": "items", "table": "rows"}
     if kind == "quiz":
         return [{"say": scene["say_question"], "kind": "intro"},
                 {"pause": scene.get("think", 5), "countdown": True, "kind": "think"},
                 {"say": scene["say_answer"], "sfx": "chime", "kind": "reveal"}]
+    if kind == "interview":                    # two beats per question: ask it, then answer it
+        beats = [{"say": scene["say"], "kind": "intro"}] if scene.get("say") else []
+        for item in scene["items"]:
+            beats += [{"say": item["say_q"], "pause": item.get("pause", 2), "kind": "item"},
+                      {"say": item["say_a"], "kind": "item"}]
+        return beats
     beats = []
     if scene.get("say"):
         beats.append({"say": scene["say"], "kind": "intro"})
@@ -280,6 +297,24 @@ def build_scene(scene, module_dir, env):
                 step["upto"] -= offset
             step.pop("say", None)
         props.pop("code", None)
+    elif kind == "run":                        # code on the left, the real output of running it on the right
+        code = load_code(scene, module_dir)
+        props["tokens"] = highlight(code, scene.get("lang", "python"))
+        props["first_line"] = scene.get("first_line", 1)
+        n = len(props["tokens"])
+        offset = props["first_line"] - 1
+        out = run_terminal({k: scene[k] for k in ("cmd", "run", "exit", "keep", "out") if k in scene},
+                           module_dir / scene.get("cwd", "."), env)
+        props["out"] = out
+        for step in props.get("steps", []):
+            hl = parse_range(step.get("lines"), n + offset) if step.get("lines") else []
+            step["hl"] = [i - offset for i in hl if 0 < i - offset <= n]
+            if "out" in step:                  # output lines (1-based) this step points at; earlier ones stay shown
+                step["ohl"] = [i for i in parse_range(step["out"], len(out)) if i <= len(out)]
+            step.pop("say", None)
+            step.pop("out", None)
+        for key in ("code", "run", "keep", "exit"):
+            props.pop(key, None)
     elif kind == "compare":
         for side in ("left", "right"):
             if "code" in props[side]:
@@ -306,10 +341,12 @@ def build_scene(scene, module_dir, env):
                 step.pop(key, None)
     if isinstance(props.get("aside"), dict) and "code" in props["aside"]:
         props["aside"]["tokens"] = highlight(props["aside"]["code"].rstrip("\n"), props["aside"].get("lang", "python"))
-    if kind not in ("code", "compare", "terminal"):
-        for key in ("items", "cards", "steps"):
+    if kind not in ("code", "compare", "terminal", "run"):
+        for key in ("items", "cards", "steps", "rows"):
             for item in props.get(key, []) or []:
                 item.pop("say", None)
+                item.pop("say_q", None)
+                item.pop("say_a", None)
     return props
 
 
@@ -404,6 +441,11 @@ def build(module, lesson, allow_new=True):
     set_pacing(module)
     mdir = module_dir_for(module)
     spec = yaml.safe_load((mdir / f"scripts/lesson-{lesson:02d}.yaml").read_text(encoding="utf-8"))
+    global VOICE, LANG
+    VOICE, LANG = ("am_michael", "en-us") if spec.get("narration") != "hinglish" else (HINGLISH_VOICE, "hinglish")
+    if LANG == "hinglish":
+        global SPEED
+        SPEED = HINGLISH_SPEED
     env = dict(os.environ, PATH=f"{VENV_BIN}{os.pathsep}{os.environ['PATH']}", PYTHONDONTWRITEBYTECODE="1",
                VIRTUAL_ENV=str(ROOT / ".venv"), COLUMNS="88", NO_COLOR="1")
     env = shell_env(env)
@@ -412,7 +454,9 @@ def build(module, lesson, allow_new=True):
                  "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "STUDY_MODEL",
                  "STUDY_BUDGET_USD", "STUDY_MAX_RETRIES", "STUDY_FAKE_FAIL",
                  "RESUME_MODEL", "RESUME_BUDGET_USD", "RESUME_MAX_RETRIES", "RESUME_FAKE_FAIL",
-                 "CALC_MODEL", "CALC_BUDGET_USD", "CALC_MAX_RETRIES", "CALC_MAX_STEPS", "CALC_FAKE_FAIL"):
+                 "CALC_MODEL", "CALC_BUDGET_USD", "CALC_MAX_RETRIES", "CALC_MAX_STEPS", "CALC_FAKE_FAIL",
+                 "PROD_MODEL", "PROD_BUDGET_USD", "PROD_MAX_RETRIES", "PROD_MAX_STEPS", "PROD_FAKE_FAIL",
+                 "PROD_FAKE_SLOW", "PROD_DATA", "PROD_TODAY"):
         env.pop(name, None)
 
     pieces, events, captions, scenes, chapters = [], [], [], [], []

@@ -1,0 +1,504 @@
+1
+00:00:00,900 --> 00:00:04,177
+So far, every valid tool call simply runs.
+
+2
+00:00:04,527 --> 00:00:06,464
+That's fine for listing tasks.
+
+3
+00:00:06,814 --> 00:00:11,732
+It's not fine for deleting your
+data, sending an email, or paying a bill.
+
+4
+00:00:12,082 --> 00:00:17,975
+In this lesson you'll give every tool a
+permission level, add a read-only mode, and
+
+5
+00:00:17,975 --> 00:00:22,306
+make the agent ask a human
+before anything dangerous happens.
+
+6
+00:00:24,106 --> 00:00:27,565
+You'll explain the principle
+of least privilege for agents.
+
+7
+00:00:28,165 --> 00:00:31,113
+Sort tools into read, write, and danger.
+
+8
+00:00:31,713 --> 00:00:33,840
+Block writes in a read-only mode.
+
+9
+00:00:34,440 --> 00:00:37,546
+And ask a human before
+every dangerous action.
+
+10
+00:00:39,346 --> 00:00:44,577
+Let's start with an idea security
+engineers use everywhere: least privilege.
+
+11
+00:00:44,927 --> 00:00:46,710
+Think of a hotel key card.
+
+12
+00:00:47,060 --> 00:00:49,438
+It doesn't open
+every door in the building.
+
+13
+00:00:49,788 --> 00:00:51,945
+It opens your room, for your stay.
+
+14
+00:00:52,295 --> 00:00:54,378
+If you lose it, the damage is small.
+
+15
+00:00:54,728 --> 00:01:00,795
+For agents, least privilege means: give
+the agent only the tools and powers it needs
+
+16
+00:01:00,795 --> 00:01:03,034
+for this job, and nothing more.
+
+17
+00:01:03,634 --> 00:01:06,064
+Why does this matter so much for agents?
+
+18
+00:01:06,414 --> 00:01:12,374
+Because a model can misunderstand a
+request, and a user, or text inside a document,
+
+19
+00:01:12,374 --> 00:01:15,892
+can try to trick it
+into doing something harmful.
+
+20
+00:01:16,242 --> 00:01:20,226
+Permissions limit the damage,
+even when the model gets it wrong.
+
+21
+00:01:22,026 --> 00:01:24,151
+Our project uses three levels.
+
+22
+00:01:24,501 --> 00:01:26,833
+Read: list tasks and search notes.
+
+23
+00:01:27,183 --> 00:01:31,320
+These are always allowed,
+because looking never changes anything.
+
+24
+00:01:31,920 --> 00:01:34,941
+Write: add task,
+complete task, and add note.
+
+25
+00:01:35,291 --> 00:01:41,104
+These change data, so they're allowed,
+unless the agent runs in read-only mode.
+
+26
+00:01:41,704 --> 00:01:43,545
+And danger: delete task.
+
+27
+00:01:43,895 --> 00:01:48,759
+Deleting can't be undone, so a
+human must approve every single call.
+
+28
+00:01:50,559 --> 00:01:51,926
+Here's the policy.
+
+29
+00:01:52,276 --> 00:01:58,874
+It holds the context, a read-only flag,
+and ask human: a function that asks a person
+
+30
+00:01:58,874 --> 00:02:00,523
+a yes or no question.
+
+31
+00:02:00,873 --> 00:02:05,550
+If there's nobody to ask, it's
+None, and dangerous calls are denied.
+
+32
+00:02:05,900 --> 00:02:08,504
+It also keeps a log of every decision.
+
+33
+00:02:09,104 --> 00:02:11,329
+The check runs before every call.
+
+34
+00:02:11,679 --> 00:02:14,581
+Read tools return straight away: allowed.
+
+35
+00:02:15,181 --> 00:02:21,255
+In read-only mode, any other tool is
+blocked, with a clear reason the model can pass
+
+36
+00:02:21,255 --> 00:02:22,339
+on to the user.
+
+37
+00:02:22,939 --> 00:02:28,454
+For danger tools, we build a clear
+question, using the tool's confirm function.
+
+38
+00:02:28,804 --> 00:02:34,594
+For delete task, it says which task, by
+number and title, so the human knows exactly
+
+39
+00:02:34,594 --> 00:02:36,179
+what they're approving.
+
+40
+00:02:36,779 --> 00:02:37,855
+Then we ask.
+
+41
+00:02:38,205 --> 00:02:40,351
+Anything other than yes means no.
+
+42
+00:02:40,701 --> 00:02:46,466
+The decision is logged, and if it's
+declined, the model gets a tool error that says:
+
+43
+00:02:46,466 --> 00:02:48,799
+the user declined, don't retry it.
+
+44
+00:02:50,599 --> 00:02:52,200
+Let's try four calls.
+
+45
+00:02:52,550 --> 00:02:55,760
+In read-only mode,
+listing tasks is allowed.
+
+46
+00:02:56,360 --> 00:02:59,949
+But completing a task is
+blocked, and nothing changes.
+
+47
+00:03:00,550 --> 00:03:02,128
+Now a dangerous call.
+
+48
+00:03:02,478 --> 00:03:06,364
+The policy asks the
+human: delete task one, pay rent?
+
+49
+00:03:06,714 --> 00:03:11,053
+This human says no, so the call
+is declined, and the task stays.
+
+50
+00:03:11,653 --> 00:03:16,141
+And when the human says yes, only
+then does the delete actually run.
+
+51
+00:03:17,941 --> 00:03:19,920
+The order of these checks matters.
+
+52
+00:03:20,270 --> 00:03:22,021
+First, does the tool exist?
+
+53
+00:03:22,371 --> 00:03:23,476
+If not, error.
+
+54
+00:03:24,076 --> 00:03:25,862
+Second, is the input valid?
+
+55
+00:03:26,212 --> 00:03:28,904
+We never ask a human to approve nonsense.
+
+56
+00:03:29,504 --> 00:03:32,253
+Third, for a delete, does the task exist?
+
+57
+00:03:32,603 --> 00:03:34,642
+We need it to write a clear question.
+
+58
+00:03:35,242 --> 00:03:40,135
+Fourth, the permission check, which
+asks the human only for danger tools.
+
+59
+00:03:40,735 --> 00:03:43,139
+And fifth, run the tool with its timeout.
+
+60
+00:03:44,939 --> 00:03:46,587
+Now in the real agent.
+
+61
+00:03:46,937 --> 00:03:50,418
+An empty store, and two
+tasks added, in one turn.
+
+62
+00:03:51,018 --> 00:03:52,393
+Delete task one.
+
+63
+00:03:52,743 --> 00:03:54,527
+The agent stops and asks.
+
+64
+00:03:54,877 --> 00:03:58,950
+Here I pipe in the answer no,
+so you can see it in the recording.
+
+65
+00:03:59,300 --> 00:04:02,330
+The delete is
+declined, and the task is safe.
+
+66
+00:04:02,930 --> 00:04:06,778
+And in read-only mode,
+even adding a task is blocked.
+
+67
+00:04:07,128 --> 00:04:11,958
+That's a good default for an agent
+that should only answer questions about your
+
+68
+00:04:11,958 --> 00:04:12,264
+data.
+
+69
+00:04:14,064 --> 00:04:16,382
+One warning about confirmations.
+
+70
+00:04:16,732 --> 00:04:23,124
+A question like, allow delete task, task
+ID one, teaches people to click yes without
+
+71
+00:04:23,124 --> 00:04:23,732
+reading.
+
+72
+00:04:24,082 --> 00:04:30,114
+A good question shows exactly what will
+happen, in plain words: delete task one, pay
+
+73
+00:04:30,114 --> 00:04:31,550
+rent, high priority.
+
+74
+00:04:31,900 --> 00:04:37,583
+Ask for every dangerous call, not just
+the first, and treat no answer as a no.
+
+75
+00:04:39,383 --> 00:04:42,911
+Pause and choose a permission
+level for each of these tools.
+
+76
+00:04:43,511 --> 00:04:44,149
+One.
+
+77
+00:04:44,499 --> 00:04:45,926
+Get weather, for a city.
+
+78
+00:04:46,526 --> 00:04:47,147
+Two.
+
+79
+00:04:47,497 --> 00:04:48,638
+Rename task.
+
+80
+00:04:49,238 --> 00:04:49,935
+Three.
+
+81
+00:04:50,285 --> 00:04:51,347
+Send email.
+
+82
+00:04:57,947 --> 00:05:00,353
+Get weather is read: it only looks.
+
+83
+00:05:00,703 --> 00:05:05,326
+Rename task is write: it
+changes data, but it's easy to undo.
+
+84
+00:05:05,676 --> 00:05:10,896
+Send email is danger: once it's sent,
+you can't take it back, so a human should
+
+85
+00:05:10,896 --> 00:05:12,086
+approve every one.
+
+86
+00:05:13,886 --> 00:05:15,027
+Interview corner.
+
+87
+00:05:15,377 --> 00:05:17,922
+How do you make a tool-using agent safe?
+
+88
+00:05:20,522 --> 00:05:23,688
+Least privilege, so
+only the tools it needs.
+
+89
+00:05:24,038 --> 00:05:25,245
+Permission levels.
+
+90
+00:05:25,595 --> 00:05:27,258
+Validate every input.
+
+91
+00:05:27,608 --> 00:05:28,477
+Timeouts.
+
+92
+00:05:28,827 --> 00:05:34,671
+And human approval for actions that can't
+be undone, with a clear confirmation and a
+
+93
+00:05:34,671 --> 00:05:36,202
+log of every decision.
+
+94
+00:05:36,552 --> 00:05:40,296
+The trap: saying, tell the
+model in the prompt to be careful.
+
+95
+00:05:40,646 --> 00:05:42,151
+Prompts guide the model.
+
+96
+00:05:42,501 --> 00:05:44,718
+Only code enforces the rules.
+
+97
+00:05:45,318 --> 00:05:48,241
+Follow-up: where should
+the approval check live?
+
+98
+00:05:50,841 --> 00:05:56,782
+In your code, between validation and
+execution, so it runs no matter what the model
+
+99
+00:05:56,782 --> 00:05:57,140
+says.
+
+100
+00:05:57,490 --> 00:06:02,390
+You can tell the model about it, but
+never rely on the model to enforce it.
+
+101
+00:06:02,740 --> 00:06:07,451
+The trap: asking the model to ask
+the user for permission in its reply.
+
+102
+00:06:09,251 --> 00:06:10,110
+Quick check.
+
+103
+00:06:10,460 --> 00:06:14,896
+Why does the policy validate
+the input before asking the human?
+
+104
+00:06:21,096 --> 00:06:25,178
+So a human only ever
+approves a real, well-formed action.
+
+105
+00:06:25,528 --> 00:06:30,944
+Asking about nonsense wastes their
+attention, and teaches them to click yes without
+
+106
+00:06:30,944 --> 00:06:31,466
+reading.
+
+107
+00:06:33,266 --> 00:06:34,074
+Recap.
+
+108
+00:06:34,424 --> 00:06:38,633
+Least privilege: only the
+tools and powers the job needs.
+
+109
+00:06:39,233 --> 00:06:44,850
+Read is always allowed, write unless
+read-only, and danger needs a human yes.
+
+110
+00:06:45,450 --> 00:06:48,719
+Validate first, then
+ask, with a clear question.
+
+111
+00:06:49,319 --> 00:06:52,703
+And enforce it in code,
+never only in the prompt.
+
+112
+00:06:53,303 --> 00:06:55,816
+You now know every idea in this module.
+
+113
+00:06:56,166 --> 00:07:01,495
+Next lesson, we put them together,
+and build the personal productivity agent.

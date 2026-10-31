@@ -1,0 +1,195 @@
+module_title: Tool Calling and Function Execution
+title: "Project, Part 1: Personal Productivity Agent, Store, Tools and Policy"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 5 · Lesson 6 · Project
+    title: "Build the Personal Productivity Agent, part 1"
+    subtitle: The brief, the architecture, a safe data store, six tools, and the permission policy.
+    loop: [Validate, Allow, Run, Observe]
+    say: >
+      Project time. Over two lessons we'll build a personal productivity agent: you tell it, in plain words, what to do with your tasks and notes, and it uses six tools to do it, safely.
+      Everything from this module comes together here. We'll go one file at a time.
+
+  - type: bullets
+    chapter: The brief
+    heading: The brief
+    items:
+      - {text: "Ask in plain words: \"add task Pay rent and list tasks\"", say: "Here's what we're building. You ask in plain words, at the command line, like: add task pay rent, and list tasks."}
+      - {text: "Six tools for tasks and notes, defined once in a registry", say: "The agent has six tools, for tasks and notes, defined once in a registry, with schemas from Pydantic."}
+      - {text: "Every input validated; every tool has a timeout", say: "Every input is validated, and every tool has a timeout."}
+      - {text: "read · write · danger, a read-only mode, and a human yes for deletes", say: "Tools have permission levels, there's a read-only mode, and deleting needs a human yes."}
+      - {text: "Data saved safely in a JSON file; 43 tests; offline mode", say: "And the data is saved safely in a JSON file, with forty-three tests and an offline mode."}
+
+  - type: diagram
+    chapter: Architecture
+    heading: Architecture
+    nodes:
+      - {id: cli, label: cli.py, sub: "ask · tasks · tools", x: 864, y: 60, w: 340, h: 110, tone: amber, mono: true}
+      - {id: agent, label: agent.py, sub: the loop, x: 864, y: 270, w: 340, h: 110, tone: teal, mono: true}
+      - {id: tools, label: tools.py, sub: "registry · validate · timeout", x: 1460, y: 270, w: 400, h: 110, tone: teal, mono: true}
+      - {id: policy, label: policy.py, sub: "read · write · danger", x: 1460, y: 470, w: 400, h: 110, tone: coral, mono: true}
+      - {id: store, label: store.py, sub: tasks & notes (JSON), x: 1460, y: 660, w: 400, h: 100, tone: blue, mono: true}
+      - {id: client, label: client.py, sub: real or offline, x: 864, y: 500, w: 340, h: 110, tone: blue, mono: true}
+      - {id: api, label: Claude API, sub: needs a key, x: 260, y: 400, w: 320, h: 100, tone: violet}
+      - {id: fake, label: fake_api.py, sub: scripted stand-in, x: 260, y: 620, w: 320, h: 100, tone: muted, mono: true}
+    edges:
+      - {from: cli, to: agent}
+      - {from: agent, to: tools}
+      - {from: tools, to: policy}
+      - {from: tools, to: store}
+      - {from: agent, to: client}
+      - {from: client, to: api}
+      - {from: client, to: fake}
+    steps:
+      - show: [cli, agent, "cli->agent"]
+        focus: [agent]
+        say: >
+          Here's the plan. The command line passes your request to the agent, which runs the loop from Module 4.
+      - show: [tools, policy, store, "agent->tools", "tools->policy", "tools->store"]
+        focus: [tools, policy, store]
+        flow: ["agent->tools", "tools->policy"]
+        say: >
+          Every tool call goes through tools dot py: the registry, validation, and timeouts. It asks the policy for permission, and the tools read and write the store.
+      - show: [client, api, fake, "agent->client", "client->api", "client->fake"]
+        focus: [client, api, fake]
+        flow: ["agent->client", "client->fake"]
+        say: >
+          And the agent talks to the model through the client: the real Claude API with a key, or the offline fake without one.
+
+  - type: code
+    chapter: An honest fake
+    heading: "fake_api.py: a script, not a model"
+    title: productivity/fake_api.py
+    file: project/productivity-agent/productivity/fake_api.py
+    lines: "1-11"
+    steps:
+      - lines: "1-7"
+        say: >
+          First, so you know exactly what you're seeing in this video: the offline fake. It speaks the same protocol as the real API, so the SDK and the loop run unchanged. It splits your request on the word and, matches each part against a few patterns, and asks for all the matching tools in one turn.
+      - lines: "8-10"
+        note: "It can't understand free-form requests: always phrase demos simply."
+        say: >
+          That's not a model. It can't understand free-form requests, so the demos use simple phrases. No API key was used in this recording. The tools, the validation, the timeouts, and the policy are all completely real.
+
+  - type: callout
+    chapter: A safe data store
+    kind: analogy
+    title: "Saving safely: write the new page, then swap"
+    body: "Editing a document by hand, you could tear out a page and then get interrupted before writing the new one. Safer: **write the new page first, then swap** it in. That's an atomic save: you always have the old file or the new file, **never half of one**."
+    say: >
+      Now the store, where tasks and notes live. Imagine editing a notebook. If you tear out a page, and then get interrupted before writing the new one, the page is just gone.
+      The safe way is to write the new page first, and then swap it in. That's called an atomic save. At any moment, you have either the old file or the new file, never half of one.
+
+  - type: code
+    heading: "store.py: load, save atomically, next id"
+    title: productivity/store.py
+    file: project/productivity-agent/productivity/store.py
+    lines: "33-57"
+    steps:
+      - lines: "34-37"
+        note: "No file yet? Start empty."
+        say: >
+          Load reads the JSON file. If there's no file yet, we start with empty lists of tasks and notes.
+      - lines: "39-42"
+        note: "Write a temp file, then `os.replace`: atomic on every major OS."
+        say: >
+          Save writes everything to a temporary file, then os dot replace swaps it in, in one step. If the program crashes halfway through writing, the real file is untouched.
+      - lines: "44-46"
+        note: "The next id: one more than the biggest so far."
+        say: >
+          New items get the next ID: one more than the biggest ID so far.
+      - lines: "52-57"
+        note: "Every change: load, modify, save."
+        say: >
+          And every change follows the same three steps: load, modify, save. Add task creates a task with the next ID, appends it, and saves.
+
+  - type: code
+    chapter: The six tools
+    heading: "The tools: descriptions written for the model"
+    title: productivity/tools.py
+    file: project/productivity-agent/productivity/tools.py
+    lines: "183-215"
+    steps:
+      - lines: "183-187"
+        note: "list_tasks: read. Its description says when to use it."
+        say: >
+          Let's look at the tools. List tasks is a read tool. Its description tells the model to use it before completing or deleting, to find the task's number.
+      - lines: "190-192"
+        note: "complete_task: write."
+        say: >
+          Complete task is a write tool. It needs the number from list tasks.
+      - lines: "195-200"
+        note: "delete_task: danger, with a clear confirmation question."
+        say: >
+          Delete task is danger. Its description warns the model to use it only when the user clearly asks, and to prefer complete task for finishing. And it has a confirm function, which builds the question the human sees.
+      - lines: "203-207"
+        note: "add_note: write."
+        say: >
+          Add note is a write tool, that saves an idea or meeting notes.
+      - lines: "210-215"
+        note: "search_notes: read, with a shorter 2 s timeout."
+        say: >
+          And search notes is read, with a shorter, two-second timeout, because in a real app it would call a remote search service.
+
+  - type: code
+    chapter: Wiring it together
+    heading: "cli.py: building the agent for one request"
+    title: productivity/cli.py
+    file: project/productivity-agent/productivity/cli.py
+    lines: "64-88"
+    steps:
+      - lines: "64-70"
+        note: "Asks on the terminal; piped answers work too."
+        say: >
+          Here's how the command line wires it together. Ask human prints the question, with y slash capital N, so no is the default, and reads one line. Piped input works too, which is how the demos answer.
+      - lines: "73-76"
+        note: "`--read-only` and `--yes` decide the policy."
+        say: >
+          For each request, we build the context, and the policy. The read-only flag sets read-only mode. And the yes flag approves dangerous actions automatically, which is useful for scripts you trust, and dangerous anywhere else.
+      - lines: "77-80"
+        say: >
+          Then the agent gets the client, the cost tracker, the context, and the policy, and runs the request, printing each step as it happens.
+      - lines: "81-88"
+        note: "A footer on stderr; any stop except answered becomes one clear error."
+        say: >
+          Finally, a footer with turns, tool calls and cost, and the answer. Any ending other than answered becomes one clear error, exactly like Module 4.
+
+  - type: terminal
+    chapter: First run
+    title: terminal — productivity-agent
+    cwd: project/productivity-agent
+    font: 22
+    steps:
+      - cmd: python -m productivity tools
+        say: >
+          Let's run it. The tools command shows every tool, with its permission and timeout.
+      - cmd: python -m productivity reset --yes
+        say: >
+          Reset gives us an empty store. It deletes data, so it asks first too, unless we pass yes.
+      - cmd: 'python -m productivity ask "add task Pay rent due 2026-11-05 high priority and add task Buy groceries and note wifi: password is on the router"'
+        say: >
+          And a first request with three parts. Look at the trace: three tool calls, all in turn one. That's a parallel tool call. Two tasks and a note, saved, in two turns in total.
+
+  - type: callout
+    kind: try
+    chapter: Pause and try
+    title: "Pause and try: predict the trace"
+    body: "The store has tasks 1 and 2. Request: \"complete task 2 and delete task 7\". The human would say yes."
+    say: >
+      Pause and predict. The store has tasks one and two. The request is: complete task two, and delete task seven. The human would say yes if asked.
+    items:
+      - {text: "How many tool calls? Is the human asked? What does each call return?", say: "How many tool calls are there? Is the human asked? And what does each call return?", pause: 6}
+    outro: >
+      Two tool calls, both in turn one. Complete task two succeeds. Delete task seven fails before anyone is asked, with: there is no task seven. The human is never asked about a task that doesn't exist.
+
+  - type: recap
+    chapter: Recap
+    heading: Part 1 recap
+    items:
+      - {text: "An honest fake: a script that speaks the real protocol", say: "Recap. An honest fake: a script that speaks the real protocol."}
+      - {text: "An atomic store: write a temp file, then replace", say: "An atomic store: write a temporary file, then replace."}
+      - {text: "Six tools with clear descriptions and three permission levels", say: "Six tools, with clear descriptions and three permission levels."}
+      - {text: "The CLI builds the policy from --read-only and --yes", say: "And the command line builds the policy from read-only and yes."}
+    outro: >
+      In part two: the agent loop with parallel calls, the full demo, failures on purpose, the tests, and the module quiz.

@@ -171,10 +171,24 @@ PROJECT_CHECKS = {
         ("step limit (exit 1)", "CALC_FAKE_FAIL=loop {bin}/python -m calc_agent ask '2 + 2' --max-steps 2; "
                                 "test $? -eq 1"),
     ],
+    "productivity-agent": [
+        ("mypy", "{bin}/mypy --no-incremental productivity"),
+        ("parallel tool calls", "rm -f /tmp/pa-check.json; PROD_DATA=/tmp/pa-check.json {bin}/python -m productivity "
+                                "ask 'add task A and add task B' | grep -c 'turn 1  act' | grep -qx 2"),
+        ("validation recovery", "PROD_DATA=/tmp/pa-check.json PROD_FAKE_FAIL=badinput {bin}/python -m productivity "
+                                "ask 'add task C' | grep -q 'observe  ! Error: invalid input'"),
+        ("declined delete keeps the task", "printf 'n\\n' | PROD_DATA=/tmp/pa-check.json {bin}/python -m productivity "
+                                           "ask 'delete task 1' >/dev/null && PROD_DATA=/tmp/pa-check.json "
+                                           "{bin}/python -m productivity tasks | grep -q '1. A'"),
+        ("read-only blocks writes", "PROD_DATA=/tmp/pa-check.json {bin}/python -m productivity ask 'add task D' "
+                                    "--read-only | grep -q 'read-only mode'"),
+        ("timeout", "PROD_DATA=/tmp/pa-check.json PROD_FAKE_SLOW=search_notes {bin}/python -m productivity "
+                    "ask 'search notes for wifi' | grep -q 'timed out after 2 s'"),
+    ],
 }
 # project checks run offline and reproducibly: no real key, proxy or scripted failures
 CHECK_ENV = {k: v for k, v in os.environ.items()
-             if not k.startswith(("ANTHROPIC_", "STUDY_", "TOOLKIT_", "RESUME_", "CALC_"))}
+             if not k.startswith(("ANTHROPIC_", "STUDY_", "TOOLKIT_", "RESUME_", "CALC_", "PROD_"))}
 
 def run(cmd, cwd, **kw):
     if isinstance(cmd, str) and sys.platform == "win32":

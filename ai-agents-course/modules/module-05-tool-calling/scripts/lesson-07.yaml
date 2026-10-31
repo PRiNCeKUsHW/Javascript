@@ -1,0 +1,296 @@
+module_title: Tool Calling and Function Execution
+title: "Project, Part 2: The Loop, the Demo, Tests and Wrap-up"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 5 · Lesson 7 · Project
+    title: "Build the Personal Productivity Agent, part 2"
+    subtitle: The agent loop with parallel calls, a full demo, failures on purpose, tests, and the module quiz.
+    loop: [Validate, Allow, Run, Observe]
+    say: >
+      Welcome back. The store, the tools and the policy are ready. Now we connect them in the agent loop, run a full demo, break things on purpose, and look at the tests.
+      Then we'll wrap up the module with interview questions, a quiz, and your extension challenge.
+
+  - type: code
+    chapter: The agent loop
+    heading: "The system prompt: context and reasons"
+    title: productivity/agent.py
+    file: project/productivity-agent/productivity/agent.py
+    lines: "14-22"
+    steps:
+      - lines: "15-17"
+        note: "Why the tools exist: they're the only way to read or change the data."
+        say: >
+          First, the system prompt. Notice the style from Module 3: it explains why, not just what. The tools are the only way to read or change the data, so the model has a reason to use them.
+      - lines: "17-18"
+        note: "Encourages parallel calls for independent requests."
+        say: >
+          It asks for parallel tool calls when the user wants several independent things.
+      - lines: "18-21"
+        note: "How to handle errors and a declined action."
+        say: >
+          And it says how to behave: look up a task's number first, fix the input after an error, and never retry an action the user declined. Today's date is filled in, so the model can write due dates correctly.
+
+  - type: code
+    heading: "run(): every call in a turn, every result in one message"
+    title: productivity/agent.py
+    file: project/productivity-agent/productivity/agent.py
+    lines: "91-131"
+    steps:
+      - lines: "91-97"
+        note: "act(): every problem becomes an observation, marked is_error."
+        say: >
+          Act runs one tool call through run tool, with the policy. Any tool error, invalid input, a denied action, a timeout, becomes a step marked as an error. Never a crash.
+      - lines: "104-113"
+        note: "The Module 4 loop: a limit, a budget, refusals and cut-offs."
+        say: >
+          Run is the loop you know from Module 4: a step limit, a budget check, and clean stops for a refusal or a cut-off reply.
+      - lines: "114-119"
+        say: >
+          No tool calls means the model has answered.
+      - lines: "120-131"
+        note: "Act on **every** call in order; send **all** results in **one** message."
+        say: >
+          And here's what's new. We act on every tool call in the reply, in order, report each step to the trace, and collect the results. Then all the results go back in one single user message, exactly as lesson two showed.
+
+  - type: terminal
+    chapter: Demo
+    title: terminal — productivity-agent
+    cwd: project/productivity-agent
+    font: 21
+    say: >
+      Now a full demo, from an empty store.
+    steps:
+      - cmd: python -m productivity reset --yes
+        say: >
+          First, reset.
+      - cmd: python -m productivity ask "add task Pay rent due 2026-11-05 high priority and add task Book dentist and add task Buy milk low priority"
+        say: >
+          Three tasks in one request. One turn with three parallel calls, and each task gets its number.
+      - cmd: 'python -m productivity ask "complete task 3 and note dentist: call before 6 pm"'
+        say: >
+          Complete task three, and save a note, again in one turn.
+      - cmd: python -m productivity ask "list all tasks and search notes for dentist"
+        say: >
+          And two read tools together: all tasks, with buy milk marked done, and the note we just saved.
+
+  - type: terminal
+    chapter: Safety on purpose
+    title: terminal — productivity-agent
+    cwd: project/productivity-agent
+    font: 21
+    steps:
+      - cmd: printf 'n\n' | python -m productivity ask "delete task 1"
+        say: >
+          Now the safety features, on purpose. Delete task one: the agent asks, with the task's title and due date. The answer is no, so pay rent stays.
+      - cmd: printf 'y\n' | python -m productivity ask "delete task 2"
+        say: >
+          Delete task two, and this time the answer is yes, so it's deleted.
+      - cmd: python -m productivity ask "add task Learn MCP" --read-only
+        say: >
+          In read-only mode, writes are blocked.
+      - cmd: PROD_FAKE_FAIL=401 python -m productivity ask "list tasks"
+        exit: 1
+        say: >
+          And a rejected API key ends with one clear line, and exit code one. No traceback anywhere.
+
+  - type: code
+    chapter: Testing
+    heading: "Tests: the real loop, tools and policy, with the fake model"
+    title: tests/test_agent.py
+    file: project/productivity-agent/tests/test_agent.py
+    lines: "12-57"
+    steps:
+      - lines: "12-22"
+        note: "Parallel calls: one turn, and results matched by id."
+        say: >
+          The tests run the real loop, the real tools and the real policy, against the fake model, with a temporary data file. This one checks parallel calls: three steps, all in turn one, and the results matched to the calls by ID, in one message.
+      - lines: "35-40"
+        note: "A bad input comes back as an error, then the fixed call works."
+        say: >
+          This one checks recovery from invalid input: first an error step, then a successful one, and exactly one task saved.
+      - lines: "43-57"
+        note: "Declined: nothing deleted. Approved: deleted."
+        say: >
+          And these check the human approval: when the answer is no, the task is still there, and the policy logged declined. When it's yes, the task is gone.
+
+  - type: terminal
+    title: terminal — productivity-agent
+    cwd: project/productivity-agent
+    steps:
+      - cmd: python -m pytest -q
+        run: python -m pytest -q -p no:cacheprovider
+        say: >
+          Forty-three tests, all passing, with no key, no network, and without touching your real data file.
+      - cmd: mypy productivity
+        run: mypy --no-incremental productivity
+        say: >
+          And mypy is happy with every type hint.
+
+  - type: cards
+    chapter: Troubleshooting
+    heading: Common problems, and fixes
+    cards:
+      - {tag: schema, title: "400: invalid tool schema", body: "Strict schemas need additionalProperties: false and every field required. Use schema_for().", tone: coral, say: "A four hundred about the tool schema usually means a strict schema rule: additional properties must be false, and every field required. Generate schemas with schema for, instead of by hand."}
+      - {tag: tool_use ids, title: "400: missing tool_result", body: "Every tool_use needs a tool_result with its id, all in the next user message.", tone: amber, say: "A four hundred about tool use IDs means a result is missing. Every call needs its result, all in the next user message."}
+      - {tag: wrong tool, title: "The model picks the wrong tool", body: "Improve the descriptions: what, when, returns, rules. Remove overlapping tools.", tone: violet, say: "If the model picks the wrong tool, improve the descriptions, and remove tools that overlap."}
+      - {tag: hangs, title: "The agent seems stuck", body: "A tool has no timeout, or it's too long. Every tool gets one.", tone: blue, say: "And if the agent seems stuck, a tool probably has no timeout. Every tool gets one."}
+
+  - type: interview
+    chapter: Interview corner
+    of: 3
+    items:
+      - q: "Walk me through what happens when an agent calls a tool."
+        a: "Your code sends tools + messages. The model replies `stop_reason: tool_use` with `tool_use` blocks. Your code **validates**, **checks permission**, **runs with a timeout**, and returns `tool_result`s (same ids, `is_error` on failure) in one user message. Repeat until no tool calls."
+        trap: "Skipping validation and permissions, or saying the API runs the tool."
+        say_q: "Module interview corner. Question one: walk me through what happens when an agent calls a tool."
+        say_a: "Your code sends the tools and the messages. The model replies with a stop reason of tool use, and tool use blocks. Your code validates each input, checks the permission, runs it with a timeout, and returns the tool results, with the same IDs, and is error on failures, all in one user message. Then repeat until there are no tool calls. The trap: skipping validation and permissions, or saying the API runs the tool."
+      - q: "How would you let an agent send emails safely?"
+        a: "Make `send_email` a **danger** tool: validate recipients and content, show the human the exact email and ask for approval **every time**, log decisions, rate-limit, and start in a read-only or draft-only mode."
+        trap: "\"Add 'never send spam' to the system prompt.\" Instructions are not enforcement."
+        say_q: "Question two, a scenario: how would you let an agent send emails safely?"
+        say_a: "Make send email a danger tool. Validate the recipients and the content. Show the human the exact email, and ask for approval every time. Log every decision, limit how many it can send, and start with a draft-only mode. The trap: adding never send spam to the system prompt. Instructions are not enforcement."
+      - q: "What's the difference between strict tool use and validating in your code?"
+        a: "Strict tool use guarantees the input **matches the schema**: fields and types. Your validation enforces **limits and business rules**, and turns failures into clear errors the model can fix."
+        trap: "Treating them as alternatives. You want both."
+        say_q: "And question three: what's the difference between strict tool use and validating in your code?"
+        say_a: "Strict tool use guarantees the input matches the schema: the fields and the types. Your validation enforces limits and business rules, and turns failures into clear errors the model can fix. The trap: treating them as alternatives. You want both."
+
+  - type: recap
+    chapter: Module recap
+    heading: Module 5 recap
+    items:
+      - {text: "Tools: the model requests, your code runs, results return by id", say: "Module recap. With tools, the model requests, your code runs, and the results come back by ID."}
+      - {text: "A registry and Pydantic: one source of truth for every tool", say: "A registry and Pydantic give one source of truth for every tool."}
+      - {text: "Parallel calls: run them all, one message of results", say: "For parallel calls, run them all, and send one message of results."}
+      - {text: "Validate every input; give every tool a timeout", say: "Validate every input, and give every tool a timeout."}
+      - {text: "Least privilege, permission levels, and a human yes for danger", say: "And use least privilege, permission levels, and a human yes for anything dangerous."}
+
+  - type: quiz
+    chapter: Module quiz
+    number: 1
+    of: 5
+    question: "Who actually runs a tool's function?"
+    options:
+      - "The Claude API, on its servers"
+      - "Your code, after the model requests it"
+      - "The model, inside its reply"
+      - "The Anthropic SDK, automatically, in every case"
+    answer: 1
+    explain: "The model only requests a call with a tool_use block. Your code decides whether and how to run it."
+    say_question: >
+      Module quiz, question one. Who actually runs a tool's function?
+    say_answer: >
+      Your code, after the model requests it. The model only asks.
+
+  - type: quiz
+    number: 2
+    of: 5
+    question: "Why generate tool schemas from Pydantic classes?"
+    options:
+      - "Pydantic schemas are shorter"
+      - "One class both describes the input to the model and validates it in code"
+      - "The API only accepts Pydantic"
+      - "It makes the model faster"
+    answer: 1
+    explain: "One source of truth: the schema the model sees and the validation your code runs come from the same class."
+    say_question: >
+      Question two. Why generate tool schemas from Pydantic classes?
+    say_answer: >
+      Because one class both describes the input to the model, and validates it in your code. One source of truth.
+
+  - type: quiz
+    number: 3
+    of: 5
+    question: "With strict: true, which check is still your job?"
+    options:
+      - "That required fields are present"
+      - "That the priority is one of the enum values"
+      - "That the task with that id exists"
+      - "That no extra fields are sent"
+    answer: 2
+    explain: "Strict mode guarantees shape and types. Only your code knows which tasks exist, and other business rules."
+    say_question: >
+      Question three. With strict mode on, which check is still your job?
+    say_answer: >
+      Checking that the task with that ID exists. Strict mode covers the shape. Business rules are yours.
+
+  - type: quiz
+    number: 4
+    of: 5
+    question: "A thread timeout fires after 2 seconds. What does it guarantee?"
+    options:
+      - "The tool's work is undone"
+      - "The agent stops waiting and gets an error result"
+      - "The thread is killed"
+      - "The tool is retried automatically"
+    answer: 1
+    explain: "It stops the waiting, not the work. Use a process when you must be able to stop the work."
+    say_question: >
+      Question four. A thread timeout fires after two seconds. What does it guarantee?
+    say_answer: >
+      That the agent stops waiting, and gets an error result. It doesn't stop the work itself.
+
+  - type: quiz
+    number: 5
+    of: 5
+    question: "Where must the human-approval check for delete_task live?"
+    options:
+      - "In the system prompt"
+      - "In the tool description"
+      - "In your code, between validation and execution"
+      - "In the model's reply to the user"
+    answer: 2
+    explain: "Only code enforces. Prompts and descriptions guide the model, but can't stop a call."
+    say_question: >
+      And question five. Where must the human approval check for delete task live?
+    say_answer: >
+      In your code, between validation and execution. Prompts guide the model. Only code enforces.
+
+  - type: callout
+    chapter: Practice
+    kind: practice
+    title: "Practice questions"
+    body: "Easy to hard. Answers are in the module's quiz.md."
+    say: >
+      Now some practice, from easy to hard. Pause and try them. The answers are in the module's quiz dot md file.
+    items:
+      - {text: "Write a schema-ready Pydantic class for rename_task(task_id, title)", say: "One. Write a Pydantic class for a rename task tool, with a task ID and a new title."}
+      - {text: "Which permission level for clear_completed_tasks()? Why?", say: "Two. Which permission level would you give a tool that clears all completed tasks, and why?"}
+      - {text: "The model sends 4 tool calls; one times out. What does the next user message contain?", say: "Three. The model sends four tool calls, and one times out. What does the next user message contain?"}
+      - {text: "Scenario: a support agent can issue refunds. Design its tools and safety checks.", say: "And four, a scenario. A customer support agent can issue refunds. Design its tools, and its safety checks.", pause: 6}
+
+  - type: callout
+    chapter: Extension challenge
+    kind: challenge
+    title: "Extend the Productivity Agent"
+    body: "Pick one or more. Each needs code **and** a test using the fake API."
+    say: >
+      Your extension challenge. Pick one or more, and write a test for each, using the fake API.
+    items:
+      - {text: "Add `rename_task(task_id, title)` as a write tool", say: "Add a rename task tool, as a write tool."}
+      - {text: "Add `due_soon(days)`: open tasks due within N days", say: "Add a due soon tool, that lists open tasks due within N days."}
+      - {text: "Log every policy decision to an audit file", say: "Log every policy decision to an audit file, with the time."}
+      - {text: "Run `search_notes` in a subprocess, so a timeout really stops it", say: "Or run search notes in a separate process, so a timeout really stops the work."}
+
+  - type: links
+    chapter: Documentation
+    heading: Official documentation
+    items:
+      - {title: Tool use overview, url: platform.claude.com/docs/en/agents-and-tools/tool-use/overview}
+      - {title: Implement tool use, url: platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use}
+      - {title: Strict tool use, url: platform.claude.com/docs/en/build-with-claude/structured-outputs}
+      - {title: Pydantic models, url: docs.pydantic.dev/latest/concepts/models}
+      - {title: Python threading, url: docs.python.org/3/library/threading.html}
+      - {title: Python SDK, url: github.com/anthropics/anthropic-sdk-python}
+    say: >
+      These are the official documentation pages for this module. Links are in the description, along with the full source code, and the course glossary.
+
+  - type: title
+    chapter: Next up
+    kicker: Coming next · Module 6
+    title: Agent Memory and Conversation State
+    subtitle: "Short-term and long-term memory, summaries, and saving state between sessions. Project: a Persistent AI Study Companion."
+    say: >
+      That's Module 5 complete. Your agent can now use many tools, check every input, survive slow tools, and ask before it does anything dangerous.
+      In Module 6, we give agents memory: what to remember, what to forget, and how to pick up a conversation the next day. See you there.

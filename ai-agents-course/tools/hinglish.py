@@ -1,0 +1,87 @@
+"""Hinglish narration for Kokoro's Hindi voices: Hindi (Devanagari) words keep espeak's Hindi
+phonemes, and English words (Latin script, digits) are phonemized as English and then moved to
+an Indian-English accent: retroflex t/d, a tapped r, v for w, pure o:/e: vowels, dental th."""
+import re
+
+LATIN = re.compile(r"[A-Za-z0-9]")
+# order matters: protect affricates, then rhotic vowels, then the rest
+RULES = [
+    ("tʃ", "\x01"), ("dʒ", "\x02"),
+    ("ɑːɹ", "aːr"), ("ɑɹ", "aːr"), ("ɔːɹ", "ɔːr"), ("ɔɹ", "ɔːr"), ("ɪɹ", "iːr"), ("ɛɹ", "eːr"),
+    ("ɚ", "ər"), ("ɝ", "ər"),
+    ("ɾ", "ʈ"), ("t", "ʈ"), ("d", "ɖ"),
+    ("θ", "tʰ"), ("ð", "d"), ("ɹ", "r"), ("w", "ʋ"), ("v", "ʋ"),
+    ("oʊ", "oː"), ("əʊ", "oː"), ("eɪ", "eː"), ("ɑː", "ɔ"), ("ɒ", "ɔ"), ("æ", "ɛ"),
+    ("ʌ", "ə"), ("ɐ", "ə"), ("ᵻ", "ɪ"), ("ɔː", "ɔ"),
+    ("\x01", "tʃ"), ("\x02", "dʒ"),
+]
+
+
+def indianize(ipa: str) -> str:
+    for a, b in RULES:
+        ipa = ipa.replace(a, b)
+    return ipa
+
+
+def phonemes(tokenizer, text: str) -> str:
+    """Split into runs of English (Latin/digits) and Hindi words; phonemize each run in its language."""
+    text = text.replace("।", ".")  # espeak drops the danda, and with it the sentence pause
+    runs: list[tuple[bool, list[str]]] = []
+    for word in text.split():
+        eng = bool(LATIN.search(word))
+        if runs and runs[-1][0] == eng:
+            runs[-1][1].append(word)
+        else:
+            runs.append((eng, [word]))
+    out = []
+    for eng, words in runs:
+        chunk = " ".join(words)
+        if eng:
+            out.append(indianize(tokenizer.phonemize(chunk, "en-us")))
+        else:
+            out.append(re.sub(r"\((en|hi)\)", "", tokenizer.phonemize(chunk, "hi")))
+    return " ".join(p.strip() for p in out if p.strip())
+
+
+# Indian names of letters, for spelled-out abbreviations ("A P I", "L L M"). Read as English, a lone
+# "A" is the article "uh", so "A P I" came out as "uh-pee-eye".
+LETTERS = dict(zip("ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                   "ए बी सी डी ई एफ़ जी एच आई जे के एल एम एन ओ पी क्यू आर एस टी यू वी डब्ल्यू एक्स वाई ज़ेड".split()))
+
+
+def to_speech(text: str) -> str:
+    """Roman Hinglish (as captioned) -> the same sentence with Hindi words in Devanagari."""
+    from hinglish_words import HINDI
+    text = re.sub(r"\b(API|SDK|HTTP|LLM|AI|ID|ATM|USD|FAQ|CLI)(s?)\b", lambda m: " ".join(m.group(1)) + m.group(2), text)
+    text = re.sub(r"\b([A-Z])(s?)\b", lambda m: LETTERS[m.group(1)] + ("ज़" if m.group(2) else ""), text)
+    return re.sub(r"[A-Za-z]+", lambda m: HINDI.get(m.group(0).lower(), m.group(0)), text)
+
+
+def english_words(texts) -> list[str]:
+    """Every word that will be spoken as English: review it for Hindi words missing from HINDI."""
+    from hinglish_words import HINDI
+    return sorted({w.lower() for t in texts for w in re.findall(r"[A-Za-z]+", t)} - set(HINDI))
+
+
+if __name__ == "__main__":
+    import sys
+
+    import yaml
+
+    if sys.argv[1:2] == ["check"]:
+        said = []
+
+        def walk(node):
+            if isinstance(node, dict):
+                for key, value in node.items():
+                    if key in ("say", "outro", "say_question", "say_answer", "say_q", "say_a") and isinstance(value, str):
+                        said.append(value)
+                    else:
+                        walk(value)
+            elif isinstance(node, list):
+                for value in node:
+                    walk(value)
+
+        for path in sys.argv[2:]:
+            walk(yaml.safe_load(open(path, encoding="utf-8")))
+        print(" ".join(english_words(said)))

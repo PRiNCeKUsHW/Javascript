@@ -1,5 +1,6 @@
 module_title: LLM Fundamentals and API Integration
 title: "Project, Part 2: Quizzes, Chat, Tests and Wrap-up"
+narration: hinglish
 scenes:
   - type: title
     chapter: Introduction
@@ -8,8 +9,8 @@ scenes:
     subtitle: Structured quizzes, chat with memory, the full demo, tests, and the module quiz.
     loop: [Ask, Stream, Measure, Budget]
     say: >
-      Welcome back. Explanations work. Now we add quizzes as structured output, a chat mode with trimmed history, and the command line that ties it together.
-      Then we'll run the full demo, look at the tests, and finish the module.
+      Welcome back. Explanations kaam kar rahe hain. Ab hum structured output se quizzes, trimmed history ke saath chat, aur sabko jodne wali command line banayenge.
+      Phir poora demo chalayenge, tests dekhenge, interview questions practice karenge, aur module complete karenge.
 
   - type: code
     chapter: Quizzes as structured output
@@ -20,10 +21,10 @@ scenes:
       - lines: "4-8"
         note: "Exactly 4 options; an answer index from 0 to 3."
         say: >
-          A question has its text, exactly four options, the index of the correct option, and an explanation of why it's right.
+          Ek question mein uska text, exactly chaar options, sahi option ka index, aur explanation ki woh sahi kyun hai.
       - lines: "11-13"
         say: >
-          A quiz is a topic plus a list of questions. This one class becomes the JSON schema the model must follow.
+          Ek quiz matlab topic aur questions ki list. Yahi ek class woh JSON schema banti hai jise model ko follow karna hai. Yaad hai, government form wali analogy.
 
   - type: code
     heading: "make_quiz(): parse, validate, check"
@@ -33,19 +34,19 @@ scenes:
     steps:
       - lines: "96"
         say: >
-          Make quiz fills in the request: write N multiple-choice questions about a topic.
+          Make quiz request bharta hai: iss topic par N multiple choice questions likho.
       - lines: "97-102"
         note: "`beta.messages.parse(..., output_format=Quiz)` with medium effort."
         say: >
-          It calls parse with output format set to Quiz, so the reply is constrained to the schema. Quizzes need more care than explanations, so we use medium effort, and a generous max tokens.
+          Yeh parse call karta hai, output format Quiz ke saath, toh reply schema ke andar hi rehta hai. Quizzes ko explanations se zyada care chahiye, isliye medium effort, aur generous max tokens.
       - lines: "103-105"
         note: "Anything that doesn't fit the schema → one clear error."
         say: >
-          If the reply somehow doesn't fit the schema, for example three options instead of four, the SDK's validation raises a pydantic validation error, and we turn it into one clear message.
+          Agar reply phir bhi schema mein fit na ho, jaise chaar ki jagah teen options, toh SDK ki validation ek pydantic validation error raise karti hai, aur hum usse ek clear message mein badalte hain.
       - lines: "106-109"
         note: "A truncated quiz is never returned."
         say: >
-          Finally, if the quiz was cut off by max tokens, we refuse to return a half-finished quiz, and suggest asking for fewer questions.
+          Aur agar quiz max tokens par kat gaya, toh hum aadha quiz return nahi karte. Kam questions maangne ka suggestion dete hain.
 
   - type: code
     chapter: Chat with history
@@ -55,20 +56,30 @@ scenes:
     lines: "128-163"
     steps:
       - lines: "128-130"
-        note: "A quick local estimate; use `count_tokens` when you need exact numbers."
+        note: "A quick local estimate; use `count_tokens` for exact numbers."
         say: >
-          For trimming, a quick local estimate is good enough: about four characters per token. When you need an exact number, use the token counting endpoint instead.
+          Trimming ke liye ek quick local estimate kaafi hai: lagbhag chaar characters ka ek token. Exact number chahiye, toh token counting endpoint use karo.
       - lines: "136-143"
         say: >
-          A chat session holds the history list and a token budget for it.
+          Chat session history list aur uska token budget rakhta hai.
       - lines: "145-152"
         note: "Drop the oldest **pair**, so roles still alternate."
         say: >
-          Trim drops the oldest user and assistant pair while the history is over budget, exactly the rule from lesson three. It always keeps at least the latest exchange.
+          Trim sabse purana user aur assistant pair hatata hai jab tak history budget mein na aa jaaye. Bilkul lesson three wala rule. Aur latest exchange hamesha rakhta hai.
       - lines: "154-163"
         note: "If the call fails, remove the unanswered question."
         say: >
-          Send appends the question, trims, and calls the model with the whole history. If the call fails, it removes the unanswered question, so the history never ends up with two user turns in a row. Then the reply is stored.
+          Send question append karta hai, trim karta hai, aur poori history ke saath model ko call karta hai. Call fail hui, toh bina jawab wala question hata deta hai, taaki history mein kabhi do user turns lagatar na hon. Phir reply store hota hai.
+
+  - type: table
+    heading: "Dry run: ChatSession.send() with a 100-token budget"
+    columns: [Step, History, Tokens, Action]
+    widths: [0.6, 2.4, 0.8, 1.6]
+    rows:
+      - {cells: ["1", "U1 · A1 · U2 · A2 · U3", "130", "over budget → trim"], say: "Ek dry run, sau tokens ke budget ke saath. Teesra question append hua, history ab ek sau tees tokens. Budget se zyada, toh trim."}
+      - {cells: ["2", "U2 · A2 · U3", "85", "fits → call the model"], tone: teal, say: "Sabse purana pair, user one aur assistant one, hata. Ab pachaasi tokens, budget mein. Model ko call karo."}
+      - {cells: ["3a", "U2 · A2 · U3 · A3", "—", "success: store the reply"], tone: teal, say: "Call successful, toh reply assistant three store hota hai."}
+      - {cells: ["3b", "U2 · A2", "—", "error: drop U3, raise"], tone: coral, say: "Aur agar call fail hoti, toh user three hata diya jaata, aur error upar raise hota. History valid rehti.", note: "Either way the history stays valid: it starts with user and roles alternate."}
 
   - type: code
     chapter: The command line
@@ -80,18 +91,18 @@ scenes:
       - lines: "62-70"
         note: "Streamed text goes to stdout; the footer goes to stderr."
         say: >
-          For explain, the on text callback prints each piece immediately. The footer with tokens and cost goes to standard error, so it never mixes into output you save or pipe.
+          Explain ke liye on text callback har piece turant print karta hai. Tokens aur cost wala footer standard error mein jaata hai, taaki woh save ya pipe kiye gaye output mein mix na ho.
       - lines: "71-84"
         say: >
-          Quiz prints the questions with letters, optionally saves the JSON, and grades your answers if you pass them.
+          Quiz questions ko letters ke saath print karta hai, chahe toh JSON save karta hai, aur answers doge toh grade bhi karta hai.
       - lines: "85-92"
         note: "One message per line from standard input."
         say: >
-          Chat reads one message per line from standard input, so it works interactively, and from a file for demos and tests.
+          Chat standard input se har line ek message ki tarah padhta hai. Toh yeh interactively bhi chalta hai, aur demos aur tests ke liye file se bhi.
       - lines: "102-111"
         note: "Every `StudyError` becomes a one-line message and exit code 1."
         say: >
-          And main builds the settings, the client, and the assistant, and turns any study error into one clean line and exit code one, just like Module 1's toolkit.
+          Aur main settings, client, aur assistant banata hai, aur har study error ko ek saaf line aur exit code one mein badalta hai, Module 1 ke toolkit ki tarah.
 
   - type: terminal
     chapter: Demo
@@ -101,13 +112,13 @@ scenes:
     steps:
       - cmd: python -m study quiz "Python dictionaries" --count 2 --answers A,C
         say: >
-          A two-question quiz, graded. These are the fake API's placeholder questions, but they went through exactly the same structured output path: schema, parsing, and validation.
+          Do questions ka quiz, grading ke saath. Yeh fake API ke placeholder questions hain, lekin bilkul same structured output path se guzre: schema, parsing, aur validation.
       - cmd: printf 'What is a token?\nAnd a context window?\n' | python -m study chat
         say: >
-          And a chat with two messages piped in. Look at the second reply: the request carried two earlier messages. That's our history at work.
+          Aur do messages ke saath chat. Doosra reply dekho: request ke saath do purane messages gaye. Yahi hamari history kaam kar rahi hai.
       - cmd: python -m study tokens "How are tokens counted?"
         say: >
-          The tokens command uses the counting endpoint. Offline, it's labelled as an estimate.
+          Tokens command counting endpoint use karta hai. Offline mein isse estimate likha jaata hai.
 
   - type: terminal
     title: terminal — ai-study-assistant
@@ -117,15 +128,15 @@ scenes:
       - cmd: ANTHROPIC_LOG=info STUDY_FAKE_FAIL=429 python -m study explain "retries"
         keep: "2-3,5-"
         say: >
-          Now the failure paths. A single rate limit: the SDK retries automatically and the explanation still arrives.
+          Ab failure paths. Ek rate limit: SDK automatically retry karta hai aur explanation phir bhi aata hai.
       - cmd: STUDY_FAKE_FAIL=429,429,429 python -m study explain "retries"
         exit: 1
         say: >
-          Three rate limits in a row exhausts the two retries, and we get one clear error line, not a traceback.
+          Lagatar teen rate limits do retries khatam kar dete hain, aur hamein ek clear error line milti hai, traceback nahi.
       - cmd: STUDY_FAKE_FAIL=refusal python -m study explain "anything"
         exit: 1
         say: >
-          And a refusal is reported plainly too.
+          Aur refusal bhi saaf saaf report hota hai.
 
   - type: code
     chapter: Testing
@@ -137,14 +148,14 @@ scenes:
       - lines: "8-20"
         note: "The fake API records what the SDK really sent."
         say: >
-          The tests use the fake API as a test double. This one checks that the explanation arrived in pieces, that the pieces add up to the final text, and, by inspecting what the fake received, that the request really was streamed, with fallbacks, and with the right prompt.
+          Tests fake API ko test double ki tarah use karte hain. Yeh test check karta hai ki explanation pieces mein aaya, pieces milkar final text bante hain, aur fake ko kya mila yeh dekhkar, ki request sach mein streamed thi, fallbacks ke saath, aur sahi prompt ke saath.
       - lines: "23-26"
         say: >
-          This test proves max tokens truncation is detected.
+          Yeh test prove karta hai ki max tokens wala truncation pakda jaata hai.
       - lines: "43-53"
         note: "Retries are tested with the SDK's real retry logic."
         say: >
-          And these two test the SDK's real retry behaviour: two failures then success makes three requests, and three rate limits in a row becomes our clean error.
+          Aur yeh do tests SDK ka real retry behaviour test karte hain. Do failures phir success, matlab teen requests. Aur lagatar teen rate limits, hamara clean error.
 
   - type: terminal
     title: terminal — ai-study-assistant
@@ -153,36 +164,56 @@ scenes:
       - cmd: python -m pytest -q
         run: python -m pytest -q -p no:cacheprovider
         say: >
-          Twenty-three tests, all passing, with no key and no network. A conftest fixture also removes any real key from the environment during tests, so they can never cost you money.
+          Teyees tests, sab pass, bina key aur bina network. Ek conftest fixture tests ke dauraan environment se real key hata deta hai, taaki tests kabhi aapka paisa kharch na karein.
       - cmd: mypy study
         run: mypy --no-incremental study
         say: >
-          And mypy is happy with every type hint, including the SDK's own types.
+          Aur mypy har type hint se khush hai, SDK ke apne types ke saath bhi.
 
   - type: cards
     chapter: Troubleshooting
     heading: Common problems, and fixes
     cards:
-      - {tag: "401", title: "API key was rejected", body: "Check `ANTHROPIC_API_KEY`: no quotes or spaces, not revoked, from the right workspace.", tone: coral, say: "If your key is rejected, check the environment variable: no stray quotes or spaces, not revoked, and from the right workspace."}
-      - {tag: "offline", title: "Unexpected offline mode", body: "The key isn't visible to Python. Export it in the same terminal, or use `.env`.", tone: amber, say: "If you expected real answers but see offline mode, Python can't see the key. Set it in the same terminal session."}
-      - {tag: "429", title: "Rate limited", body: "Wait, reduce parallel requests, or raise `STUDY_MAX_RETRIES`.", tone: violet, say: "Repeated rate limits mean you're sending too fast for your account's limits. Slow down, or allow more retries."}
-      - {tag: "max_tokens", title: "Cut-off answers or quizzes", body: "Raise `--max-tokens`, or ask for fewer questions.", tone: blue, say: "And for cut-off answers, raise max tokens, or ask for less."}
+      - {tag: "401", title: "API key was rejected", body: "Check `ANTHROPIC_API_KEY`: no quotes or spaces, not revoked, from the right workspace.", tone: coral, say: "Key reject ho rahi hai? Environment variable check karo: extra quotes ya spaces nahi, revoke nahi hui, aur sahi workspace ki hai."}
+      - {tag: "offline", title: "Unexpected offline mode", body: "The key isn't visible to Python. Export it in the same terminal, or use `.env`.", tone: amber, say: "Real answers chahiye, lekin offline mode aa raha hai? Python ko key dikh nahi rahi. Usi terminal session mein set karo."}
+      - {tag: "429", title: "Rate limited", body: "Wait, reduce parallel requests, or raise `STUDY_MAX_RETRIES`.", tone: violet, say: "Baar baar rate limit? Aap apne account ki limit se tez bhej rahe ho. Dheere karo, ya zyada retries allow karo."}
+      - {tag: "max_tokens", title: "Cut-off answers or quizzes", body: "Raise `--max-tokens`, or ask for fewer questions.", tone: blue, say: "Aur kate hue answers ke liye, max tokens badhao, ya kam maango."}
+
+  - type: interview
+    chapter: Interview corner
+    of: 3
+    items:
+      - q: "How would you test code that calls an LLM API without spending money?"
+        a: "Put a **test double behind the real SDK**: a fake server (here an `httpx` MockTransport) that speaks the same protocol, so tests run the real client code, and can script errors, refusals and truncation."
+        trap: "Mocking your own function so the SDK never runs. Then retries, streaming and parsing are never tested."
+        say_q: "Module ka interview corner. Pehla question: LLM API call karne wale code ko bina paisa kharch kiye kaise test karoge?"
+        say_a: "Answer: real SDK ke peeche ek test double lagao. Ek fake server, jaise yahan MockTransport, jo same protocol bolta hai. Tests real client code chalate hain, aur errors, refusals, aur truncation script kar sakte hain. Trap: apne function ko mock kar dena, jisse SDK kabhi chalta hi nahi. Tab retries, streaming, aur parsing test hi nahi hote."
+      - q: "How do you stop an AI feature from running up a huge bill?"
+        a: "Measure tokens on every call, convert to cost, and **check a budget before each call**. Add `max_tokens`, step limits for loops, and alerts on spend."
+        trap: "\"We'll watch the dashboard.\" By the time you look, a loop may have spent the money."
+        say_q: "Doosra: ek AI feature ko bahut bada bill banane se kaise rokoge?"
+        say_a: "Answer: har call ke tokens measure karo, unhe cost mein badlo, aur har call se pehle budget check karo. Saath mein max tokens, loops ke liye step limits, aur kharche par alerts. Trap: hum dashboard dekhte rahenge. Jab tak aap dekhoge, ek loop paisa kharch kar chuka hoga."
+      - q: "Structured output passed validation. Is the content correct?"
+        a: "Not necessarily. The schema guarantees **shape**, not **truth**. You still check facts, business rules (e.g. the answer index points to a real option) and test with evals."
+        trap: "Treating schema-valid as correct."
+        say_q: "Teesra: structured output ne validation pass kar li. Kya content sahi hai?"
+        say_a: "Answer: zaroori nahi. Schema shape guarantee karta hai, truth nahi. Facts aur business rules phir bhi check karne padte hain, aur evals se test karna padta hai. Trap: schema valid ko sahi maan lena."
 
   - type: recap
     chapter: Module recap
     heading: Module 2 recap
     items:
-      - {text: "LLMs predict tokens; tokens drive cost, limits and speed", say: "Language models predict tokens, and tokens drive cost, limits, and speed."}
-      - {text: "`messages.create`: content blocks, `stop_reason`, `usage`", say: "You called the API and read content blocks, stop reasons, and usage."}
-      - {text: "The API is stateless: send and trim the history yourself", say: "You managed stateless conversations, with trimmed history."}
-      - {text: "Streaming and structured output with `parse`", say: "You streamed replies, and got validated structured output."}
-      - {text: "Errors, retries, refusals, costs and budgets", say: "And you handled errors, retries, refusals, costs, and budgets, in a fully tested project."}
+      - {text: "LLMs predict tokens; tokens drive cost, limits and speed", say: "Module recap. Language models tokens predict karte hain, aur tokens cost, limits, aur speed decide karte hain."}
+      - {text: "`messages.create`: content blocks, `stop_reason`, `usage`", say: "Aapne API call ki aur content blocks, stop reasons, aur usage padhe."}
+      - {text: "The API is stateless: send and trim the history yourself", say: "Stateless conversations manage ki, trimmed history ke saath."}
+      - {text: "Streaming and structured output with `parse`", say: "Replies stream kiye, aur validated structured output liya."}
+      - {text: "Errors, retries, refusals, costs and budgets", say: "Aur errors, retries, refusals, costs, aur budgets handle kiye, ek fully tested project mein."}
 
   - type: quiz
     chapter: Module quiz
     number: 1
     of: 5
-    question: "Why do output tokens matter more for cost than many beginners expect?"
+    question: "Why do output tokens matter so much for cost?"
     options:
       - "They're free"
       - "They usually cost several times more than input tokens"
@@ -191,9 +222,9 @@ scenes:
     answer: 1
     explain: "On Claude Opus 5.5, output tokens cost $20 per million vs $4 for input: five times more. Ask for concise answers."
     say_question: >
-      Module quiz, question one. Why do output tokens matter so much for cost?
+      Module quiz, question one. Output tokens cost ke liye itne important kyun hain?
     say_answer: >
-      They usually cost several times more than input tokens. Five times more, on Claude Opus 5.5.
+      Kyunki woh usually input tokens se kai guna mehenge hote hain. Claude Opus 5.5 par paanch guna.
 
   - type: quiz
     number: 2
@@ -207,14 +238,14 @@ scenes:
     answer: 1
     explain: "The reply hit `max_tokens` and stopped, possibly mid-sentence or mid-JSON. Raise the limit or ask for less."
     say_question: >
-      Question two. What does a stop reason of max tokens tell you?
+      Question two. Stop reason max tokens kya batata hai?
     say_answer: >
-      The reply was cut off at your limit, and may be incomplete.
+      Reply aapki limit par kat gaya, aur adhoora ho sakta hai.
 
   - type: quiz
     number: 3
     of: 5
-    question: "A chat app's bot forgets everything said earlier. What's the most likely bug?"
+    question: "A chat bot forgets everything said earlier. What's the most likely bug?"
     options:
       - "The model's memory is full"
       - "The app doesn't send the earlier messages with each request"
@@ -223,9 +254,9 @@ scenes:
     answer: 1
     explain: "The API is stateless. The app must send the history (and store each reply) on every request."
     say_question: >
-      Question three. A chat bot forgets everything said earlier. What's the most likely bug?
+      Question three. Ek chat bot pehle kahi gayi har baat bhool jaata hai. Sabse likely bug kya hai?
     say_answer: >
-      The app isn't sending the earlier messages with each request. The API is stateless.
+      App har request ke saath purane messages nahi bhej rahi. API stateless hai.
 
   - type: quiz
     number: 4
@@ -239,9 +270,9 @@ scenes:
     answer: 2
     explain: "Rate limits, server errors and network failures can recover. The Anthropic SDK retries them twice by default, with backoff."
     say_question: >
-      Question four. Which errors are worth retrying automatically?
+      Question four. Kaun se errors automatically retry karne layak hain?
     say_answer: >
-      Rate limits, server errors, and connection errors. And the SDK already retries them for you.
+      Rate limits, server errors, aur connection errors. Aur SDK yeh already aapke liye retry karta hai.
 
   - type: quiz
     number: 5
@@ -255,9 +286,23 @@ scenes:
     answer: 1
     explain: "You get a validated object that matches the schema. Structure is guaranteed, **truth is not**: facts still need checking."
     say_question: >
-      And question five. What does parse with output format equals Quiz give you?
+      Aur question five. Parse, output format Quiz ke saath, aapko kya deta hai?
     say_answer: >
-      A validated Quiz object. The structure is guaranteed, but the facts are not. A valid quiz can still contain a wrong answer.
+      Ek validated Quiz object. Structure guaranteed hai, facts nahi. Ek valid quiz mein bhi galat answer ho sakta hai.
+
+  - type: callout
+    chapter: Practice
+    kind: scenario
+    title: "Real-world scenario: a college help-desk bot"
+    body: "Your college wants a bot that answers student questions from the **admissions FAQ**, remembers the conversation, and must **never cost more than ₹500 a day**."
+    say: >
+      Ab ek real world scenario, poore module ko jodne ke liye. Aapke college ko ek bot chahiye jo admissions FAQ se students ke questions answer kare, conversation yaad rakhe, aur ek din mein paanch sau rupaye se zyada kharcha kabhi na kare.
+    items:
+      - {text: "Where does the conversation memory live, and how is it trimmed?", say: "Socho: conversation ki memory kahan rahegi, aur trim kaise hogi?"}
+      - {text: "How do you enforce the daily budget?", say: "Daily budget kaise enforce karoge?"}
+      - {text: "What does the bot do on a 429, a 401 and a refusal?", say: "Four twenty nine, four oh one, aur refusal par bot kya karega?", pause: 6}
+    outro: >
+      Is module ki har cheez yahan kaam aati hai: history list aur pair trimming, budget check, aur error table. Answers quiz dot md mein hain.
 
   - type: callout
     chapter: Extension challenge
@@ -265,12 +310,12 @@ scenes:
     title: "Extend the Study Assistant"
     body: "Pick one or more. Each needs code **and** a test using the fake API."
     say: >
-      Your extension challenge. Pick one or more, and write a test for each, using the fake API.
+      Aapka extension challenge. Ek ya zyada chuno, aur har ek ke liye fake API ke saath test likho.
     items:
-      - {text: "Add `--model` to switch between Opus, Sonnet and Haiku, and compare costs", say: "Add a model option, and compare costs between Opus, Sonnet, and Haiku."}
-      - {text: "Show the exact token count with `count_tokens` before each chat turn", say: "Show the exact token count before each chat turn."}
-      - {text: "Add `quiz --take`: ask questions interactively, then show explanations", say: "Add an interactive quiz mode that shows the explanations at the end."}
-      - {text: "Save chat history to a JSON file and reload it next time", say: "Or save chat history to a file and reload it next time, a first step towards Module 6."}
+      - {text: "Add `--model` to switch between Opus, Sonnet and Haiku, and compare costs", say: "Ek model option add karo, aur Opus, Sonnet, aur Haiku ki cost compare karo."}
+      - {text: "Show the exact token count with `count_tokens` before each chat turn", say: "Har chat turn se pehle exact token count dikhao."}
+      - {text: "Add `quiz --take`: ask questions interactively, then show explanations", say: "Ek interactive quiz mode banao jo aakhir mein explanations dikhaye."}
+      - {text: "Save chat history to a JSON file and reload it next time", say: "Ya chat history ko file mein save karo aur agli baar reload karo. Yeh Module 6 ki taraf pehla kadam hai."}
 
   - type: links
     chapter: Documentation
@@ -285,7 +330,7 @@ scenes:
       - {title: Rate limits, url: platform.claude.com/docs/en/api/rate-limits}
       - {title: Pricing, url: platform.claude.com/docs/en/about-claude/pricing}
     say: >
-      These are the official documentation pages for everything in this module. Links are in the description, along with the full source code.
+      Yeh iss module ke official documentation pages hain. Links description mein hain, poore source code aur course glossary ke saath.
 
   - type: title
     chapter: Next up
@@ -293,5 +338,5 @@ scenes:
     title: Prompt Engineering and Structured Outputs
     subtitle: "Instructions, examples, constraints, Pydantic validation, prompt versions and evaluations. Project: an AI Resume Analyzer."
     say: >
-      That's Module 2 complete. You can now call a language model from Python reliably, affordably, and testably.
-      In Module 3, you'll learn to write prompts that work consistently, validate every output with Pydantic, version your prompts, and evaluate them, while building an AI Resume Analyzer. See you there.
+      Module 2 complete! Ab aap Python se ek language model ko reliably, sasta, aur testable tareeke se call kar sakte ho.
+      Module 3 mein aap aise prompts likhna seekhoge jo consistently kaam karein, Pydantic se har output validate karoge, prompts ko version karoge, aur evaluate karoge, ek AI Resume Analyzer banate hue. Milte hain agle module mein!

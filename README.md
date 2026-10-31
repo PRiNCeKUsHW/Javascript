@@ -15,7 +15,7 @@ a quiz and an extension challenge.
 | 2 | [LLM Fundamentals and API Integration](ai-agents-course/modules/module-02-llm-fundamentals) | [AI Study Assistant](ai-agents-course/modules/module-02-llm-fundamentals/project/ai-study-assistant) | Published |
 | 3 | [Prompt Engineering and Structured Outputs](ai-agents-course/modules/module-03-prompt-engineering) | [AI Resume Analyzer](ai-agents-course/modules/module-03-prompt-engineering/project/ai-resume-analyzer) | Published |
 | 4 | [AI Agent Architecture](ai-agents-course/modules/module-04-agent-architecture) | [Smart Calculator Agent](ai-agents-course/modules/module-04-agent-architecture/project/smart-calculator-agent) | Published |
-| 5 | Tool Calling and Function Execution | Personal Productivity Agent | Coming soon |
+| 5 | [Tool Calling and Function Execution](ai-agents-course/modules/module-05-tool-calling) | [Personal Productivity Agent](ai-agents-course/modules/module-05-tool-calling/project/productivity-agent) | Published |
 | 6 | Agent Memory and Conversation State | Persistent AI Study Companion | Coming soon |
 | 7 | Reliable and Efficient Agents | Resilient API Agent | Coming soon |
 | 8 | Model Context Protocol (MCP) | Restricted File Assistant MCP Server | Coming soon |
@@ -33,6 +33,8 @@ a quiz and an extension challenge.
 Full syllabus: [ai-agents-course/COURSE_SYLLABUS.md](ai-agents-course/COURSE_SYLLABUS.md)
 
 New to a term? The [glossary](ai-agents-course/GLOSSARY.md) explains every technical word in plain language.
+
+Test yourself: the [question bank](ai-agents-course/QUESTION_BANK.md) has every question asked in the videos (quick checks, quizzes, practice and interview questions), with click-to-reveal answers.
 
 ## Run a project
 
@@ -56,7 +58,7 @@ and add your own `ANTHROPIC_API_KEY`. Never commit that file.
 
 ```text
 ai-agents-course/        the course: modules, projects, lesson scripts, captions, video tooling
-  modules/module-NN-*/   one folder per module (README, project/, source/, quiz.md, captions/)
+  modules/module-NN-*/   one folder per module (README, project/, source/, quiz.md, QUESTIONS.md, captions/)
   studio/                Remotion project that renders the lesson videos
   tools/                 build, render and validation scripts
 fastapi-course/          an earlier FastAPI course

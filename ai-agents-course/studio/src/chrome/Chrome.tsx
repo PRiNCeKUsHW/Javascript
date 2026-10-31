@@ -32,7 +32,7 @@ export const Footer: React.FC<{ envelope: number[]; hz: number; fps: number; tot
   const bars = [0.55, 0.85, 1, 0.75, 0.5];
   return (
     <>
-      <div style={{ position: "absolute", left: 0, bottom: 0, width: W, height: 6, background: "rgba(255,255,255,0.05)" }}>
+      <div style={{ position: "absolute", left: 0, bottom: 0, width: W, height: 6, background: C.line }}>
         <div style={{ width: `${progress * 100}%`, height: "100%", background: `linear-gradient(90deg, ${C.teal}, ${C.blue})` }} />
       </div>
       <div style={{ position: "absolute", right: SAFE.x, bottom: 34, display: "flex", alignItems: "center", gap: 14 }}>

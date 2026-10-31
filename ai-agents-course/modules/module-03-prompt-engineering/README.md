@@ -54,6 +54,7 @@ an evaluation command, cost tracking, SDK retries. 27 pytest tests, mypy clean.
 | Narration scripts / audio | `scripts/*.yaml` / `audio/` (audio not committed) |
 | Captions | `captions/module-03-full.srt` (and per part: `captions/lesson-NN.srt`) |
 | Quiz + answer key + challenge | [quiz.md](quiz.md) |
+| Question bank: every question from the videos, answers hidden (9) | [QUESTIONS.md](QUESTIONS.md) |
 | Thumbnail | `assets/thumbnail-module-03.png` |
 | YouTube packaging | [youtube.md](youtube.md), [youtube-uploads.md](youtube-uploads.md) |
 | Validation report | [validation-report.md](validation-report.md) |

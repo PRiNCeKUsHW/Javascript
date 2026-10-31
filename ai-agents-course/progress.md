@@ -27,6 +27,15 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
 
 ## Module 2: LLM Fundamentals and API Integration: COMPLETED (2026-10-29)
 
+- **Remade 2026-10-30 in Hinglish** (learner's request): Indian female voice B at 0.85, Roman Hinglish
+  captions, light Paper theme, What → Why → How → Where → Practice with analogies, code + real output
+  side by side, dry-run tables, interview corner and practice questions per lesson (answers in quiz.md).
+  Full video 1:05:33, 73 chapters, 995 captions; validation 70/70. Pronunciation fixes from the
+  learner's review: "API" spelled with Indian letter names, "model" said mo-DEL.
+  The original English details below describe the first version.
+- **Uploaded to YouTube 2026-10-31 in two parts:** Part 1 lessons 1-4 (36:31), Part 2 lessons 5-7
+  (29:02). Titles, descriptions, chapters and tags: `modules/module-02-llm-fundamentals/youtube.md`.
+
 - 7 lessons rendered (1920x1080 60 fps), full module video 41:05 with 59 chapters and 632 captions.
 - Project: AI Study Assistant, 23 tests passing; every demo runs offline against `study/fake_api.py`.
 - Validation: 70/70 checks (`modules/module-02-llm-fundamentals/validation-report.md`).
@@ -46,7 +55,24 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
 - Validation: 62/62 checks. Upload kit: `modules/module-04-agent-architecture/youtube-uploads.md` (video #16).
 - Rendering: `studio/render.mjs` renders all parts from one bundle and deletes it (avoids /tmp build-up).
 
-## Next: Module 5: Tool Calling and Function Execution (project: Personal Productivity Agent)
+## Module 5: Tool Calling and Function Execution: COMPLETED (2026-10-31)
+
+- English narration (am_michael, 0.92), light theme, the learner's teaching style (analogies, code +
+  real output, dry-run tables, interview corner, practice with answers in quiz.md).
+- 7 lessons, full video 52:47, 67 chapters, 817 captions. Validation 70/70.
+- Project: Personal Productivity Agent: registry + Pydantic schemas (strict), validation, per-tool
+  timeouts, read/write/danger permissions with read-only mode and human approval, parallel tool calls,
+  atomic JSON store. 43 tests, mypy clean.
+- Renders resume after a container restart (`studio/render.mjs` skips lessons already rendered).
+- **Uploaded to YouTube 2026-10-31 in two parts:** Part 1 lessons 1-4 (29:41), Part 2 lessons 5-7
+  (23:06). Titles, descriptions, chapters and tags: `modules/module-05-tool-calling/youtube.md`.
+  Question bank: `modules/module-05-tool-calling/QUESTIONS.md`. Local video files deleted after upload
+  (rebuild with `python tools/module.py render 5`).
+
+## Next: Module 6: Agent Memory and Conversation State (project: Persistent AI Study Companion)
+
+All scripts follow `TEACHING_STYLE.md` (the learner's brief): What → Why → How → Where → Practice,
+real-life analogies, line-by-line code with dry runs, an interview section, and practice at the end.
 
 Beginner-friendliness rules from Module 4 on (user request, 2026-10-30):
 - Slower pacing: `tools/build_lesson.py` applies `BEGINNER_PACING` for module >= 4 (voice speed 0.92,
@@ -55,6 +81,21 @@ Beginner-friendliness rules from Module 4 on (user request, 2026-10-30):
   `GLOSSARY.md`), say why before how, and recap the previous step before a new one.
 - One "Pause and try" moment per lesson: a `callout` (kind: tip) with a short task and a 5 s pause beat.
 - Update `GLOSSARY.md` with the module's new terms.
+
+From Module 5 on (user request, 2026-10-30): explain code with the split `run` scene, code on the
+left and the real output of running it on the right. The builder runs `cmd` in `cwd` once; each
+step highlights code `lines` and can point at output lines with `out: "2"` (the command is typed at
+the first such step, and output appears up to the furthest line pointed at). Keep plain `code`
+scenes for files that don't run on their own (classes, tool definitions).
+
+    - type: run
+      heading: "mini_agent.py: code and what it printed"
+      title: mini_agent.py
+      file: source/lesson-03/mini_agent.py
+      cwd: source/lesson-03
+      cmd: python mini_agent.py
+      steps:
+        - {lines: "17-21", out: "2", note: "...", say: "..."}
 
 Notes carried over from Module 1:
 

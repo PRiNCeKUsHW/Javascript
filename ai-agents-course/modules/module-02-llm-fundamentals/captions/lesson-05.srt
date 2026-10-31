@@ -1,490 +1,692 @@
 1
-00:00:00,700 --> 00:00:02,669
-A demo that works once is easy.
+00:00:00,700 --> 00:00:03,855
+Ek demo jo ek baar
+chal jaaye, woh aasaan hai.
 
 2
-00:00:02,889 --> 00:00:08,215
-A program that keeps working when the
-network drops, when you hit a rate limit, or
+00:00:04,075 --> 00:00:09,971
+Lekin ek program jo network girne par,
+rate limit aane par, ya cost badhne par bhi
 
 3
-00:00:08,215 --> 00:00:11,528
-when costs start to
-climb, takes deliberate design.
+00:00:09,971 --> 00:00:14,358
+chalta rahe, uske liye soch
+samajhkar design karna padta hai.
 
 4
-00:00:11,748 --> 00:00:16,523
-This lesson covers the production
-basics every AI application needs.
+00:00:14,578 --> 00:00:20,161
+Yeh lesson woh production basics
+sikhata hai jo har AI application ko chahiye.
 
 5
-00:00:17,823 --> 00:00:22,450
-You'll recognise the API's error
-types, and know what to do about each one.
+00:00:21,461 --> 00:00:26,479
+Aap API ke error types
+pehchanoge, aur har ek ke liye kya karna hai.
 
 6
-00:00:22,800 --> 00:00:24,534
-Catch errors in the right order.
+00:00:26,829 --> 00:00:29,562
+Errors ko sahi order mein catch karoge.
 
 7
-00:00:24,884 --> 00:00:29,065
-Understand rate limits, and
-the SDK's automatic retries.
+00:00:29,912 --> 00:00:33,059
+Rate limits aur
+automatic retries samjhoge.
 
 8
-00:00:29,415 --> 00:00:32,491
-And calculate and
-control what each call costs.
+00:00:33,409 --> 00:00:36,966
+Aur har call ki cost
+calculate aur control karoge.
 
 9
-00:00:33,791 --> 00:00:35,304
-Errors fall into groups.
+00:00:38,266 --> 00:00:40,959
+Pehle what: kaun kaun se errors aate hain.
 
 10
-00:00:35,524 --> 00:00:41,422
-A four hundred or four oh four means
-your request is wrong: a bad parameter, or a
+00:00:41,179 --> 00:00:45,205
+HTTP status code batata
+hai ki problem kis taraf hai.
 
 11
-00:00:41,422 --> 00:00:43,606
-model name that doesn't exist.
+00:00:45,555 --> 00:00:49,243
+Four hundred ya four oh
+four: aapki request galat hai.
 
 12
-00:00:43,826 --> 00:00:45,146
-Retrying won't help.
+00:00:49,463 --> 00:00:54,038
+Koi galat parameter, ya model
+ka naam jo exist hi nahi karta.
 
 13
-00:00:45,366 --> 00:00:46,545
-Fix the request.
+00:00:54,258 --> 00:00:57,570
+Retry se kuch nahi
+hoga, request theek karo.
 
 14
-00:00:46,895 --> 00:00:51,788
-Four oh one and four oh three are
-about your key: missing, wrong, or without
+00:00:57,920 --> 00:01:00,974
+Four oh one aur four
+oh three: key ki problem.
 
 15
-00:00:51,788 --> 00:00:52,496
-permission.
+00:01:01,194 --> 00:01:04,092
+Key missing hai, galat
+hai, ya permission nahi hai.
 
 16
-00:00:52,716 --> 00:00:54,027
-Again, don't retry.
+00:01:04,312 --> 00:01:06,615
+Retry mat karo, key theek karo.
 
 17
-00:00:54,247 --> 00:00:55,259
-Fix the key.
+00:01:06,965 --> 00:01:10,310
+Four twenty nine: aapne
+rate limit cross kar di.
 
 18
-00:00:55,609 --> 00:00:58,333
-Four twenty-nine means
-you've hit a rate limit.
+00:01:10,530 --> 00:01:13,674
+Yahan rukna aur retry
+karna bilkul sahi hai.
 
 19
-00:00:58,553 --> 00:01:01,113
-Waiting and retrying is exactly right.
+00:01:14,024 --> 00:01:19,875
+Five hundred wale errors, five twenty
+nine overloaded bhi, server side problems
 
 20
-00:01:01,463 --> 00:01:07,024
-Five hundreds, including five
-twenty-nine for overloaded, are server-side problems
+00:01:19,875 --> 00:01:21,504
+hain, aksar temporary.
 
 21
-00:01:07,024 --> 00:01:08,719
-that are often temporary.
+00:01:21,724 --> 00:01:23,815
+Thoda rukkar retry karo.
 
 22
-00:01:08,939 --> 00:01:10,770
-Retry after a short wait.
+00:01:24,165 --> 00:01:28,588
+Aur network errors ya timeouts:
+koi proper response aaya hi nahi.
 
 23
-00:01:11,120 --> 00:01:16,026
-And connection errors and timeouts
-mean no proper response came back at all.
+00:01:28,808 --> 00:01:31,042
+Yeh bhi retry karne layak hain.
 
 24
-00:01:16,246 --> 00:01:18,086
-Those are also worth a retry.
+00:01:32,342 --> 00:01:33,238
+Ab how.
 
 25
-00:01:18,436 --> 00:01:23,324
-The rule is simple: retry rate
-limits, server errors, and network problems.
+00:01:33,458 --> 00:01:39,187
+Sirf iss demo ke liye hum automatic
+retries band karte hain, taaki har error hamare
 
 26
-00:01:23,544 --> 00:01:26,535
-Never blindly retry
-the other four hundreds.
+00:01:39,187 --> 00:01:40,429
+code tak pahunche.
 
 27
-00:01:27,835 --> 00:01:33,782
-For this demo only, we turn off
-automatic retries, so every error reaches our code.
+00:01:40,779 --> 00:01:42,809
+Call ek try block ke andar hai.
 
 28
-00:01:34,132 --> 00:01:36,309
-The call goes inside a try block.
+00:01:43,159 --> 00:01:48,286
+Phir hum specific exception classes
+catch karte hain, sabse specific pehle.
 
 29
-00:01:36,659 --> 00:01:41,735
-Then we catch specific exception
-classes, most specific first: an authentication
+00:01:48,506 --> 00:01:51,982
+Pehle authentication
+error, phir rate limit error.
 
 30
-00:01:41,735 --> 00:01:43,703
-error, then a rate limit error.
+00:01:52,332 --> 00:01:58,501
+API status error har HTTP error ki
+parent class hai, toh jo bacha hai woh yeh pakad
 
 31
-00:01:44,053 --> 00:01:50,292
-API status error is the parent class of
-every HTTP error, so it catches anything we
+00:01:58,501 --> 00:02:00,806
+leti hai, status code ke saath.
 
 32
-00:01:50,292 --> 00:01:53,750
-haven't handled, and
-gives us the status code.
+00:02:01,026 --> 00:02:05,965
+Connection errors HTTP errors hain
+hi nahi, isliye unki alag class hai.
 
 33
-00:01:53,970 --> 00:01:59,109
-Connection errors aren't HTTP errors
-at all, so they have their own class.
+00:02:06,185 --> 00:02:11,651
+Agar parent class pehle catch karoge,
+toh specific handlers kabhi chalenge hi nahi.
 
 34
-00:01:59,329 --> 00:02:03,060
-If you catch the parent first,
-the specific handlers never run.
+00:02:12,001 --> 00:02:16,262
+Bina kisi failure ke, ek
+normal placeholder reply aata hai.
 
 35
-00:02:04,360 --> 00:02:09,853
-To demonstrate errors without breaking
-anything, the fake API reads an environment
+00:02:16,482 --> 00:02:18,155
+Right side par wahi hai.
 
 36
-00:02:09,853 --> 00:02:11,997
-variable telling it how to fail.
+00:02:19,455 --> 00:02:25,513
+Bina kuch tode errors dikhane ke liye,
+fake API ek environment variable padhti hai,
 
 37
-00:02:12,347 --> 00:02:15,490
-With no failure, a
-normal placeholder reply.
+00:02:25,513 --> 00:02:28,287
+jo batata hai ki kaise fail karna hai.
 
 38
-00:02:15,840 --> 00:02:18,727
-A four oh one becomes, check your API key.
+00:02:28,637 --> 00:02:32,448
+Four oh one ka message
+banta hai: check your API key.
 
 39
-00:02:19,077 --> 00:02:21,848
-A four twenty-nine becomes, rate limited.
+00:02:32,798 --> 00:02:35,304
+Four twenty nine ka: rate limited.
 
 40
-00:02:22,198 --> 00:02:27,503
-And a five twenty-nine, an overloaded
-server, falls through to the general status
+00:02:35,654 --> 00:02:41,394
+Aur five twenty nine, overloaded server,
+general status handler tak pahunchta hai.
 
 41
-00:02:27,503 --> 00:02:28,027
-handler.
+00:02:42,694 --> 00:02:47,956
+Rate limit ka matlab: har account ke
+liye ek limit hai ki ek minute mein kitni
 
 42
-00:02:29,327 --> 00:02:34,530
-Every API account has rate limits: how
-many requests and tokens you may use per
+00:02:47,956 --> 00:02:50,655
+requests aur kitne tokens bhej sakte ho.
 
 43
-00:02:34,530 --> 00:02:34,991
-minute.
+00:02:50,875 --> 00:02:53,997
+Limit cross hui, toh
+four twenty nine aata hai.
 
 44
-00:02:35,211 --> 00:02:37,930
-When you exceed them,
-you get a four twenty-nine.
+00:02:54,217 --> 00:02:58,138
+Iska solution samjho ek
+busy dost ko call karne se.
 
 45
-00:02:38,280 --> 00:02:42,199
-The standard response is to
-retry with exponential backoff.
+00:02:58,358 --> 00:02:59,720
+Line busy hai.
 
 46
-00:02:42,549 --> 00:02:47,957
-Wait a short time, plus a little
-randomness so that many clients don't all retry at
+00:02:59,940 --> 00:03:02,565
+Aap har second redial nahi karte.
 
 47
-00:02:47,957 --> 00:02:49,976
-the same moment, and try again.
+00:03:02,785 --> 00:03:06,245
+Thoda rukte ho, aur har
+baar thoda zyada rukte ho.
 
 48
-00:02:50,326 --> 00:02:53,291
-If it fails again,
-wait roughly twice as long.
+00:03:06,465 --> 00:03:12,001
+Aur agar hazaar log yahi kar rahe hain,
+toh thodi randomness unhe ek hi second par
 
 49
-00:02:53,511 --> 00:02:57,868
-Good news: the Anthropic SDK
-already does all of this for you.
+00:03:12,001 --> 00:03:14,026
+wapas call karne se rokti hai.
 
 50
-00:02:58,088 --> 00:03:03,887
-It retries rate limits, server errors,
-and connection errors twice by default, with
+00:03:15,326 --> 00:03:16,775
+Dry run dekho.
 
 51
-00:03:03,887 --> 00:03:08,218
-backoff, and it respects the
-retry after header the API sends.
+00:03:16,995 --> 00:03:18,921
+Try one: four twenty nine.
 
 52
-00:03:09,518 --> 00:03:13,729
-You control this with max
-retries, on the client or per request.
+00:03:19,141 --> 00:03:23,165
+Lagbhag aadha second
+ruko, thodi randomness ke saath.
 
 53
-00:03:13,949 --> 00:03:16,708
-Two is the default, and zero turns it off.
+00:03:23,515 --> 00:03:25,994
+Try two: five hundred, server error.
 
 54
-00:03:18,008 --> 00:03:22,701
-Here the fake API fails with a four
-twenty-nine and then a five hundred.
+00:03:26,214 --> 00:03:28,407
+Ab lagbhag ek second ruko.
 
 55
-00:03:22,921 --> 00:03:29,393
-Setting ANTHROPIC LOG to info shows what
-the SDK does: it waits about half a second,
+00:03:28,627 --> 00:03:30,292
+Wait dugna ho gaya.
 
 56
-00:03:29,393 --> 00:03:33,940
-retries, waits about a
-second, retries again, and succeeds.
+00:03:30,642 --> 00:03:32,136
+Try three: success.
 
 57
-00:03:34,160 --> 00:03:36,498
-Our code didn't need a single extra line.
+00:03:32,356 --> 00:03:33,900
+Reply use karo.
 
 58
-00:03:37,798 --> 00:03:39,769
-Set a timeout you're comfortable with.
+00:03:35,200 --> 00:03:39,812
+Achhi khabar yeh hai ki
+Anthropic SDK yeh sab already karta hai.
 
 59
-00:03:39,989 --> 00:03:42,263
-The SDK default is ten minutes.
+00:03:40,032 --> 00:03:43,205
+Max retries se aap isse control karte ho.
 
 60
-00:03:42,483 --> 00:03:45,047
-For long replies,
-stream instead of waiting.
+00:03:43,425 --> 00:03:46,392
+Default do hai, aur zero se band hota hai.
 
 61
-00:03:45,397 --> 00:03:48,256
-When something fails, log the request ID.
+00:03:46,742 --> 00:03:49,347
+Normal case mein call succeed hoti hai.
 
 62
-00:03:48,476 --> 00:03:51,560
-It identifies exactly
-which request went wrong.
+00:03:49,567 --> 00:03:52,919
+Ab dekhte hain jab
+fake API pehle fail kare.
 
 63
-00:03:51,910 --> 00:03:57,031
-Use separate keys for separate apps and
-environments, so you can revoke one without
+00:03:54,219 --> 00:03:59,121
+Yahan fake API pehle four twenty
+nine deti hai, phir five hundred.
 
 64
-00:03:57,031 --> 00:03:58,264
-breaking the others.
+00:03:59,341 --> 00:04:04,972
+ANTHROPIC LOG ko info karne se dikhta
+hai SDK kya kar raha hai: thoda rukta hai,
 
 65
-00:03:58,614 --> 00:04:02,171
-And never send keys to the
-model, or print them in logs.
+00:04:04,972 --> 00:04:09,829
+retry karta hai, phir thoda zyada
+rukta hai, phir retry, aur success.
 
 66
-00:04:02,391 --> 00:04:05,201
-Logs are often far less
-protected than you think.
+00:04:10,049 --> 00:04:13,206
+Hamare code mein ek
+bhi extra line nahi lagi.
 
 67
-00:04:06,501 --> 00:04:07,352
-Now, money.
+00:04:14,506 --> 00:04:16,560
+Production ke kuch aur rules.
 
 68
-00:04:07,572 --> 00:04:13,017
-You pay per token, with separate prices
-for input and output, quoted per million
+00:04:16,780 --> 00:04:19,642
+Ek timeout set karo
+jo aapke liye theek ho.
 
 69
-00:04:13,017 --> 00:04:13,494
-tokens.
+00:04:19,862 --> 00:04:22,344
+SDK ka default das minute hai.
 
 70
-00:04:13,844 --> 00:04:19,955
-Claude Opus 5.5, the most capable of the
-three and our default, costs four dollars
+00:04:22,564 --> 00:04:24,962
+Lambe replies ke liye stream karo.
 
 71
-00:04:19,955 --> 00:04:24,651
-per million input tokens, and
-twenty per million output tokens.
+00:04:25,312 --> 00:04:28,187
+Kuch fail ho, toh request ID log karo.
 
 72
-00:04:25,001 --> 00:04:27,385
-Sonnet 5.5 costs half that.
+00:04:28,407 --> 00:04:32,434
+Isse pata chalta hai
+exactly kaunsi request fail hui.
 
 73
-00:04:27,735 --> 00:04:32,561
-And Haiku 5.5 is far
-cheaper, for simple, high-volume work.
+00:04:32,784 --> 00:04:38,325
+Har app aur environment ki alag key
+rakho, taaki ek ko revoke karne se baaki na
 
 74
-00:04:32,911 --> 00:04:36,458
-These are list prices in October 2026.
+00:04:38,325 --> 00:04:38,886
+tootein.
 
 75
-00:04:36,678 --> 00:04:40,499
-Prices change, so always
-check the official pricing page.
+00:04:39,236 --> 00:04:43,463
+Aur keys ko kabhi model ko mat
+bhejo, na logs mein print karo.
 
 76
-00:04:40,719 --> 00:04:45,232
-And notice that output tokens
-cost five times more than input tokens.
+00:04:43,683 --> 00:04:48,088
+Logs aksar utne protected
+nahi hote jitna aap sochte ho.
 
 77
-00:04:46,532 --> 00:04:48,281
-Here's the cost calculation.
+00:04:49,388 --> 00:04:50,467
+Ab paisa.
 
 78
-00:04:48,501 --> 00:04:50,467
-Prices are per million tokens.
+00:04:50,687 --> 00:04:53,242
+Cost ko bijli ke bill ki tarah socho.
 
 79
-00:04:50,817 --> 00:04:56,323
-Count tokens measures a request before
-you send it, so you can warn about, or block,
+00:04:53,462 --> 00:04:57,402
+Kitne units use kiye, guna
+price per unit, barabar bill.
 
 80
-00:04:56,323 --> 00:04:59,535
-a request that would be
-too big or too expensive.
+00:04:57,622 --> 00:05:00,778
+API mein: tokens guna price per token.
 
 81
-00:04:59,885 --> 00:05:03,170
-After the call, usage
-gives the actual tokens.
+00:05:00,998 --> 00:05:03,413
+Input aur output ke price alag hain.
 
 82
-00:05:03,390 --> 00:05:07,019
-Multiply each by its
-price, and divide by a million.
+00:05:03,633 --> 00:05:07,286
+Ek call mein bahut thoda,
+lekin scale par bahut zyada.
 
 83
-00:05:07,369 --> 00:05:11,590
-And then the important habit:
-multiply by your expected traffic.
+00:05:08,586 --> 00:05:14,676
+Claude Opus 5.5, sabse capable aur
+hamara default: chaar dollar per million input
 
 84
-00:05:12,890 --> 00:05:14,709
-A fraction of a cent per call.
+00:05:14,676 --> 00:05:18,436
+tokens, aur bees dollar
+per million output tokens.
 
 85
-00:05:14,929 --> 00:05:19,598
-But the same call ten thousand
-times a day costs real money every day.
+00:05:18,786 --> 00:05:21,181
+Sonnet 5.5 iska aadha.
 
 86
-00:05:19,818 --> 00:05:23,529
-In offline mode these
-token counts are rough estimates.
+00:05:21,531 --> 00:05:26,777
+Aur Haiku 5.5 bahut sasta hai,
+simple aur high volume kaam ke liye.
 
 87
-00:05:23,749 --> 00:05:25,580
-With a real key, they're exact.
+00:05:28,077 --> 00:05:30,141
+Yeh raha cost calculation.
 
 88
-00:05:26,880 --> 00:05:28,765
-Five ways to control cost.
+00:05:30,361 --> 00:05:32,367
+Prices per million tokens hain.
 
 89
-00:05:28,985 --> 00:05:33,790
-First, send less: trim history,
-and include only relevant documents.
+00:05:32,717 --> 00:05:37,400
+Count tokens request bhejne
+se pehle uska size naap leta hai.
 
 90
-00:05:34,140 --> 00:05:38,227
-Second, ask for concise
-answers, with a sensible max tokens.
+00:05:37,620 --> 00:05:42,283
+Toh aap bahut badi ya mehengi
+request ko pehle hi rok sakte ho.
 
 91
-00:05:38,577 --> 00:05:41,136
-Third, use lower effort for simple tasks.
+00:05:42,503 --> 00:05:44,654
+Output mein: nau input tokens.
 
 92
-00:05:41,486 --> 00:05:46,874
-Fourth, pick the smallest model that
-does the job well, measured on real examples,
+00:05:45,004 --> 00:05:48,203
+Call ke baad usage actual tokens deta hai.
 
 93
-00:05:46,874 --> 00:05:47,662
-not guessed.
+00:05:48,423 --> 00:05:52,954
+Har ek ko uske price se guna
+karo, aur ek million se divide karo.
 
 94
-00:05:48,012 --> 00:05:52,719
-And fifth, track spending in code,
-with a budget that stops runaway loops.
+00:05:53,304 --> 00:05:57,842
+Aur phir important habit:
+apne expected traffic se guna karo.
 
 95
-00:05:52,939 --> 00:05:54,892
-Our project does exactly this.
+00:05:58,062 --> 00:06:03,959
+Ek call ek cent se bhi kam, lekin roz
+das hazaar calls, toh har din real paisa.
 
 96
-00:05:56,192 --> 00:05:57,000
-Quick check.
+00:06:04,179 --> 00:06:07,557
+Offline mode mein yeh token
+counts rough estimates hain.
 
 97
-00:05:57,220 --> 00:05:59,449
-Which of these errors
-should your code retry?
+00:06:07,777 --> 00:06:10,177
+Real key ke saath exact hote hain.
 
 98
-00:06:05,149 --> 00:06:06,548
-The four twenty-nine.
+00:06:11,477 --> 00:06:13,627
+Haath se calculate karte hain.
 
 99
-00:06:06,768 --> 00:06:08,935
-A rate limit recovers after waiting.
+00:06:13,847 --> 00:06:17,466
+Input: nau guna chaar
+dollar, divided by ek million.
 
 100
-00:06:09,155 --> 00:06:13,957
-The others fail the same way every
-time, until you fix the request or the key.
+00:06:17,816 --> 00:06:21,910
+Output: chausath guna bees
+dollar, divided by ek million.
 
 101
-00:06:15,257 --> 00:06:19,389
-Four hundreds, except four
-twenty-nine, need a fix, not a retry.
+00:06:22,130 --> 00:06:25,521
+Dekho, output ka hissa
+input se kaafi bada hai.
 
 102
-00:06:19,739 --> 00:06:25,435
-Rate limits, server errors, and network
-errors are retried with backoff, and the SDK
+00:06:25,871 --> 00:06:28,789
+Total: lagbhag zero point one three cents.
 
 103
-00:06:25,435 --> 00:06:26,655
-does that for you.
+00:06:29,009 --> 00:06:30,867
+Ek cent se bhi bahut kam.
 
 104
-00:06:27,005 --> 00:06:30,292
-Catch specific exception
-classes before the general one.
+00:06:31,217 --> 00:06:35,338
+Aur das hazaar calls roz:
+tera dollar solah cents har din.
 
 105
-00:06:30,642 --> 00:06:34,763
-And cost is tokens times
-price, so count, track, and budget.
+00:06:35,558 --> 00:06:37,349
+Yahi scale ka asar hai.
 
 106
-00:06:35,113 --> 00:06:37,648
-You now know everything the project needs.
+00:06:38,649 --> 00:06:40,873
+Cost control ke paanch tareeke.
 
 107
-00:06:37,868 --> 00:06:41,430
-Next lesson, we start
-building the AI Study Assistant.
+00:06:41,093 --> 00:06:42,632
+Pehla: kam bhejo.
+
+108
+00:06:42,852 --> 00:06:46,435
+History trim karo, sirf
+relevant documents daalo.
+
+109
+00:06:46,785 --> 00:06:51,451
+Doosra: concise answers
+maango, sensible max tokens ke saath.
+
+110
+00:06:51,801 --> 00:06:54,541
+Teesra: simple tasks ke liye low effort.
+
+111
+00:06:54,891 --> 00:06:58,906
+Chautha: sabse chhota model
+chuno jo kaam achhe se kare.
+
+112
+00:06:59,126 --> 00:07:02,611
+Real examples par
+measure karke, guess karke nahi.
+
+113
+00:07:02,961 --> 00:07:08,220
+Aur paanchva: code mein kharcha track
+karo, ek budget ke saath jo runaway loops ko
+
+114
+00:07:08,220 --> 00:07:08,669
+rok de.
+
+115
+00:07:08,889 --> 00:07:11,205
+Hamara project yahi karta hai.
+
+116
+00:07:12,505 --> 00:07:13,964
+Interview corner.
+
+117
+00:07:14,184 --> 00:07:18,038
+Kaun se API errors retry
+karne chahiye, aur kaise?
+
+118
+00:07:20,388 --> 00:07:26,262
+Answer: four twenty nine, five hundred
+wale, aur network errors, exponential backoff
+
+119
+00:07:26,262 --> 00:07:31,997
+aur thodi randomness ke saath, jise
+jitter kehte hain, aur attempts ki ek limit ke
+
+120
+00:07:31,997 --> 00:07:32,416
+saath.
+
+121
+00:07:32,636 --> 00:07:35,585
+Baaki four hundred wale retry mat karo.
+
+122
+00:07:35,805 --> 00:07:39,132
+Trap: har error ko ek
+tight loop mein retry karna.
+
+123
+00:07:39,352 --> 00:07:41,747
+Isse server par aur load padta hai.
+
+124
+00:07:42,097 --> 00:07:47,646
+Doosra question: specific exceptions
+ko general se pehle kyun catch karte hain?
+
+125
+00:07:49,996 --> 00:07:53,645
+Answer: Python pehla
+matching except block chalata hai.
+
+126
+00:07:53,865 --> 00:07:59,515
+API status error jaisi parent
+class har HTTP error match karti hai.
+
+127
+00:07:59,735 --> 00:08:03,506
+Woh pehle aayi, toh specific
+handlers kabhi nahi chalenge.
+
+128
+00:08:03,726 --> 00:08:07,574
+Trap: ek bare except
+Exception, jo bugs chhupa deta hai.
+
+129
+00:08:08,874 --> 00:08:10,131
+Practice time.
+
+130
+00:08:10,481 --> 00:08:12,157
+Pehla: four oh one aaya.
+
+131
+00:08:12,377 --> 00:08:14,285
+Retry karoge ya fix?
+
+132
+00:08:14,505 --> 00:08:15,220
+Kyun?
+
+133
+00:08:15,570 --> 00:08:22,217
+Doosra: Opus 5.5 par do hazaar input
+aur paanch sau output tokens ki cost kitni
+
+134
+00:08:22,217 --> 00:08:22,637
+hogi?
+
+135
+00:08:22,987 --> 00:08:27,915
+Teesra: ek loop likho jo teen baar
+retry kare, har baar dugna wait karke.
+
+136
+00:08:28,265 --> 00:08:31,848
+Aur scenario: raat bhar
+mein aapka bill double ho gaya.
+
+137
+00:08:32,068 --> 00:08:34,681
+Teen cheezein batao jo aap check karoge.
+
+138
+00:08:41,981 --> 00:08:42,910
+Quick check.
+
+139
+00:08:43,130 --> 00:08:46,286
+Inn mein se kaunsa
+error retry karna chahiye?
+
+140
+00:08:51,986 --> 00:08:53,501
+Four twenty nine.
+
+141
+00:08:53,721 --> 00:08:56,573
+Rate limit rukne ke
+baad theek ho jaati hai.
+
+142
+00:08:56,793 --> 00:09:02,208
+Baaki har baar same tareeke se fail
+honge, jab tak request ya key theek na ho.
+
+143
+00:09:03,508 --> 00:09:04,347
+Recap.
+
+144
+00:09:04,567 --> 00:09:10,059
+Four hundred wale errors, four twenty
+nine ko chhodkar, fix maangte hain, retry
+
+145
+00:09:10,059 --> 00:09:10,407
+nahi.
+
+146
+00:09:10,757 --> 00:09:16,636
+Rate limits, server errors, aur network
+errors backoff ke saath retry hote hain, aur
+
+147
+00:09:16,636 --> 00:09:18,246
+SDK yeh khud karta hai.
+
+148
+00:09:18,596 --> 00:09:22,727
+Specific exception classes
+ko general se pehle catch karo.
+
+149
+00:09:23,077 --> 00:09:25,376
+Aur cost hai tokens guna price.
+
+150
+00:09:25,596 --> 00:09:28,430
+Toh count karo, track
+karo, aur budget rakho.
+
+151
+00:09:28,780 --> 00:09:31,754
+Ab project ke liye
+sab kuch aapko pata hai.
+
+152
+00:09:31,974 --> 00:09:36,083
+Agle lesson mein AI Study
+Assistant banana shuru karenge.

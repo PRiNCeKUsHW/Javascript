@@ -1,0 +1,495 @@
+1
+00:00:00,900 --> 00:00:06,787
+Real tools talk to the outside world: a
+database, a calendar service, a website.
+
+2
+00:00:07,137 --> 00:00:12,155
+And the outside world is sometimes
+slow, and sometimes doesn't answer at all.
+
+3
+00:00:12,505 --> 00:00:17,710
+In this lesson you'll make sure one
+stuck tool can never freeze your whole agent.
+
+4
+00:00:19,510 --> 00:00:22,323
+You'll explain why
+every tool needs a timeout.
+
+5
+00:00:22,923 --> 00:00:25,956
+Run a function with a
+timeout, using a thread.
+
+6
+00:00:26,556 --> 00:00:29,949
+Turn timeouts and other
+failures into tool errors.
+
+7
+00:00:30,549 --> 00:00:32,775
+And know the limits of thread timeouts.
+
+8
+00:00:34,575 --> 00:00:36,199
+Why do we need timeouts?
+
+9
+00:00:36,549 --> 00:00:38,764
+Think of standing in a queue at an office.
+
+10
+00:00:39,114 --> 00:00:44,398
+If nothing moves for an hour, at some
+point you decide to leave, and come back
+
+11
+00:00:44,398 --> 00:00:45,211
+another day.
+
+12
+00:00:45,561 --> 00:00:47,086
+You don't wait there forever.
+
+13
+00:00:47,436 --> 00:00:50,606
+A timeout is that
+decision, made in advance.
+
+14
+00:00:50,956 --> 00:00:52,893
+Wait at most, say, two seconds.
+
+15
+00:00:53,243 --> 00:00:55,393
+Then move on, with a clear message.
+
+16
+00:00:55,993 --> 00:01:02,136
+Without a timeout, one tool that never
+answers means the agent never answers, the
+
+17
+00:01:02,136 --> 00:01:08,278
+user waits forever, and in a server,
+that request holds resources until something
+
+18
+00:01:08,278 --> 00:01:08,885
+crashes.
+
+19
+00:01:10,685 --> 00:01:13,032
+Here's the idea in its simplest form.
+
+20
+00:01:13,382 --> 00:01:15,488
+We run the tool in a separate thread.
+
+21
+00:01:15,838 --> 00:01:21,323
+A thread is a second worker inside the
+same program, so our main code can keep an
+
+22
+00:01:21,323 --> 00:01:22,474
+eye on the clock.
+
+23
+00:01:23,074 --> 00:01:28,298
+Join with a number of seconds means:
+wait for the worker to finish, but no longer
+
+24
+00:01:28,298 --> 00:01:28,943
+than this.
+
+25
+00:01:29,543 --> 00:01:34,671
+If the worker is still running after
+that, we give up, and return a clear error
+
+26
+00:01:34,671 --> 00:01:36,943
+message instead of waiting forever.
+
+27
+00:01:37,543 --> 00:01:41,568
+A quick tool finishes in
+time, so we get its normal result.
+
+28
+00:01:42,168 --> 00:01:46,821
+This tool sleeps for sixty
+seconds, like a server that never answers.
+
+29
+00:01:47,171 --> 00:01:50,861
+After two seconds, we stop
+waiting, and get a timeout error.
+
+30
+00:01:51,461 --> 00:01:54,866
+And the total wait was
+two seconds, not sixty-two.
+
+31
+00:01:55,216 --> 00:01:57,056
+The agent stays responsive.
+
+32
+00:01:58,856 --> 00:02:01,879
+The project's version
+adds one important thing.
+
+33
+00:02:02,229 --> 00:02:06,791
+The worker stores either the
+result, or any exception the tool raised.
+
+34
+00:02:07,391 --> 00:02:08,887
+The thread is a daemon.
+
+35
+00:02:09,237 --> 00:02:13,363
+That means a stuck worker
+never stops the program from exiting.
+
+36
+00:02:13,713 --> 00:02:18,893
+After the wait, if it's still alive, we
+raise a tool error naming the tool and the
+
+37
+00:02:18,893 --> 00:02:19,272
+limit.
+
+38
+00:02:19,872 --> 00:02:25,242
+If the tool raised an error, we raise
+it again here, in the main thread, so it's
+
+39
+00:02:25,242 --> 00:02:27,189
+handled like any other error.
+
+40
+00:02:27,539 --> 00:02:29,552
+Otherwise we return the result.
+
+41
+00:02:31,352 --> 00:02:34,483
+And here's the function
+every tool call goes through.
+
+42
+00:02:34,833 --> 00:02:36,661
+First: does the tool exist?
+
+43
+00:02:37,261 --> 00:02:40,116
+Then: is the input
+valid, from lesson three.
+
+44
+00:02:40,466 --> 00:02:43,289
+And is the call
+allowed, which is next lesson.
+
+45
+00:02:43,889 --> 00:02:46,526
+Then: run the tool, with its own timeout.
+
+46
+00:02:46,876 --> 00:02:52,049
+And a lookup error, like a task that
+doesn't exist, becomes a tool error too.
+
+47
+00:02:52,399 --> 00:02:55,952
+Every problem ends up as
+a message, never a crash.
+
+48
+00:02:57,752 --> 00:03:00,573
+Let's see what the
+model receives in each case.
+
+49
+00:03:00,923 --> 00:03:03,422
+The tool finished: the normal result.
+
+50
+00:03:04,022 --> 00:03:09,888
+The tool was too slow: search notes timed
+out after two seconds, marked as an error.
+
+51
+00:03:10,488 --> 00:03:13,773
+The task doesn't
+exist: there is no task nine.
+
+52
+00:03:14,373 --> 00:03:18,246
+And bad input: the
+validation message from lesson three.
+
+53
+00:03:20,046 --> 00:03:21,587
+Here's the real agent.
+
+54
+00:03:21,937 --> 00:03:27,010
+This environment variable makes search
+notes sleep for thirty seconds, to play a
+
+55
+00:03:27,010 --> 00:03:27,834
+slow service.
+
+56
+00:03:28,184 --> 00:03:30,000
+Its timeout is two seconds.
+
+57
+00:03:30,350 --> 00:03:35,714
+After two seconds the agent gets a
+timeout observation, and finishes normally,
+
+58
+00:03:35,714 --> 00:03:37,021
+instead of hanging.
+
+59
+00:03:38,821 --> 00:03:40,845
+Let's be honest about the limits.
+
+60
+00:03:41,195 --> 00:03:47,169
+A thread timeout can stop waiting after
+N seconds, keep the agent responsive, and
+
+61
+00:03:47,169 --> 00:03:48,718
+report a clear error.
+
+62
+00:03:49,318 --> 00:03:51,105
+But it can't kill the stuck thread.
+
+63
+00:03:51,455 --> 00:03:56,523
+In Python, a thread can't be stopped
+from outside, so it keeps running in the
+
+64
+00:03:56,523 --> 00:03:57,247
+background.
+
+65
+00:03:57,597 --> 00:03:59,758
+It can't undo half-finished work.
+
+66
+00:04:00,108 --> 00:04:04,538
+And it can't protect you from a
+tool that uses huge amounts of memory.
+
+67
+00:04:04,888 --> 00:04:10,610
+For real isolation, run risky tools
+in a separate process, or a container.
+
+68
+00:04:10,960 --> 00:04:17,190
+And for network calls, use the
+library's own timeout too, like the SDK's timeout
+
+69
+00:04:17,190 --> 00:04:18,903
+setting from Module 2.
+
+70
+00:04:20,703 --> 00:04:23,861
+Pause and choose a
+timeout for each of these tools.
+
+71
+00:04:24,461 --> 00:04:25,099
+One.
+
+72
+00:04:25,449 --> 00:04:28,387
+List tasks, which
+reads a small local file.
+
+73
+00:04:28,987 --> 00:04:29,609
+Two.
+
+74
+00:04:29,959 --> 00:04:33,048
+Search notes, which
+calls a remote search service.
+
+75
+00:04:33,648 --> 00:04:34,345
+Three.
+
+76
+00:04:34,695 --> 00:04:40,246
+Export report, which builds a PDF
+that usually takes about twenty seconds.
+
+77
+00:04:46,846 --> 00:04:50,238
+There's no single right
+number, but here's the reasoning.
+
+78
+00:04:50,588 --> 00:04:55,070
+A local file should take
+milliseconds, so a few seconds is generous.
+
+79
+00:04:55,420 --> 00:05:00,366
+A remote service: a few seconds, so a
+slow network doesn't freeze the agent.
+
+80
+00:05:00,716 --> 00:05:06,028
+A twenty-second job needs more,
+perhaps sixty seconds, or better, run it in the
+
+81
+00:05:06,028 --> 00:05:09,189
+background and let the
+agent check on it later.
+
+82
+00:05:10,989 --> 00:05:12,130
+Interview corner.
+
+83
+00:05:12,480 --> 00:05:15,480
+How do you stop a slow
+tool from freezing an agent?
+
+84
+00:05:18,080 --> 00:05:19,848
+Give every tool a timeout.
+
+85
+00:05:20,198 --> 00:05:26,145
+Run it in a worker, a thread or a
+process, wait at most N seconds, and then return
+
+86
+00:05:26,145 --> 00:05:27,305
+an error result.
+
+87
+00:05:27,655 --> 00:05:31,544
+For network calls, also
+use the library's own timeout.
+
+88
+00:05:31,894 --> 00:05:35,186
+The trap: expecting the
+model to notice it's slow.
+
+89
+00:05:35,536 --> 00:05:38,769
+The model can only act
+after your code returns.
+
+90
+00:05:39,369 --> 00:05:42,429
+Follow-up: would you
+use a thread or a process?
+
+91
+00:05:45,029 --> 00:05:50,211
+A thread is simple, and fine for
+waiting on input and output, but it can't be
+
+92
+00:05:50,211 --> 00:05:50,682
+killed.
+
+93
+00:05:51,032 --> 00:05:56,985
+A process can be terminated, and it
+isolates memory and crashes, but it costs more
+
+94
+00:05:56,985 --> 00:05:57,638
+to start.
+
+95
+00:05:57,988 --> 00:06:01,288
+The trap: claiming a
+thread timeout stops the work.
+
+96
+00:06:01,638 --> 00:06:03,264
+It only stops the waiting.
+
+97
+00:06:05,064 --> 00:06:05,922
+Quick check.
+
+98
+00:06:06,272 --> 00:06:10,279
+After a thread timeout fires,
+what happens to the stuck tool?
+
+99
+00:06:16,479 --> 00:06:18,466
+It keeps running in the background.
+
+100
+00:06:18,816 --> 00:06:20,393
+We just stop waiting for it.
+
+101
+00:06:20,743 --> 00:06:24,642
+If you must be able to stop
+the work, use a separate process.
+
+102
+00:06:26,442 --> 00:06:27,250
+Recap.
+
+103
+00:06:27,600 --> 00:06:31,663
+Every tool gets a timeout, so
+the agent never waits forever.
+
+104
+00:06:32,263 --> 00:06:35,895
+A worker thread, plus join
+with seconds, stops the waiting.
+
+105
+00:06:36,495 --> 00:06:40,928
+Timeouts, missing items and
+bad input all become tool errors.
+
+106
+00:06:41,528 --> 00:06:46,091
+And threads can't be killed, so
+use processes for real isolation.
+
+107
+00:06:46,691 --> 00:06:50,411
+Next lesson: the most
+important safety feature of all.
+
+108
+00:06:50,761 --> 00:06:55,322
+Permissions, and asking a human
+before anything dangerous happens.

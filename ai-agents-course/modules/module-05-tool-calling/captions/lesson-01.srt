@@ -1,0 +1,547 @@
+1
+00:00:00,900 --> 00:00:02,723
+Welcome to Module 5.
+
+2
+00:00:03,073 --> 00:00:07,241
+In Module 4 you built an
+agent loop with two small tools.
+
+3
+00:00:07,591 --> 00:00:10,413
+Now we go deeper
+into the tools themselves.
+
+4
+00:00:10,763 --> 00:00:16,722
+By the end of this module, you'll build
+a personal productivity agent that manages
+
+5
+00:00:16,722 --> 00:00:22,680
+real tasks and notes, checks every
+input, stops slow tools, and asks you before it
+
+6
+00:00:22,680 --> 00:00:23,915
+deletes anything.
+
+7
+00:00:25,715 --> 00:00:30,317
+In this lesson, you'll learn what
+tool calling is, and why it exists.
+
+8
+00:00:30,917 --> 00:00:34,438
+You'll follow one tool call
+from the request to the result.
+
+9
+00:00:35,038 --> 00:00:37,872
+You'll read every
+part of a tool definition.
+
+10
+00:00:38,472 --> 00:00:42,020
+And you'll write tool
+descriptions that a model uses correctly.
+
+11
+00:00:43,820 --> 00:00:47,653
+Let's start with what a tool
+is, using an everyday picture.
+
+12
+00:00:48,003 --> 00:00:49,882
+Imagine you hire an assistant.
+
+13
+00:00:50,232 --> 00:00:55,081
+They're smart, but they can't reach
+into your calendar or your files directly.
+
+14
+00:00:55,431 --> 00:00:57,711
+So you lend them a phone with a few apps.
+
+15
+00:00:58,061 --> 00:01:02,788
+Each app has a clear label, saying
+what it does, and a form to fill in.
+
+16
+00:01:03,388 --> 00:01:05,117
+The model is the assistant.
+
+17
+00:01:05,467 --> 00:01:09,267
+It decides which app to
+open, and what to type in the form.
+
+18
+00:01:09,867 --> 00:01:15,509
+A tool is one app: a name, a description
+of what it does, and a form for its inputs.
+
+19
+00:01:16,109 --> 00:01:17,762
+And your code is the phone.
+
+20
+00:01:18,112 --> 00:01:22,028
+It's the part that actually
+runs the app, and shows the result.
+
+21
+00:01:22,628 --> 00:01:24,715
+So why does tool calling exist?
+
+22
+00:01:25,065 --> 00:01:29,002
+Because a language model on
+its own can only write text.
+
+23
+00:01:29,352 --> 00:01:33,283
+It can't read your to-do list,
+save a note, or check today's date.
+
+24
+00:01:33,633 --> 00:01:38,761
+Tools let it ask your code to do those
+things, safely, through doors you choose.
+
+25
+00:01:40,561 --> 00:01:42,025
+Now how does it work?
+
+26
+00:01:42,375 --> 00:01:45,200
+Let's follow one tool call, step by step.
+
+27
+00:01:45,800 --> 00:01:46,698
+Step one.
+
+28
+00:01:47,048 --> 00:01:52,952
+Your code sends a request with two
+things: the user's message, and the list of tools
+
+29
+00:01:52,952 --> 00:01:54,217
+the model may use.
+
+30
+00:01:54,817 --> 00:01:55,739
+Step two.
+
+31
+00:01:56,089 --> 00:01:58,409
+The model decides a tool would help.
+
+32
+00:01:58,759 --> 00:02:04,581
+Instead of a final answer, it replies
+with a tool use block: the tool's name, the
+
+33
+00:02:04,581 --> 00:02:06,449
+input it wants, and an ID.
+
+34
+00:02:06,799 --> 00:02:08,762
+The stop reason is tool use.
+
+35
+00:02:09,362 --> 00:02:10,355
+Step three.
+
+36
+00:02:10,705 --> 00:02:13,767
+Your code runs the real
+function with that input.
+
+37
+00:02:14,117 --> 00:02:18,157
+This is important: the
+model never runs anything itself.
+
+38
+00:02:18,507 --> 00:02:19,731
+It only asks.
+
+39
+00:02:20,331 --> 00:02:21,283
+Step four.
+
+40
+00:02:21,633 --> 00:02:27,507
+Your code sends the output back as a
+tool result, with the same ID, in the next
+
+41
+00:02:27,507 --> 00:02:28,102
+request.
+
+42
+00:02:28,452 --> 00:02:33,157
+Then the model continues, and
+either asks for another tool, or answers.
+
+43
+00:02:34,957 --> 00:02:36,679
+Let's see that in real code.
+
+44
+00:02:37,029 --> 00:02:40,758
+The code is on the left, and
+what it printed is on the right.
+
+45
+00:02:41,358 --> 00:02:44,281
+A tool definition is a Python dictionary.
+
+46
+00:02:44,631 --> 00:02:48,048
+First, a name, and a
+description written for the model.
+
+47
+00:02:48,398 --> 00:02:52,410
+The description is how the
+model decides when to use this tool.
+
+48
+00:02:53,010 --> 00:02:54,557
+Next, the input schema.
+
+49
+00:02:54,907 --> 00:02:58,732
+It's a JSON Schema: a
+standard way to describe data.
+
+50
+00:02:59,082 --> 00:03:04,664
+Here the form has three fields: a
+title, a due date that can be empty, and a
+
+51
+00:03:04,664 --> 00:03:07,748
+priority that must be low, normal or high.
+
+52
+00:03:08,348 --> 00:03:09,546
+And strict, true.
+
+53
+00:03:09,896 --> 00:03:15,460
+With strict mode, the API guarantees
+that the input the model sends matches this
+
+54
+00:03:15,460 --> 00:03:18,659
+schema: the right
+fields, and the right types.
+
+55
+00:03:19,259 --> 00:03:23,343
+Then we pass the tool in the
+tools list, next to the messages.
+
+56
+00:03:23,693 --> 00:03:29,729
+The first output line is the offline
+notice: as in every module, a scripted fake
+
+57
+00:03:29,729 --> 00:03:32,520
+plays the model, so no key is needed.
+
+58
+00:03:33,120 --> 00:03:35,083
+The stop reason is tool use.
+
+59
+00:03:35,433 --> 00:03:36,937
+The model didn't answer.
+
+60
+00:03:37,287 --> 00:03:39,539
+It's asking our code to run a tool.
+
+61
+00:03:40,139 --> 00:03:46,169
+And here's the tool use block: the name,
+add task, and the input, title pay rent, no
+
+62
+00:03:46,169 --> 00:03:47,892
+due date, priority high.
+
+63
+00:03:48,242 --> 00:03:50,631
+Notice that nothing has been added yet.
+
+64
+00:03:50,981 --> 00:03:53,172
+Our code would run the function next.
+
+65
+00:03:53,522 --> 00:03:55,180
+We'll do that in lesson two.
+
+66
+00:03:56,980 --> 00:03:59,282
+Let's put every part in one table.
+
+67
+00:03:59,632 --> 00:04:03,550
+The name: short, unique, and
+usually a verb, like add task.
+
+68
+00:04:04,150 --> 00:04:07,849
+The description: when to use
+the tool, and what it returns.
+
+69
+00:04:08,199 --> 00:04:12,449
+This is the model's only guide,
+so it's the most important part.
+
+70
+00:04:13,049 --> 00:04:17,363
+The input schema: the fields,
+their types, and the allowed values.
+
+71
+00:04:17,963 --> 00:04:21,956
+And strict: when it's true,
+the inputs always match the schema.
+
+72
+00:04:23,756 --> 00:04:25,856
+Now, where do developers go wrong?
+
+73
+00:04:26,206 --> 00:04:28,031
+Mostly in the description.
+
+74
+00:04:28,381 --> 00:04:34,187
+A name like task, and a description like
+task tool, tells the model almost nothing.
+
+75
+00:04:34,537 --> 00:04:35,819
+Does it add a task?
+
+76
+00:04:36,169 --> 00:04:37,092
+Delete one?
+
+77
+00:04:37,442 --> 00:04:38,348
+List them?
+
+78
+00:04:38,948 --> 00:04:41,231
+A clear description says three things.
+
+79
+00:04:41,581 --> 00:04:45,252
+What the tool does: adds a
+task and returns its number.
+
+80
+00:04:45,602 --> 00:04:49,918
+When to use it: when the user
+asks to remember or plan something.
+
+81
+00:04:50,268 --> 00:04:53,800
+And any rules: the due
+date must be today or later.
+
+82
+00:04:54,150 --> 00:04:57,662
+Write it as if for a new
+colleague who has never seen your app.
+
+83
+00:04:59,462 --> 00:05:01,032
+Pause the video and try it.
+
+84
+00:05:01,382 --> 00:05:04,824
+Here's a tool called notes,
+with the description: notes.
+
+85
+00:05:05,174 --> 00:05:07,349
+Rewrite the name and the description.
+
+86
+00:05:07,949 --> 00:05:12,874
+Ask yourself: what does it do, when
+should the model use it, and what does it
+
+87
+00:05:12,874 --> 00:05:13,322
+return?
+
+88
+00:05:19,922 --> 00:05:22,561
+One good answer: name it search notes.
+
+89
+00:05:22,911 --> 00:05:28,651
+Description: searches the user's notes
+for words in the title or text, and returns
+
+90
+00:05:28,651 --> 00:05:29,981
+the matching notes.
+
+91
+00:05:30,331 --> 00:05:34,055
+Use it when the user asks
+about something they saved earlier.
+
+92
+00:05:35,855 --> 00:05:36,997
+Interview corner.
+
+93
+00:05:37,347 --> 00:05:38,898
+Here's a common question.
+
+94
+00:05:39,248 --> 00:05:41,413
+Does the model run the tool itself?
+
+95
+00:05:44,013 --> 00:05:45,443
+A good answer: no.
+
+96
+00:05:45,793 --> 00:05:51,375
+The model only requests a call, by
+returning a tool use block with a name and an
+
+97
+00:05:51,375 --> 00:05:51,794
+input.
+
+98
+00:05:52,144 --> 00:05:57,907
+Your code runs the function, and sends
+the output back as a tool result with the
+
+99
+00:05:57,907 --> 00:05:58,484
+same ID.
+
+100
+00:05:58,834 --> 00:06:01,966
+The trap is saying the
+model executes your function.
+
+101
+00:06:02,316 --> 00:06:04,116
+It never touches your code.
+
+102
+00:06:04,466 --> 00:06:06,186
+You decide whether to run it.
+
+103
+00:06:06,786 --> 00:06:10,065
+And a follow-up: what
+makes a good tool definition?
+
+104
+00:06:12,665 --> 00:06:18,378
+A clear verb for the name, a description
+that says what the tool does, when to use
+
+105
+00:06:18,378 --> 00:06:24,231
+it, and what it returns, and a tight
+schema, with enums, required fields, and strict
+
+106
+00:06:24,231 --> 00:06:24,579
+mode.
+
+107
+00:06:24,929 --> 00:06:27,374
+The trap: focusing only on the schema.
+
+108
+00:06:27,724 --> 00:06:31,397
+The description is what the
+model reads to choose the tool.
+
+109
+00:06:33,197 --> 00:06:34,056
+Quick check.
+
+110
+00:06:34,406 --> 00:06:36,369
+The stop reason is tool use.
+
+111
+00:06:36,719 --> 00:06:38,107
+What should your code do?
+
+112
+00:06:44,307 --> 00:06:50,131
+Run the requested tool, and send the
+output back as a tool result with the same ID.
+
+113
+00:06:51,931 --> 00:06:53,020
+Let's recap.
+
+114
+00:06:53,370 --> 00:06:56,724
+Tools let a model ask
+your code to act in the world.
+
+115
+00:06:57,324 --> 00:07:03,024
+The model requests, your code runs the
+function, and the result goes back with the
+
+116
+00:07:03,024 --> 00:07:03,580
+same ID.
+
+117
+00:07:04,180 --> 00:07:09,240
+A definition has a name, a
+description, an input schema, and strict mode.
+
+118
+00:07:09,840 --> 00:07:14,906
+And the description is the model's
+guide: what it does, when to use it, what it
+
+119
+00:07:14,906 --> 00:07:16,381
+returns, and the rules.
+
+120
+00:07:16,981 --> 00:07:19,770
+Next lesson: many tools in one place.
+
+121
+00:07:20,120 --> 00:07:25,860
+You'll build a tool registry, generate
+schemas from Pydantic, and handle several
+
+122
+00:07:25,860 --> 00:07:27,869
+tool calls in a single turn.
