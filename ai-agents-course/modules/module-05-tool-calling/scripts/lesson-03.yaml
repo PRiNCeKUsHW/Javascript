@@ -1,0 +1,183 @@
+module_title: Tool Calling and Function Execution
+title: "Validating Tool Inputs: Never Trust, Always Check"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 5 · Lesson 3
+    title: Never trust a tool input
+    subtitle: Strict schemas, Pydantic validation, business rules, and errors the model can fix.
+    say: >
+      Your tool now receives input from a model. And here's a habit that separates hobby projects from production code: never trust that input. Always check it first.
+      In this lesson, you'll see what can go wrong with tool input, what strict mode does and doesn't protect you from, and how to turn every mistake into a message the model can fix.
+
+  - type: objectives
+    items:
+      - {text: "Explain why tool input is untrusted", say: "You'll explain why tool input is untrusted."}
+      - {text: "Know what strict mode guarantees, and what it doesn't", say: "Know what strict mode guarantees, and what it doesn't."}
+      - {text: "Validate input with Pydantic before running a tool", say: "Validate input with Pydantic, before running a tool."}
+      - {text: "Return clear errors so the model can correct itself", say: "And return clear errors, so the model can correct itself."}
+
+  - type: callout
+    chapter: Why validate?
+    kind: analogy
+    title: "Validation is the bank clerk checking your form"
+    body: "You hand a bank clerk a form. Before any money moves, they check it: is the account number the right length, is the date real, is the amount positive? If not, they hand it back and **tell you what to fix**. Your tool should do exactly the same."
+    say: >
+      Why validate at all? Think of a bank clerk. You hand them a form to send money. Before anything moves, they check it. Is the account number the right length? Is the date real? Is the amount positive?
+      If something's wrong, they don't crash, and they don't guess. They hand the form back, and tell you exactly what to fix. Your tools should behave the same way.
+    outro: >
+      Tool input comes from a model, and the model's input comes, partly, from users. A model can misread a date, invent a value, or be tricked by a user. So treat tool input like any untrusted input from the internet.
+
+  - type: table
+    chapter: What strict mode covers
+    heading: "Two layers of protection"
+    columns: [Check, Example, "strict: true", Your code]
+    widths: [1.2, 2, 0.9, 0.9]
+    rows:
+      - {cells: ["Right fields", "no unknown or missing fields", "✓", "✓"], say: "There are two layers of protection, and it's important to know which does what. Strict mode makes sure the right fields are there, with no unknown fields."}
+      - {cells: ["Right types", "priority is a string from the enum", "✓", "✓"], say: "It makes sure the types are right, and that enum values are from the list."}
+      - {cells: ["Limits", "title at most 120 characters", "—", "✓"], tone: amber, say: "But limits, like a maximum length or a minimum number, aren't part of strict schemas. Pydantic checks those in your code."}
+      - {cells: ["Business rules", "due date not in the past; task 7 exists", "—", "✓"], tone: coral, say: "And business rules, like the due date not being in the past, or task seven existing, only your code can check.", note: "Strict mode guarantees the shape. Only your code knows the rules: validate every call."}
+
+  - type: code
+    chapter: Validation in code
+    heading: "validate(): raw input in, checked object out"
+    title: productivity/tools.py
+    file: project/productivity-agent/productivity/tools.py
+    lines: "90-98"
+    steps:
+      - lines: "90-93"
+        note: "`model_validate` checks types, limits and allowed values."
+        say: >
+          Here's how the project validates. Pydantic's model validate takes the raw dictionary from the model, and either returns a checked object, or raises a validation error.
+      - lines: "94-98"
+        note: "Every problem becomes one short line: which field, and what's wrong."
+        say: >
+          If it fails, we don't crash. We turn every problem into one short line, the field name and what's wrong, and raise a tool error. Remember from Module 4: a tool error becomes an observation the model can read.
+
+  - type: code
+    heading: "A business rule, inside the tool"
+    title: productivity/tools.py
+    file: project/productivity-agent/productivity/tools.py
+    lines: "175-180"
+    steps:
+      - lines: "176-177"
+        note: "Rules that need context (today's date) live in the tool."
+        say: >
+          Some rules need context that a schema can't know. Is the due date in the past? That depends on today. So that check lives inside the tool, and it raises a tool error with both dates, so the model knows exactly what went wrong.
+
+  - type: run
+    heading: "validate.py: five calls, one valid"
+    title: validate.py
+    file: source/lesson-03/validate.py
+    cwd: source/lesson-03
+    cmd: python validate.py
+    font: 20
+    say: >
+      Let's send five inputs through the real run tool function, and see what happens to each one.
+    steps:
+      - lines: "12"
+        out: "1"
+        note: "Valid: the task is added."
+        say: >
+          The first input is valid, so the task is added, as task one.
+      - lines: "13"
+        out: "2"
+        tone: coral
+        note: "\"next friday\" isn't a date: a clear message, not a crash."
+        say: >
+          The second has a due date of next friday. That's not a date in the right format, so we get a clear message about the due field.
+      - lines: "14"
+        out: "3"
+        tone: coral
+        note: "\"urgent\" isn't one of the allowed priorities."
+        say: >
+          The third says urgent, which isn't one of the allowed priorities, and the message lists the three that are.
+      - lines: "15"
+        out: "4"
+        tone: coral
+        note: "An empty title breaks the minimum length."
+        say: >
+          The fourth has an empty title, which breaks the minimum length.
+      - lines: "16"
+        out: "5"
+        tone: coral
+        note: "Valid shape, broken rule: the date is in the past."
+        say: >
+          And the fifth has a perfectly valid shape, but the date is in January, already in the past. Only the business rule catches it.
+
+  - type: table
+    heading: "Dry run: one bad call, and how the agent recovers"
+    columns: [Turn, Model sends, Your code returns]
+    widths: [0.6, 2.2, 2.4]
+    rows:
+      - {cells: ["1", "add_task(due=\"next friday\", priority=\"urgent\")", "is_error: due must be a date; priority must be low, normal or high"], tone: coral, say: "Now the most useful part: recovery. Turn one: the model sends a bad call. Our code returns an error result, marked is error, that names both problems."}
+      - {cells: ["2", "add_task(due=\"2026-11-05\", priority=\"high\")", "added [ ] 1. Pay rent (high, due 2026-11-05)"], tone: teal, say: "Turn two: the model reads the message, fixes both fields, and the call succeeds."}
+      - {cells: ["3", "a short answer", "—"], say: "Turn three: the model answers the user.", note: "Clear error messages are what make recovery possible: say which field, and what's allowed."}
+
+  - type: terminal
+    title: terminal — productivity-agent
+    cwd: project/productivity-agent
+    font: 22
+    steps:
+      - cmd: python -m productivity reset --yes
+        say: >
+          Let's watch that recovery in the real agent. First, an empty store.
+      - cmd: PROD_FAKE_FAIL=badinput python -m productivity ask "add task Pay rent due 2026-11-05 high priority"
+        say: >
+          Here the offline fake is scripted to send a bad call first. Turn one: the error, with both problems. Turn two: the corrected call, and the task is added. With a real model, this recovery isn't scripted: the model reads your message and fixes the input itself. That's why clear messages matter so much.
+
+  - type: callout
+    kind: try
+    chapter: Pause and try
+    title: "Pause and try: schema or code?"
+    body: "Which layer catches each problem: strict mode, or your validation code?"
+    say: >
+      Pause and decide. For each problem, which layer catches it: strict mode, or your code?
+    items:
+      - {text: "The model sends a field called \"deadline\" that isn't in the schema", say: "One. The model sends a field called deadline, that isn't in the schema."}
+      - {text: "The model asks to complete task 42, but there are only 3 tasks", say: "Two. The model asks to complete task forty-two, but there are only three tasks."}
+      - {text: "The note text is 5,000 characters long; the limit is 2,000", say: "Three. A note's text is five thousand characters, and the limit is two thousand.", pause: 6}
+    outro: >
+      One: strict mode, because additional properties is false. Two: your code, because only the store knows which tasks exist. Three: your code too, because length limits aren't part of strict schemas, so Pydantic checks them.
+
+  - type: interview
+    chapter: Interview corner
+    items:
+      - q: "If you use strict tool schemas, do you still need to validate tool inputs?"
+        a: "Yes. Strict mode guarantees the **shape and types**. It can't check **limits** that strict schemas drop, or **business rules** like \"the due date is in the future\" or \"task 42 exists\"."
+        trap: "\"Strict mode means the input is correct.\" It means the input is well-formed."
+        say_q: "Interview corner. If you use strict tool schemas, do you still need to validate tool inputs?"
+        say_a: "Yes. Strict mode guarantees the shape and the types. It can't check limits that strict schemas leave out, or business rules, like the due date being in the future, or task forty-two existing. The trap is saying strict means correct. Strict means well-formed."
+      - q: "What should a tool return when its input is invalid?"
+        a: "A `tool_result` with `is_error: true` and a short, specific message: **which field** and **what's allowed**. The model can then fix the call."
+        trap: "Raising an exception that crashes the loop, or a vague \"invalid input\" the model can't act on."
+        say_q: "Follow-up: what should a tool return when its input is invalid?"
+        say_a: "A tool result marked is error, with a short, specific message: which field is wrong, and what's allowed. Then the model can fix the call. The trap: crashing the loop with an exception, or a vague message like invalid input, which the model can't act on."
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "Which problem can only your code catch, not strict mode?"
+    options:
+      - "A missing required field"
+      - "A string where a number was expected"
+      - "A due date that is already in the past"
+      - "An extra field that isn't in the schema"
+    answer: 2
+    explain: "A past date is a well-formed date: only your code knows today's date and the rule."
+    say_question: >
+      Quick check. Which of these can only your code catch, not strict mode?
+    say_answer: >
+      A due date that's already in the past. It's a perfectly well-formed date. Only your code knows today, and the rule.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 3 recap
+    items:
+      - {text: "Tool input is untrusted: check it before running anything", say: "Recap. Tool input is untrusted, so check it before running anything."}
+      - {text: "Strict mode: shape and types. Your code: limits and rules", say: "Strict mode covers shape and types. Your code covers limits and business rules."}
+      - {text: "Pydantic's model_validate turns raw input into a checked object", say: "Pydantic's model validate turns raw input into a checked object."}
+      - {text: "Errors name the field and what's allowed, so the model can fix it", say: "And error messages name the field and what's allowed, so the model can fix it."}
+    outro: >
+      Next lesson: tools that are slow, or never answer. You'll add timeouts, so one stuck tool can't freeze your agent.

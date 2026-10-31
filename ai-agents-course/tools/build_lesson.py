@@ -454,7 +454,9 @@ def build(module, lesson, allow_new=True):
                  "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "STUDY_MODEL",
                  "STUDY_BUDGET_USD", "STUDY_MAX_RETRIES", "STUDY_FAKE_FAIL",
                  "RESUME_MODEL", "RESUME_BUDGET_USD", "RESUME_MAX_RETRIES", "RESUME_FAKE_FAIL",
-                 "CALC_MODEL", "CALC_BUDGET_USD", "CALC_MAX_RETRIES", "CALC_MAX_STEPS", "CALC_FAKE_FAIL"):
+                 "CALC_MODEL", "CALC_BUDGET_USD", "CALC_MAX_RETRIES", "CALC_MAX_STEPS", "CALC_FAKE_FAIL",
+                 "PROD_MODEL", "PROD_BUDGET_USD", "PROD_MAX_RETRIES", "PROD_MAX_STEPS", "PROD_FAKE_FAIL",
+                 "PROD_FAKE_SLOW", "PROD_DATA", "PROD_TODAY"):
         env.pop(name, None)
 
     pieces, events, captions, scenes, chapters = [], [], [], [], []

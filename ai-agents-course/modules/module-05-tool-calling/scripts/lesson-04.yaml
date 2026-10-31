@@ -1,0 +1,204 @@
+module_title: Tool Calling and Function Execution
+title: "Timeouts and Failures: When a Tool Never Answers"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 5 · Lesson 4
+    title: When a tool never answers
+    subtitle: Timeouts with a worker thread, turning failures into observations, and their limits.
+    say: >
+      Real tools talk to the outside world: a database, a calendar service, a website. And the outside world is sometimes slow, and sometimes doesn't answer at all.
+      In this lesson you'll make sure one stuck tool can never freeze your whole agent.
+
+  - type: objectives
+    items:
+      - {text: "Explain why every tool needs a timeout", say: "You'll explain why every tool needs a timeout."}
+      - {text: "Run a function with a timeout, using a thread", say: "Run a function with a timeout, using a thread."}
+      - {text: "Turn timeouts and other failures into tool errors", say: "Turn timeouts and other failures into tool errors."}
+      - {text: "Know the limits of thread timeouts", say: "And know the limits of thread timeouts."}
+
+  - type: callout
+    chapter: Why timeouts?
+    kind: analogy
+    title: "A timeout is the queue you give up on"
+    body: "You're in a queue at a government office. If nothing moves for an hour, you leave and **come back another day**: you don't wait forever. A timeout is that decision, made in advance: **wait at most N seconds**, then move on with a clear message."
+    say: >
+      Why do we need timeouts? Think of standing in a queue at an office. If nothing moves for an hour, at some point you decide to leave, and come back another day. You don't wait there forever.
+      A timeout is that decision, made in advance. Wait at most, say, two seconds. Then move on, with a clear message.
+    outro: >
+      Without a timeout, one tool that never answers means the agent never answers, the user waits forever, and in a server, that request holds resources until something crashes.
+
+  - type: run
+    chapter: A timeout in code
+    heading: "timeout.py: wait at most two seconds"
+    title: timeout.py
+    file: source/lesson-04/timeout.py
+    cwd: source/lesson-04
+    cmd: python timeout.py
+    steps:
+      - lines: "6-9"
+        note: "The tool runs in a separate **thread**: a second worker in the same program."
+        say: >
+          Here's the idea in its simplest form. We run the tool in a separate thread. A thread is a second worker inside the same program, so our main code can keep an eye on the clock.
+      - lines: "10"
+        note: "`join(seconds)`: wait for the worker, but at most this long."
+        say: >
+          Join with a number of seconds means: wait for the worker to finish, but no longer than this.
+      - lines: "11-13"
+        note: "Still running after the wait? Give up with a clear message."
+        say: >
+          If the worker is still running after that, we give up, and return a clear error message instead of waiting forever.
+      - lines: "16-17, 26"
+        out: "1"
+        note: "A quick tool finishes in time: normal result."
+        say: >
+          A quick tool finishes in time, so we get its normal result.
+      - lines: "20-22, 27"
+        out: "2"
+        tone: coral
+        note: "A stuck tool: an error after 2 seconds, not 60."
+        say: >
+          This tool sleeps for sixty seconds, like a server that never answers. After two seconds, we stop waiting, and get a timeout error.
+      - lines: "28"
+        out: "3"
+        note: "The whole script took 2 seconds, not 62."
+        say: >
+          And the total wait was two seconds, not sixty-two. The agent stays responsive.
+
+  - type: code
+    heading: "The project's version: errors pass through too"
+    title: productivity/tools.py
+    file: project/productivity-agent/productivity/tools.py
+    lines: "101-124"
+    steps:
+      - lines: "108-115"
+        note: "The worker stores either the result, or the exception."
+        say: >
+          The project's version adds one important thing. The worker stores either the result, or any exception the tool raised.
+      - lines: "117-121"
+        note: "Daemon thread: it never stops the program from exiting."
+        say: >
+          The thread is a daemon. That means a stuck worker never stops the program from exiting. After the wait, if it's still alive, we raise a tool error naming the tool and the limit.
+      - lines: "122-124"
+        note: "A tool's own error is re-raised, so it's handled as usual."
+        say: >
+          If the tool raised an error, we raise it again here, in the main thread, so it's handled like any other error. Otherwise we return the result.
+
+  - type: code
+    heading: "run_tool(): the same three checks, every time"
+    title: productivity/tools.py
+    file: project/productivity-agent/productivity/tools.py
+    lines: "127-139"
+    steps:
+      - lines: "130-132"
+        say: >
+          And here's the function every tool call goes through. First: does the tool exist?
+      - lines: "133-135"
+        note: "1. Valid input? 2. Allowed? (lesson 5)"
+        say: >
+          Then: is the input valid, from lesson three. And is the call allowed, which is next lesson.
+      - lines: "136-139"
+        note: "3. Run with the tool's own timeout. A missing task becomes a ToolError too."
+        say: >
+          Then: run the tool, with its own timeout. And a lookup error, like a task that doesn't exist, becomes a tool error too. Every problem ends up as a message, never a crash.
+
+  - type: table
+    heading: "Dry run: what the model sees for each kind of failure"
+    columns: [What happened, The model receives, is_error]
+    widths: [1.6, 3, 0.7]
+    rows:
+      - {cells: ["Tool finished", "added [ ] 1. Pay rent (normal)", "false"], tone: teal, say: "Let's see what the model receives in each case. The tool finished: the normal result."}
+      - {cells: ["Tool too slow", "search_notes timed out after 2 s", "true"], tone: coral, say: "The tool was too slow: search notes timed out after two seconds, marked as an error."}
+      - {cells: ["Task doesn't exist", "there is no task 9", "true"], tone: coral, say: "The task doesn't exist: there is no task nine."}
+      - {cells: ["Bad input", "invalid input for add_task: priority: ...", "true"], tone: coral, say: "And bad input: the validation message from lesson three.", note: "Every failure becomes a short, honest observation. The model can retry, choose another tool, or tell the user."}
+
+  - type: terminal
+    chapter: In the real agent
+    title: terminal — productivity-agent
+    cwd: project/productivity-agent
+    font: 22
+    steps:
+      - cmd: PROD_FAKE_SLOW=search_notes python -m productivity ask "search notes for wifi"
+        say: >
+          Here's the real agent. This environment variable makes search notes sleep for thirty seconds, to play a slow service. Its timeout is two seconds. After two seconds the agent gets a timeout observation, and finishes normally, instead of hanging.
+
+  - type: compare
+    chapter: Limits of thread timeouts
+    heading: "What a thread timeout can and can't do"
+    left:
+      title: "It can"
+      tone: teal
+      items:
+        - "Stop **waiting** after N seconds"
+        - "Keep the agent responsive"
+        - "Report a clear error to the model"
+    right:
+      title: "It can't"
+      tone: coral
+      items:
+        - "**Kill** the stuck thread: it keeps running"
+        - "Undo half-finished work"
+        - "Isolate a tool that uses lots of CPU or memory"
+    steps:
+      - show: left
+        say: >
+          Let's be honest about the limits. A thread timeout can stop waiting after N seconds, keep the agent responsive, and report a clear error.
+      - show: right
+        say: >
+          But it can't kill the stuck thread. In Python, a thread can't be stopped from outside, so it keeps running in the background. It can't undo half-finished work. And it can't protect you from a tool that uses huge amounts of memory.
+          For real isolation, run risky tools in a separate process, or a container. And for network calls, use the library's own timeout too, like the SDK's timeout setting from Module 2.
+
+  - type: callout
+    kind: try
+    chapter: Pause and try
+    title: "Pause and try: pick a timeout"
+    body: "Choose a sensible timeout for each tool."
+    say: >
+      Pause and choose a timeout for each of these tools.
+    items:
+      - {text: "list_tasks: reads a small local JSON file", say: "One. List tasks, which reads a small local file."}
+      - {text: "search_notes: calls a remote search service", say: "Two. Search notes, which calls a remote search service."}
+      - {text: "export_report: builds a PDF that takes about 20 seconds", say: "Three. Export report, which builds a PDF that usually takes about twenty seconds.", pause: 6}
+    outro: >
+      There's no single right number, but here's the reasoning. A local file should take milliseconds, so a few seconds is generous. A remote service: a few seconds, so a slow network doesn't freeze the agent. A twenty-second job needs more, perhaps sixty seconds, or better, run it in the background and let the agent check on it later.
+
+  - type: interview
+    chapter: Interview corner
+    items:
+      - q: "How do you stop a slow tool from freezing an agent?"
+        a: "Give **every tool a timeout**: run it in a worker (thread or process), wait at most N seconds, then return an error result. Prefer the client library's own timeouts for network calls."
+        trap: "Relying on the model to \"notice\" it's slow. The model only acts after your code returns."
+        say_q: "Interview corner. How do you stop a slow tool from freezing an agent?"
+        say_a: "Give every tool a timeout. Run it in a worker, a thread or a process, wait at most N seconds, and then return an error result. For network calls, also use the library's own timeout. The trap: expecting the model to notice it's slow. The model can only act after your code returns."
+      - q: "Thread or process for a tool timeout?"
+        a: "A **thread** is simple and fine for I/O, but it can't be killed. A **process** can be terminated and isolates memory and crashes, at the cost of more overhead."
+        trap: "Claiming a thread timeout stops the work. It only stops the waiting."
+        say_q: "Follow-up: would you use a thread or a process?"
+        say_a: "A thread is simple, and fine for waiting on input and output, but it can't be killed. A process can be terminated, and it isolates memory and crashes, but it costs more to start. The trap: claiming a thread timeout stops the work. It only stops the waiting."
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "After a thread timeout fires, what happens to the stuck tool?"
+    options:
+      - "Python kills it immediately"
+      - "It keeps running in the background; we just stop waiting"
+      - "It is rolled back automatically"
+      - "The whole program exits"
+    answer: 1
+    explain: "Threads can't be killed from outside in Python. Use a separate process when you must be able to stop the work."
+    say_question: >
+      Quick check. After a thread timeout fires, what happens to the stuck tool?
+    say_answer: >
+      It keeps running in the background. We just stop waiting for it. If you must be able to stop the work, use a separate process.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 4 recap
+    items:
+      - {text: "Every tool gets a timeout: never wait forever", say: "Recap. Every tool gets a timeout, so the agent never waits forever."}
+      - {text: "A worker thread plus join(seconds) stops the waiting", say: "A worker thread, plus join with seconds, stops the waiting."}
+      - {text: "Timeouts, missing items and bad input all become tool errors", say: "Timeouts, missing items and bad input all become tool errors."}
+      - {text: "Threads can't be killed: use processes for real isolation", say: "And threads can't be killed, so use processes for real isolation."}
+    outro: >
+      Next lesson: the most important safety feature of all. Permissions, and asking a human before anything dangerous happens.

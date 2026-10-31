@@ -1,0 +1,217 @@
+module_title: Tool Calling and Function Execution
+title: "Many Tools: A Registry, Schemas from Pydantic, Parallel Calls"
+scenes:
+  - type: title
+    chapter: Introduction
+    kicker: Module 5 · Lesson 2
+    title: Many tools, one registry
+    subtitle: Register tools with a decorator, generate schemas from Pydantic, and run parallel tool calls.
+    say: >
+      One tool is easy to write by hand. Six tools, each with a schema, a description, a permission and a timeout, is where hand-written dictionaries start to break.
+      In this lesson, we'll organise many tools in one place, let Pydantic write the schemas for us, and handle a model that asks for several tools at once.
+
+  - type: objectives
+    items:
+      - {text: "Register tools with a decorator", say: "You'll register tools with a decorator."}
+      - {text: "Generate strict JSON schemas from Pydantic classes", say: "Generate strict JSON schemas from Pydantic classes."}
+      - {text: "Dispatch a tool call by name", say: "Dispatch a tool call by its name."}
+      - {text: "Handle several tool calls in one turn", say: "And handle several tool calls in one turn."}
+
+  - type: callout
+    chapter: A tool registry
+    kind: analogy
+    title: "A registry is a restaurant menu"
+    body: "A menu lists every dish once, with its name, description and price. The kitchen looks orders up on it. A **registry** lists every tool once, with its name, description, input form, permission and timeout. Your code looks calls up in it."
+    say: >
+      First, what is a registry? Think of a restaurant menu. Every dish is listed once, with its name, description and price. When an order comes in, the kitchen looks it up on the menu.
+      A tool registry is the menu for your agent. Every tool is listed once, with its name, description, input form, permission, and timeout. When the model asks for a tool, your code looks it up there.
+    outro: >
+      Why bother? Because one list means one source of truth. The definitions you send to the model, and the functions your code runs, can never drift apart.
+
+  - type: code
+    heading: "@tool: one decorator registers a function"
+    title: productivity/tools.py
+    file: project/productivity-agent/productivity/tools.py
+    lines: "33-55"
+    steps:
+      - lines: "33-41"
+        note: "Everything about one tool, in one frozen dataclass."
+        say: >
+          Here's how the project does it. A Tool is a frozen dataclass that holds everything about one tool: its name, description, the Pydantic class for its input, the function, its permission, its timeout, and an optional confirmation text. We'll use permission in lesson five.
+      - lines: "44"
+        note: "The registry: a dict from name to Tool."
+        say: >
+          The registry is just a dictionary, from the tool's name to its Tool object.
+      - lines: "47-55"
+        note: "`@tool(...)` adds the function to the registry, using its name."
+        say: >
+          And tool is a decorator. A decorator is a function that wraps another function. This one doesn't change the function at all. It just adds it to the registry, using the function's own name as the tool name.
+
+  - type: code
+    heading: "One tool, written with the decorator"
+    title: productivity/tools.py
+    file: project/productivity-agent/productivity/tools.py
+    lines: "149-180"
+    steps:
+      - lines: "149-152"
+        note: "The input form, as a Pydantic class: types, limits, allowed values."
+        say: >
+          Now one real tool. First, the input as a Pydantic class. A title between one and a hundred and twenty characters. A due date, or None. And a priority that must be low, normal, or high.
+      - lines: "172-174"
+        note: "Description, input class, permission: all in one line above the function."
+        say: >
+          Then the decorator, with the description, the input class, and the permission: write, because adding a task changes data.
+      - lines: "175-180"
+        note: "The function receives a checked `AddTask` object, not a raw dict."
+        say: >
+          And the function itself. Notice that it receives an AddTask object, already checked, not a raw dictionary. So inside the function, a dot due really is a date, and a dot priority really is one of the three values.
+
+  - type: run
+    chapter: Schemas from Pydantic
+    heading: "from_pydantic.py: write a class, get the schema"
+    title: from_pydantic.py
+    file: source/lesson-02/from_pydantic.py
+    cwd: source/lesson-02
+    cmd: python from_pydantic.py
+    font: 20
+    steps:
+      - lines: "10-14"
+        note: "Normal Python types become JSON Schema types."
+        say: >
+          Writing JSON schemas by hand is slow, and easy to get wrong. So we let Pydantic write them. Here's a note with a string title, a string text, a boolean pinned, and a colour that must be yellow, blue, or green.
+      - lines: "17"
+        out: "1-30"
+        note: "`str` → string, `bool` → boolean, `Literal` → enum."
+        say: >
+          Schema for turns the class into a JSON schema. Look at the right side: string, string, boolean, and an enum with the three colours. Every field is required, and additional properties is false, which strict mode needs.
+
+  - type: code
+    heading: "schema_for(): from Pydantic to a strict schema"
+    title: productivity/tools.py
+    file: project/productivity-agent/productivity/tools.py
+    lines: "59-86"
+    steps:
+      - lines: "59"
+        note: "Keywords strict schemas don't accept. Pydantic still checks them later."
+        say: >
+          How does it work inside? Pydantic's schema contains a few keywords that strict tool schemas don't accept, like maximum length. So we remove them. That's safe, because Pydantic still checks those limits when the input arrives.
+      - lines: "64-67"
+        note: "Remove those keywords, but never a **property** that happens to be called `title`."
+        say: >
+          This code walks through the schema and drops those keywords. One detail: Pydantic adds a keyword called title, but our task also has a field called title. So property names are kept, always. I actually got this wrong in my first version, and a test caught it: the title field vanished.
+      - lines: "68-70"
+        note: "Every object: no extra fields, every field required."
+        say: >
+          Then, for every object, additional properties becomes false, and every field becomes required. Optional values, like the due date, are written as either a date or null.
+      - lines: "82-86"
+        note: "The list sent to the API: name, description, schema, strict."
+        say: >
+          And definitions builds the list for the API, from the registry. Name, description, schema, and strict true, for every tool.
+
+  - type: run
+    heading: "registry.py: the whole menu"
+    title: registry.py
+    file: source/lesson-02/registry.py
+    cwd: source/lesson-02
+    cmd: python registry.py
+    steps:
+      - lines: "5-7"
+        out: "1-6"
+        note: "Six tools: their inputs, permission and timeout, from one registry."
+        say: >
+          Here's the whole menu. Six tools: add, list, complete and delete tasks, and add and search notes. Each with its inputs, its permission, and its timeout. One registry, so nothing can drift.
+
+  - type: callout
+    chapter: Parallel tool calls
+    kind: analogy
+    title: "Parallel calls: one waiter, several orders"
+    body: "If your table orders three dishes, the waiter takes **all three orders at once**, not one per trip. A model can do the same: one reply can hold **several tool_use blocks**. You run them all, and send **all the results back together**."
+    say: >
+      Next, parallel tool calls. Imagine your table orders three dishes. A good waiter takes all three orders in one trip, not one trip per dish.
+      A model can do the same. When a request needs several independent things, one reply can contain several tool use blocks. Your code runs them all, and sends all the results back together.
+
+  - type: run
+    heading: "parallel.py: two calls in one reply, two results in one message"
+    title: parallel.py
+    file: source/lesson-02/parallel.py
+    cwd: source/lesson-02
+    cmd: python parallel.py
+    steps:
+      - lines: "13-17"
+        out: "1-2"
+        note: "One reply, two `tool_use` blocks."
+        say: >
+          The request asks for two tasks. The reply contains two tool use blocks. That's a parallel tool call.
+      - lines: "22-25"
+        out: "3-4"
+        note: "Run each call; each result keeps its own `tool_use_id`."
+        say: >
+          We run each call in order, and each result keeps the ID of the call it answers: offline zero one, and offline zero two.
+      - lines: "27-30"
+        out: "5"
+        note: "**All** results go in **one** user message."
+        say: >
+          And here's the rule developers often break: all the results go into one single user message, not one message per result. The next request sends three messages, and the last one holds both results.
+
+  - type: table
+    heading: "Dry run: the message list during a parallel call"
+    columns: [Message, Role, Contains]
+    widths: [0.8, 1, 3]
+    rows:
+      - {cells: ["1", "user", "\"add task Pay rent and add task Call mom\""], say: "Let's dry run the message list. Message one, from the user: the request."}
+      - {cells: ["2", "assistant", "tool_use 01 add_task · tool_use 02 add_task"], tone: violet, say: "Message two, from the assistant: two tool use blocks, IDs zero one and zero two."}
+      - {cells: ["3", "user", "tool_result 01 · tool_result 02"], tone: teal, say: "Message three, from the user: both tool results, zero one and zero two, together."}
+      - {cells: ["✗", "user, user", "one message per result"], tone: coral, say: "And the wrong way: two separate user messages, one per result. Don't do that. Keep the results together, in the same order as the calls.", note: "Every tool_use needs a matching tool_result, in the very next user message."}
+
+  - type: callout
+    kind: try
+    chapter: Pause and try
+    title: "Pause and try: count the messages"
+    body: "A request needs 3 tool calls. The model asks for all 3 in its first reply, then answers."
+    say: >
+      Pause and work it out. A request needs three tool calls. The model asks for all three in its first reply, and then answers.
+    items:
+      - {text: "How many requests? How many messages at the end?", say: "How many requests are sent? And how many messages are in the list at the end?", pause: 6}
+    outro: >
+      Two requests. And four messages: the user request, the assistant with three tool calls, the user with three results, and the final answer. Compare that with lesson three of Module 4, where one call per turn needed more round trips.
+
+  - type: interview
+    chapter: Interview corner
+    items:
+      - q: "Why generate tool schemas from Pydantic models?"
+        a: "One source of truth: the same class **describes** the input to the model and **validates** it in your code, so they can't drift apart. Less hand-written JSON, fewer mistakes."
+        trap: "Thinking the schema alone protects you. You still validate every input when it arrives (lesson 3)."
+        say_q: "Interview corner. Why generate tool schemas from Pydantic models?"
+        say_a: "A good answer: one source of truth. The same class describes the input to the model, and validates it in your code, so the two can't drift apart. And less hand-written JSON means fewer mistakes. The trap: thinking the schema alone protects you. You still validate every input when it arrives."
+      - q: "The model returns two tool_use blocks. How do you respond?"
+        a: "Run both, then send **one** user message containing **two** `tool_result` blocks, each with its matching `tool_use_id`."
+        trap: "Sending one message per result, or answering only the first call: the next request fails."
+        say_q: "Follow-up: the model returns two tool use blocks. How do you respond?"
+        say_a: "Run both, then send one user message, containing two tool results, each with its matching ID. The trap: one message per result, or answering only the first call. The next request will fail."
+
+  - type: quiz
+    chapter: Quick check
+    number: 1
+    question: "A reply contains 3 tool_use blocks. What does the next user message contain?"
+    options:
+      - "Only the first tool's result"
+      - "3 tool_result blocks, each with its matching tool_use_id"
+      - "The text of the 3 results, joined into one string"
+      - "Nothing: tool results go in the system prompt"
+    answer: 1
+    explain: "Every tool_use needs a tool_result with the same id, all together in the next user message."
+    say_question: >
+      Quick check. A reply contains three tool use blocks. What does the next user message contain?
+    say_answer: >
+      Three tool result blocks, each with its matching ID, all in that one message.
+
+  - type: recap
+    chapter: Recap
+    heading: Lesson 2 recap
+    items:
+      - {text: "A registry lists every tool once: one source of truth", say: "Recap. A registry lists every tool once, so there's one source of truth."}
+      - {text: "@tool registers a function by its name", say: "The tool decorator registers a function by its name."}
+      - {text: "Pydantic classes generate strict schemas", say: "Pydantic classes generate the strict schemas."}
+      - {text: "Parallel calls: run them all, return all results in one message", say: "And for parallel calls, run them all, and return all the results in one message."}
+    outro: >
+      Next lesson: the model's input can still be wrong. You'll validate every call, and turn mistakes into messages the model can fix.
