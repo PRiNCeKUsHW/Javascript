@@ -99,6 +99,129 @@ Official docs: platform.claude.com/docs/en/agents-and-tools/tool-use/overview ·
 
 **Search terms**: tool calling python, function calling claude, claude tool use tutorial, parallel tool calls, pydantic json schema, ai agent safety, human in the loop ai, tool input validation, ai agent permissions, productivity agent python
 
+## Uploaded in two parts
+
+### Part 1: Lessons 1–4 (29:41)
+
+**Title:** AI Agents with Python 2026 · Module 5 (Part 1/2): Tool Calling, Schemas, Validation, Timeouts
+
+```text
+Module 5 of "AI Agents with Python: Beginner to Production (2026)": Tool Calling and Function Execution. Part 1 of 2 (Lessons 1–4).
+
+In this part: how a model uses your functions, a tool registry with schemas generated from Pydantic, parallel tool calls, validating every tool input (strict mode vs your code), and timeouts so a stuck tool can never freeze your agent.
+
+Part 2 (permissions, human approval + the Personal Productivity Agent project): https://youtu.be/XXXX
+
+Every lesson explains the concept, shows real code on the left with its real output on the right, covers common errors, and ends with a quick check, an interview corner and pause-and-try questions.
+
+Prerequisites: Module 4 (AI Agent Architecture), or equivalent. An Anthropic API key is optional: every demo also runs offline with a built-in scripted fake API (not a model). You need Python 3.11+ and a code editor.
+
+Source code + README: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-05-tool-calling
+Question bank (every question from the videos, with answers): https://github.com/PRiNCeKUsHW/ai-agents-python-2026/blob/main/ai-agents-course/modules/module-05-tool-calling/QUESTIONS.md
+
+Chapters
+00:00 L1 Tool Calling: How a Model Uses Your Functions
+00:42 What is a tool?
+01:39 One tool call, step by step
+03:56 Anatomy of a definition
+04:22 Writing good descriptions
+04:58 Pause and try
+05:34 Interview corner
+06:32 Quick check
+06:51 Recap
+07:28 L2 Many Tools: A Registry, Schemas from Pydantic, Parallel Calls
+08:07 A tool registry
+10:08 Schemas from Pydantic
+11:56 Parallel tool calls
+13:25 Pause and try
+14:04 Interview corner
+14:56 Quick check
+15:17 Recap
+15:48 L3 Validating Tool Inputs: Never Trust, Always Check
+16:31 Why validate?
+17:13 What strict mode covers
+17:46 Validation in code
+20:09 Pause and try
+20:57 Interview corner
+21:51 Quick check
+22:11 Recap
+22:44 L4 Timeouts and Failures: When a Tool Never Answers
+23:18 Why timeouts?
+23:54 A timeout in code
+26:03 In the real agent
+26:22 Limits of thread timeouts
+27:04 Pause and try
+27:54 Interview corner
+28:48 Quick check
+29:10 Recap
+
+Official docs: platform.claude.com/docs/en/agents-and-tools/tool-use/overview · platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use · platform.claude.com/docs/en/build-with-claude/structured-outputs
+
+#AIAgents #Python #ClaudeAPI #ToolCalling #AIEngineering
+```
+
+**Tags:** tool calling python, function calling claude, claude tool use tutorial, parallel tool calls, pydantic json schema, tool registry python, strict tool schema, tool input validation, python thread timeout, ai agent tools, claude api python
+
+### Part 2: Lessons 5–7 (23:06)
+
+**Title:** AI Agents with Python 2026 · Module 5 (Part 2/2): Permissions + Productivity Agent Project
+
+```text
+Module 5 of "AI Agents with Python: Beginner to Production (2026)": Tool Calling and Function Execution. Part 2 of 2 (Lessons 5–7).
+
+In this part: least privilege, read/write/danger permissions, read-only mode and human approval before dangerous actions. Then the project: Personal Productivity Agent, an agent that manages tasks and notes with six tools, validation, per-tool timeouts, permissions, parallel tool calls and 43 tests. Ends with the module quiz and an extension challenge.
+
+Part 1 (tool calling basics, registry, Pydantic schemas, validation, timeouts): https://youtu.be/XXXX
+
+Every lesson explains the concept, shows real code on the left with its real output on the right, covers common errors, and ends with a quick check, an interview corner and pause-and-try questions.
+
+Prerequisites: Module 4 (AI Agent Architecture), or equivalent. An Anthropic API key is optional: every demo also runs offline with a built-in scripted fake API (not a model). You need Python 3.11+ and a code editor.
+
+Source code + README: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-05-tool-calling
+Question bank (every question from the videos, with answers): https://github.com/PRiNCeKUsHW/ai-agents-python-2026/blob/main/ai-agents-course/modules/module-05-tool-calling/QUESTIONS.md
+
+Chapters
+00:00 L5 Permissions and Human Confirmation: Ask Before You Act
+00:39 Least privilege
+01:21 Three permission levels
+01:50 The policy in code
+03:44 In the real agent
+04:14 Good confirmations
+04:39 Pause and try
+05:13 Interview corner
+06:09 Quick check
+06:33 Recap
+07:03 L6 Project, Part 1: Personal Productivity Agent, Store, Tools and Policy
+07:23 The brief
+07:59 Architecture
+08:29 An honest fake
+09:08 A safe data store
+10:11 The six tools
+10:58 Wiring it together
+11:51 First run
+12:18 Pause and try
+12:57 Recap
+13:27 L7 Project, Part 2: The Loop, the Demo, Tests and Wrap-up
+13:47 The agent loop
+15:07 Demo
+15:32 Safety on purpose
+16:00 Testing
+16:52 Troubleshooting
+17:30 Interview corner
+19:09 Module recap
+19:39 Module quiz
+21:16 Practice
+22:02 Extension challenge
+22:29 Documentation
+22:44 Next up
+
+Official docs: platform.claude.com/docs/en/agents-and-tools/tool-use/overview · platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use · platform.claude.com/docs/en/build-with-claude/structured-outputs
+
+#AIAgents #Python #ClaudeAPI #ToolCalling #AIEngineering
+```
+
+**Tags:** ai agent permissions, human in the loop ai, ai agent safety, least privilege ai, productivity agent python, ai agent project python, claude tool use tutorial, parallel tool calls, pytest ai agent, claude api python, tool calling python
+
 ## Individual lesson videos (`renders/lesson-NN.mp4`)
 
 ### Lesson 1 (07:28)
