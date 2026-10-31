@@ -33,6 +33,8 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
   Full video 1:05:33, 73 chapters, 995 captions; validation 70/70. Pronunciation fixes from the
   learner's review: "API" spelled with Indian letter names, "model" said mo-DEL.
   The original English details below describe the first version.
+- **Uploaded to YouTube 2026-10-31 in two parts:** Part 1 lessons 1-4 (36:31), Part 2 lessons 5-7
+  (29:02). Titles, descriptions, chapters and tags: `modules/module-02-llm-fundamentals/youtube.md`.
 
 - 7 lessons rendered (1920x1080 60 fps), full module video 41:05 with 59 chapters and 632 captions.
 - Project: AI Study Assistant, 23 tests passing; every demo runs offline against `study/fake_api.py`.
@@ -62,6 +64,10 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
   timeouts, read/write/danger permissions with read-only mode and human approval, parallel tool calls,
   atomic JSON store. 43 tests, mypy clean.
 - Renders resume after a container restart (`studio/render.mjs` skips lessons already rendered).
+- **Uploaded to YouTube 2026-10-31 in two parts:** Part 1 lessons 1-4 (29:41), Part 2 lessons 5-7
+  (23:06). Titles, descriptions, chapters and tags: `modules/module-05-tool-calling/youtube.md`.
+  Question bank: `modules/module-05-tool-calling/QUESTIONS.md`. Local video files deleted after upload
+  (rebuild with `python tools/module.py render 5`).
 
 ## Next: Module 6: Agent Memory and Conversation State (project: Persistent AI Study Companion)
 
