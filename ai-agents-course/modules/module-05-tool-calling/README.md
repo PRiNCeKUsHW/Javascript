@@ -59,6 +59,7 @@ tests, mypy clean.
 | Narration scripts / audio | `scripts/*.yaml` / `audio/` (audio not committed) |
 | Captions | `captions/module-05-full.srt` (and per part: `captions/lesson-NN.srt`) |
 | Quiz, practice answers, challenge | [quiz.md](quiz.md) |
+| Question bank: every question from the videos, answers hidden (39) | [QUESTIONS.md](QUESTIONS.md) |
 | Thumbnail | `assets/thumbnail-module-05.png` |
 | YouTube packaging | [youtube.md](youtube.md) |
 | Validation report | [validation-report.md](validation-report.md) |

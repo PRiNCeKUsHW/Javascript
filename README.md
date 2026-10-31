@@ -34,6 +34,8 @@ Full syllabus: [ai-agents-course/COURSE_SYLLABUS.md](ai-agents-course/COURSE_SYL
 
 New to a term? The [glossary](ai-agents-course/GLOSSARY.md) explains every technical word in plain language.
 
+Test yourself: the [question bank](ai-agents-course/QUESTION_BANK.md) has every question asked in the videos (quick checks, quizzes, practice and interview questions), with click-to-reveal answers.
+
 ## Run a project
 
 You need Python 3.11 or newer. For example, the Module 2 project:
@@ -56,7 +58,7 @@ and add your own `ANTHROPIC_API_KEY`. Never commit that file.
 
 ```text
 ai-agents-course/        the course: modules, projects, lesson scripts, captions, video tooling
-  modules/module-NN-*/   one folder per module (README, project/, source/, quiz.md, captions/)
+  modules/module-NN-*/   one folder per module (README, project/, source/, quiz.md, QUESTIONS.md, captions/)
   studio/                Remotion project that renders the lesson videos
   tools/                 build, render and validation scripts
 fastapi-course/          an earlier FastAPI course

@@ -61,6 +61,7 @@ python -m pytest -q
 | Narration audio | `audio/lesson-NN-narration.wav` (not committed; rebuilt by `tools/build_lesson.py`) |
 | Captions | `captions/lesson-NN.srt`, `captions/module-01-full.srt` |
 | Quiz + answer key | [quiz.md](quiz.md) |
+| Question bank: every question from the videos, answers hidden (9) | [QUESTIONS.md](QUESTIONS.md) |
 | Thumbnail | `assets/thumbnail-module-01.png` |
 | YouTube title, description, chapters, search terms | [youtube.md](youtube.md) |
 | Validation report | [validation-report.md](validation-report.md) |

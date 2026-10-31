@@ -57,6 +57,7 @@ SDK retries, refusal fallbacks. 23 pytest tests, mypy clean.
 | Narration scripts / audio | `scripts/*.yaml` / `audio/` (audio not committed) |
 | Captions | `captions/lesson-NN.srt`, `captions/module-02-full.srt` |
 | Quiz + answer key | [quiz.md](quiz.md) |
+| Question bank: every question from the videos, answers hidden (47) | [QUESTIONS.md](QUESTIONS.md) |
 | Thumbnail | `assets/thumbnail-module-02.png` |
 | YouTube packaging | [youtube.md](youtube.md), [youtube-uploads.md](youtube-uploads.md) |
 | Validation report | [validation-report.md](validation-report.md) |
