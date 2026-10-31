@@ -107,6 +107,133 @@ Official docs: platform.claude.com/docs/en/build-with-claude/structured-outputs 
 
 **Search terms**: llm api python, anthropic api tutorial, claude api python, tokens and context window, llm streaming python, structured output json, api rate limits retries, llm api cost, ai study assistant project, llm in hindi, claude api hindi, ai agents course hindi, python ai hinglish
 
+## Uploaded in two parts (Hinglish)
+
+### Part 1: Lessons 1–4 (36:31)
+
+**Title:** AI Agents with Python 2026 · Module 2 (Part 1/2): How LLMs Work, First API Call, Conversations, Output Control | Hinglish
+
+```text
+Module 2 of "AI Agents with Python: Beginner to Production (2026)": LLM Fundamentals and API Integration. Part 1 of 2 (Lessons 1–4).
+
+In this part: how LLMs work (tokens, context window, generation), your first API call, conversations with message history, and controlling output with limits, streaming and structured JSON.
+
+Part 2 (production basics + the AI Study Assistant project): <PART 2 LINK>
+
+Explained in Hinglish (Hindi + English) with Hinglish captions. Every concept goes What → Why → How → Where → Practice, with real-life analogies, code on the left and its real output on the right, dry-run tables, an interview corner and practice questions (answers in quiz.md).
+
+Prerequisites: Module 1 (Python for AI Engineering) or equivalent Python. An Anthropic API key is optional: every demo also runs in an offline mode with a built-in fake API. You need Python 3.11+ and a code editor.
+
+Source code + README: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+
+Chapters
+00:00 L1 How LLMs Work: Tokens, Context Windows and Generation
+00:48 Next-token prediction
+03:10 Tokens
+04:53 The context window
+06:16 No memory between requests
+07:04 Your controls
+07:54 Interview corner
+08:49 Practice
+09:39 Quick check
+10:03 Recap
+10:34 L2 Your First API Call: Keys, Requests and Responses
+11:16 What is an API?
+12:01 API keys
+13:04 Installing the SDK
+14:15 The first request
+15:36 Anatomy of a response
+16:49 System prompts
+17:37 Interview corner
+18:34 Practice
+19:15 Quick check
+19:35 Recap
+20:05 L3 Conversations: Message History and the Growing Context
+20:45 A stateless API
+22:02 Building the history
+23:14 The forgotten reply
+23:47 Long conversations
+25:09 Interview corner
+26:13 Practice
+26:47 Quick check
+27:09 Recap
+27:34 L4 Controlling Output: Limits, Streaming and Structured JSON
+28:15 Stop reasons
+28:57 Output limits
+30:10 Streaming
+31:40 Structured output
+33:41 Refusals
+34:10 Interview corner
+35:08 Practice
+35:40 Quick check
+36:04 Recap
+
+Official docs: platform.claude.com/docs/en/build-with-claude/structured-outputs · platform.claude.com/docs/en/api/errors · platform.claude.com/docs/en/about-claude/pricing
+
+#Python #LLM #ClaudeAPI #AIAgents #Hinglish #PythonInHindi
+```
+
+**Tags:** llm in hindi, how llm works hindi, tokens and context window, claude api python, anthropic api tutorial, first api call python, llm conversation history, llm streaming python, structured output json, claude api hindi, ai agents course hindi, python ai hinglish
+
+### Part 2: Lessons 5–7 (29:02)
+
+**Title:** AI Agents with Python 2026 · Module 2 (Part 2/2): Errors, Retries, Costs + AI Study Assistant Project | Hinglish
+
+```text
+Module 2 of "AI Agents with Python: Beginner to Production (2026)": LLM Fundamentals and API Integration. Part 2 of 2 (Lessons 5–7).
+
+In this part: production basics (errors, rate limits, retries and costs), then the project: AI Study Assistant, a command-line tutor that streams explanations, writes quizzes as validated JSON, chats with trimmed history, and tracks the cost of every call against a budget, with 23 tests. Ends with the module quiz and an extension challenge.
+
+Part 1 (LLM basics, first API call, conversations, output control): <PART 1 LINK>
+
+Explained in Hinglish (Hindi + English) with Hinglish captions. Every concept goes What → Why → How → Where → Practice, with real-life analogies, code on the left and its real output on the right, dry-run tables, an interview corner and practice questions (answers in quiz.md).
+
+Prerequisites: Module 1 (Python for AI Engineering) or equivalent Python. An Anthropic API key is optional: every demo also runs in an offline mode with a built-in fake API. You need Python 3.11+ and a code editor.
+
+Source code + README: https://github.com/PRiNCeKUsHW/ai-agents-python-2026/tree/main/ai-agents-course/modules/module-02-llm-fundamentals
+
+Chapters
+00:00 L5 Production Basics: Errors, Rate Limits, Retries and Costs
+00:38 Error types
+01:32 Catching errors
+02:42 Rate limits and retries
+04:49 Costs
+07:12 Interview corner
+08:08 Practice
+08:42 Quick check
+09:03 Recap
+09:37 L6 Project, Part 1: AI Study Assistant, Client, Costs and Explanations
+10:02 What we are building
+10:39 Architecture
+11:24 The offline fake API
+12:47 Client and settings
+13:27 Costs and budget
+14:32 The assistant
+16:11 First run
+16:42 Pause and try
+17:14 Recap
+17:46 L7 Project, Part 2: Quizzes, Chat, Tests and Wrap-up
+18:07 Quizzes as structured output
+19:11 Chat with history
+20:29 The command line
+21:12 Demo
+22:03 Testing
+22:58 Troubleshooting
+23:31 Interview corner
+24:57 Module recap
+25:29 Module quiz
+27:04 Practice
+27:50 Extension challenge
+28:22 Documentation
+28:35 Next up
+
+Official docs: platform.claude.com/docs/en/build-with-claude/structured-outputs · platform.claude.com/docs/en/api/errors · platform.claude.com/docs/en/about-claude/pricing
+
+#Python #LLM #ClaudeAPI #AIAgents #Hinglish #PythonInHindi
+```
+
+**Tags:** llm api errors python, api rate limits retries, llm api cost, anthropic api tutorial, claude api python, ai study assistant project, python ai project hindi, structured output json, pytest python, claude api hindi, ai agents course hindi, python ai hinglish
+
 ## Individual lesson videos (`renders/lesson-NN.mp4`)
 
 ### Lesson 1 (10:34)
