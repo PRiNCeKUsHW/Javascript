@@ -89,3 +89,24 @@ in brackets. New terms are added with each module.
 | **tool_use** [4] | A block in the model's reply that requests a tool call: a name, an input and an id. |
 | **trace** [4] | A printout of every action an agent took and what it observed, used to understand and debug it. |
 | **workflow** [4] | A program whose code runs fixed steps in a fixed order, some of them model calls. |
+
+## Tools and safety
+
+| Term | Meaning |
+|---|---|
+| **atomic save** [5] | Writing a temporary file, then replacing the real one in one step, so a crash never leaves half a file. |
+| **business rule** [5] | A rule about your data that a schema can't express, e.g. "the due date isn't in the past" or "task 7 exists". |
+| **daemon thread** [5] | A background thread that never stops the program from exiting. |
+| **danger tool** [5] | A tool whose action can't be undone (delete, send, pay). A human must approve every call. |
+| **decorator** [5] | A function that wraps another function; `@tool(...)` registers a function as a tool. |
+| **human in the loop** [5] | A person approves (or declines) an agent's action before it runs. |
+| **JSON Schema** [5] | A standard way to describe the shape of JSON data: fields, types, allowed values. |
+| **least privilege** [5] | Give a program only the powers it needs for its job, and nothing more. |
+| **parallel tool calls** [5] | One model reply that requests several tools; all results go back in one user message. |
+| **permission level** [5] | How risky a tool is: read (always allowed), write (not in read-only mode), danger (needs approval). |
+| **read-only mode** [5] | A mode where the agent may only use tools that look, never tools that change data. |
+| **registry** [5] | One place that lists every tool once, so definitions and functions can't drift apart. |
+| **strict tool use** [5] | `strict: true` on a tool: the model's input always matches the schema (shape and types). |
+| **thread** [5] | A second worker inside the same program; used to run a tool while the main code watches the clock. |
+| **timeout** [5] | The longest you'll wait for something before giving up with a clear error. |
+| **validation** [5] | Checking input before using it; here with Pydantic's `model_validate`. |

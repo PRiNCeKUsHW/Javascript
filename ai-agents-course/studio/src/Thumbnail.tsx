@@ -42,6 +42,14 @@ export const THUMBS: ThumbProps[] = [
     tagline: "Decide · Act · Observe · Repeat",
     code: ["act      calculate('18 * 1.15')", "observe  = 20.7", "act      convert(42.195, km, mi)", "observe  = 26.2188 mi"],
   },
+  {
+    id: "thumb-m05",
+    module: 5,
+    lines: ["TOOLS THAT", "AGENTS USE", "SAFELY"],
+    accentLine: 1,
+    tagline: "Validate · timeout · ask first",
+    code: ["act      delete_task(task_id=1)", "confirm  Delete task 1? [y/N] n", "observe  ! the user declined", "act      list_tasks(status='open')"],
+  },
 ];
 
 export const Thumbnail: React.FC<ThumbProps> = ({ module, lines, accentLine, tagline, code }) => (

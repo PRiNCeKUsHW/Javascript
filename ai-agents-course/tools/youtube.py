@@ -80,6 +80,23 @@ MODULES = {
                 "platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use · "
                 "platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
     },
+    5: {
+        "title": "Tool Calling and Function Execution",
+        "project": "Personal Productivity Agent",
+        "project_dir": "productivity-agent",
+        "project_blurb": "an agent that manages tasks and notes with six tools in a registry, schemas "
+                         "generated from Pydantic, input validation, per-tool timeouts, read/write/danger "
+                         "permissions with human approval for deletes, parallel tool calls, and 43 tests.",
+        "prereq": "Module 4 (AI Agent Architecture), or equivalent. An Anthropic API key is optional: every "
+                  "demo also runs offline with a built-in scripted fake API (not a model).",
+        "terms": ["tool calling python", "function calling claude", "claude tool use tutorial",
+                  "parallel tool calls", "pydantic json schema", "ai agent safety", "human in the loop ai",
+                  "tool input validation", "ai agent permissions", "productivity agent python"],
+        "tags": "#AIAgents #Python #ClaudeAPI #ToolCalling #AIEngineering",
+        "docs": "platform.claude.com/docs/en/agents-and-tools/tool-use/overview · "
+                "platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use · "
+                "platform.claude.com/docs/en/build-with-claude/structured-outputs",
+    },
 }
 
 
