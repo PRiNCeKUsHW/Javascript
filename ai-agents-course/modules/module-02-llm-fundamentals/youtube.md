@@ -118,7 +118,7 @@ Module 2 of "AI Agents with Python: Beginner to Production (2026)": LLM Fundamen
 
 In this part: how LLMs work (tokens, context window, generation), your first API call, conversations with message history, and controlling output with limits, streaming and structured JSON.
 
-Part 2 (production basics + the AI Study Assistant project): <PART 2 LINK>
+Part 2 (production basics + the AI Study Assistant project): (paste Part 2 link here)
 
 Explained in Hinglish (Hindi + English) with Hinglish captions. Every concept goes What → Why → How → Where → Practice, with real-life analogies, code on the left and its real output on the right, dry-run tables, an interview corner and practice questions (answers in quiz.md).
 
@@ -184,7 +184,7 @@ Module 2 of "AI Agents with Python: Beginner to Production (2026)": LLM Fundamen
 
 In this part: production basics (errors, rate limits, retries and costs), then the project: AI Study Assistant, a command-line tutor that streams explanations, writes quizzes as validated JSON, chats with trimmed history, and tracks the cost of every call against a budget, with 23 tests. Ends with the module quiz and an extension challenge.
 
-Part 1 (LLM basics, first API call, conversations, output control): <PART 1 LINK>
+Part 1 (LLM basics, first API call, conversations, output control): (paste Part 1 link here)
 
 Explained in Hinglish (Hindi + English) with Hinglish captions. Every concept goes What → Why → How → Where → Practice, with real-life analogies, code on the left and its real output on the right, dry-run tables, an interview corner and practice questions (answers in quiz.md).
 
