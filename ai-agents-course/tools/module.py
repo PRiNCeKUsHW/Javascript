@@ -183,7 +183,7 @@ PROJECT_CHECKS = {
         ("read-only blocks writes", "PROD_DATA=/tmp/pa-check.json {bin}/python -m productivity ask 'add task D' "
                                     "--read-only | grep -q 'read-only mode'"),
         ("timeout", "PROD_DATA=/tmp/pa-check.json PROD_FAKE_SLOW=search_notes {bin}/python -m productivity "
-                    "ask 'search notes for x' | grep -q 'timed out after 2 s'"),
+                    "ask 'search notes for wifi' | grep -q 'timed out after 2 s'"),
     ],
 }
 # project checks run offline and reproducibly: no real key, proxy or scripted failures

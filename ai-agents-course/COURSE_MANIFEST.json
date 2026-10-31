@@ -9,7 +9,7 @@
   "audio": "aac"
  },
  "design_system": "COURSE_DESIGN_SYSTEM.md",
- "next_module": 5,
+ "next_module": 6,
  "modules": [
   {
    "number": 1,
@@ -146,11 +146,32 @@
    "title": "Tool Calling and Function Execution",
    "part": "II — Build Agents from Scratch",
    "project": "Personal Productivity Agent",
-   "status": "NOT_STARTED",
-   "lessons": [],
-   "paths": {},
-   "validation": null,
-   "render": null,
+   "status": "COMPLETED",
+   "lessons": [
+    "Tool Calling: How a Model Uses Your Functions",
+    "Many Tools: A Registry, Schemas from Pydantic, Parallel Calls",
+    "Validating Tool Inputs: Never Trust, Always Check",
+    "Timeouts and Failures: When a Tool Never Answers",
+    "Permissions and Human Confirmation: Ask Before You Act",
+    "Project, Part 1: Personal Productivity Agent, Store, Tools and Policy",
+    "Project, Part 2: The Loop, the Demo, Tests and Wrap-up"
+   ],
+   "paths": {
+    "module": "modules/module-05-tool-calling",
+    "project": "modules/module-05-tool-calling/project/productivity-agent"
+   },
+   "validation": {
+    "report": "modules/module-05-tool-calling/validation-report.md",
+    "checks_passed": 70,
+    "checks_total": 70
+   },
+   "render": {
+    "lessons": 7,
+    "full_module": "renders/module-05-full.mp4",
+    "duration": "52:47",
+    "format": "1920x1080 60fps H.264 + AAC",
+    "language": "English"
+   },
    "blockers": []
   },
   {
@@ -315,5 +336,5 @@
   "Enterprise Knowledge Assistant",
   "AI Workflow Automation Platform"
  ],
- "updated": "2026-10-30T23:34:46Z"
+ "updated": "2026-10-31T05:32:46Z"
 }

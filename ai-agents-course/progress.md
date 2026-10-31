@@ -53,7 +53,17 @@ Source of truth: `COURSE_MANIFEST.json` (update only with `tools/manifest.py`, a
 - Validation: 62/62 checks. Upload kit: `modules/module-04-agent-architecture/youtube-uploads.md` (video #16).
 - Rendering: `studio/render.mjs` renders all parts from one bundle and deletes it (avoids /tmp build-up).
 
-## Next: Module 5: Tool Calling and Function Execution (project: Personal Productivity Agent)
+## Module 5: Tool Calling and Function Execution: COMPLETED (2026-10-31)
+
+- English narration (am_michael, 0.92), light theme, the learner's teaching style (analogies, code +
+  real output, dry-run tables, interview corner, practice with answers in quiz.md).
+- 7 lessons, full video 52:47, 67 chapters, 817 captions. Validation 70/70.
+- Project: Personal Productivity Agent: registry + Pydantic schemas (strict), validation, per-tool
+  timeouts, read/write/danger permissions with read-only mode and human approval, parallel tool calls,
+  atomic JSON store. 43 tests, mypy clean.
+- Renders resume after a container restart (`studio/render.mjs` skips lessons already rendered).
+
+## Next: Module 6: Agent Memory and Conversation State (project: Persistent AI Study Companion)
 
 All scripts follow `TEACHING_STYLE.md` (the learner's brief): What → Why → How → Where → Practice,
 real-life analogies, line-by-line code with dry runs, an interview section, and practice at the end.

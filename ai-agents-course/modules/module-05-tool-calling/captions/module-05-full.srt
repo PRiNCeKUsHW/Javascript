@@ -1,0 +1,3694 @@
+1
+00:00:00,900 --> 00:00:02,723
+Welcome to Module 5.
+
+2
+00:00:03,073 --> 00:00:07,241
+In Module 4 you built an
+agent loop with two small tools.
+
+3
+00:00:07,591 --> 00:00:10,413
+Now we go deeper
+into the tools themselves.
+
+4
+00:00:10,763 --> 00:00:16,722
+By the end of this module, you'll build
+a personal productivity agent that manages
+
+5
+00:00:16,722 --> 00:00:22,680
+real tasks and notes, checks every
+input, stops slow tools, and asks you before it
+
+6
+00:00:22,680 --> 00:00:23,915
+deletes anything.
+
+7
+00:00:25,715 --> 00:00:30,317
+In this lesson, you'll learn what
+tool calling is, and why it exists.
+
+8
+00:00:30,917 --> 00:00:34,438
+You'll follow one tool call
+from the request to the result.
+
+9
+00:00:35,038 --> 00:00:37,872
+You'll read every
+part of a tool definition.
+
+10
+00:00:38,472 --> 00:00:42,020
+And you'll write tool
+descriptions that a model uses correctly.
+
+11
+00:00:43,820 --> 00:00:47,653
+Let's start with what a tool
+is, using an everyday picture.
+
+12
+00:00:48,003 --> 00:00:49,882
+Imagine you hire an assistant.
+
+13
+00:00:50,232 --> 00:00:55,081
+They're smart, but they can't reach
+into your calendar or your files directly.
+
+14
+00:00:55,431 --> 00:00:57,711
+So you lend them a phone with a few apps.
+
+15
+00:00:58,061 --> 00:01:02,788
+Each app has a clear label, saying
+what it does, and a form to fill in.
+
+16
+00:01:03,388 --> 00:01:05,117
+The model is the assistant.
+
+17
+00:01:05,467 --> 00:01:09,267
+It decides which app to
+open, and what to type in the form.
+
+18
+00:01:09,867 --> 00:01:15,509
+A tool is one app: a name, a description
+of what it does, and a form for its inputs.
+
+19
+00:01:16,109 --> 00:01:17,762
+And your code is the phone.
+
+20
+00:01:18,112 --> 00:01:22,028
+It's the part that actually
+runs the app, and shows the result.
+
+21
+00:01:22,628 --> 00:01:24,715
+So why does tool calling exist?
+
+22
+00:01:25,065 --> 00:01:29,002
+Because a language model on
+its own can only write text.
+
+23
+00:01:29,352 --> 00:01:33,283
+It can't read your to-do list,
+save a note, or check today's date.
+
+24
+00:01:33,633 --> 00:01:38,761
+Tools let it ask your code to do those
+things, safely, through doors you choose.
+
+25
+00:01:40,561 --> 00:01:42,025
+Now how does it work?
+
+26
+00:01:42,375 --> 00:01:45,200
+Let's follow one tool call, step by step.
+
+27
+00:01:45,800 --> 00:01:46,698
+Step one.
+
+28
+00:01:47,048 --> 00:01:52,952
+Your code sends a request with two
+things: the user's message, and the list of tools
+
+29
+00:01:52,952 --> 00:01:54,217
+the model may use.
+
+30
+00:01:54,817 --> 00:01:55,739
+Step two.
+
+31
+00:01:56,089 --> 00:01:58,409
+The model decides a tool would help.
+
+32
+00:01:58,759 --> 00:02:04,581
+Instead of a final answer, it replies
+with a tool use block: the tool's name, the
+
+33
+00:02:04,581 --> 00:02:06,449
+input it wants, and an ID.
+
+34
+00:02:06,799 --> 00:02:08,762
+The stop reason is tool use.
+
+35
+00:02:09,362 --> 00:02:10,355
+Step three.
+
+36
+00:02:10,705 --> 00:02:13,767
+Your code runs the real
+function with that input.
+
+37
+00:02:14,117 --> 00:02:18,157
+This is important: the
+model never runs anything itself.
+
+38
+00:02:18,507 --> 00:02:19,731
+It only asks.
+
+39
+00:02:20,331 --> 00:02:21,283
+Step four.
+
+40
+00:02:21,633 --> 00:02:27,507
+Your code sends the output back as a
+tool result, with the same ID, in the next
+
+41
+00:02:27,507 --> 00:02:28,102
+request.
+
+42
+00:02:28,452 --> 00:02:33,157
+Then the model continues, and
+either asks for another tool, or answers.
+
+43
+00:02:34,957 --> 00:02:36,679
+Let's see that in real code.
+
+44
+00:02:37,029 --> 00:02:40,758
+The code is on the left, and
+what it printed is on the right.
+
+45
+00:02:41,358 --> 00:02:44,281
+A tool definition is a Python dictionary.
+
+46
+00:02:44,631 --> 00:02:48,048
+First, a name, and a
+description written for the model.
+
+47
+00:02:48,398 --> 00:02:52,410
+The description is how the
+model decides when to use this tool.
+
+48
+00:02:53,010 --> 00:02:54,557
+Next, the input schema.
+
+49
+00:02:54,907 --> 00:02:58,732
+It's a JSON Schema: a
+standard way to describe data.
+
+50
+00:02:59,082 --> 00:03:04,664
+Here the form has three fields: a
+title, a due date that can be empty, and a
+
+51
+00:03:04,664 --> 00:03:07,748
+priority that must be low, normal or high.
+
+52
+00:03:08,348 --> 00:03:09,546
+And strict, true.
+
+53
+00:03:09,896 --> 00:03:15,460
+With strict mode, the API guarantees
+that the input the model sends matches this
+
+54
+00:03:15,460 --> 00:03:18,659
+schema: the right
+fields, and the right types.
+
+55
+00:03:19,259 --> 00:03:23,343
+Then we pass the tool in the
+tools list, next to the messages.
+
+56
+00:03:23,693 --> 00:03:29,729
+The first output line is the offline
+notice: as in every module, a scripted fake
+
+57
+00:03:29,729 --> 00:03:32,520
+plays the model, so no key is needed.
+
+58
+00:03:33,120 --> 00:03:35,083
+The stop reason is tool use.
+
+59
+00:03:35,433 --> 00:03:36,937
+The model didn't answer.
+
+60
+00:03:37,287 --> 00:03:39,539
+It's asking our code to run a tool.
+
+61
+00:03:40,139 --> 00:03:46,169
+And here's the tool use block: the name,
+add task, and the input, title pay rent, no
+
+62
+00:03:46,169 --> 00:03:47,892
+due date, priority high.
+
+63
+00:03:48,242 --> 00:03:50,631
+Notice that nothing has been added yet.
+
+64
+00:03:50,981 --> 00:03:53,172
+Our code would run the function next.
+
+65
+00:03:53,522 --> 00:03:55,180
+We'll do that in lesson two.
+
+66
+00:03:56,980 --> 00:03:59,282
+Let's put every part in one table.
+
+67
+00:03:59,632 --> 00:04:03,550
+The name: short, unique, and
+usually a verb, like add task.
+
+68
+00:04:04,150 --> 00:04:07,849
+The description: when to use
+the tool, and what it returns.
+
+69
+00:04:08,199 --> 00:04:12,449
+This is the model's only guide,
+so it's the most important part.
+
+70
+00:04:13,049 --> 00:04:17,363
+The input schema: the fields,
+their types, and the allowed values.
+
+71
+00:04:17,963 --> 00:04:21,956
+And strict: when it's true,
+the inputs always match the schema.
+
+72
+00:04:23,756 --> 00:04:25,856
+Now, where do developers go wrong?
+
+73
+00:04:26,206 --> 00:04:28,031
+Mostly in the description.
+
+74
+00:04:28,381 --> 00:04:34,187
+A name like task, and a description like
+task tool, tells the model almost nothing.
+
+75
+00:04:34,537 --> 00:04:35,819
+Does it add a task?
+
+76
+00:04:36,169 --> 00:04:37,092
+Delete one?
+
+77
+00:04:37,442 --> 00:04:38,348
+List them?
+
+78
+00:04:38,948 --> 00:04:41,231
+A clear description says three things.
+
+79
+00:04:41,581 --> 00:04:45,252
+What the tool does: adds a
+task and returns its number.
+
+80
+00:04:45,602 --> 00:04:49,918
+When to use it: when the user
+asks to remember or plan something.
+
+81
+00:04:50,268 --> 00:04:53,800
+And any rules: the due
+date must be today or later.
+
+82
+00:04:54,150 --> 00:04:57,662
+Write it as if for a new
+colleague who has never seen your app.
+
+83
+00:04:59,462 --> 00:05:01,032
+Pause the video and try it.
+
+84
+00:05:01,382 --> 00:05:04,824
+Here's a tool called notes,
+with the description: notes.
+
+85
+00:05:05,174 --> 00:05:07,349
+Rewrite the name and the description.
+
+86
+00:05:07,949 --> 00:05:12,874
+Ask yourself: what does it do, when
+should the model use it, and what does it
+
+87
+00:05:12,874 --> 00:05:13,322
+return?
+
+88
+00:05:19,922 --> 00:05:22,561
+One good answer: name it search notes.
+
+89
+00:05:22,911 --> 00:05:28,651
+Description: searches the user's notes
+for words in the title or text, and returns
+
+90
+00:05:28,651 --> 00:05:29,981
+the matching notes.
+
+91
+00:05:30,331 --> 00:05:34,055
+Use it when the user asks
+about something they saved earlier.
+
+92
+00:05:35,855 --> 00:05:36,997
+Interview corner.
+
+93
+00:05:37,347 --> 00:05:38,898
+Here's a common question.
+
+94
+00:05:39,248 --> 00:05:41,413
+Does the model run the tool itself?
+
+95
+00:05:44,013 --> 00:05:45,443
+A good answer: no.
+
+96
+00:05:45,793 --> 00:05:51,375
+The model only requests a call, by
+returning a tool use block with a name and an
+
+97
+00:05:51,375 --> 00:05:51,794
+input.
+
+98
+00:05:52,144 --> 00:05:57,907
+Your code runs the function, and sends
+the output back as a tool result with the
+
+99
+00:05:57,907 --> 00:05:58,484
+same ID.
+
+100
+00:05:58,834 --> 00:06:01,966
+The trap is saying the
+model executes your function.
+
+101
+00:06:02,316 --> 00:06:04,116
+It never touches your code.
+
+102
+00:06:04,466 --> 00:06:06,186
+You decide whether to run it.
+
+103
+00:06:06,786 --> 00:06:10,065
+And a follow-up: what
+makes a good tool definition?
+
+104
+00:06:12,665 --> 00:06:18,378
+A clear verb for the name, a description
+that says what the tool does, when to use
+
+105
+00:06:18,378 --> 00:06:24,231
+it, and what it returns, and a tight
+schema, with enums, required fields, and strict
+
+106
+00:06:24,231 --> 00:06:24,579
+mode.
+
+107
+00:06:24,929 --> 00:06:27,374
+The trap: focusing only on the schema.
+
+108
+00:06:27,724 --> 00:06:31,397
+The description is what the
+model reads to choose the tool.
+
+109
+00:06:33,197 --> 00:06:34,056
+Quick check.
+
+110
+00:06:34,406 --> 00:06:36,369
+The stop reason is tool use.
+
+111
+00:06:36,719 --> 00:06:38,107
+What should your code do?
+
+112
+00:06:44,307 --> 00:06:50,131
+Run the requested tool, and send the
+output back as a tool result with the same ID.
+
+113
+00:06:51,931 --> 00:06:53,020
+Let's recap.
+
+114
+00:06:53,370 --> 00:06:56,724
+Tools let a model ask
+your code to act in the world.
+
+115
+00:06:57,324 --> 00:07:03,024
+The model requests, your code runs the
+function, and the result goes back with the
+
+116
+00:07:03,024 --> 00:07:03,580
+same ID.
+
+117
+00:07:04,180 --> 00:07:09,240
+A definition has a name, a
+description, an input schema, and strict mode.
+
+118
+00:07:09,840 --> 00:07:14,906
+And the description is the model's
+guide: what it does, when to use it, what it
+
+119
+00:07:14,906 --> 00:07:16,381
+returns, and the rules.
+
+120
+00:07:16,981 --> 00:07:19,770
+Next lesson: many tools in one place.
+
+121
+00:07:20,120 --> 00:07:25,860
+You'll build a tool registry, generate
+schemas from Pydantic, and handle several
+
+122
+00:07:25,860 --> 00:07:27,869
+tool calls in a single turn.
+
+123
+00:07:29,668 --> 00:07:32,076
+One tool is easy to write by hand.
+
+124
+00:07:32,426 --> 00:07:38,057
+Six tools, each with a schema, a
+description, a permission and a timeout, is where
+
+125
+00:07:38,057 --> 00:07:40,872
+hand-written dictionaries start to break.
+
+126
+00:07:41,222 --> 00:07:46,909
+In this lesson, we'll organise many
+tools in one place, let Pydantic write the
+
+127
+00:07:46,909 --> 00:07:52,086
+schemas for us, and handle a model
+that asks for several tools at once.
+
+128
+00:07:53,886 --> 00:07:56,435
+You'll register tools with a decorator.
+
+129
+00:07:57,035 --> 00:08:00,967
+Generate strict JSON
+schemas from Pydantic classes.
+
+130
+00:08:01,567 --> 00:08:03,710
+Dispatch a tool call by its name.
+
+131
+00:08:04,310 --> 00:08:07,070
+And handle several tool calls in one turn.
+
+132
+00:08:08,870 --> 00:08:10,631
+First, what is a registry?
+
+133
+00:08:10,981 --> 00:08:12,751
+Think of a restaurant menu.
+
+134
+00:08:13,101 --> 00:08:17,360
+Every dish is listed once, with
+its name, description and price.
+
+135
+00:08:17,710 --> 00:08:21,226
+When an order comes in, the
+kitchen looks it up on the menu.
+
+136
+00:08:21,576 --> 00:08:24,780
+A tool registry is
+the menu for your agent.
+
+137
+00:08:25,130 --> 00:08:30,451
+Every tool is listed once, with its
+name, description, input form, permission, and
+
+138
+00:08:30,451 --> 00:08:30,970
+timeout.
+
+139
+00:08:31,320 --> 00:08:34,937
+When the model asks for a
+tool, your code looks it up there.
+
+140
+00:08:35,537 --> 00:08:36,470
+Why bother?
+
+141
+00:08:36,820 --> 00:08:39,359
+Because one list
+means one source of truth.
+
+142
+00:08:39,709 --> 00:08:45,143
+The definitions you send to the model,
+and the functions your code runs, can never
+
+143
+00:08:45,143 --> 00:08:45,938
+drift apart.
+
+144
+00:08:47,738 --> 00:08:49,562
+Here's how the project does it.
+
+145
+00:08:49,912 --> 00:08:55,542
+A Tool is a frozen dataclass that
+holds everything about one tool: its name,
+
+146
+00:08:55,542 --> 00:09:01,469
+description, the Pydantic class for its
+input, the function, its permission, its
+
+147
+00:09:01,469 --> 00:09:04,655
+timeout, and an
+optional confirmation text.
+
+148
+00:09:05,005 --> 00:09:07,267
+We'll use permission in lesson five.
+
+149
+00:09:07,867 --> 00:09:12,985
+The registry is just a dictionary,
+from the tool's name to its Tool object.
+
+150
+00:09:13,585 --> 00:09:15,473
+And tool is a decorator.
+
+151
+00:09:15,823 --> 00:09:19,201
+A decorator is a function
+that wraps another function.
+
+152
+00:09:19,551 --> 00:09:22,136
+This one doesn't
+change the function at all.
+
+153
+00:09:22,486 --> 00:09:27,627
+It just adds it to the registry, using
+the function's own name as the tool name.
+
+154
+00:09:29,427 --> 00:09:30,832
+Now one real tool.
+
+155
+00:09:31,182 --> 00:09:33,850
+First, the input as a Pydantic class.
+
+156
+00:09:34,200 --> 00:09:37,955
+A title between one and a
+hundred and twenty characters.
+
+157
+00:09:38,305 --> 00:09:39,715
+A due date, or None.
+
+158
+00:09:40,065 --> 00:09:43,254
+And a priority that
+must be low, normal, or high.
+
+159
+00:09:43,854 --> 00:09:49,001
+Then the decorator, with the
+description, the input class, and the permission:
+
+160
+00:09:49,001 --> 00:09:51,772
+write, because adding a task changes data.
+
+161
+00:09:52,372 --> 00:09:53,840
+And the function itself.
+
+162
+00:09:54,190 --> 00:09:59,787
+Notice that it receives an AddTask
+object, already checked, not a raw dictionary.
+
+163
+00:10:00,137 --> 00:10:06,307
+So inside the function, a dot due really
+is a date, and a dot priority really is one
+
+164
+00:10:06,307 --> 00:10:07,776
+of the three values.
+
+165
+00:10:09,576 --> 00:10:14,045
+Writing JSON schemas by hand
+is slow, and easy to get wrong.
+
+166
+00:10:14,395 --> 00:10:16,362
+So we let Pydantic write them.
+
+167
+00:10:16,712 --> 00:10:22,236
+Here's a note with a string title, a
+string text, a boolean pinned, and a colour
+
+168
+00:10:22,236 --> 00:10:24,722
+that must be yellow, blue, or green.
+
+169
+00:10:25,322 --> 00:10:28,463
+Schema for turns the
+class into a JSON schema.
+
+170
+00:10:28,813 --> 00:10:34,036
+Look at the right side: string, string,
+boolean, and an enum with the three colours.
+
+171
+00:10:34,386 --> 00:10:39,808
+Every field is required, and
+additional properties is false, which strict mode
+
+172
+00:10:39,808 --> 00:10:40,225
+needs.
+
+173
+00:10:42,025 --> 00:10:43,552
+How does it work inside?
+
+174
+00:10:43,902 --> 00:10:49,341
+Pydantic's schema contains a few
+keywords that strict tool schemas don't accept,
+
+175
+00:10:49,341 --> 00:10:50,701
+like maximum length.
+
+176
+00:10:51,051 --> 00:10:52,357
+So we remove them.
+
+177
+00:10:52,707 --> 00:10:57,599
+That's safe, because Pydantic still
+checks those limits when the input arrives.
+
+178
+00:10:58,199 --> 00:11:01,883
+This code walks through the
+schema and drops those keywords.
+
+179
+00:11:02,233 --> 00:11:08,423
+One detail: Pydantic adds a keyword
+called title, but our task also has a field
+
+180
+00:11:08,423 --> 00:11:09,442
+called title.
+
+181
+00:11:09,792 --> 00:11:12,125
+So property names are kept, always.
+
+182
+00:11:12,475 --> 00:11:18,159
+I actually got this wrong in my first
+version, and a test caught it: the title field
+
+183
+00:11:18,159 --> 00:11:18,769
+vanished.
+
+184
+00:11:19,369 --> 00:11:25,530
+Then, for every object, additional
+properties becomes false, and every field becomes
+
+185
+00:11:25,530 --> 00:11:26,190
+required.
+
+186
+00:11:26,540 --> 00:11:31,282
+Optional values, like the due date,
+are written as either a date or null.
+
+187
+00:11:31,882 --> 00:11:36,068
+And definitions builds the
+list for the API, from the registry.
+
+188
+00:11:36,418 --> 00:11:40,190
+Name, description, schema,
+and strict true, for every tool.
+
+189
+00:11:41,990 --> 00:11:43,382
+Here's the whole menu.
+
+190
+00:11:43,732 --> 00:11:48,913
+Six tools: add, list, complete and
+delete tasks, and add and search notes.
+
+191
+00:11:49,263 --> 00:11:52,377
+Each with its inputs, its
+permission, and its timeout.
+
+192
+00:11:52,727 --> 00:11:55,307
+One registry, so nothing can drift.
+
+193
+00:11:57,107 --> 00:11:58,988
+Next, parallel tool calls.
+
+194
+00:11:59,338 --> 00:12:01,909
+Imagine your table orders three dishes.
+
+195
+00:12:02,259 --> 00:12:07,255
+A good waiter takes all three
+orders in one trip, not one trip per dish.
+
+196
+00:12:07,605 --> 00:12:09,257
+A model can do the same.
+
+197
+00:12:09,607 --> 00:12:15,456
+When a request needs several independent
+things, one reply can contain several tool
+
+198
+00:12:15,456 --> 00:12:16,232
+use blocks.
+
+199
+00:12:16,582 --> 00:12:20,782
+Your code runs them all, and
+sends all the results back together.
+
+200
+00:12:22,582 --> 00:12:24,627
+The request asks for two tasks.
+
+201
+00:12:24,977 --> 00:12:27,602
+The reply contains two tool use blocks.
+
+202
+00:12:27,952 --> 00:12:29,658
+That's a parallel tool call.
+
+203
+00:12:30,258 --> 00:12:36,366
+We run each call in order, and each
+result keeps the ID of the call it answers:
+
+204
+00:12:36,366 --> 00:12:39,381
+offline zero one, and offline zero two.
+
+205
+00:12:39,981 --> 00:12:45,944
+And here's the rule developers often
+break: all the results go into one single user
+
+206
+00:12:45,944 --> 00:12:48,530
+message, not one message per result.
+
+207
+00:12:48,880 --> 00:12:54,141
+The next request sends three
+messages, and the last one holds both results.
+
+208
+00:12:55,941 --> 00:12:57,942
+Let's dry run the message list.
+
+209
+00:12:58,292 --> 00:13:00,951
+Message one, from the user: the request.
+
+210
+00:13:01,551 --> 00:13:07,668
+Message two, from the assistant: two
+tool use blocks, IDs zero one and zero two.
+
+211
+00:13:08,268 --> 00:13:14,122
+Message three, from the user: both tool
+results, zero one and zero two, together.
+
+212
+00:13:14,722 --> 00:13:18,773
+And the wrong way: two
+separate user messages, one per result.
+
+213
+00:13:19,123 --> 00:13:20,170
+Don't do that.
+
+214
+00:13:20,520 --> 00:13:24,178
+Keep the results together,
+in the same order as the calls.
+
+215
+00:13:25,978 --> 00:13:27,470
+Pause and work it out.
+
+216
+00:13:27,820 --> 00:13:29,940
+A request needs three tool calls.
+
+217
+00:13:30,290 --> 00:13:34,935
+The model asks for all three in
+its first reply, and then answers.
+
+218
+00:13:35,535 --> 00:13:37,167
+How many requests are sent?
+
+219
+00:13:37,517 --> 00:13:40,503
+And how many messages
+are in the list at the end?
+
+220
+00:13:47,103 --> 00:13:48,151
+Two requests.
+
+221
+00:13:48,501 --> 00:13:54,082
+And four messages: the user request, the
+assistant with three tool calls, the user
+
+222
+00:13:54,082 --> 00:13:56,873
+with three results, and the final answer.
+
+223
+00:13:57,223 --> 00:14:02,836
+Compare that with lesson three of
+Module 4, where one call per turn needed more
+
+224
+00:14:02,836 --> 00:14:03,689
+round trips.
+
+225
+00:14:05,489 --> 00:14:06,630
+Interview corner.
+
+226
+00:14:06,980 --> 00:14:10,360
+Why generate tool
+schemas from Pydantic models?
+
+227
+00:14:12,960 --> 00:14:15,330
+A good answer: one source of truth.
+
+228
+00:14:15,680 --> 00:14:21,416
+The same class describes the input to
+the model, and validates it in your code, so
+
+229
+00:14:21,416 --> 00:14:23,235
+the two can't drift apart.
+
+230
+00:14:23,585 --> 00:14:26,651
+And less hand-written
+JSON means fewer mistakes.
+
+231
+00:14:27,001 --> 00:14:29,924
+The trap: thinking the
+schema alone protects you.
+
+232
+00:14:30,274 --> 00:14:33,190
+You still validate
+every input when it arrives.
+
+233
+00:14:33,790 --> 00:14:37,361
+Follow-up: the model
+returns two tool use blocks.
+
+234
+00:14:37,711 --> 00:14:39,059
+How do you respond?
+
+235
+00:14:41,659 --> 00:14:47,830
+Run both, then send one user message,
+containing two tool results, each with its
+
+236
+00:14:47,830 --> 00:14:48,756
+matching ID.
+
+237
+00:14:49,106 --> 00:14:53,874
+The trap: one message per
+result, or answering only the first call.
+
+238
+00:14:54,224 --> 00:14:55,954
+The next request will fail.
+
+239
+00:14:57,754 --> 00:14:58,613
+Quick check.
+
+240
+00:14:58,963 --> 00:15:01,642
+A reply contains three tool use blocks.
+
+241
+00:15:01,992 --> 00:15:04,252
+What does the next user message contain?
+
+242
+00:15:10,452 --> 00:15:16,113
+Three tool result blocks, each with
+its matching ID, all in that one message.
+
+243
+00:15:17,913 --> 00:15:18,720
+Recap.
+
+244
+00:15:19,070 --> 00:15:23,451
+A registry lists every tool
+once, so there's one source of truth.
+
+245
+00:15:24,051 --> 00:15:27,895
+The tool decorator
+registers a function by its name.
+
+246
+00:15:28,495 --> 00:15:31,736
+Pydantic classes
+generate the strict schemas.
+
+247
+00:15:32,336 --> 00:15:38,016
+And for parallel calls, run them all,
+and return all the results in one message.
+
+248
+00:15:38,616 --> 00:15:42,141
+Next lesson: the model's
+input can still be wrong.
+
+249
+00:15:42,491 --> 00:15:47,878
+You'll validate every call, and turn
+mistakes into messages the model can fix.
+
+250
+00:15:49,700 --> 00:15:52,301
+Your tool now receives input from a model.
+
+251
+00:15:52,651 --> 00:15:58,018
+And here's a habit that separates hobby
+projects from production code: never trust
+
+252
+00:15:58,018 --> 00:15:58,738
+that input.
+
+253
+00:15:59,088 --> 00:16:00,580
+Always check it first.
+
+254
+00:16:00,930 --> 00:16:06,610
+In this lesson, you'll see what can go
+wrong with tool input, what strict mode does
+
+255
+00:16:06,610 --> 00:16:12,358
+and doesn't protect you from, and how to
+turn every mistake into a message the model
+
+256
+00:16:12,358 --> 00:16:12,906
+can fix.
+
+257
+00:16:14,706 --> 00:16:17,429
+You'll explain why
+tool input is untrusted.
+
+258
+00:16:18,029 --> 00:16:21,221
+Know what strict mode
+guarantees, and what it doesn't.
+
+259
+00:16:21,821 --> 00:16:25,601
+Validate input with
+Pydantic, before running a tool.
+
+260
+00:16:26,201 --> 00:16:30,136
+And return clear errors, so
+the model can correct itself.
+
+261
+00:16:31,936 --> 00:16:33,417
+Why validate at all?
+
+262
+00:16:33,767 --> 00:16:35,252
+Think of a bank clerk.
+
+263
+00:16:35,602 --> 00:16:37,591
+You hand them a form to send money.
+
+264
+00:16:37,941 --> 00:16:39,910
+Before anything moves, they check it.
+
+265
+00:16:40,260 --> 00:16:42,503
+Is the account number the right length?
+
+266
+00:16:42,853 --> 00:16:44,166
+Is the date real?
+
+267
+00:16:44,516 --> 00:16:46,207
+Is the amount positive?
+
+268
+00:16:46,557 --> 00:16:49,757
+If something's wrong, they
+don't crash, and they don't guess.
+
+269
+00:16:50,107 --> 00:16:53,923
+They hand the form back, and
+tell you exactly what to fix.
+
+270
+00:16:54,273 --> 00:16:56,516
+Your tools should behave the same way.
+
+271
+00:16:57,116 --> 00:17:02,541
+Tool input comes from a model, and the
+model's input comes, partly, from users.
+
+272
+00:17:02,891 --> 00:17:07,793
+A model can misread a date,
+invent a value, or be tricked by a user.
+
+273
+00:17:08,143 --> 00:17:12,461
+So treat tool input like any
+untrusted input from the internet.
+
+274
+00:17:14,262 --> 00:17:18,898
+There are two layers of protection,
+and it's important to know which does what.
+
+275
+00:17:19,248 --> 00:17:24,114
+Strict mode makes sure the right
+fields are there, with no unknown fields.
+
+276
+00:17:24,714 --> 00:17:29,120
+It makes sure the types are right,
+and that enum values are from the list.
+
+277
+00:17:29,720 --> 00:17:34,701
+But limits, like a maximum length or
+a minimum number, aren't part of strict
+
+278
+00:17:34,701 --> 00:17:35,226
+schemas.
+
+279
+00:17:35,576 --> 00:17:37,640
+Pydantic checks those in your code.
+
+280
+00:17:38,240 --> 00:17:44,097
+And business rules, like the due date not
+being in the past, or task seven existing,
+
+281
+00:17:44,097 --> 00:17:45,840
+only your code can check.
+
+282
+00:17:47,640 --> 00:17:49,809
+Here's how the project validates.
+
+283
+00:17:50,159 --> 00:17:55,697
+Pydantic's model validate takes the
+raw dictionary from the model, and either
+
+284
+00:17:55,697 --> 00:17:59,652
+returns a checked object,
+or raises a validation error.
+
+285
+00:18:00,252 --> 00:18:02,074
+If it fails, we don't crash.
+
+286
+00:18:02,424 --> 00:18:08,049
+We turn every problem into one short
+line, the field name and what's wrong, and
+
+287
+00:18:08,049 --> 00:18:09,402
+raise a tool error.
+
+288
+00:18:09,752 --> 00:18:15,578
+Remember from Module 4: a tool error
+becomes an observation the model can read.
+
+289
+00:18:17,378 --> 00:18:20,541
+Some rules need context
+that a schema can't know.
+
+290
+00:18:20,891 --> 00:18:22,717
+Is the due date in the past?
+
+291
+00:18:23,067 --> 00:18:24,575
+That depends on today.
+
+292
+00:18:24,925 --> 00:18:30,845
+So that check lives inside the tool, and
+it raises a tool error with both dates, so
+
+293
+00:18:30,845 --> 00:18:33,698
+the model knows exactly what went wrong.
+
+294
+00:18:35,498 --> 00:18:40,623
+Let's send five inputs through the real
+run tool function, and see what happens to
+
+295
+00:18:40,623 --> 00:18:41,185
+each one.
+
+296
+00:18:41,785 --> 00:18:45,884
+The first input is valid, so
+the task is added, as task one.
+
+297
+00:18:46,484 --> 00:18:49,170
+The second has a due date of next friday.
+
+298
+00:18:49,520 --> 00:18:54,685
+That's not a date in the right format,
+so we get a clear message about the due
+
+299
+00:18:54,685 --> 00:18:55,082
+field.
+
+300
+00:18:55,682 --> 00:19:01,057
+The third says urgent, which isn't one
+of the allowed priorities, and the message
+
+301
+00:19:01,057 --> 00:19:02,715
+lists the three that are.
+
+302
+00:19:03,315 --> 00:19:07,314
+The fourth has an empty title,
+which breaks the minimum length.
+
+303
+00:19:07,914 --> 00:19:13,566
+And the fifth has a perfectly valid
+shape, but the date is in January, already in
+
+304
+00:19:13,566 --> 00:19:14,194
+the past.
+
+305
+00:19:14,544 --> 00:19:16,575
+Only the business rule catches it.
+
+306
+00:19:18,375 --> 00:19:20,954
+Now the most useful part: recovery.
+
+307
+00:19:21,304 --> 00:19:23,917
+Turn one: the model sends a bad call.
+
+308
+00:19:24,267 --> 00:19:29,702
+Our code returns an error result,
+marked is error, that names both problems.
+
+309
+00:19:30,302 --> 00:19:35,981
+Turn two: the model reads the message,
+fixes both fields, and the call succeeds.
+
+310
+00:19:36,581 --> 00:19:39,223
+Turn three: the model answers the user.
+
+311
+00:19:41,023 --> 00:19:44,139
+Let's watch that
+recovery in the real agent.
+
+312
+00:19:44,489 --> 00:19:46,155
+First, an empty store.
+
+313
+00:19:46,755 --> 00:19:50,852
+Here the offline fake is
+scripted to send a bad call first.
+
+314
+00:19:51,202 --> 00:19:53,870
+Turn one: the error, with both problems.
+
+315
+00:19:54,220 --> 00:19:57,412
+Turn two: the corrected
+call, and the task is added.
+
+316
+00:19:57,762 --> 00:20:03,603
+With a real model, this recovery isn't
+scripted: the model reads your message and
+
+317
+00:20:03,603 --> 00:20:05,262
+fixes the input itself.
+
+318
+00:20:05,612 --> 00:20:08,186
+That's why clear messages matter so much.
+
+319
+00:20:09,986 --> 00:20:11,303
+Pause and decide.
+
+320
+00:20:11,653 --> 00:20:16,179
+For each problem, which layer
+catches it: strict mode, or your code?
+
+321
+00:20:16,779 --> 00:20:17,418
+One.
+
+322
+00:20:17,768 --> 00:20:21,987
+The model sends a field called
+deadline, that isn't in the schema.
+
+323
+00:20:22,587 --> 00:20:23,209
+Two.
+
+324
+00:20:23,559 --> 00:20:28,500
+The model asks to complete task
+forty-two, but there are only three tasks.
+
+325
+00:20:29,100 --> 00:20:29,797
+Three.
+
+326
+00:20:30,147 --> 00:20:34,849
+A note's text is five thousand
+characters, and the limit is two thousand.
+
+327
+00:20:41,449 --> 00:20:45,194
+One: strict mode, because
+additional properties is false.
+
+328
+00:20:45,544 --> 00:20:50,064
+Two: your code, because only
+the store knows which tasks exist.
+
+329
+00:20:50,414 --> 00:20:55,532
+Three: your code too, because length
+limits aren't part of strict schemas, so
+
+330
+00:20:55,532 --> 00:20:56,928
+Pydantic checks them.
+
+331
+00:20:58,728 --> 00:20:59,869
+Interview corner.
+
+332
+00:21:00,219 --> 00:21:04,964
+If you use strict tool schemas, do
+you still need to validate tool inputs?
+
+333
+00:21:07,564 --> 00:21:08,249
+Yes.
+
+334
+00:21:08,599 --> 00:21:11,361
+Strict mode guarantees
+the shape and the types.
+
+335
+00:21:11,711 --> 00:21:17,447
+It can't check limits that strict schemas
+leave out, or business rules, like the due
+
+336
+00:21:17,447 --> 00:21:21,067
+date being in the future,
+or task forty-two existing.
+
+337
+00:21:21,417 --> 00:21:23,699
+The trap is saying strict means correct.
+
+338
+00:21:24,049 --> 00:21:25,669
+Strict means well-formed.
+
+339
+00:21:26,269 --> 00:21:30,473
+Follow-up: what should a tool
+return when its input is invalid?
+
+340
+00:21:33,073 --> 00:21:38,603
+A tool result marked is error, with a
+short, specific message: which field is wrong,
+
+341
+00:21:38,603 --> 00:21:39,854
+and what's allowed.
+
+342
+00:21:40,204 --> 00:21:42,233
+Then the model can fix the call.
+
+343
+00:21:42,583 --> 00:21:48,096
+The trap: crashing the loop with an
+exception, or a vague message like invalid
+
+344
+00:21:48,096 --> 00:21:50,640
+input, which the model can't act on.
+
+345
+00:21:52,440 --> 00:21:53,299
+Quick check.
+
+346
+00:21:53,649 --> 00:21:57,236
+Which of these can only
+your code catch, not strict mode?
+
+347
+00:22:03,436 --> 00:22:05,632
+A due date that's already in the past.
+
+348
+00:22:05,982 --> 00:22:08,041
+It's a perfectly well-formed date.
+
+349
+00:22:08,391 --> 00:22:11,068
+Only your code knows today, and the rule.
+
+350
+00:22:12,868 --> 00:22:13,676
+Recap.
+
+351
+00:22:14,026 --> 00:22:18,412
+Tool input is untrusted, so
+check it before running anything.
+
+352
+00:22:19,012 --> 00:22:21,176
+Strict mode covers shape and types.
+
+353
+00:22:21,526 --> 00:22:24,323
+Your code covers
+limits and business rules.
+
+354
+00:22:24,923 --> 00:22:29,769
+Pydantic's model validate turns
+raw input into a checked object.
+
+355
+00:22:30,369 --> 00:22:35,241
+And error messages name the field and
+what's allowed, so the model can fix it.
+
+356
+00:22:35,841 --> 00:22:39,336
+Next lesson: tools that
+are slow, or never answer.
+
+357
+00:22:39,686 --> 00:22:43,731
+You'll add timeouts, so one
+stuck tool can't freeze your agent.
+
+358
+00:22:45,551 --> 00:22:51,438
+Real tools talk to the outside world: a
+database, a calendar service, a website.
+
+359
+00:22:51,788 --> 00:22:56,806
+And the outside world is sometimes
+slow, and sometimes doesn't answer at all.
+
+360
+00:22:57,156 --> 00:23:02,361
+In this lesson you'll make sure one
+stuck tool can never freeze your whole agent.
+
+361
+00:23:04,161 --> 00:23:06,974
+You'll explain why
+every tool needs a timeout.
+
+362
+00:23:07,574 --> 00:23:10,607
+Run a function with a
+timeout, using a thread.
+
+363
+00:23:11,207 --> 00:23:14,600
+Turn timeouts and other
+failures into tool errors.
+
+364
+00:23:15,200 --> 00:23:17,426
+And know the limits of thread timeouts.
+
+365
+00:23:19,226 --> 00:23:20,850
+Why do we need timeouts?
+
+366
+00:23:21,200 --> 00:23:23,415
+Think of standing in a queue at an office.
+
+367
+00:23:23,765 --> 00:23:29,049
+If nothing moves for an hour, at some
+point you decide to leave, and come back
+
+368
+00:23:29,049 --> 00:23:29,862
+another day.
+
+369
+00:23:30,212 --> 00:23:31,737
+You don't wait there forever.
+
+370
+00:23:32,087 --> 00:23:35,257
+A timeout is that
+decision, made in advance.
+
+371
+00:23:35,607 --> 00:23:37,544
+Wait at most, say, two seconds.
+
+372
+00:23:37,894 --> 00:23:40,044
+Then move on, with a clear message.
+
+373
+00:23:40,644 --> 00:23:46,787
+Without a timeout, one tool that never
+answers means the agent never answers, the
+
+374
+00:23:46,787 --> 00:23:52,929
+user waits forever, and in a server,
+that request holds resources until something
+
+375
+00:23:52,929 --> 00:23:53,536
+crashes.
+
+376
+00:23:55,336 --> 00:23:57,683
+Here's the idea in its simplest form.
+
+377
+00:23:58,033 --> 00:24:00,139
+We run the tool in a separate thread.
+
+378
+00:24:00,489 --> 00:24:05,974
+A thread is a second worker inside the
+same program, so our main code can keep an
+
+379
+00:24:05,974 --> 00:24:07,125
+eye on the clock.
+
+380
+00:24:07,725 --> 00:24:12,949
+Join with a number of seconds means:
+wait for the worker to finish, but no longer
+
+381
+00:24:12,949 --> 00:24:13,594
+than this.
+
+382
+00:24:14,194 --> 00:24:19,322
+If the worker is still running after
+that, we give up, and return a clear error
+
+383
+00:24:19,322 --> 00:24:21,594
+message instead of waiting forever.
+
+384
+00:24:22,194 --> 00:24:26,219
+A quick tool finishes in
+time, so we get its normal result.
+
+385
+00:24:26,819 --> 00:24:31,472
+This tool sleeps for sixty
+seconds, like a server that never answers.
+
+386
+00:24:31,822 --> 00:24:35,512
+After two seconds, we stop
+waiting, and get a timeout error.
+
+387
+00:24:36,112 --> 00:24:39,517
+And the total wait was
+two seconds, not sixty-two.
+
+388
+00:24:39,867 --> 00:24:41,707
+The agent stays responsive.
+
+389
+00:24:43,507 --> 00:24:46,530
+The project's version
+adds one important thing.
+
+390
+00:24:46,880 --> 00:24:51,442
+The worker stores either the
+result, or any exception the tool raised.
+
+391
+00:24:52,042 --> 00:24:53,538
+The thread is a daemon.
+
+392
+00:24:53,888 --> 00:24:58,014
+That means a stuck worker
+never stops the program from exiting.
+
+393
+00:24:58,364 --> 00:25:03,544
+After the wait, if it's still alive, we
+raise a tool error naming the tool and the
+
+394
+00:25:03,544 --> 00:25:03,923
+limit.
+
+395
+00:25:04,523 --> 00:25:09,893
+If the tool raised an error, we raise
+it again here, in the main thread, so it's
+
+396
+00:25:09,893 --> 00:25:11,840
+handled like any other error.
+
+397
+00:25:12,190 --> 00:25:14,203
+Otherwise we return the result.
+
+398
+00:25:16,003 --> 00:25:19,134
+And here's the function
+every tool call goes through.
+
+399
+00:25:19,484 --> 00:25:21,312
+First: does the tool exist?
+
+400
+00:25:21,912 --> 00:25:24,767
+Then: is the input
+valid, from lesson three.
+
+401
+00:25:25,117 --> 00:25:27,940
+And is the call
+allowed, which is next lesson.
+
+402
+00:25:28,540 --> 00:25:31,177
+Then: run the tool, with its own timeout.
+
+403
+00:25:31,527 --> 00:25:36,700
+And a lookup error, like a task that
+doesn't exist, becomes a tool error too.
+
+404
+00:25:37,050 --> 00:25:40,603
+Every problem ends up as
+a message, never a crash.
+
+405
+00:25:42,403 --> 00:25:45,224
+Let's see what the
+model receives in each case.
+
+406
+00:25:45,574 --> 00:25:48,073
+The tool finished: the normal result.
+
+407
+00:25:48,673 --> 00:25:54,539
+The tool was too slow: search notes timed
+out after two seconds, marked as an error.
+
+408
+00:25:55,139 --> 00:25:58,424
+The task doesn't
+exist: there is no task nine.
+
+409
+00:25:59,024 --> 00:26:02,897
+And bad input: the
+validation message from lesson three.
+
+410
+00:26:04,697 --> 00:26:06,238
+Here's the real agent.
+
+411
+00:26:06,588 --> 00:26:11,661
+This environment variable makes search
+notes sleep for thirty seconds, to play a
+
+412
+00:26:11,661 --> 00:26:12,485
+slow service.
+
+413
+00:26:12,835 --> 00:26:14,651
+Its timeout is two seconds.
+
+414
+00:26:15,001 --> 00:26:20,365
+After two seconds the agent gets a
+timeout observation, and finishes normally,
+
+415
+00:26:20,365 --> 00:26:21,672
+instead of hanging.
+
+416
+00:26:23,472 --> 00:26:25,496
+Let's be honest about the limits.
+
+417
+00:26:25,846 --> 00:26:31,820
+A thread timeout can stop waiting after
+N seconds, keep the agent responsive, and
+
+418
+00:26:31,820 --> 00:26:33,369
+report a clear error.
+
+419
+00:26:33,969 --> 00:26:35,756
+But it can't kill the stuck thread.
+
+420
+00:26:36,106 --> 00:26:41,174
+In Python, a thread can't be stopped
+from outside, so it keeps running in the
+
+421
+00:26:41,174 --> 00:26:41,898
+background.
+
+422
+00:26:42,248 --> 00:26:44,409
+It can't undo half-finished work.
+
+423
+00:26:44,759 --> 00:26:49,189
+And it can't protect you from a
+tool that uses huge amounts of memory.
+
+424
+00:26:49,539 --> 00:26:55,261
+For real isolation, run risky tools
+in a separate process, or a container.
+
+425
+00:26:55,611 --> 00:27:01,841
+And for network calls, use the
+library's own timeout too, like the SDK's timeout
+
+426
+00:27:01,841 --> 00:27:03,554
+setting from Module 2.
+
+427
+00:27:05,354 --> 00:27:08,512
+Pause and choose a
+timeout for each of these tools.
+
+428
+00:27:09,112 --> 00:27:09,750
+One.
+
+429
+00:27:10,100 --> 00:27:13,038
+List tasks, which
+reads a small local file.
+
+430
+00:27:13,638 --> 00:27:14,260
+Two.
+
+431
+00:27:14,610 --> 00:27:17,699
+Search notes, which
+calls a remote search service.
+
+432
+00:27:18,299 --> 00:27:18,996
+Three.
+
+433
+00:27:19,346 --> 00:27:24,897
+Export report, which builds a PDF
+that usually takes about twenty seconds.
+
+434
+00:27:31,497 --> 00:27:34,889
+There's no single right
+number, but here's the reasoning.
+
+435
+00:27:35,239 --> 00:27:39,721
+A local file should take
+milliseconds, so a few seconds is generous.
+
+436
+00:27:40,071 --> 00:27:45,017
+A remote service: a few seconds, so a
+slow network doesn't freeze the agent.
+
+437
+00:27:45,367 --> 00:27:50,679
+A twenty-second job needs more,
+perhaps sixty seconds, or better, run it in the
+
+438
+00:27:50,679 --> 00:27:53,840
+background and let the
+agent check on it later.
+
+439
+00:27:55,640 --> 00:27:56,781
+Interview corner.
+
+440
+00:27:57,131 --> 00:28:00,131
+How do you stop a slow
+tool from freezing an agent?
+
+441
+00:28:02,731 --> 00:28:04,499
+Give every tool a timeout.
+
+442
+00:28:04,849 --> 00:28:10,796
+Run it in a worker, a thread or a
+process, wait at most N seconds, and then return
+
+443
+00:28:10,796 --> 00:28:11,956
+an error result.
+
+444
+00:28:12,306 --> 00:28:16,195
+For network calls, also
+use the library's own timeout.
+
+445
+00:28:16,545 --> 00:28:19,837
+The trap: expecting the
+model to notice it's slow.
+
+446
+00:28:20,187 --> 00:28:23,420
+The model can only act
+after your code returns.
+
+447
+00:28:24,020 --> 00:28:27,080
+Follow-up: would you
+use a thread or a process?
+
+448
+00:28:29,680 --> 00:28:34,862
+A thread is simple, and fine for
+waiting on input and output, but it can't be
+
+449
+00:28:34,862 --> 00:28:35,333
+killed.
+
+450
+00:28:35,683 --> 00:28:41,636
+A process can be terminated, and it
+isolates memory and crashes, but it costs more
+
+451
+00:28:41,636 --> 00:28:42,289
+to start.
+
+452
+00:28:42,639 --> 00:28:45,939
+The trap: claiming a
+thread timeout stops the work.
+
+453
+00:28:46,289 --> 00:28:47,915
+It only stops the waiting.
+
+454
+00:28:49,715 --> 00:28:50,573
+Quick check.
+
+455
+00:28:50,923 --> 00:28:54,930
+After a thread timeout fires,
+what happens to the stuck tool?
+
+456
+00:29:01,130 --> 00:29:03,117
+It keeps running in the background.
+
+457
+00:29:03,467 --> 00:29:05,044
+We just stop waiting for it.
+
+458
+00:29:05,394 --> 00:29:09,293
+If you must be able to stop
+the work, use a separate process.
+
+459
+00:29:11,093 --> 00:29:11,901
+Recap.
+
+460
+00:29:12,251 --> 00:29:16,314
+Every tool gets a timeout, so
+the agent never waits forever.
+
+461
+00:29:16,914 --> 00:29:20,546
+A worker thread, plus join
+with seconds, stops the waiting.
+
+462
+00:29:21,146 --> 00:29:25,579
+Timeouts, missing items and
+bad input all become tool errors.
+
+463
+00:29:26,179 --> 00:29:30,742
+And threads can't be killed, so
+use processes for real isolation.
+
+464
+00:29:31,342 --> 00:29:35,062
+Next lesson: the most
+important safety feature of all.
+
+465
+00:29:35,412 --> 00:29:39,973
+Permissions, and asking a human
+before anything dangerous happens.
+
+466
+00:29:41,786 --> 00:29:45,063
+So far, every valid tool call simply runs.
+
+467
+00:29:45,413 --> 00:29:47,350
+That's fine for listing tasks.
+
+468
+00:29:47,700 --> 00:29:52,618
+It's not fine for deleting your
+data, sending an email, or paying a bill.
+
+469
+00:29:52,968 --> 00:29:58,861
+In this lesson you'll give every tool a
+permission level, add a read-only mode, and
+
+470
+00:29:58,861 --> 00:30:03,192
+make the agent ask a human
+before anything dangerous happens.
+
+471
+00:30:04,992 --> 00:30:08,451
+You'll explain the principle
+of least privilege for agents.
+
+472
+00:30:09,051 --> 00:30:11,999
+Sort tools into read, write, and danger.
+
+473
+00:30:12,599 --> 00:30:14,726
+Block writes in a read-only mode.
+
+474
+00:30:15,326 --> 00:30:18,432
+And ask a human before
+every dangerous action.
+
+475
+00:30:20,232 --> 00:30:25,463
+Let's start with an idea security
+engineers use everywhere: least privilege.
+
+476
+00:30:25,813 --> 00:30:27,596
+Think of a hotel key card.
+
+477
+00:30:27,946 --> 00:30:30,324
+It doesn't open
+every door in the building.
+
+478
+00:30:30,674 --> 00:30:32,831
+It opens your room, for your stay.
+
+479
+00:30:33,181 --> 00:30:35,264
+If you lose it, the damage is small.
+
+480
+00:30:35,614 --> 00:30:41,681
+For agents, least privilege means: give
+the agent only the tools and powers it needs
+
+481
+00:30:41,681 --> 00:30:43,920
+for this job, and nothing more.
+
+482
+00:30:44,520 --> 00:30:46,950
+Why does this matter so much for agents?
+
+483
+00:30:47,300 --> 00:30:53,260
+Because a model can misunderstand a
+request, and a user, or text inside a document,
+
+484
+00:30:53,260 --> 00:30:56,778
+can try to trick it
+into doing something harmful.
+
+485
+00:30:57,128 --> 00:31:01,112
+Permissions limit the damage,
+even when the model gets it wrong.
+
+486
+00:31:02,912 --> 00:31:05,037
+Our project uses three levels.
+
+487
+00:31:05,387 --> 00:31:07,719
+Read: list tasks and search notes.
+
+488
+00:31:08,069 --> 00:31:12,206
+These are always allowed,
+because looking never changes anything.
+
+489
+00:31:12,806 --> 00:31:15,827
+Write: add task,
+complete task, and add note.
+
+490
+00:31:16,177 --> 00:31:21,990
+These change data, so they're allowed,
+unless the agent runs in read-only mode.
+
+491
+00:31:22,590 --> 00:31:24,431
+And danger: delete task.
+
+492
+00:31:24,781 --> 00:31:29,645
+Deleting can't be undone, so a
+human must approve every single call.
+
+493
+00:31:31,445 --> 00:31:32,812
+Here's the policy.
+
+494
+00:31:33,162 --> 00:31:39,760
+It holds the context, a read-only flag,
+and ask human: a function that asks a person
+
+495
+00:31:39,760 --> 00:31:41,409
+a yes or no question.
+
+496
+00:31:41,759 --> 00:31:46,436
+If there's nobody to ask, it's
+None, and dangerous calls are denied.
+
+497
+00:31:46,786 --> 00:31:49,390
+It also keeps a log of every decision.
+
+498
+00:31:49,990 --> 00:31:52,215
+The check runs before every call.
+
+499
+00:31:52,565 --> 00:31:55,467
+Read tools return straight away: allowed.
+
+500
+00:31:56,067 --> 00:32:02,141
+In read-only mode, any other tool is
+blocked, with a clear reason the model can pass
+
+501
+00:32:02,141 --> 00:32:03,225
+on to the user.
+
+502
+00:32:03,825 --> 00:32:09,340
+For danger tools, we build a clear
+question, using the tool's confirm function.
+
+503
+00:32:09,690 --> 00:32:15,480
+For delete task, it says which task, by
+number and title, so the human knows exactly
+
+504
+00:32:15,480 --> 00:32:17,065
+what they're approving.
+
+505
+00:32:17,665 --> 00:32:18,741
+Then we ask.
+
+506
+00:32:19,091 --> 00:32:21,237
+Anything other than yes means no.
+
+507
+00:32:21,587 --> 00:32:27,352
+The decision is logged, and if it's
+declined, the model gets a tool error that says:
+
+508
+00:32:27,352 --> 00:32:29,685
+the user declined, don't retry it.
+
+509
+00:32:31,485 --> 00:32:33,086
+Let's try four calls.
+
+510
+00:32:33,436 --> 00:32:36,646
+In read-only mode,
+listing tasks is allowed.
+
+511
+00:32:37,246 --> 00:32:40,835
+But completing a task is
+blocked, and nothing changes.
+
+512
+00:32:41,436 --> 00:32:43,014
+Now a dangerous call.
+
+513
+00:32:43,364 --> 00:32:47,250
+The policy asks the
+human: delete task one, pay rent?
+
+514
+00:32:47,600 --> 00:32:51,939
+This human says no, so the call
+is declined, and the task stays.
+
+515
+00:32:52,539 --> 00:32:57,027
+And when the human says yes, only
+then does the delete actually run.
+
+516
+00:32:58,827 --> 00:33:00,806
+The order of these checks matters.
+
+517
+00:33:01,156 --> 00:33:02,907
+First, does the tool exist?
+
+518
+00:33:03,257 --> 00:33:04,362
+If not, error.
+
+519
+00:33:04,962 --> 00:33:06,748
+Second, is the input valid?
+
+520
+00:33:07,098 --> 00:33:09,790
+We never ask a human to approve nonsense.
+
+521
+00:33:10,390 --> 00:33:13,139
+Third, for a delete, does the task exist?
+
+522
+00:33:13,489 --> 00:33:15,528
+We need it to write a clear question.
+
+523
+00:33:16,128 --> 00:33:21,021
+Fourth, the permission check, which
+asks the human only for danger tools.
+
+524
+00:33:21,621 --> 00:33:24,025
+And fifth, run the tool with its timeout.
+
+525
+00:33:25,825 --> 00:33:27,473
+Now in the real agent.
+
+526
+00:33:27,823 --> 00:33:31,304
+An empty store, and two
+tasks added, in one turn.
+
+527
+00:33:31,904 --> 00:33:33,279
+Delete task one.
+
+528
+00:33:33,629 --> 00:33:35,413
+The agent stops and asks.
+
+529
+00:33:35,763 --> 00:33:39,836
+Here I pipe in the answer no,
+so you can see it in the recording.
+
+530
+00:33:40,186 --> 00:33:43,216
+The delete is
+declined, and the task is safe.
+
+531
+00:33:43,816 --> 00:33:47,664
+And in read-only mode,
+even adding a task is blocked.
+
+532
+00:33:48,014 --> 00:33:52,844
+That's a good default for an agent
+that should only answer questions about your
+
+533
+00:33:52,844 --> 00:33:53,150
+data.
+
+534
+00:33:54,950 --> 00:33:57,268
+One warning about confirmations.
+
+535
+00:33:57,618 --> 00:34:04,010
+A question like, allow delete task, task
+ID one, teaches people to click yes without
+
+536
+00:34:04,010 --> 00:34:04,618
+reading.
+
+537
+00:34:04,968 --> 00:34:11,000
+A good question shows exactly what will
+happen, in plain words: delete task one, pay
+
+538
+00:34:11,000 --> 00:34:12,436
+rent, high priority.
+
+539
+00:34:12,786 --> 00:34:18,469
+Ask for every dangerous call, not just
+the first, and treat no answer as a no.
+
+540
+00:34:20,269 --> 00:34:23,797
+Pause and choose a permission
+level for each of these tools.
+
+541
+00:34:24,397 --> 00:34:25,035
+One.
+
+542
+00:34:25,385 --> 00:34:26,812
+Get weather, for a city.
+
+543
+00:34:27,412 --> 00:34:28,033
+Two.
+
+544
+00:34:28,383 --> 00:34:29,524
+Rename task.
+
+545
+00:34:30,124 --> 00:34:30,821
+Three.
+
+546
+00:34:31,171 --> 00:34:32,233
+Send email.
+
+547
+00:34:38,833 --> 00:34:41,239
+Get weather is read: it only looks.
+
+548
+00:34:41,589 --> 00:34:46,212
+Rename task is write: it
+changes data, but it's easy to undo.
+
+549
+00:34:46,562 --> 00:34:51,782
+Send email is danger: once it's sent,
+you can't take it back, so a human should
+
+550
+00:34:51,782 --> 00:34:52,972
+approve every one.
+
+551
+00:34:54,772 --> 00:34:55,913
+Interview corner.
+
+552
+00:34:56,263 --> 00:34:58,808
+How do you make a tool-using agent safe?
+
+553
+00:35:01,408 --> 00:35:04,574
+Least privilege, so
+only the tools it needs.
+
+554
+00:35:04,924 --> 00:35:06,131
+Permission levels.
+
+555
+00:35:06,481 --> 00:35:08,144
+Validate every input.
+
+556
+00:35:08,494 --> 00:35:09,363
+Timeouts.
+
+557
+00:35:09,713 --> 00:35:15,557
+And human approval for actions that can't
+be undone, with a clear confirmation and a
+
+558
+00:35:15,557 --> 00:35:17,088
+log of every decision.
+
+559
+00:35:17,438 --> 00:35:21,182
+The trap: saying, tell the
+model in the prompt to be careful.
+
+560
+00:35:21,532 --> 00:35:23,037
+Prompts guide the model.
+
+561
+00:35:23,387 --> 00:35:25,604
+Only code enforces the rules.
+
+562
+00:35:26,204 --> 00:35:29,127
+Follow-up: where should
+the approval check live?
+
+563
+00:35:31,727 --> 00:35:37,668
+In your code, between validation and
+execution, so it runs no matter what the model
+
+564
+00:35:37,668 --> 00:35:38,026
+says.
+
+565
+00:35:38,376 --> 00:35:43,276
+You can tell the model about it, but
+never rely on the model to enforce it.
+
+566
+00:35:43,626 --> 00:35:48,337
+The trap: asking the model to ask
+the user for permission in its reply.
+
+567
+00:35:50,137 --> 00:35:50,996
+Quick check.
+
+568
+00:35:51,346 --> 00:35:55,782
+Why does the policy validate
+the input before asking the human?
+
+569
+00:36:01,982 --> 00:36:06,064
+So a human only ever
+approves a real, well-formed action.
+
+570
+00:36:06,414 --> 00:36:11,830
+Asking about nonsense wastes their
+attention, and teaches them to click yes without
+
+571
+00:36:11,830 --> 00:36:12,352
+reading.
+
+572
+00:36:14,152 --> 00:36:14,960
+Recap.
+
+573
+00:36:15,310 --> 00:36:19,519
+Least privilege: only the
+tools and powers the job needs.
+
+574
+00:36:20,119 --> 00:36:25,736
+Read is always allowed, write unless
+read-only, and danger needs a human yes.
+
+575
+00:36:26,336 --> 00:36:29,605
+Validate first, then
+ask, with a clear question.
+
+576
+00:36:30,205 --> 00:36:33,589
+And enforce it in code,
+never only in the prompt.
+
+577
+00:36:34,189 --> 00:36:36,702
+You now know every idea in this module.
+
+578
+00:36:37,052 --> 00:36:42,381
+Next lesson, we put them together,
+and build the personal productivity agent.
+
+579
+00:36:44,186 --> 00:36:45,344
+Project time.
+
+580
+00:36:45,694 --> 00:36:51,414
+Over two lessons we'll build a personal
+productivity agent: you tell it, in plain
+
+581
+00:36:51,414 --> 00:36:57,346
+words, what to do with your tasks and
+notes, and it uses six tools to do it, safely.
+
+582
+00:36:57,696 --> 00:37:00,585
+Everything from this
+module comes together here.
+
+583
+00:37:00,935 --> 00:37:02,729
+We'll go one file at a time.
+
+584
+00:37:04,529 --> 00:37:05,942
+Here's what we're building.
+
+585
+00:37:06,292 --> 00:37:11,587
+You ask in plain words, at the command
+line, like: add task pay rent, and list
+
+586
+00:37:11,587 --> 00:37:11,995
+tasks.
+
+587
+00:37:12,595 --> 00:37:18,469
+The agent has six tools, for tasks and
+notes, defined once in a registry, with
+
+588
+00:37:18,469 --> 00:37:20,125
+schemas from Pydantic.
+
+589
+00:37:20,725 --> 00:37:24,772
+Every input is validated,
+and every tool has a timeout.
+
+590
+00:37:25,372 --> 00:37:31,313
+Tools have permission levels, there's a
+read-only mode, and deleting needs a human
+
+591
+00:37:31,313 --> 00:37:31,603
+yes.
+
+592
+00:37:32,203 --> 00:37:37,983
+And the data is saved safely in a JSON
+file, with forty-three tests and an offline
+
+593
+00:37:37,983 --> 00:37:38,336
+mode.
+
+594
+00:37:40,136 --> 00:37:41,265
+Here's the plan.
+
+595
+00:37:41,615 --> 00:37:47,227
+The command line passes your request to
+the agent, which runs the loop from Module
+
+596
+00:37:47,227 --> 00:37:47,364
+4.
+
+597
+00:37:47,964 --> 00:37:54,120
+Every tool call goes through tools dot
+py: the registry, validation, and timeouts.
+
+598
+00:37:54,470 --> 00:37:59,269
+It asks the policy for permission,
+and the tools read and write the store.
+
+599
+00:37:59,869 --> 00:38:05,898
+And the agent talks to the model through
+the client: the real Claude API with a key,
+
+600
+00:38:05,898 --> 00:38:08,195
+or the offline fake without one.
+
+601
+00:38:09,995 --> 00:38:14,726
+First, so you know exactly what you're
+seeing in this video: the offline fake.
+
+602
+00:38:15,076 --> 00:38:21,876
+It speaks the same protocol as the real
+API, so the SDK and the loop run unchanged.
+
+603
+00:38:22,226 --> 00:38:27,844
+It splits your request on the word and,
+matches each part against a few patterns,
+
+604
+00:38:27,844 --> 00:38:31,174
+and asks for all the
+matching tools in one turn.
+
+605
+00:38:31,774 --> 00:38:33,028
+That's not a model.
+
+606
+00:38:33,378 --> 00:38:38,524
+It can't understand free-form
+requests, so the demos use simple phrases.
+
+607
+00:38:38,874 --> 00:38:41,711
+No API key was used in this recording.
+
+608
+00:38:42,061 --> 00:38:47,642
+The tools, the validation, the
+timeouts, and the policy are all completely real.
+
+609
+00:38:49,442 --> 00:38:52,176
+Now the store, where tasks and notes live.
+
+610
+00:38:52,526 --> 00:38:54,499
+Imagine editing a notebook.
+
+611
+00:38:54,849 --> 00:39:00,241
+If you tear out a page, and then get
+interrupted before writing the new one, the
+
+612
+00:39:00,241 --> 00:39:01,454
+page is just gone.
+
+613
+00:39:01,804 --> 00:39:05,975
+The safe way is to write the
+new page first, and then swap it in.
+
+614
+00:39:06,325 --> 00:39:08,141
+That's called an atomic save.
+
+615
+00:39:08,491 --> 00:39:13,826
+At any moment, you have either the old
+file or the new file, never half of one.
+
+616
+00:39:15,626 --> 00:39:17,656
+Load reads the JSON file.
+
+617
+00:39:18,006 --> 00:39:22,539
+If there's no file yet, we start
+with empty lists of tasks and notes.
+
+618
+00:39:23,139 --> 00:39:29,226
+Save writes everything to a temporary
+file, then os dot replace swaps it in, in one
+
+619
+00:39:29,226 --> 00:39:29,592
+step.
+
+620
+00:39:29,942 --> 00:39:34,843
+If the program crashes halfway
+through writing, the real file is untouched.
+
+621
+00:39:35,443 --> 00:39:40,346
+New items get the next ID: one
+more than the biggest ID so far.
+
+622
+00:39:40,946 --> 00:39:45,943
+And every change follows the
+same three steps: load, modify, save.
+
+623
+00:39:46,293 --> 00:39:50,850
+Add task creates a task with
+the next ID, appends it, and saves.
+
+624
+00:39:52,650 --> 00:39:54,067
+Let's look at the tools.
+
+625
+00:39:54,417 --> 00:39:56,200
+List tasks is a read tool.
+
+626
+00:39:56,550 --> 00:40:02,072
+Its description tells the model to use it
+before completing or deleting, to find the
+
+627
+00:40:02,072 --> 00:40:02,993
+task's number.
+
+628
+00:40:03,593 --> 00:40:05,595
+Complete task is a write tool.
+
+629
+00:40:05,945 --> 00:40:08,066
+It needs the number from list tasks.
+
+630
+00:40:08,666 --> 00:40:10,346
+Delete task is danger.
+
+631
+00:40:10,696 --> 00:40:16,244
+Its description warns the model to use
+it only when the user clearly asks, and to
+
+632
+00:40:16,244 --> 00:40:18,641
+prefer complete task for finishing.
+
+633
+00:40:18,991 --> 00:40:23,695
+And it has a confirm function,
+which builds the question the human sees.
+
+634
+00:40:24,295 --> 00:40:28,653
+Add note is a write tool, that
+saves an idea or meeting notes.
+
+635
+00:40:29,253 --> 00:40:34,813
+And search notes is read, with a
+shorter, two-second timeout, because in a real app
+
+636
+00:40:34,813 --> 00:40:37,358
+it would call a remote search service.
+
+637
+00:40:39,158 --> 00:40:41,910
+Here's how the command
+line wires it together.
+
+638
+00:40:42,260 --> 00:40:48,098
+Ask human prints the question, with y
+slash capital N, so no is the default, and
+
+639
+00:40:48,098 --> 00:40:49,192
+reads one line.
+
+640
+00:40:49,542 --> 00:40:53,216
+Piped input works too,
+which is how the demos answer.
+
+641
+00:40:53,816 --> 00:40:57,277
+For each request, we build
+the context, and the policy.
+
+642
+00:40:57,627 --> 00:41:00,341
+The read-only flag sets read-only mode.
+
+643
+00:41:00,691 --> 00:41:05,992
+And the yes flag approves dangerous
+actions automatically, which is useful for
+
+644
+00:41:05,992 --> 00:41:09,187
+scripts you trust, and
+dangerous anywhere else.
+
+645
+00:41:09,787 --> 00:41:15,501
+Then the agent gets the client, the cost
+tracker, the context, and the policy, and
+
+646
+00:41:15,501 --> 00:41:19,055
+runs the request,
+printing each step as it happens.
+
+647
+00:41:19,655 --> 00:41:24,155
+Finally, a footer with turns,
+tool calls and cost, and the answer.
+
+648
+00:41:24,505 --> 00:41:30,148
+Any ending other than answered becomes
+one clear error, exactly like Module 4.
+
+649
+00:41:31,948 --> 00:41:32,886
+Let's run it.
+
+650
+00:41:33,236 --> 00:41:37,537
+The tools command shows every
+tool, with its permission and timeout.
+
+651
+00:41:38,137 --> 00:41:40,301
+Reset gives us an empty store.
+
+652
+00:41:40,651 --> 00:41:44,634
+It deletes data, so it asks
+first too, unless we pass yes.
+
+653
+00:41:45,234 --> 00:41:47,506
+And a first request with three parts.
+
+654
+00:41:47,856 --> 00:41:51,239
+Look at the trace: three
+tool calls, all in turn one.
+
+655
+00:41:51,589 --> 00:41:53,295
+That's a parallel tool call.
+
+656
+00:41:53,645 --> 00:41:57,324
+Two tasks and a note,
+saved, in two turns in total.
+
+657
+00:41:59,124 --> 00:42:00,433
+Pause and predict.
+
+658
+00:42:00,783 --> 00:42:02,726
+The store has tasks one and two.
+
+659
+00:42:03,076 --> 00:42:07,236
+The request is: complete
+task two, and delete task seven.
+
+660
+00:42:07,586 --> 00:42:09,633
+The human would say yes if asked.
+
+661
+00:42:10,233 --> 00:42:11,941
+How many tool calls are there?
+
+662
+00:42:12,291 --> 00:42:13,655
+Is the human asked?
+
+663
+00:42:14,005 --> 00:42:15,860
+And what does each call return?
+
+664
+00:42:22,460 --> 00:42:24,688
+Two tool calls, both in turn one.
+
+665
+00:42:25,038 --> 00:42:26,806
+Complete task two succeeds.
+
+666
+00:42:27,156 --> 00:42:32,596
+Delete task seven fails before anyone
+is asked, with: there is no task seven.
+
+667
+00:42:32,946 --> 00:42:36,680
+The human is never asked
+about a task that doesn't exist.
+
+668
+00:42:38,480 --> 00:42:39,287
+Recap.
+
+669
+00:42:39,637 --> 00:42:43,500
+An honest fake: a script
+that speaks the real protocol.
+
+670
+00:42:44,100 --> 00:42:47,919
+An atomic store: write a
+temporary file, then replace.
+
+671
+00:42:48,519 --> 00:42:52,454
+Six tools, with clear
+descriptions and three permission levels.
+
+672
+00:42:53,054 --> 00:42:57,240
+And the command line builds
+the policy from read-only and yes.
+
+673
+00:42:57,840 --> 00:43:04,056
+In part two: the agent loop with parallel
+calls, the full demo, failures on purpose,
+
+674
+00:43:04,056 --> 00:43:06,349
+the tests, and the module quiz.
+
+675
+00:43:08,165 --> 00:43:09,225
+Welcome back.
+
+676
+00:43:09,575 --> 00:43:12,460
+The store, the tools
+and the policy are ready.
+
+677
+00:43:12,810 --> 00:43:18,455
+Now we connect them in the agent loop,
+run a full demo, break things on purpose, and
+
+678
+00:43:18,455 --> 00:43:19,665
+look at the tests.
+
+679
+00:43:20,015 --> 00:43:25,586
+Then we'll wrap up the module with
+interview questions, a quiz, and your extension
+
+680
+00:43:25,586 --> 00:43:26,266
+challenge.
+
+681
+00:43:28,066 --> 00:43:29,693
+First, the system prompt.
+
+682
+00:43:30,043 --> 00:43:34,815
+Notice the style from Module
+3: it explains why, not just what.
+
+683
+00:43:35,165 --> 00:43:40,992
+The tools are the only way to read or
+change the data, so the model has a reason to
+
+684
+00:43:40,992 --> 00:43:41,624
+use them.
+
+685
+00:43:42,224 --> 00:43:47,541
+It asks for parallel tool calls when
+the user wants several independent things.
+
+686
+00:43:48,141 --> 00:43:53,901
+And it says how to behave: look up a
+task's number first, fix the input after an
+
+687
+00:43:53,901 --> 00:43:57,573
+error, and never retry
+an action the user declined.
+
+688
+00:43:57,923 --> 00:44:02,388
+Today's date is filled in, so the
+model can write due dates correctly.
+
+689
+00:44:04,188 --> 00:44:08,119
+Act runs one tool call
+through run tool, with the policy.
+
+690
+00:44:08,469 --> 00:44:14,717
+Any tool error, invalid input, a denied
+action, a timeout, becomes a step marked as
+
+691
+00:44:14,717 --> 00:44:15,394
+an error.
+
+692
+00:44:15,744 --> 00:44:16,923
+Never a crash.
+
+693
+00:44:17,523 --> 00:44:23,557
+Run is the loop you know from Module
+4: a step limit, a budget check, and clean
+
+694
+00:44:23,557 --> 00:44:26,536
+stops for a refusal or a cut-off reply.
+
+695
+00:44:27,136 --> 00:44:30,209
+No tool calls means
+the model has answered.
+
+696
+00:44:30,809 --> 00:44:32,107
+And here's what's new.
+
+697
+00:44:32,457 --> 00:44:38,436
+We act on every tool call in the reply,
+in order, report each step to the trace, and
+
+698
+00:44:38,436 --> 00:44:39,859
+collect the results.
+
+699
+00:44:40,209 --> 00:44:45,880
+Then all the results go back in one
+single user message, exactly as lesson two
+
+700
+00:44:45,880 --> 00:44:46,389
+showed.
+
+701
+00:44:48,189 --> 00:44:50,680
+Now a full demo, from an empty store.
+
+702
+00:44:51,280 --> 00:44:52,409
+First, reset.
+
+703
+00:44:53,009 --> 00:44:54,956
+Three tasks in one request.
+
+704
+00:44:55,306 --> 00:44:59,764
+One turn with three parallel
+calls, and each task gets its number.
+
+705
+00:45:00,364 --> 00:45:04,113
+Complete task three, and
+save a note, again in one turn.
+
+706
+00:45:04,713 --> 00:45:10,608
+And two read tools together: all tasks,
+with buy milk marked done, and the note we
+
+707
+00:45:10,608 --> 00:45:11,399
+just saved.
+
+708
+00:45:13,199 --> 00:45:15,602
+Now the safety features, on purpose.
+
+709
+00:45:15,952 --> 00:45:20,379
+Delete task one: the agent asks,
+with the task's title and due date.
+
+710
+00:45:20,729 --> 00:45:23,310
+The answer is no, so pay rent stays.
+
+711
+00:45:23,910 --> 00:45:28,452
+Delete task two, and this time
+the answer is yes, so it's deleted.
+
+712
+00:45:29,052 --> 00:45:31,674
+In read-only mode, writes are blocked.
+
+713
+00:45:32,274 --> 00:45:37,482
+And a rejected API key ends with
+one clear line, and exit code one.
+
+714
+00:45:37,832 --> 00:45:39,428
+No traceback anywhere.
+
+715
+00:45:41,228 --> 00:45:47,104
+The tests run the real loop, the real
+tools and the real policy, against the fake
+
+716
+00:45:47,104 --> 00:45:49,570
+model, with a temporary data file.
+
+717
+00:45:49,920 --> 00:45:55,554
+This one checks parallel calls: three
+steps, all in turn one, and the results
+
+718
+00:45:55,554 --> 00:45:58,700
+matched to the calls
+by ID, in one message.
+
+719
+00:45:59,300 --> 00:46:05,811
+This one checks recovery from invalid
+input: first an error step, then a successful
+
+720
+00:46:05,811 --> 00:46:08,321
+one, and exactly one task saved.
+
+721
+00:46:08,921 --> 00:46:14,696
+And these check the human approval: when
+the answer is no, the task is still there,
+
+722
+00:46:14,696 --> 00:46:16,853
+and the policy logged declined.
+
+723
+00:46:17,203 --> 00:46:19,243
+When it's yes, the task is gone.
+
+724
+00:46:21,043 --> 00:46:26,999
+Forty-three tests, all passing, with no
+key, no network, and without touching your
+
+725
+00:46:26,999 --> 00:46:28,088
+real data file.
+
+726
+00:46:28,688 --> 00:46:31,269
+And mypy is happy with every type hint.
+
+727
+00:46:33,069 --> 00:46:39,004
+A four hundred about the tool schema
+usually means a strict schema rule: additional
+
+728
+00:46:39,004 --> 00:46:42,652
+properties must be
+false, and every field required.
+
+729
+00:46:43,002 --> 00:46:46,762
+Generate schemas with
+schema for, instead of by hand.
+
+730
+00:46:47,362 --> 00:46:51,863
+A four hundred about tool use
+IDs means a result is missing.
+
+731
+00:46:52,213 --> 00:46:56,237
+Every call needs its result,
+all in the next user message.
+
+732
+00:46:56,837 --> 00:47:02,346
+If the model picks the wrong tool,
+improve the descriptions, and remove tools that
+
+733
+00:47:02,346 --> 00:47:02,884
+overlap.
+
+734
+00:47:03,484 --> 00:47:07,613
+And if the agent seems stuck,
+a tool probably has no timeout.
+
+735
+00:47:07,963 --> 00:47:09,340
+Every tool gets one.
+
+736
+00:47:11,140 --> 00:47:12,892
+Module interview corner.
+
+737
+00:47:13,242 --> 00:47:17,619
+Question one: walk me through what
+happens when an agent calls a tool.
+
+738
+00:47:20,219 --> 00:47:23,019
+Your code sends the
+tools and the messages.
+
+739
+00:47:23,369 --> 00:47:28,330
+The model replies with a stop
+reason of tool use, and tool use blocks.
+
+740
+00:47:28,680 --> 00:47:34,680
+Your code validates each input, checks
+the permission, runs it with a timeout, and
+
+741
+00:47:34,680 --> 00:47:40,607
+returns the tool results, with the same
+IDs, and is error on failures, all in one
+
+742
+00:47:40,607 --> 00:47:41,558
+user message.
+
+743
+00:47:41,908 --> 00:47:44,680
+Then repeat until there are no tool calls.
+
+744
+00:47:45,030 --> 00:47:50,761
+The trap: skipping validation and
+permissions, or saying the API runs the tool.
+
+745
+00:47:51,361 --> 00:47:56,639
+Question two, a scenario: how would
+you let an agent send emails safely?
+
+746
+00:47:59,239 --> 00:48:01,330
+Make send email a danger tool.
+
+747
+00:48:01,680 --> 00:48:04,202
+Validate the recipients and the content.
+
+748
+00:48:04,552 --> 00:48:09,067
+Show the human the exact email,
+and ask for approval every time.
+
+749
+00:48:09,417 --> 00:48:15,424
+Log every decision, limit how many it
+can send, and start with a draft-only mode.
+
+750
+00:48:15,774 --> 00:48:19,289
+The trap: adding never
+send spam to the system prompt.
+
+751
+00:48:19,639 --> 00:48:21,621
+Instructions are not enforcement.
+
+752
+00:48:22,221 --> 00:48:27,487
+And question three: what's the
+difference between strict tool use and validating in
+
+753
+00:48:27,487 --> 00:48:28,121
+your code?
+
+754
+00:48:30,721 --> 00:48:36,261
+Strict tool use guarantees the input
+matches the schema: the fields and the types.
+
+755
+00:48:36,611 --> 00:48:42,507
+Your validation enforces limits and
+business rules, and turns failures into clear
+
+756
+00:48:42,507 --> 00:48:44,326
+errors the model can fix.
+
+757
+00:48:44,676 --> 00:48:47,162
+The trap: treating them as alternatives.
+
+758
+00:48:47,512 --> 00:48:48,609
+You want both.
+
+759
+00:48:50,409 --> 00:48:51,715
+Module recap.
+
+760
+00:48:52,065 --> 00:48:57,698
+With tools, the model requests, your
+code runs, and the results come back by ID.
+
+761
+00:48:58,298 --> 00:49:02,875
+A registry and Pydantic give
+one source of truth for every tool.
+
+762
+00:49:03,475 --> 00:49:08,183
+For parallel calls, run them
+all, and send one message of results.
+
+763
+00:49:08,783 --> 00:49:12,475
+Validate every input, and
+give every tool a timeout.
+
+764
+00:49:13,075 --> 00:49:18,562
+And use least privilege, permission
+levels, and a human yes for anything dangerous.
+
+765
+00:49:20,362 --> 00:49:22,258
+Module quiz, question one.
+
+766
+00:49:22,608 --> 00:49:24,841
+Who actually runs a tool's function?
+
+767
+00:49:31,041 --> 00:49:33,466
+Your code, after the model requests it.
+
+768
+00:49:33,816 --> 00:49:35,376
+The model only asks.
+
+769
+00:49:37,176 --> 00:49:38,266
+Question two.
+
+770
+00:49:38,616 --> 00:49:42,038
+Why generate tool
+schemas from Pydantic classes?
+
+771
+00:49:48,238 --> 00:49:53,578
+Because one class both describes the
+input to the model, and validates it in your
+
+772
+00:49:53,578 --> 00:49:53,907
+code.
+
+773
+00:49:54,257 --> 00:49:55,633
+One source of truth.
+
+774
+00:49:57,433 --> 00:49:58,564
+Question three.
+
+775
+00:49:58,914 --> 00:50:02,128
+With strict mode on,
+which check is still your job?
+
+776
+00:50:08,328 --> 00:50:10,974
+Checking that the
+task with that ID exists.
+
+777
+00:50:11,324 --> 00:50:13,190
+Strict mode covers the shape.
+
+778
+00:50:13,540 --> 00:50:15,270
+Business rules are yours.
+
+779
+00:50:17,070 --> 00:50:18,184
+Question four.
+
+780
+00:50:18,534 --> 00:50:21,355
+A thread timeout fires after two seconds.
+
+781
+00:50:21,705 --> 00:50:23,097
+What does it guarantee?
+
+782
+00:50:29,297 --> 00:50:32,905
+That the agent stops
+waiting, and gets an error result.
+
+783
+00:50:33,255 --> 00:50:35,170
+It doesn't stop the work itself.
+
+784
+00:50:36,970 --> 00:50:38,334
+And question five.
+
+785
+00:50:38,684 --> 00:50:42,087
+Where must the human
+approval check for delete task live?
+
+786
+00:50:48,287 --> 00:50:51,542
+In your code, between
+validation and execution.
+
+787
+00:50:51,892 --> 00:50:53,398
+Prompts guide the model.
+
+788
+00:50:53,748 --> 00:50:55,324
+Only code enforces.
+
+789
+00:50:57,124 --> 00:50:59,532
+Now some practice, from easy to hard.
+
+790
+00:50:59,882 --> 00:51:01,228
+Pause and try them.
+
+791
+00:51:01,578 --> 00:51:05,140
+The answers are in the
+module's quiz dot md file.
+
+792
+00:51:05,740 --> 00:51:06,379
+One.
+
+793
+00:51:06,729 --> 00:51:12,407
+Write a Pydantic class for a rename
+task tool, with a task ID and a new title.
+
+794
+00:51:13,007 --> 00:51:13,629
+Two.
+
+795
+00:51:13,979 --> 00:51:19,084
+Which permission level would you give a
+tool that clears all completed tasks, and
+
+796
+00:51:19,084 --> 00:51:19,336
+why?
+
+797
+00:51:19,936 --> 00:51:20,633
+Three.
+
+798
+00:51:20,983 --> 00:51:24,411
+The model sends four
+tool calls, and one times out.
+
+799
+00:51:24,761 --> 00:51:27,022
+What does the next user message contain?
+
+800
+00:51:27,622 --> 00:51:29,274
+And four, a scenario.
+
+801
+00:51:29,624 --> 00:51:32,566
+A customer support
+agent can issue refunds.
+
+802
+00:51:32,916 --> 00:51:35,525
+Design its tools, and its safety checks.
+
+803
+00:51:43,325 --> 00:51:44,932
+Your extension challenge.
+
+804
+00:51:45,282 --> 00:51:49,963
+Pick one or more, and write a
+test for each, using the fake API.
+
+805
+00:51:50,563 --> 00:51:53,343
+Add a rename task tool, as a write tool.
+
+806
+00:51:53,943 --> 00:51:58,322
+Add a due soon tool, that
+lists open tasks due within N days.
+
+807
+00:51:58,922 --> 00:52:02,904
+Log every policy decision to
+an audit file, with the time.
+
+808
+00:52:03,504 --> 00:52:08,742
+Or run search notes in a separate
+process, so a timeout really stops the work.
+
+809
+00:52:10,542 --> 00:52:14,614
+These are the official
+documentation pages for this module.
+
+810
+00:52:14,965 --> 00:52:19,782
+Links are in the description, along
+with the full source code, and the course
+
+811
+00:52:19,782 --> 00:52:20,345
+glossary.
+
+812
+00:52:25,745 --> 00:52:27,683
+That's Module 5 complete.
+
+813
+00:52:28,033 --> 00:52:34,075
+Your agent can now use many tools,
+check every input, survive slow tools, and ask
+
+814
+00:52:34,075 --> 00:52:36,611
+before it does anything dangerous.
+
+815
+00:52:36,961 --> 00:52:42,479
+In Module 6, we give agents memory:
+what to remember, what to forget, and how to
+
+816
+00:52:42,479 --> 00:52:44,962
+pick up a conversation the next day.
+
+817
+00:52:45,312 --> 00:52:46,254
+See you there.
